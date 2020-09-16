@@ -4,11 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.jipp.GetAttributes
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.toast
 import java.net.URI
 
 
@@ -19,18 +21,17 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         getTextImageFromOtherApp()
         val uri = URI.create(edtUrlInputtext.text.toString())
-
-        btnGetAttributes.setOnClickListener {
-            doAsync {
-
-                val getAttributes = GetAttributes()
-                getAttributes.getAttributes(uri, this@MainActivity)
-            }
-
+        val getAttributes = GetAttributes()
+        doAsync {
+           val st:String= getAttributes.getAttributes(uri)
+            Log.i("printer","----->"+st)
         }
 
-        val m: MyPrintService = MyPrintService()
+        btnGetAttributes.setOnClickListener {
+
+        }
     }
+
 
     private fun getTextImageFromOtherApp() {
         when (intent?.action) {
