@@ -1,34 +1,45 @@
 package com.example.customeprintservice
 
+import android.content.BroadcastReceiver
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.customeprintservice.jipp.GetAttributes
+import com.example.customeprintservice.jipp.AttributesUtils
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.toast
 import java.net.URI
 
 
 class MainActivity : AppCompatActivity() {
+
+    var receiver: BroadcastReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         getTextImageFromOtherApp()
         val uri = URI.create(edtUrlInputtext.text.toString())
-        val getAttributes = GetAttributes()
+        val attributesUtils = AttributesUtils()
 
         btnGetAttributes.setOnClickListener {
 
-            val st: String = getAttributes.getAttributes(uri)
-           Toast.makeText(this@MainActivity,st,Toast.LENGTH_LONG).show()
-            Log.i("printer", "----->" + st)
-
+            val st: String = attributesUtils.getAttributes(uri,this@MainActivity)
+            Toast.makeText(this@MainActivity, st, Toast.LENGTH_LONG).show()
+            Log.i("printer", "----->$st")
+            broadcastIntent(it)
         }
+
+    }
+
+    fun broadcastIntent(view: View?) {
+        Log.i("printer","In broadcastintent fun--")
+        val intent = Intent()
+        intent.action = "com.example.CUSTOM_INTENT"
+        sendBroadcast(intent)
     }
 
     private fun getTextImageFromOtherApp() {

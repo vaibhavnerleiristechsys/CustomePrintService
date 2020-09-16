@@ -14,14 +14,13 @@ import java.net.URI;
 import static com.hp.jipp.model.Types.requestedAttributes;
 import static com.hp.jipp.model.Types.requestingUserName;
 
-public class GetAttributes {
+public class AttributesUtils {
 
     private final static IppClientTransport transport = new HttpIppClientTransport();
     private final static String CMD_NAME = "jprint";
 
-    public String  getAttributes(URI uri) throws IOException {
-        // Query for supported document formats
-        Log.i("printer", "In GetAttribute method");
+    public String getAttributes(URI uri, Context context) throws IOException {
+
         Attribute<String> requested;
         requested = requestedAttributes.of("all");
         IppPacket attributeRequest =
@@ -29,12 +28,16 @@ public class GetAttributes {
                         .putOperationAttributes(requestingUserName.of("print"), requested)
                         .build();
 
-//        Log.i("printer", "Sending ------>>>" + attributeRequest.prettyPrint(100, "  "));
-
         IppPacketData request = new IppPacketData(attributeRequest);
-//        IppPacketData response = transport.sendData(uri, request);
-//        Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+        new Thread(()-> {
+                try {
+                  IppPacketData  response = transport.sendData(uri, request);
+                    Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+                } catch (IOException e) {
+                    e.printStackTrace();
+            }
+        }).start();
 
-        return attributeRequest.prettyPrint(100,"");
+        return attributeRequest.prettyPrint(100, "");
     }
 }
