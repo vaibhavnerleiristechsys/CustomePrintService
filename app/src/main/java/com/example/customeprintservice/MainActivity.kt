@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.jipp.GetAttributes
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
 import java.net.URI
 
@@ -22,16 +21,15 @@ class MainActivity : AppCompatActivity() {
         getTextImageFromOtherApp()
         val uri = URI.create(edtUrlInputtext.text.toString())
         val getAttributes = GetAttributes()
-        doAsync {
-           val st:String= getAttributes.getAttributes(uri)
-            Log.i("printer","----->"+st)
-        }
 
         btnGetAttributes.setOnClickListener {
 
+            val st: String = getAttributes.getAttributes(uri)
+           Toast.makeText(this@MainActivity,st,Toast.LENGTH_LONG).show()
+            Log.i("printer", "----->" + st)
+
         }
     }
-
 
     private fun getTextImageFromOtherApp() {
         when (intent?.action) {

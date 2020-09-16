@@ -29,12 +29,11 @@ public class GetAttributes {
                         .putOperationAttributes(requestingUserName.of("print"), requested)
                         .build();
 
-        attributeRequest.getStatus();
-        Log.i("printer", "Sending ------>>>" + attributeRequest.prettyPrint(100, "  "));
+//        Log.i("printer", "Sending ------>>>" + attributeRequest.prettyPrint(100, "  "));
 
         IppPacketData request = new IppPacketData(attributeRequest);
-        IppPacketData response = transport.sendData(uri, request);
-        Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+//        IppPacketData response = transport.sendData(uri, request);
+//        Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
 
         return attributeRequest.prettyPrint(100,"");
     }
