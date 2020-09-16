@@ -1,6 +1,7 @@
 package com.example.customeprintservice.jipp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.hp.jipp.encoding.Attribute;
@@ -29,12 +30,24 @@ public class AttributesUtils {
                         .build();
 
         IppPacketData request = new IppPacketData(attributeRequest);
+
+//            String s = "send message";
+//            Intent intent =
+//                    new Intent("com.example.CUSTOM_INTENT")
+//                    .putExtra("getMessage", s);
+//            context.sendBroadcast(intent);
+
         new Thread(()-> {
-                try {
-                  IppPacketData  response = transport.sendData(uri, request);
-                    Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
-                } catch (IOException e) {
-                    e.printStackTrace();
+            try {
+            String s = "send message";
+                Intent intent =
+                        new Intent("com.example.CUSTOM_INTENT")
+                                .putExtra("getMessage", s.toString());
+                context.sendBroadcast(intent);
+                IppPacketData  response = transport.sendData(uri, request);
+                Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }).start();
 
