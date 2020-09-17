@@ -39,13 +39,17 @@ public class AttributesUtils {
 
         new Thread(()-> {
             try {
-            String s = "send message";
+            //String s = "send message";
+                IppPacketData  response = transport.sendData(uri, request);
+                String responseString  = response.toString();
+
+                Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+
                 Intent intent =
                         new Intent("com.example.CUSTOM_INTENT")
-                                .putExtra("getMessage", s.toString());
+                                .putExtra("getMessage", responseString);
                 context.sendBroadcast(intent);
-                IppPacketData  response = transport.sendData(uri, request);
-                Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -22,11 +22,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 //        getTextImageFromOtherApp()
-        val uri = URI.create(edtUrlInputtext.text.toString())
+
         val attributesUtils = AttributesUtils()
 
         btnGetAttributes.setOnClickListener {
 
+            val uri = URI.create(edtUrlInputtext.text.toString())
             val st: String = attributesUtils.getAttributes(uri, this@MainActivity)
             Log.i("printer", "----->$st")
             txtRequestAttribute.text = "Request-->$st"
