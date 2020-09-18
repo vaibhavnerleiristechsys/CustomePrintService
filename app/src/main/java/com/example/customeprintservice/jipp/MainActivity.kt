@@ -63,7 +63,8 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             val uri: Uri = data?.data!!
-            val file: File = File(uri.path!!)
+            val realPath = FileUtils.getPath(this,uri)
+            val file: File = File(realPath)
             val uri1 = URI.create(edtUrlInputtext.text.toString())
             printUtils.print(uri1, file)
 

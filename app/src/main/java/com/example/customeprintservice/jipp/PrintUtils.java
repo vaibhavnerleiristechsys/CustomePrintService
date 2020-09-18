@@ -31,6 +31,10 @@ public class PrintUtils {
     public void print(URI uri, File file) {
 
         File inputFile = new File(file.getPath());
+        boolean exists = inputFile.exists();
+
+        Log.i("printer", String.valueOf(exists));
+
         Log.i("printer", "input File-->" + inputFile);
         String fileName = inputFile.getName();
         String format = inputFile.getName();
