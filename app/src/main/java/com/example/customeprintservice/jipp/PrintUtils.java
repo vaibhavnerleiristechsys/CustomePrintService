@@ -26,6 +26,9 @@ public class PrintUtils {
         put("pdf", FORMAT_PDF);
         put("pclm", "application/PCLm");
         put("pwg", "image/pwg-raster");
+        put("jpeg", "application/image");
+        put("jpg", "application/image");
+        put("png", "application/image");
     }};
 
     public void print(URI uri, File file) {
@@ -38,11 +41,11 @@ public class PrintUtils {
         Log.i("printer", "input File-->" + inputFile);
         String fileName = inputFile.getName();
         String format = inputFile.getName();
-        if (format == null) {
+        //if (format == null) {
             if (fileName.contains(".")) {
                 format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase());
             }
-        }
+        //}
         // Deliver the print request
         IppPacket printRequest = IppPacket.printJob(uri)
                 .putOperationAttributes(
@@ -60,6 +63,9 @@ public class PrintUtils {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+            catch (Exception e) {
+            e.printStackTrace();
             }
         }).start();
 
