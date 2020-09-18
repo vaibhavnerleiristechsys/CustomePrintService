@@ -6,16 +6,20 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
+import java.io.FileInputStream
 import java.net.URI
 
 
 class MainActivity : AppCompatActivity() {
+
     val printUtils = PrintUtils()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,10 +36,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnPrint.setOnClickListener {
-
-            val mRequestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
-            mRequestFileIntent.type = "*/*"
-            startActivityForResult(mRequestFileIntent, 1)
+            val i = Intent(
+                Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            )
+            i.type = "*/*"
+            startActivityForResult(i, 1)
+//            val mRequestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
+//            startActivityForResult(mRequestFileIntent, 1)
         }
 
         val filter = IntentFilter()
@@ -63,14 +71,14 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             val uri: Uri = data?.data!!
-            val realPath = FileUtils.getPath(this,uri)
+            val realPath = FileUtils.getPath(this, uri)
             val file: File = File(realPath)
+
             val uri1 = URI.create(edtUrlInputtext.text.toString())
             printUtils.print(uri1, file)
 
             Log.i("printer", "file choosed-->" + uri.path)
         }
     }
-
 
 }

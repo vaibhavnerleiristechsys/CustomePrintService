@@ -53,7 +53,7 @@ public class FileUtils {
                     return null;
                 }
             }
-
+//
             // DownloadsProvider
             else if (isDownloadsDocument(uri)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

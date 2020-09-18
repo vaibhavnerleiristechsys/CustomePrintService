@@ -30,7 +30,7 @@ public class PrintUtils {
 
     public void print(URI uri, File file) {
 
-        File inputFile = new File(file.getPath());
+        File inputFile = new File(file.getAbsolutePath());
         boolean exists = inputFile.exists();
 
         Log.i("printer", String.valueOf(exists));
@@ -53,6 +53,7 @@ public class PrintUtils {
         Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
         new Thread(() -> {
             try {
+                Log.i("printer","In print utils method");
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                 IppPacketData response = transport.sendData(uri, request);
                 Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
