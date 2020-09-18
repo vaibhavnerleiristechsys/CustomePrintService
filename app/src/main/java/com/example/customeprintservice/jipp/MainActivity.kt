@@ -1,19 +1,16 @@
 package com.example.customeprintservice.jipp
 
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.R
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.io.FileInputStream
 import java.net.URI
 
 
@@ -64,11 +61,10 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
-            val uri: Uri = data.data!!
-            val file = File(uri.path)
-            var fileInputStream:FileInputStream = FileInputStream(uri.path)
-
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            val uri: Uri = data?.data!!
+            val realPath = FileUtils.getPath(this,uri)
+            val file: File = File(realPath)
             val uri1 = URI.create(edtUrlInputtext.text.toString())
             printUtils.print(uri1, file)
 
@@ -76,18 +72,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getRealPathFromURI(contentURI: Uri): String? {
-        val result: String?
-        val cursor = contentResolver.query(contentURI, null, null, null, null)
-        if (cursor == null) { // Source is Dropbox or other similar local file path
-            result = contentURI.path
-        } else {
-            cursor.moveToFirst()
-            val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-            result = cursor.getString(idx)
-            cursor.close()
-        }
-        return result
-    }
 
 }

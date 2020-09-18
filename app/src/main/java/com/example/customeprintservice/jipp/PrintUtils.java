@@ -14,7 +14,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.hp.jipp.model.Types.dateTimeAtCanceled;
 import static com.hp.jipp.model.Types.documentFormat;
 import static com.hp.jipp.model.Types.requestingUserName;
 
@@ -32,11 +31,10 @@ public class PrintUtils {
     public void print(URI uri, File file) {
 
         File inputFile = new File(file.getPath());
-        if (!inputFile.exists()) {
-            Log.i("printer", "file is not exists");
-        }else{
-            Log.i("printer", "file is exists");
-        }
+        boolean exists = inputFile.exists();
+
+        Log.i("printer", String.valueOf(exists));
+
         Log.i("printer", "input File-->" + inputFile);
         String fileName = inputFile.getName();
         String format = inputFile.getName();
