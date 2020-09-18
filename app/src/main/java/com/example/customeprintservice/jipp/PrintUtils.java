@@ -26,8 +26,8 @@ public class PrintUtils {
         put("pdf", FORMAT_PDF);
         put("pclm", "application/PCLm");
         put("pwg", "image/pwg-raster");
-        put("jpeg", "application/image");
-        put("jpg", "application/image");
+        put("jpeg", "image/jpeg");
+        put("jpg", "image/jpeg");
         put("png", "application/image");
     }};
 
