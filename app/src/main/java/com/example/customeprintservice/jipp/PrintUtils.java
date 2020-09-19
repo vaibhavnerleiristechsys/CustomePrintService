@@ -3,6 +3,7 @@ package com.example.customeprintservice.jipp;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.hp.jipp.encoding.IppPacket;
 import com.hp.jipp.trans.IppClientTransport;
@@ -10,8 +11,10 @@ import com.hp.jipp.trans.IppPacketData;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.hp.jipp.model.Types.documentFormat;
@@ -29,6 +32,13 @@ public class PrintUtils {
         put("jpeg", "image/jpeg");
         put("jpg", "image/jpeg");
         put("png", "application/image");
+        put("xpdf", "application/vnd.adobe.xfdf");
+        put("csv", "text/csv");
+        put("xls", "application/vnd.ms-excel");
+        put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        put("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        put("dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml.template");
     }};
 
     public void print(URI uri, File file, Context context) {
@@ -44,35 +54,52 @@ public class PrintUtils {
 
         if (fileName.contains(".")) {
             format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase());
+
+            Log.i("printer", "format--->" + format);
         }
 
-        // Deliver the print request
-        IppPacket printRequest = IppPacket.printJob(uri)
-                .putOperationAttributes(
-                        requestingUserName.of(CMD_NAME),
-                        documentFormat.of(format))
-                .build();
+        try {
+            AttributesUtils attributesUtils = new AttributesUtils();
+            List<String> att = attributesUtils.getAttributesForPrintUtils(uri);
 
-        Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
-        new Thread(() -> {
             try {
-                IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
-                IppPacketData response = transport.sendData(uri, request);
-
-                Intent intent =
-                        new Intent("com.example.CUSTOM_INTENT")
-                                .putExtra("getMessage", "Response Print Util-->" + response.toString());
-                context.sendBroadcast(intent);
-
-                Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
-            } catch (Exception e) {
-                Intent intent =
-                        new Intent("com.example.CUSTOM_INTENT")
-                                .putExtra("getMessage", "Response Print Util-->" + e.toString());
-                context.sendBroadcast(intent);
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
             }
-        }).start();
 
+            Log.i("printer", "att array--> " + att.toString());
+
+            if (format != null && att.contains(format)) {
+                IppPacket printRequest = IppPacket.printJob(uri)
+                        .putOperationAttributes(
+                                requestingUserName.of(CMD_NAME),
+                                documentFormat.of(format))
+                        .build();                Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
+                new Thread(() -> {
+                    try {
+                        Log.i("printer", "In print utils method");
+                        IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
+                        IppPacketData response = transport.sendData(uri, request);
+                        Intent intent =
+                                new Intent("com.example.CUSTOM_INTENT")
+                                        .putExtra("getMessage", response.toString());
+                        context.sendBroadcast(intent);
+                        Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+                    } catch (Exception e) {
+                        Intent intent =
+                                new Intent("com.example.CUSTOM_INTENT")
+                                        .putExtra("getMessage", e.toString());
+                        context.sendBroadcast(intent);
+                    }
+                }).start();
+
+            } else {
+                Toast toast = Toast.makeText(context, "File format is not supported", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
