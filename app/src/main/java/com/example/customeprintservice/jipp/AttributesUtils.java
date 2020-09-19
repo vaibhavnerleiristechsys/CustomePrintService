@@ -36,7 +36,7 @@ public class AttributesUtils {
 
                 Intent intent =
                         new Intent("com.example.CUSTOM_INTENT")
-                                .putExtra("getMessage", responseString);
+                                .putExtra("getMessage", "Response Attribute-->"+responseString);
                 context.sendBroadcast(intent);
 
             } catch (IOException e) {

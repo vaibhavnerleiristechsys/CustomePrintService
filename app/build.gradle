@@ -39,10 +39,10 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     testImplementation 'junit:junit:4.12'
-    compile 'com.hp.jipp:jipp-core:0.7.6'
+    implementation 'com.hp.jipp:jipp-core:0.7.6'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-
+    implementation "org.jmdns:jmdns:3.5.1"
     //kotlin anko
     implementation 'org.jetbrains.anko:anko-common:0.9'
 //    implementation "org.jetbrains.anko:anko:$anko_version"
