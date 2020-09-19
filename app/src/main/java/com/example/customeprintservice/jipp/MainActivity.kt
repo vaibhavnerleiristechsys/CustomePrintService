@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             val file: File = File(realPath)
 
             val uri1 = URI.create(edtUrlInputtext.text.toString())
-            printUtils.print(uri1, file)
+            printUtils.print(uri1, file,this@MainActivity)
 
             Log.i("printer", "file choosed-->" + uri.path)
         }
