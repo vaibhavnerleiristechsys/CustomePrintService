@@ -16,11 +16,15 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.hp.jipp.model.Types.documentFormat;
 import static com.hp.jipp.model.Types.requestingUserName;
 
 public class PrintUtils {
+
+    private Context context = null;
 
     private final static String FORMAT_PDF = "application/pdf";
     private final static IppClientTransport transport = new HttpIppClientTransport();
@@ -40,6 +44,17 @@ public class PrintUtils {
         put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         put("dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml.template");
     }};
+
+
+    public void setContextAndInitializeJMDNS(Context context)
+    {
+        this.context = context;
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        JMDnsUtils dnsUtil = new JMDnsUtils();
+        dnsUtil.setContext(context);
+        executor.execute(dnsUtil);
+    }
+
 
     public void print(URI uri, File file, Context context) {
 

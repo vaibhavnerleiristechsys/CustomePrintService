@@ -18,7 +18,7 @@ import java.net.URI
 
 class MainActivity : AppCompatActivity() {
 
-    val printUtils = PrintUtils()
+    val printUtils = PrintUtils();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +50,9 @@ class MainActivity : AppCompatActivity() {
         filter.addAction("com.example.CUSTOM_INTENT")
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
+
+        //printUtils.setContext(this@MainActivity)
+        printUtils.setContextAndInitializeJMDNS(this@MainActivity)
 
     }
 
