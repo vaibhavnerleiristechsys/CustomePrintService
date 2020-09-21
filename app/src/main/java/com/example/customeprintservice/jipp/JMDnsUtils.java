@@ -21,6 +21,7 @@ import com.google.common.primitives.*;
 public class JMDnsUtils implements Runnable{
 
     private Context context = null;
+    private WifiManager.MulticastLock multicastLock;
     public void setContext(Context context)
     {
         this.context =  context;
@@ -38,11 +39,11 @@ public class JMDnsUtils implements Runnable{
         try {
 
             final InetAddress deviceIpAddress = getDeviceIpAddress(wifiMgr);
-            WifiManager.MulticastLock multicastLock = wifiMgr.createMulticastLock(getClass().getName());
+            multicastLock = wifiMgr.createMulticastLock(getClass().getName());
             multicastLock.setReferenceCounted(true);
             multicastLock.acquire();
             Log.i("printer", "Starting ZeroConf probe....");
-            JmDNS jmdns = JmDNS.create(deviceIpAddress, "LOCALHOST");
+            JmDNS jmdns = JmDNS.create();
             jmdns.addServiceListener("_http._tcp.local.", new JmDNSListener());
 
             /*InetAddress address = InetAddress.getByAddress(bytes);

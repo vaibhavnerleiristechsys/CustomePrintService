@@ -50,9 +50,12 @@ public class PrintUtils {
     {
         this.context = context;
         ExecutorService executor = Executors.newFixedThreadPool(1);
-        JMDnsUtils dnsUtil = new JMDnsUtils();
+        /*JMDnsUtils dnsUtil = new JMDnsUtils();
         dnsUtil.setContext(context);
-        executor.execute(dnsUtil);
+        executor.execute(dnsUtil);*/
+        NSDUtils nsdUtils = new NSDUtils();
+        nsdUtils.setContext(context);
+        executor.execute(nsdUtils);
     }
 
 
