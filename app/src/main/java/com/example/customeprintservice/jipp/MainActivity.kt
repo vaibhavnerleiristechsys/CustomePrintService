@@ -1,6 +1,7 @@
 package com.example.customeprintservice.jipp
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,18 +16,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.customeprintservice.R
-import com.example.customeprintservice.jmdns.PrinterDiscoveryUtils
+import com.example.customeprintservice.utils.Permissions
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
-import java.net.URI
-
 
 
 class MainActivity : AppCompatActivity() {
 
     val printUtils = PrintUtils()
     val attributesUtils = AttributesUtils()
+    private val PERMISSION_READ_EXTERNAL = 1
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -55,6 +56,40 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        btnSelectDocument.setOnClickListener {
+            if (Permissions().checkAndRequestPermissions(this@MainActivity)) {
+                val i = Intent(
+                    Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                )
+                i.type = "*/*"
+                startActivityForResult(i, 1)
+//            val mRequestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
+//            startActivityForResult(mRequestFileIntent, 1)
+            } else {
+                Toast.makeText(this@MainActivity, "Please accept Permissions", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
+        btnNext.setOnClickListener {
+            val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
+            startActivity(intent)
+        }
+
+//        btnGetAttributes.setOnClickListener {
+//            if (Permissions().checkAndRequestPermissions(this)) {
+//                val uri = URI.create(edtUrlInputtext.text.toString())
+//                val st: String = attributesUtils.getAttributes(uri, this@MainActivity)
+//                Log.i("printer", "----->$st")
+//                txtRequestAttribute.text = "Request-->$st"
+//            } else {
+//                Toast.makeText(this@MainActivity, "Please accept Permissions", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
+//        }
+
+
         val filter = IntentFilter()
         filter.addAction("com.example.CUSTOM_INTENT")
         val receiver = broadcastReceiver
@@ -78,25 +113,6 @@ class MainActivity : AppCompatActivity() {
                                 PackageManager.PERMISSION_GRANTED)
                     ) {
                         Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
-                        btnGetAttributes.setOnClickListener {
-
-                            val uri = URI.create(edtUrlInputtext.text.toString())
-                            val st: String = attributesUtils.getAttributes(uri, this@MainActivity)
-                            Log.i("printer", "----->$st")
-                            txtRequestAttribute.text = "Request-->$st"
-                        }
-
-                        btnPrint.setOnClickListener {
-                            val i = Intent(
-                                Intent.ACTION_PICK,
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                            )
-                            i.type = "*/*"
-                            startActivityForResult(i, 1)
-//            val mRequestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
-//            startActivityForResult(mRequestFileIntent, 1)
-                        }
-
                     }
                 } else {
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
@@ -112,7 +128,7 @@ class MainActivity : AppCompatActivity() {
             Log.i("printer", "msg---->$ippPacket")
 
             try {
-                txtResponseAttribute.text = ippPacket
+//                txtResponseAttribute.text = ippPacket
             } catch (e: Exception) {
             }
         }
@@ -126,8 +142,9 @@ class MainActivity : AppCompatActivity() {
             val realPath = FileUtils.getPath(this, uri)
             val file: File = File(realPath)
 
-            val uri1 = URI.create(edtUrlInputtext.text.toString())
-            printUtils.print(uri1, file, this@MainActivity)
+            txtPath.text = uri.path
+//            val uri1 = URI.create(edtUrlInputtext.text.toString())
+//            printUtils.print(uri1, file, this@MainActivity)
 
             Log.i("printer", "file choosed-->" + uri.path)
         }
