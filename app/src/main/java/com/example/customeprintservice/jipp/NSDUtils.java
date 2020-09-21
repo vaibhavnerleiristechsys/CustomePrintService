@@ -20,7 +20,7 @@ public class NSDUtils implements Runnable {
     private NsdServiceInfo mService;
     private NsdManager.DiscoveryListener mDiscoveryListener = null;
 
-    private List<Printer> printerList = new ArrayList<>();
+    private List<PrinterModel> printerModelList = new ArrayList<>();
 
     private Context context = null;
 
@@ -56,15 +56,15 @@ public class NSDUtils implements Runnable {
                 InetAddress printerHost = nsdServiceInfo.getHost();
                 int printerPort = nsdServiceInfo.getPort();
                 String serviceName = nsdServiceInfo.getServiceName();
-                Printer printer = new Printer();
+                PrinterModel printerModel = new PrinterModel();
 
-                printer.setPrinterHost(printerHost);
-                printer.setPrinterPort(printerPort);
-                printer.setServiceName(serviceName);
+                printerModel.setPrinterHost(printerHost);
+                printerModel.setPrinterPort(printerPort);
+                printerModel.setServiceName(serviceName);
 
-                printerList.add(printer);
+                printerModelList.add(printerModel);
 
-                PrinterList.setPrinterList(printerList);
+                PrinterList.setPrinterModelList(printerModelList);
 
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
             }

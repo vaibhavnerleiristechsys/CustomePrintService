@@ -56,8 +56,8 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
         val recyclerViewPrinterLst = dialog.findViewById<RecyclerView>(R.id.recyclerViewPrinterList)
 
-        var list = ArrayList<Printer>()
-        val printer = Printer()
+        var list = ArrayList<PrinterModel>()
+        val printer = PrinterModel()
         var inetAddress: InetAddress? = null
         doAsync {
             inetAddress= InetAddress.getLocalHost()

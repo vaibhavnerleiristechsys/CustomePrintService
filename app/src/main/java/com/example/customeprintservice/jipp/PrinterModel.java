@@ -2,7 +2,7 @@ package com.example.customeprintservice.jipp;
 
 import java.net.InetAddress;
 
-public class Printer {
+public class PrinterModel {
 
     private InetAddress printerHost;
 
