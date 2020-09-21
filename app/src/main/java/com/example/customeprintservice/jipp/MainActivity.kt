@@ -21,7 +21,7 @@ import java.io.File
 import java.net.URI
 
 
-@Suppress("DEPRECATED_IDENTITY_EQUALS")
+
 class MainActivity : AppCompatActivity() {
 
     val printUtils = PrintUtils()
@@ -32,13 +32,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 //        getTextImageFromOtherApp()
 
-        var printerDiscoveryUtils: PrinterDiscoveryUtils = PrinterDiscoveryUtils()
-        printerDiscoveryUtils.printerDiscovery()
-
         if (ContextCompat.checkSelfPermission(
                 this@MainActivity,
                 Manifest.permission.READ_EXTERNAL_STORAGE
-            ) !==
+            ) !=
             PackageManager.PERMISSION_GRANTED
         ) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -77,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                     if ((ContextCompat.checkSelfPermission(
                             this@MainActivity,
                             Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) ===
+                        ) ==
                                 PackageManager.PERMISSION_GRANTED)
                     ) {
                         Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
