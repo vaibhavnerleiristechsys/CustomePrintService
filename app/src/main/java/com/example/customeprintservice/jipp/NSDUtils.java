@@ -11,8 +11,8 @@ public class NSDUtils implements Runnable
 {
 
     private static final String TAG = "printer";
-    //private static final String SERVICE_TYPE = "_services._dns-sd._udp";
-    private static final String SERVICE_TYPE = "_ipp._tcp.";
+    private static final String SERVICE_TYPE = "_services._dns-sd._udp";
+    //private static final String SERVICE_TYPE = "_ipp._tcp.";
     private String mServiceName ="_ipp";
     private NsdManager mNsdManager;
     private NsdManager.ResolveListener mResolveListener = null;
@@ -40,6 +40,22 @@ public class NSDUtils implements Runnable
     public void initializeDiscoveryListener() {
 
 
+        mResolveListener = new NsdManager.ResolveListener(){
+
+            @Override
+            public void onResolveFailed(NsdServiceInfo nsdServiceInfo, int i) {
+
+            }
+
+            @Override
+            public void onServiceResolved(NsdServiceInfo nsdServiceInfo) {
+
+                InetAddress printerHost =  nsdServiceInfo.getHost();
+                int printerPort =  nsdServiceInfo.getPort();
+                String serviceName = nsdServiceInfo.getServiceName();
+                Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
+            }
+        };
 
         // Instantiate a new DiscoveryListener
          mDiscoveryListener = new NsdManager.DiscoveryListener() {
@@ -53,13 +69,20 @@ public class NSDUtils implements Runnable
             @Override
             public void onServiceFound(NsdServiceInfo service) {
                 // A service was found!  Do something with it.
-                Log.d(TAG, "Service discovery success" + service);
+                //Log.d(TAG, "Service discovery success" + service);
+
+                InetAddress printerHost =  service.getHost();
+                int printerPort =  service.getPort();
+                String serviceName = service.getServiceName();
+                //Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
+
 
                 if (!service.getServiceType().equals(SERVICE_TYPE)) {
                     // Service type is the string containing the protocol and
                     // transport layer for this service.
                     Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
-                } else if (service.getServiceName().equals(mServiceName)) {
+                }
+                /*else if (service.getServiceName().equals(mServiceName)) {
                     // The name of the service tells the user what they'd be
                     // connecting to. It could be "Bob's Chat App".
                     Log.d(TAG, "Same machine: " + mServiceName);
@@ -67,6 +90,10 @@ public class NSDUtils implements Runnable
 
 
                     //mNsdManager.resolveService(service, mResolveListener);
+                }*/
+                else
+                {
+                    mNsdManager.resolveService(service, mResolveListener);
                 }
             }
 
