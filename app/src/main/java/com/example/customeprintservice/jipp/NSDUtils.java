@@ -6,23 +6,26 @@ import android.net.nsd.NsdServiceInfo;
 import android.util.Log;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
-public class NSDUtils implements Runnable
-{
+public class NSDUtils implements Runnable {
 
     private static final String TAG = "printer";
     private static final String SERVICE_TYPE = "_services._dns-sd._udp";
     //private static final String SERVICE_TYPE = "_ipp._tcp.";
-    private String mServiceName ="_ipp";
+    private String mServiceName = "_ipp";
     private NsdManager mNsdManager;
     private NsdManager.ResolveListener mResolveListener = null;
     private NsdServiceInfo mService;
     private NsdManager.DiscoveryListener mDiscoveryListener = null;
 
+    private List<Printer> printerList = new ArrayList<>();
+
     private Context context = null;
-    public void setContext(Context context)
-    {
-        this.context =  context;
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -40,25 +43,35 @@ public class NSDUtils implements Runnable
     public void initializeDiscoveryListener() {
 
 
-        mResolveListener = new NsdManager.ResolveListener(){
+        mResolveListener = new NsdManager.ResolveListener() {
 
             @Override
             public void onResolveFailed(NsdServiceInfo nsdServiceInfo, int i) {
-
+                Log.i("printer", "In ND failed Resolved");
             }
 
             @Override
             public void onServiceResolved(NsdServiceInfo nsdServiceInfo) {
 
-                InetAddress printerHost =  nsdServiceInfo.getHost();
-                int printerPort =  nsdServiceInfo.getPort();
+                InetAddress printerHost = nsdServiceInfo.getHost();
+                int printerPort = nsdServiceInfo.getPort();
                 String serviceName = nsdServiceInfo.getServiceName();
+                Printer printer = new Printer();
+
+                printer.setPrinterHost(printerHost);
+                printer.setPrinterPort(printerPort);
+                printer.setServiceName(serviceName);
+
+                printerList.add(printer);
+
+                PrinterList.setPrinterList(printerList);
+
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
             }
         };
 
         // Instantiate a new DiscoveryListener
-         mDiscoveryListener = new NsdManager.DiscoveryListener() {
+        mDiscoveryListener = new NsdManager.DiscoveryListener() {
 
             //  Called as soon as service discovery begins.
             @Override
@@ -71,8 +84,8 @@ public class NSDUtils implements Runnable
                 // A service was found!  Do something with it.
                 //Log.d(TAG, "Service discovery success" + service);
 
-                InetAddress printerHost =  service.getHost();
-                int printerPort =  service.getPort();
+                InetAddress printerHost = service.getHost();
+                int printerPort = service.getPort();
                 String serviceName = service.getServiceName();
                 //Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
 
@@ -91,8 +104,7 @@ public class NSDUtils implements Runnable
 
                     //mNsdManager.resolveService(service, mResolveListener);
                 }*/
-                else
-                {
+                else {
                     mNsdManager.resolveService(service, mResolveListener);
                 }
             }
@@ -123,8 +135,6 @@ public class NSDUtils implements Runnable
 
 
         };
-
-
 
 
         mNsdManager.discoverServices(

@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import kotlinx.android.synthetic.main.activity_printer_discovery.*
+import org.jetbrains.anko.doAsync
+import java.net.InetAddress
 
 class PrinterDiscoveryActivity : AppCompatActivity() {
     @SuppressLint("WrongConstant")
@@ -23,6 +25,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         btnSelectPrinter.setOnClickListener {
+            PrintUtils().setContextAndInitializeJMDNS(this@PrinterDiscoveryActivity)
             dialogPrinterList()
         }
 
@@ -53,10 +56,23 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
         val recyclerViewPrinterLst = dialog.findViewById<RecyclerView>(R.id.recyclerViewPrinterList)
 
-        val list = ArrayList<String>()
-        list.add("printer-1")
-        list.add("printer-2")
-        list.add("printer-3")
+        var list = ArrayList<Printer>()
+        val printer = Printer()
+        var inetAddress: InetAddress? = null
+        doAsync {
+            inetAddress= InetAddress.getLocalHost()
+        }
+        Thread.sleep(100)
+
+//        list= PrinterList.getPrinterList() as ArrayList<Printer>
+
+        printer.printerHost = inetAddress
+        printer.printerPort = 630
+        printer.serviceName = "23234"
+
+        list.add(printer)
+        list.add(printer)
+        list.add(printer)
 
         recyclerViewPrinterLst.layoutManager =
             LinearLayoutManager(
