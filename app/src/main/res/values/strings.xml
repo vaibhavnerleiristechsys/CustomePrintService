@@ -6,4 +6,7 @@
     <string name="select_printer">Select Printer</string>
     <string name="add_manual_printer">Add Manual Printer</string>
     <string name="print">Print</string>
+    <string name="printer_ip">Printer IP</string>
+    <string name="add_printer">Add Printer</string>
+    <string name="cancel">Cancel</string>
 </resources>

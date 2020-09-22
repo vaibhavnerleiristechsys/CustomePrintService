@@ -56,15 +56,15 @@ public class NSDUtils implements Runnable {
                 InetAddress printerHost = nsdServiceInfo.getHost();
                 int printerPort = nsdServiceInfo.getPort();
                 String serviceName = nsdServiceInfo.getServiceName();
-                Printer printer = new Printer();
-
-                printer.setPrinterHost(printerHost);
-                printer.setPrinterPort(printerPort);
-                printer.setServiceName(serviceName);
-
-                printerList.add(printer);
-
-                PrinterList.setPrinterList(printerList);
+//                Printer printer = new Printer();
+//
+//                printer.setPrinterHost(printerHost);
+//                printer.setPrinterPort(printerPort);
+//                printer.setServiceName(serviceName);
+//
+//                printerList.add(printer);
+//
+//                PrinterList.setPrinterList(printerList);
 
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
             }

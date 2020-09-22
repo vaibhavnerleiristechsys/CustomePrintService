@@ -1,5 +1,6 @@
 package com.example.customeprintservice.jipp
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -28,9 +29,10 @@ class PrinterListAdapter(val context: Context,
         return list.size
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PrinterListAdapter.ViewHolder, position: Int) {
 
-        holder.getPrinterName().text = list[position].printerHost.toString()
+        holder.getPrinterName().text = ""+list[position].printerHost.toString()
         holder.getRadioButton().setOnCheckedChangeListener(checkedChangeListener)
         if (holder.getRadioButton().isChecked) checkedRadioButton = holder.getRadioButton()
 
