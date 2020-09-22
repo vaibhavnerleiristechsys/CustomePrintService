@@ -76,13 +76,20 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             printer.printerHost = inetAddress
             printer.serviceName = "inetAddress?.hostAddress.toString()"
             printer.printerPort = 631
+            var flagIsExist: Boolean = false
 
+            PrinterList().printerList.forEach {
+                if (it.printerHost.equals(printer.printerHost)) {
+                    flagIsExist = true
+                }
+            }
 
-            val boolean = PrinterList().addPrinterModel(printer)
-            if (boolean) {
+            if(!flagIsExist){
+                val boolean = PrinterList().addPrinterModel(printer)
                 Toast.makeText(this@PrinterDiscoveryActivity, "Printer Added", Toast.LENGTH_SHORT)
                     .show()
                 dialog.dismiss()
+                Log.i("printer", "flag-->$boolean")
             } else {
                 Toast.makeText(
                     this@PrinterDiscoveryActivity,
@@ -90,7 +97,6 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
             }
-            Log.i("printer", "flag-->$boolean")
         }
     }
 

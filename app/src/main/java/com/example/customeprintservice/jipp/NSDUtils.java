@@ -3,7 +3,10 @@ package com.example.customeprintservice.jipp;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -21,6 +24,8 @@ public class NSDUtils implements Runnable {
     private NsdManager.DiscoveryListener mDiscoveryListener = null;
 
     private List<PrinterModel> printerModelList = new ArrayList<>();
+    private PrinterList printerList = new PrinterList();
+    private Boolean flagIsExist = false;
 
     private Context context = null;
 
@@ -50,22 +55,28 @@ public class NSDUtils implements Runnable {
                 Log.i("printer", "In ND failed Resolved");
             }
 
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onServiceResolved(NsdServiceInfo nsdServiceInfo) {
 
                 InetAddress printerHost = nsdServiceInfo.getHost();
                 int printerPort = nsdServiceInfo.getPort();
                 String serviceName = nsdServiceInfo.getServiceName();
+
                 PrinterModel printerModel = new PrinterModel();
+                printerModel.setPrinterHost(printerHost);
+                printerModel.setPrinterPort(printerPort);
+                printerModel.setServiceName(serviceName);
 
-//                printerModel.setPrinterHost(printerHost);
-//                printerModel.setPrinterPort(printerPort);
-//                printerModel.setServiceName(serviceName);
-//
-//                printerModelList.add(printerModel);
-//
-//                PrinterList.setPrinterModelList(printerModelList);
+                printerList.getPrinterList().forEach(p->{
+                    if(p.getPrinterHost().equals(printerHost)){
+                        flagIsExist = true;
+                    }
+                });
 
+                if(!flagIsExist){
+                    printerList.addPrinterModel(printerModel);
+                }
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
             }
         };
