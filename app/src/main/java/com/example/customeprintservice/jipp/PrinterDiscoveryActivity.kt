@@ -19,6 +19,8 @@ import org.jetbrains.anko.doAsync
 import java.net.InetAddress
 
 class PrinterDiscoveryActivity : AppCompatActivity() {
+    var bundle = Bundle()
+
     @SuppressLint("WrongConstant")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +30,11 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         actionBar?.title = "Printer Discovery"
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
+        bundle = intent.extras!!
+
+        val selectedFile: String? = bundle.getString("selectedFile")
+
+        Log.i("printer", "selected file in printer discovery activty$selectedFile")
         btnSelectPrinter.setOnClickListener {
 
             PrintUtils().setContextAndInitializeJMDNS(this@PrinterDiscoveryActivity)
@@ -43,12 +50,10 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
     }
-
 
     private fun dialogAddManualPrinter() {
         val dialog = Dialog(this@PrinterDiscoveryActivity)
@@ -84,7 +89,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
                 }
             }
 
-            if(!flagIsExist){
+            if (!flagIsExist) {
                 val boolean = PrinterList().addPrinterModel(printer)
                 Toast.makeText(this@PrinterDiscoveryActivity, "Printer Added", Toast.LENGTH_SHORT)
                     .show()
@@ -126,6 +131,10 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             this@PrinterDiscoveryActivity,
             PrinterList().printerList
         )
+        adapter.itemClick().doOnNext {
+            Log.i("printer", "publish subject --->$it")
+        }.subscribe()
+
         recyclerViewPrinterLst.adapter = adapter
     }
 }

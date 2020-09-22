@@ -23,7 +23,8 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-    val printUtils = PrintUtils()
+
+    val bundle = Bundle()
     val attributesUtils = AttributesUtils()
     private val PERMISSION_READ_EXTERNAL = 1
 
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
 
         btnNext.setOnClickListener {
             val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
+            intent.putExtras(bundle)
             startActivity(intent)
         }
 
@@ -144,6 +146,8 @@ class MainActivity : AppCompatActivity() {
             val file: File = File(realPath)
 
             txtPath.text = uri.path
+            bundle.putString("selectedFile", uri.path)
+
 //            val uri1 = URI.create(edtUrlInputtext.text.toString())
 //            printUtils.print(uri1, file, this@MainActivity)
 
