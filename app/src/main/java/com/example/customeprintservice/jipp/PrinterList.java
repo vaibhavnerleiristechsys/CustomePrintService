@@ -5,15 +5,21 @@ import java.util.List;
 
 public class PrinterList {
 
-   static public List<Printer> printerList = new ArrayList<>();
+    private static List<PrinterModel> printerList = new ArrayList<>();
 
-//    public static List<Printer> getPrinterList() {
-//        return printerList;
-//    }
-//
-//    public static void setPrinterList(List<Printer> printerList) {
-//        PrinterList.printerList = printerList;
-//    }
+    public boolean addPrinterModel(PrinterModel printerModel) {
+
+        return printerList.add(printerModel);
+    }
+
+    public void removePrinter() {
+
+    }
+
+    public List<PrinterModel> getPrinterList() {
+        return printerList;
+    }
+
 }
 
 

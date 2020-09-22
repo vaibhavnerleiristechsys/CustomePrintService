@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +29,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         btnSelectPrinter.setOnClickListener {
+
             PrintUtils().setContextAndInitializeJMDNS(this@PrinterDiscoveryActivity)
             dialogPrinterList()
         }
@@ -36,7 +38,6 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             val intent = Intent(this@PrinterDiscoveryActivity, PrintActivity::class.java)
             startActivity(intent)
         }
-
         edtAddManualPrinter.setOnClickListener {
             dialogAddManualPrinter()
         }
@@ -47,6 +48,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         onBackPressed()
         return true
     }
+
 
     private fun dialogAddManualPrinter() {
         val dialog = Dialog(this@PrinterDiscoveryActivity)
@@ -64,8 +66,8 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         btnCancel.setOnClickListener { dialog.dismiss() }
 
         btnAddPrinterManually.setOnClickListener {
-            var list = ArrayList<Printer>()
-            val printer: Printer = Printer()
+
+            val printer: PrinterModel = PrinterModel()
             var inetAddress: InetAddress? = null
             doAsync {
                 inetAddress = InetAddress.getLocalHost()
@@ -74,18 +76,24 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             printer.printerHost = inetAddress
             printer.serviceName = "inetAddress?.hostAddress.toString()"
             printer.printerPort = 631
-            list.add(printer)
 
-            PrinterList.printerList.add(printer)
-            PrinterList.printerList.forEach {
-                Log.i(
-                    "printer",
-                    "printer added manually --->" + it.printerHost + " " + it.printerPort + " " + it.serviceName
-                )
+
+            val boolean = PrinterList().addPrinterModel(printer)
+            if (boolean) {
+                Toast.makeText(this@PrinterDiscoveryActivity, "Printer Added", Toast.LENGTH_SHORT)
+                    .show()
+                dialog.dismiss()
+            } else {
+                Toast.makeText(
+                    this@PrinterDiscoveryActivity,
+                    "Unable to add Printer",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+            Log.i("printer", "flag-->$boolean")
         }
-
     }
+
 
     @SuppressLint("WrongConstant")
     private fun dialogPrinterList() {
@@ -101,17 +109,6 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
         val recyclerViewPrinterLst = dialog.findViewById<RecyclerView>(R.id.recyclerViewPrinterList)
 
-
-//        var list = ArrayList<Printer>()
-//        val printer = Printer()
-//        var inetAddress: InetAddress? = null
-//        doAsync {
-//            inetAddress = InetAddress.getLocalHost()
-//        }
-//        Thread.sleep(100)
-//
-//        PrinterList.setPrinterList(list)
-
         recyclerViewPrinterLst.layoutManager =
             LinearLayoutManager(
                 this@PrinterDiscoveryActivity,
@@ -121,9 +118,8 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
         val adapter = PrinterListAdapter(
             this@PrinterDiscoveryActivity,
-            PrinterList.printerList
+            PrinterList().printerList
         )
-
         recyclerViewPrinterLst.adapter = adapter
     }
 }

@@ -58,13 +58,13 @@ public class NSDUtils implements Runnable {
                 String serviceName = nsdServiceInfo.getServiceName();
                 PrinterModel printerModel = new PrinterModel();
 
-                printerModel.setPrinterHost(printerHost);
-                printerModel.setPrinterPort(printerPort);
-                printerModel.setServiceName(serviceName);
-
-                printerModelList.add(printerModel);
-
-                PrinterList.setPrinterModelList(printerModelList);
+//                printerModel.setPrinterHost(printerHost);
+//                printerModel.setPrinterPort(printerPort);
+//                printerModel.setServiceName(serviceName);
+//
+//                printerModelList.add(printerModel);
+//
+//                PrinterList.setPrinterModelList(printerModelList);
 
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
             }
