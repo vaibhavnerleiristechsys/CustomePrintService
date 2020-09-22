@@ -12,8 +12,8 @@ import java.util.List;
 public class NSDUtils implements Runnable {
 
     private static final String TAG = "printer";
-    private static final String SERVICE_TYPE = "_services._dns-sd._udp";
-    //private static final String SERVICE_TYPE = "_ipp._tcp.";
+    //private static final String SERVICE_TYPE = "_services._dns-sd._udp";
+    private static final String SERVICE_TYPE = "_ipp._tcp.";
     private String mServiceName = "_ipp";
     private NsdManager mNsdManager;
     private NsdManager.ResolveListener mResolveListener = null;
