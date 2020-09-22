@@ -84,7 +84,7 @@ public class AttributesUtils {
         return attributeRequest.prettyPrint(100, "");
     }
 
-    public List<String> getAttributesForPrintUtils(URI uri) throws IOException {
+    public List<String> getAttributesForPrintUtils(URI uri,Context context) throws IOException {
         List<String> attributeList = new ArrayList<>();
         Attribute<String> requested;
         requested = requestedAttributes.of("all");
@@ -119,7 +119,7 @@ public class AttributesUtils {
                         }
                     }
                 }
-                Log.i("printer", "attribute list--->" + attributeList.toString());
+
             } catch (IOException e) {
                 e.printStackTrace();
             }

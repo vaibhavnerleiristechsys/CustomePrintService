@@ -32,15 +32,18 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
-        val selectedFile: String? = bundle.getString("selectedFile")
-
-        Log.i("printer", "selected file in printer discovery activty$selectedFile")
+        if (bundle.getString("selectedFile") != null) {
+            val selectedFile: String? = bundle.getString("selectedFile")
+            bundle.putString("selectedFile", bundle.getString("selectedFile"))
+            Log.i("printer", "selected file in printer discovery activty$selectedFile")
+        }
         btnSelectPrinter.setOnClickListener {
             dialogPrinterList()
         }
 
         btnNextPrinterDiscovery.setOnClickListener {
             val intent = Intent(this@PrinterDiscoveryActivity, PrintActivity::class.java)
+            intent.putExtras(bundle)
             startActivity(intent)
         }
         edtAddManualPrinter.setOnClickListener {
@@ -73,7 +76,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             val printer: PrinterModel = PrinterModel()
             var inetAddress: InetAddress? = null
             doAsync {
-                inetAddress = InetAddress.getByName(edtAddManualPrinter.toString())
+                inetAddress = InetAddress.getByName("192.168.1.3")
             }
             Thread.sleep(100)
             printer.printerHost = inetAddress
@@ -130,6 +133,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             PrinterList().printerList
         )
         adapter.itemClick().doOnNext {
+            bundle.putString("ipAddress", it)
             Log.i("printer", "publish subject --->$it")
         }.subscribe()
 
