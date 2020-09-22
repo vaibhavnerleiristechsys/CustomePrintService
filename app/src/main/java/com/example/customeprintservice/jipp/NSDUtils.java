@@ -12,15 +12,15 @@ import java.util.List;
 public class NSDUtils implements Runnable {
 
     private static final String TAG = "printer";
-    private static final String SERVICE_TYPE = "_services._dns-sd._udp";
-    //private static final String SERVICE_TYPE = "_ipp._tcp.";
+    //private static final String SERVICE_TYPE = "_services._dns-sd._udp";
+    private static final String SERVICE_TYPE = "_ipp._tcp.";
     private String mServiceName = "_ipp";
     private NsdManager mNsdManager;
     private NsdManager.ResolveListener mResolveListener = null;
     private NsdServiceInfo mService;
     private NsdManager.DiscoveryListener mDiscoveryListener = null;
 
-    private List<Printer> printerList = new ArrayList<>();
+    private List<PrinterModel> printerModelList = new ArrayList<>();
 
     private Context context = null;
 
@@ -56,15 +56,15 @@ public class NSDUtils implements Runnable {
                 InetAddress printerHost = nsdServiceInfo.getHost();
                 int printerPort = nsdServiceInfo.getPort();
                 String serviceName = nsdServiceInfo.getServiceName();
-//                Printer printer = new Printer();
-//
-//                printer.setPrinterHost(printerHost);
-//                printer.setPrinterPort(printerPort);
-//                printer.setServiceName(serviceName);
-//
-//                printerList.add(printer);
-//
-//                PrinterList.setPrinterList(printerList);
+                PrinterModel printerModel = new PrinterModel();
+
+                printerModel.setPrinterHost(printerHost);
+                printerModel.setPrinterPort(printerPort);
+                printerModel.setServiceName(serviceName);
+
+                printerModelList.add(printerModel);
+
+                PrinterList.setPrinterModelList(printerModelList);
 
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
             }

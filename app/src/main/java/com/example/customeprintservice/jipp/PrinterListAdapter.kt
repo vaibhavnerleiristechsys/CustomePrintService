@@ -10,10 +10,9 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
-import kotlinx.android.synthetic.main.card_printer_list.view.*
 
 class PrinterListAdapter(val context: Context,
-                         val list: List<Printer>):RecyclerView.Adapter<PrinterListAdapter.ViewHolder>() {
+                         val list: List<PrinterModel>):RecyclerView.Adapter<PrinterListAdapter.ViewHolder>() {
 
     private var checkedRadioButton: CompoundButton? = null
 
