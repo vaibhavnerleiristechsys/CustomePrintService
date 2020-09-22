@@ -29,8 +29,6 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         btnSelectPrinter.setOnClickListener {
-
-            PrintUtils().setContextAndInitializeJMDNS(this@PrinterDiscoveryActivity)
             dialogPrinterList()
         }
 
@@ -70,11 +68,11 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             val printer: PrinterModel = PrinterModel()
             var inetAddress: InetAddress? = null
             doAsync {
-                inetAddress = InetAddress.getLocalHost()
+                inetAddress = InetAddress.getByName(edtAddManualPrinter.toString())
             }
             Thread.sleep(100)
             printer.printerHost = inetAddress
-            printer.serviceName = "inetAddress?.hostAddress.toString()"
+            printer.serviceName = inetAddress.toString()
             printer.printerPort = 631
             var flagIsExist: Boolean = false
 

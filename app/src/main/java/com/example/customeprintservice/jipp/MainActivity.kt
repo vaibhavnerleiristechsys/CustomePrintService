@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     val printUtils = PrintUtils()
     val attributesUtils = AttributesUtils()
     private val PERMISSION_READ_EXTERNAL = 1
+    var isFileSelected: Boolean = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,6 +65,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 i.type = "*/*"
                 startActivityForResult(i, 1)
+                PrintUtils().setContextAndInitializeJMDNS(this@MainActivity)
 //            val mRequestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
 //            startActivityForResult(mRequestFileIntent, 1)
             } else {
@@ -73,9 +75,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnNext.setOnClickListener {
-            val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
-            startActivity(intent)
+            if (isFileSelected) {
+                val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this@MainActivity, "Select Document", Toast.LENGTH_LONG).show()
+            }
         }
+
 
 //        btnGetAttributes.setOnClickListener {
 //            if (Permissions().checkAndRequestPermissions(this)) {
@@ -144,6 +151,7 @@ class MainActivity : AppCompatActivity() {
             val file: File = File(realPath)
 
             txtPath.text = uri.path
+            isFileSelected = true
 //            val uri1 = URI.create(edtUrlInputtext.text.toString())
 //            printUtils.print(uri1, file, this@MainActivity)
 
