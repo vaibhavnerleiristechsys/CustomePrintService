@@ -2,13 +2,11 @@ package com.example.customeprintservice.jipp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
@@ -33,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        getTextImageFromOtherApp()
+        getTextImageFromOtherApp()
 
         val actionBar = supportActionBar
         actionBar?.title = "IPP Print Demo"
@@ -81,7 +79,6 @@ class MainActivity : AppCompatActivity() {
 
         btnNext.setOnClickListener {
 
-            startActivity(intent)
             if (isFileSelected) {
                 val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
                 intent.putExtras(bundle)
@@ -133,4 +130,28 @@ class MainActivity : AppCompatActivity() {
             Log.i("printer", "file choosed-->$file")
         }
     }
+
+    private fun getTextImageFromOtherApp() {
+        when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                handleSendImage(intent)
+                if (intent.type?.startsWith("image/*") == true) {
+                    Log.i("printer", "in action send text image")
+                }
+            }
+        }
+    }
+
+
+    private fun handleSendImage(intent: Intent) {
+        val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri?
+        if (imageUri != null) {
+            Log.i("printer", "imageUri=>$imageUri")
+            val realPath = FileUtils.getPath(this, imageUri)
+            Log.i("printer","real Path =>"+realPath)
+        } else {
+            Toast.makeText(this, "Error Occured, URI is invalid", Toast.LENGTH_LONG).show()
+        }
+    }
+
 }
