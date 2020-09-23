@@ -100,10 +100,7 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
-        val filter = IntentFilter()
-        filter.addAction("com.example.CUSTOM_INTENT")
-        val receiver = broadcastReceiver
-        registerReceiver(receiver, filter)
+
 
     }
 
@@ -133,17 +130,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val ippPacket: String = intent.getStringExtra("getMessage").toString()
-            Log.i("printer", "msg---->$ippPacket")
-
-            try {
-//                txtResponseAttribute.text = ippPacket
-            } catch (e: Exception) {
-            }
-        }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -155,12 +141,12 @@ class MainActivity : AppCompatActivity() {
 
             txtPath.text = uri.path
             isFileSelected = true
-            bundle.putString("selectedFile", uri.path)
+            bundle.putString("selectedFile", realPath)
 
 //            val uri1 = URI.create(edtUrlInputtext.text.toString())
 //            printUtils.print(uri1, file, this@MainActivity)
 
-            Log.i("printer", "file choosed-->" + uri.path)
+            Log.i("printer", "file choosed-->$file")
         }
     }
 

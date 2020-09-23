@@ -58,7 +58,6 @@ public class PrintUtils {
         executor.execute(nsdUtils);
     }
 
-
     public void print(URI uri, File file, Context context) {
 
         File inputFile = new File(file.getAbsolutePath());
@@ -77,7 +76,7 @@ public class PrintUtils {
 
         try {
             AttributesUtils attributesUtils = new AttributesUtils();
-            List<String> att = attributesUtils.getAttributesForPrintUtils(uri);
+            List<String> att = attributesUtils.getAttributesForPrintUtils(uri,context);
 
             try {
                 Thread.sleep(1000);
@@ -91,7 +90,8 @@ public class PrintUtils {
                         .putOperationAttributes(
                                 requestingUserName.of(CMD_NAME),
                                 documentFormat.of(format))
-                        .build();                Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
+                        .build();
+                Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
                 new Thread(() -> {
                     try {
                         Log.i("printer", "In print utils method");
