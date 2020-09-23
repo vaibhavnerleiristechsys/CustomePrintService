@@ -90,23 +90,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Select Document", Toast.LENGTH_LONG).show()
             }
         }
-
-
-//        btnGetAttributes.setOnClickListener {
-//            if (Permissions().checkAndRequestPermissions(this)) {
-//                val uri = URI.create(edtUrlInputtext.text.toString())
-//                val st: String = attributesUtils.getAttributes(uri, this@MainActivity)
-//                Log.i("printer", "----->$st")
-//                txtRequestAttribute.text = "Request-->$st"
-//            } else {
-//                Toast.makeText(this@MainActivity, "Please accept Permissions", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//        }
-
-
-
-
     }
 
     override fun onRequestPermissionsResult(
@@ -147,12 +130,7 @@ class MainActivity : AppCompatActivity() {
             txtPath.text = uri.path
             isFileSelected = true
             bundle.putString("selectedFile", realPath)
-
-//            val uri1 = URI.create(edtUrlInputtext.text.toString())
-//            printUtils.print(uri1, file, this@MainActivity)
-
             Log.i("printer", "file choosed-->$file")
         }
     }
-
 }
