@@ -76,11 +76,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnNext.setOnClickListener {
-            val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
-            intent.putExtras(bundle)
-            startActivity(intent)
+
             if (isFileSelected) {
                 val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
+                intent.putExtras(bundle)
                 startActivity(intent)
             } else {
                 Toast.makeText(this@MainActivity, "Select Document", Toast.LENGTH_LONG).show()

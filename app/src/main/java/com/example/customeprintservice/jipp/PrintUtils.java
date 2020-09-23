@@ -72,7 +72,6 @@ public class PrintUtils {
 
         if (fileName.contains(".")) {
             format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase());
-
             Log.i("printer", "format--->" + format);
         }
 
