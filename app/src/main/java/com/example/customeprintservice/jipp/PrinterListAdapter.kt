@@ -14,12 +14,13 @@ import com.example.customeprintservice.R
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
+import org.jetbrains.anko.find
 
 class PrinterListAdapter(val context: Context,
                          val list: List<PrinterModel>):RecyclerView.Adapter<PrinterListAdapter.ViewHolder>() {
 
     private var checkedRadioButton: CompoundButton? = null
-    private val publishSubject: PublishSubject<String> = PublishSubject.create()
+    private val publishSubject: PublishSubject<PrinterModel> = PublishSubject.create()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -36,17 +37,18 @@ class PrinterListAdapter(val context: Context,
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PrinterListAdapter.ViewHolder, position: Int) {
 
-        holder.getPrinterName().text = ""+list[position].printerHost.toString()
+        holder.getPrinterName().text = ""+list[position].serviceName.toString()
+        holder.getIpAddress().text = list[position].printerHost.toString()
 
-        holder.getCardPrinterList().setOnClickListener {
-            publishSubject.onNext(list[position].printerHost.toString())
+        holder.getRadioButton().setOnClickListener {
+            publishSubject.onNext(list[position])
         }
         holder.getRadioButton().setOnCheckedChangeListener(checkedChangeListener)
         if (holder.getRadioButton().isChecked) checkedRadioButton = holder.getRadioButton()
 
     }
 
-    fun itemClick(): Observable<String> {
+    fun itemClick(): Observable<PrinterModel> {
         return publishSubject.observeOn(AndroidSchedulers.mainThread())
     }
     private val checkedChangeListener = CompoundButton.OnCheckedChangeListener { compoundButton, isChecked ->
@@ -65,6 +67,10 @@ class PrinterListAdapter(val context: Context,
 
         fun getCardPrinterList(): CardView{
             return itemView.findViewById(R.id.cardview)
+        }
+
+        fun getIpAddress():TextView{
+            return itemView.find(R.id.txtIpAddress)
         }
     }
 }

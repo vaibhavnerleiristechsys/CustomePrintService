@@ -35,6 +35,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 //        getTextImageFromOtherApp()
 
+        val actionBar = supportActionBar
+        actionBar?.title = "IPP Print Demo"
+
+
         if (ContextCompat.checkSelfPermission(
                 this@MainActivity,
                 Manifest.permission.READ_EXTERNAL_STORAGE
