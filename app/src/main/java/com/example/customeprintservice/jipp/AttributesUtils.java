@@ -69,7 +69,7 @@ public class AttributesUtils {
                 Log.i("printer", "attribute list--->" + attributeList.toString());
 
                 String responseString = response.toString();
-//                Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+                Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
 
                 Intent intent =
                         new Intent("com.example.CUSTOM_INTENT")

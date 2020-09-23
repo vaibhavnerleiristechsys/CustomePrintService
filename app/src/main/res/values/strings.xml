@@ -9,4 +9,9 @@
     <string name="printer_ip">Printer IP</string>
     <string name="add_printer">Add Printer</string>
     <string name="cancel">Cancel</string>
+    <string name="get_attribute_response">Get Attribute Response</string>
+    <string name="printer_response">Printer Response</string>
+    <string name="selected_document">Selected Document</string>
+    <string name="selected_printer">Selected Printer</string>
+    <string name="Ok">Ok</string>
 </resources>
