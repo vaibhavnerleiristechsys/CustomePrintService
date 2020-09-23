@@ -99,9 +99,6 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 
-
-
-
     }
 
     override fun onRequestPermissionsResult(
