@@ -53,37 +53,42 @@ class PrintActivity : AppCompatActivity() {
         Log.i("printer", "uri1---->$uri")
 
         btnPrint.setOnClickListener {
+
+           /* val file: File = File(bundle.getString("selectedFile")!!)  */
+
+
             val uri1 = Uri.parse(bundle.getString("selectedFile"))
             val file: File = File(bundle.getString("selectedFile")!!)
+            val inputFile = File(file.absolutePath)
+
+            val fileName: String = inputFile.name
+            var format: String? =  null
+
+            if (fileName.contains(".")) {
+                format = PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)
+                    .toLowerCase()]
+                Log.i("printer", "format--->$format")
+            }
+
+
             printUtils.print(uri, file, this@PrintActivity)
         }
-        val file: File = File(bundle.getString("selectedFile")!!)
-        val inputFile = File(file.absolutePath)
 
-
-        val fileName: String = inputFile.name
-        var format: String? =  null
-
-        if (fileName.contains(".")) {
-            format = PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)
-                .toLowerCase()]
-            Log.i("printer", "format--->$format")
-        }
-        val att: List<String> =
+          /*val att: List<String> =
             attributesUtils.getAttributesForPrintUtils(uri, this@PrintActivity)
         try {
             Thread.sleep(1000)
         } catch (e: InterruptedException) {
         }
-        Log.i("printer", "att lst--->${att.toString()}")
+        Log.i("printer", "att lst--->${att.toString()}")*/
 
-        if(att.contains(format?.trim())){
+        /*if(att.contains(format?.trim())){
             txtPrinterActivityIsPrintSupported.text = "Is Print format support - True"
             Toast.makeText(this@PrintActivity,"File is Supported to Print",Toast.LENGTH_LONG).show()
         }else{
             txtPrinterActivityIsPrintSupported.text = "Is Print format support - False"
             Toast.makeText(this@PrintActivity,"File is Not Supported ",Toast.LENGTH_LONG).show()
-        }
+        }*/
 
 
 
@@ -100,12 +105,15 @@ class PrintActivity : AppCompatActivity() {
 
     var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            val ippPacket: String = intent.getStringExtra("getMessage").toString()
-            Log.i("printer", "msg---->$ippPacket")
 
-            try {
+            try
+            {
+                val ippPacket: String = intent.getStringExtra("getMessage").toString()
+                Log.i("printer", "msg---->$ippPacket")
                 txtPrinterResponse.text = ippPacket
-            } catch (e: Exception) {
+            }
+            catch (e: Exception){
+                txtDignosticInfo.text = e.toString();
             }
         }
     }
