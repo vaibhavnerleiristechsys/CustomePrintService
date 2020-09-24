@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import kotlinx.android.synthetic.main.activity_printer_discovery.*
-import kotlinx.android.synthetic.main.dialog_add_manual_printer.*
 import org.jetbrains.anko.doAsync
 import java.net.InetAddress
 import java.net.URI
@@ -26,6 +25,7 @@ import java.net.URI
 class PrinterDiscoveryActivity : AppCompatActivity() {
 
     var bundle = Bundle()
+    var bundle1 =Bundle()
     var attributesUtils = AttributesUtils()
     var printerUri: URI? = null
 
@@ -46,17 +46,15 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
             txtPrinterDiscoverySelectedDocument.text =
                 "Selected Document -${selectedFile.toString()}"
-            Log.i("printer", "selected file in printer discovery activty$selectedFile")
+
         }
+
         btnSelectPrinter.setOnClickListener {
             dialogPrinterList()
         }
 
 
         btnNextPrinterDiscovery.setOnClickListener {
-            val uri = URI.create("http://$printerUri/ipp/print")
-            val printerAttribute: String =
-                attributesUtils.getAttributes(uri, this@PrinterDiscoveryActivity)
             if (printerUri != null && bundle.getString("selectedFile") != null) {
                 val intent = Intent(this@PrinterDiscoveryActivity, PrintActivity::class.java)
                 intent.putExtras(bundle)
@@ -78,6 +76,11 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         filter.addAction("com.example.CUSTOM_INTENT")
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
+
+        val filterSupportedFormat = IntentFilter()
+        filterSupportedFormat.addAction("com.example.SUPPORTED_FORMAT")
+        val receiverSupportedFormat = broadcastReceiverSupportedFormat
+        registerReceiver(receiverSupportedFormat, filterSupportedFormat)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -172,20 +175,30 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
             txtPrinterDiscoveryPrinterName.text = "Selected Printer -" + it.serviceName.toString()
             Log.i("printer", "publish subject --->$it")
+            val uri = URI.create("http://$printerUri/ipp/print")
+            val printerAttribute: String =
+                attributesUtils.getAttributes(uri, this@PrinterDiscoveryActivity)
         }.subscribe()
 
         recyclerViewPrinterLst.adapter = adapter
     }
 
+
     var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val ippPacket: String = intent.getStringExtra("getMessage").toString()
             Log.i("printer", "msg---->$ippPacket")
-
             try {
                 bundle.putString("printerAttribute", ippPacket)
             } catch (e: Exception) {
             }
+        }
+    }
+    var broadcastReceiverSupportedFormat: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val formatSupported = intent.getStringExtra("formatSupported").toString()
+            Log.i("printer", "format Supported in broadcast receiver===>$formatSupported")
+            bundle.putString("formatSupported", formatSupported)
         }
     }
 }

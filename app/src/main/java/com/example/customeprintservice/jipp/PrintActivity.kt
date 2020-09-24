@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.R
 import kotlinx.android.synthetic.main.activity_print.*
@@ -18,7 +19,9 @@ class PrintActivity : AppCompatActivity() {
 
     val printUtils = PrintUtils()
     var bundle: Bundle = Bundle()
+    var attributesUtils = AttributesUtils()
 
+    var uri:URI? = null
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,24 +37,58 @@ class PrintActivity : AppCompatActivity() {
             val selectedFile: String? = bundle.getString("selectedFile")
             val ipAddress: String? = bundle.getString("ipAddress")
             val printerName: String? = bundle.getString("printerName")
+            val formatSupported: String? = bundle.getString("formatSupported")
+
             txtDignosticInfo.text = bundle.getString("printerAttribute")
-            txtPrinterActivitySelectedDocument.text = "Selected Document - ${selectedFile.toString()}"
+            txtPrinterActivitySelectedDocument.text =
+                "Selected Document - ${selectedFile.toString()}"
             txtPrinterActivityPrinterName.text = "Printer Name - ${printerName.toString()}"
+            txtPrinterActivityFormatSupported.text =
+                "format Supported -${formatSupported.toString()}"
 
-            Log.i("printer", "selected file-->$selectedFile ipAddress-->-$ipAddress")
+            Log.i("printer", "printer Format Support in print activity-->$formatSupported")
+            Log.i("printer", "printer attribute in print activity->"+bundle.getString("printerAttribute"))
         }
+        uri = URI.create("http://" + bundle.getString("ipAddress") + "/" + "ipp/print")
+        Log.i("printer", "uri1---->$uri")
+
         btnPrint.setOnClickListener {
-            val uri = URI.create("http://" + bundle.getString("ipAddress") + "/" + "ipp/print")
             val uri1 = Uri.parse(bundle.getString("selectedFile"))
-            Log.i("printer", "uri1---->$uri")
-
             val file: File = File(bundle.getString("selectedFile")!!)
-
             printUtils.print(uri, file, this@PrintActivity)
         }
+        val file: File = File(bundle.getString("selectedFile")!!)
+        val inputFile = File(file.absolutePath)
+
+
+        val fileName: String = inputFile.name
+        var format: String? =  null
+
+        if (fileName.contains(".")) {
+            format = PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)
+                .toLowerCase()]
+            Log.i("printer", "format--->$format")
+        }
+        val att: List<String> =
+            attributesUtils.getAttributesForPrintUtils(uri, this@PrintActivity)
+        try {
+            Thread.sleep(1000)
+        } catch (e: InterruptedException) {
+        }
+        Log.i("printer", "att lst--->${att.toString()}")
+
+        if(att.contains(format?.trim())){
+            txtPrinterActivityIsPrintSupported.text = "Is Print format support - True"
+            Toast.makeText(this@PrintActivity,"File is Supported to Print",Toast.LENGTH_LONG).show()
+        }else{
+            txtPrinterActivityIsPrintSupported.text = "Is Print format support - False"
+            Toast.makeText(this@PrintActivity,"File is Not Supported ",Toast.LENGTH_LONG).show()
+        }
+
+
 
         val filter = IntentFilter()
-        filter.addAction("com.example.CUSTOM_INTENT")
+        filter.addAction("com.example.PRINT_RESPONSE")
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
     }

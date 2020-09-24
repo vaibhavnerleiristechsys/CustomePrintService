@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         val actionBar = supportActionBar
         actionBar?.title = "IPP Print Demo"
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
 
         if (ContextCompat.checkSelfPermission(
@@ -63,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         btnSelectDocument.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(this@MainActivity)) {
                 val i = Intent(
-                    Intent.ACTION_PICK,
+                    Intent.ACTION_GET_CONTENT,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 )
                 i.type = "*/*"
@@ -87,6 +88,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, "Select Document", Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     override fun onRequestPermissionsResult(
@@ -149,6 +155,9 @@ class MainActivity : AppCompatActivity() {
             Log.i("printer", "imageUri=>$imageUri")
             val realPath = FileUtils.getPath(this, imageUri)
             Log.i("printer","real Path =>"+realPath)
+            txtPath.text = realPath.toString()
+            isFileSelected = true
+            bundle.putString("selectedFile", realPath)
         } else {
             Toast.makeText(this, "Error Occured, URI is invalid", Toast.LENGTH_LONG).show()
         }

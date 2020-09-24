@@ -29,7 +29,7 @@ public class PrintUtils {
     private final static String FORMAT_PDF = "application/pdf";
     private final static IppClientTransport transport = new HttpIppClientTransport();
     private final static String CMD_NAME = "jprint";
-    private final static Map<String, String> extensionTypes = new HashMap<String, String>() {{
+    protected final static Map<String, String> extensionTypes = new HashMap<String, String>() {{
         put("pdf", FORMAT_PDF);
         put("pclm", "application/PCLm");
         put("pwg", "image/pwg-raster");
@@ -98,13 +98,13 @@ public class PrintUtils {
                         IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                         IppPacketData response = transport.sendData(uri, request);
                         Intent intent =
-                                new Intent("com.example.CUSTOM_INTENT")
+                                new Intent("com.example.PRINT_RESPONSE")
                                         .putExtra("getMessage", response.toString());
                         context.sendBroadcast(intent);
                         Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
                     } catch (Exception e) {
                         Intent intent =
-                                new Intent("com.example.CUSTOM_INTENT")
+                                new Intent("com.example.PRINT_RESPONSE")
                                         .putExtra("getMessage", e.toString());
                         context.sendBroadcast(intent);
                     }

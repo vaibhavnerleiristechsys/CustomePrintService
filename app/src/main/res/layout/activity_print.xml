@@ -45,17 +45,37 @@
         app:layout_constraintTop_toBottomOf="@+id/txtPrinterActivitySelectedDocument" />
 
     <TextView
+        android:id="@+id/txtPrinterActivityIsPrintSupported"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/is_print_supported"
+        app:layout_constraintEnd_toEndOf="@+id/txtPrinterActivityPrinterName"
+        app:layout_constraintStart_toStartOf="@+id/txtPrinterActivityPrinterName"
+        app:layout_constraintTop_toBottomOf="@+id/txtPrinterActivityPrinterName" />
+
+    <TextView
+        android:id="@+id/txtPrinterActivityFormatSupported"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/format_supported"
+        app:layout_constraintEnd_toEndOf="@+id/txtPrinterActivityIsPrintSupported"
+        app:layout_constraintStart_toStartOf="@+id/txtPrinterActivityIsPrintSupported"
+        app:layout_constraintTop_toBottomOf="@+id/txtPrinterActivityIsPrintSupported" />
+
+    <TextView
         android:id="@+id/txtDignosticInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
         android:text="@string/get_attribute_response"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPrinterActivityPrinterName" />
+        app:layout_constraintTop_toBottomOf="@+id/txtPrinterActivityFormatSupported" />
 
     <TextView
         android:id="@+id/txtPrinterResponse"
