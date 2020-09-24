@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         btnSelectDocument.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(this@MainActivity)) {
                 val i = Intent(
-                    Intent.ACTION_PICK,
+                    Intent.ACTION_GET_CONTENT,
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 )
                 i.type = "*/*"

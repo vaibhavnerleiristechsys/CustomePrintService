@@ -109,6 +109,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             }
             Thread.sleep(100)
             printer.printerHost = inetAddress
+            Log.i("printer","innet Address->"+inetAddress)
             printer.serviceName = inetAddress.toString()
             printer.printerPort = 631
             var flagIsExist: Boolean = false
