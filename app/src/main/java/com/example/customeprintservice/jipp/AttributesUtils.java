@@ -2,10 +2,7 @@ package com.example.customeprintservice.jipp;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.hp.jipp.encoding.Attribute;
 import com.hp.jipp.encoding.AttributeGroup;
@@ -51,7 +48,9 @@ public class AttributesUtils {
                 for (AttributeGroup attributeGroup : attributeGroupList) {
                     if (attributeGroup.get("document-format-supported") != null) {
                         Log.i("printer", "attribute groups-->" + attributeGroup.get("document-format-supported"));
+
                         Attribute attribute = attributeGroup.get("document-format-supported");
+
                         for (int i = 0; i < attribute.size(); i++) {
                             Object att = attribute.get(i);
                             if (att instanceof OtherString) {
@@ -71,6 +70,11 @@ public class AttributesUtils {
                 String responseString = response.toString();
                 Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
 
+                Intent formatSupported =
+                        new Intent("com.example.SUPPORTED_FORMAT")
+                                .putExtra("formatSupported", "format Supported-->" + attributeList.toString().trim().toLowerCase());
+                context.sendBroadcast(formatSupported);
+
                 Intent intent =
                         new Intent("com.example.CUSTOM_INTENT")
                                 .putExtra("getMessage", "Response Attribute-->"+responseString);
@@ -79,7 +83,7 @@ public class AttributesUtils {
             } catch (IOException e) {
                 Intent intent =
                         new Intent("com.example.CUSTOM_INTENT")
-                                .putExtra("getMessage", "Response Attribute-->"+e.getMessage());
+                                .putExtra("getMessage", "Response Attribute-->" + e.getMessage());
                 context.sendBroadcast(intent);
             }
         }).start();
@@ -87,7 +91,7 @@ public class AttributesUtils {
         return attributeRequest.prettyPrint(100, "");
     }
 
-    public List<String> getAttributesForPrintUtils(URI uri,Context context) throws IOException {
+    public List<String> getAttributesForPrintUtils(URI uri, Context context) throws IOException {
         List<String> attributeList = new ArrayList<>();
         Attribute<String> requested;
         requested = requestedAttributes.of("all");
@@ -115,7 +119,7 @@ public class AttributesUtils {
                                 OtherString attOtherString = (OtherString) att;
                                 ValueTag valueTag = attOtherString.getTag();
                                 String tagName = valueTag.getName();
-                                String tagValue = attOtherString.getValue();
+                                String tagValue = attOtherString.getValue().trim().toLowerCase();
                                 attributeList.add(tagValue);
                             }
                             Log.i("printer", "Format: " + i + " " + att);

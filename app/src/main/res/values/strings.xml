@@ -14,4 +14,6 @@
     <string name="selected_document">Selected Document</string>
     <string name="selected_printer">Selected Printer</string>
     <string name="Ok">Ok</string>
+    <string name="format_supported">Format Supported</string>
+    <string name="is_print_supported">Is Print Supported</string>
 </resources>
