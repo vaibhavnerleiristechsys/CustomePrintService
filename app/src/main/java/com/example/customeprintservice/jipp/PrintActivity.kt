@@ -8,6 +8,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.R
 import kotlinx.android.synthetic.main.activity_print.*
@@ -133,6 +134,12 @@ class PrintActivity : AppCompatActivity() {
                 if (intent.getStringExtra("exception") != null) {
                     exception = intent.getStringExtra("exception").toString()
                     txtDignosticInfo.text = "Exception Occured - $exception"
+                }
+
+                var fileNotSupported :String =""
+                if (intent.getStringExtra("fileNotSupported") != null) {
+                    fileNotSupported = intent.getStringExtra("fileNotSupported").toString()
+                    Toast.makeText(this@PrintActivity,fileNotSupported,Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 txtDignosticInfo.text = e.toString()
