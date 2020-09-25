@@ -10,6 +10,16 @@ public class PrinterModel {
 
     private String serviceName;
 
+    private Boolean manual = false;
+
+    public Boolean getManual() {
+        return manual;
+    }
+
+    public void setManual(Boolean manual) {
+        this.manual = manual;
+    }
+
     public InetAddress getPrinterHost() {
         return printerHost;
     }

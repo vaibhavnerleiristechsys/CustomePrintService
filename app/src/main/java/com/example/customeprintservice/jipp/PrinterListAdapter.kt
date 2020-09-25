@@ -39,10 +39,9 @@ class PrinterListAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PrinterListAdapter.ViewHolder, position: Int) {
 
-        holder.getPrinterName().text = "" + list[position].serviceName.toString()
-        if (list[position].printerHost.toString() != null) {
-            holder.getIpAddress().text = list[position].printerHost.toString()
-        }
+        holder.getPrinterName().text = "" + list[position].serviceName
+        holder.getIpAddress().text = "" + list[position].printerHost
+
 
         holder.getRadioButton().setOnClickListener {
             publishSubject.onNext(list[position])

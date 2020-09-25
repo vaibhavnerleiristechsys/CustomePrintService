@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.utils.Inet
 import kotlinx.android.synthetic.main.activity_printer_discovery.*
 import org.jetbrains.anko.doAsync
 import java.net.InetAddress
@@ -92,41 +93,53 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         val printer: PrinterModel = PrinterModel()
 
         btnAddPrinterManually.setOnClickListener {
-            try {
-                var inetAddress: InetAddress? = null
-                doAsync {
-                    inetAddress = InetAddress.getByName(edtAddManualPrinter.text.toString())
-                }
-                Thread.sleep(100)
-                if (inetAddress != null) {
-                    printer.printerHost = inetAddress
-                }
-                Log.i("printer", "innet Address->" + inetAddress)
-                printer.serviceName = inetAddress.toString()
-            } catch (e: Exception) {
-                Log.i("printer", e.toString())
-            }
-            printer.printerPort = 631
-            var flagIsExist: Boolean = false
+            if (Inet.validIP(edtAddManualPrinter.text.toString())) {
+                try {
+                    var inetAddress: InetAddress? = null
 
-            PrinterList().printerList.forEach {
-                if (it.printerHost.equals(printer.printerHost)) {
-                    flagIsExist = true
-                }
-            }
+                    doAsync {
+                        inetAddress = InetAddress.getByName(edtAddManualPrinter.text.toString())
+                    }
+                    Thread.sleep(100)
+                    if (inetAddress != null) {
+                        printer.printerHost = inetAddress
+                        printer.serviceName = "" + inetAddress
+                        printer.printerPort = 631
+                        Log.i("printer", "innet Address->" + inetAddress)
+                    }
 
-            if (!flagIsExist) {
-                val boolean = PrinterList().addPrinterModel(printer)
-                Toast.makeText(this@PrinterDiscoveryActivity, "Printer Added", Toast.LENGTH_SHORT)
-                    .show()
-                dialog.dismiss()
-                Log.i("printer", "flag-->$boolean")
+                } catch (e: Exception) {
+                    Log.i("printer", e.toString())
+                }
+
+                var flagIsExist: Boolean = false
+
+                PrinterList().printerList.forEach {
+                    if (it.printerHost.equals(printer.printerHost)) {
+                        flagIsExist = true
+                    }
+                }
+
+                if (!flagIsExist) {
+                    val boolean = PrinterList().addPrinterModel(printer)
+                    Toast.makeText(
+                        this@PrinterDiscoveryActivity,
+                        "Printer Added",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                    dialog.dismiss()
+                    Log.i("printer", "flag-->$boolean")
+                } else {
+                    Toast.makeText(
+                        this@PrinterDiscoveryActivity,
+                        "Unable to add Printer",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             } else {
-                Toast.makeText(
-                    this@PrinterDiscoveryActivity,
-                    "Unable to add Printer",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(this@PrinterDiscoveryActivity, "IP is not valid", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -177,23 +190,4 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         recyclerViewPrinterLst.adapter = adapter
     }
 
-
-//    var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-//        override fun onReceive(context: Context, intent: Intent) {
-//            val ippPacket: String = intent.getStringExtra("getMessage").toString()
-//            Log.i("printer", "msg---->$ippPacket")
-//            try {
-//                bundle.putString("printerAttribute", ippPacket)
-//            } catch (e: Exception) {
-//            }
-//        }
-//    }
-
-//    var broadcastReceiverSupportedFormat: BroadcastReceiver = object : BroadcastReceiver() {
-//        override fun onReceive(context: Context, intent: Intent) {
-//            val formatSupported = intent.getStringExtra("formatSupported").toString()
-//            Log.i("printer", "format Supported in broadcast receiver===>$formatSupported")
-//            bundle.putString("formatSupported", formatSupported)
-//        }
-//    }
 }
