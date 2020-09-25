@@ -72,7 +72,7 @@ public class PrintUtils {
                 String format = inputFile.getName();
 
                 if (fileName.contains(".")) {
-                    format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase());
+                    format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase().trim());
                     Log.i("printer", "format--->" + format);
                 }
 
@@ -96,6 +96,11 @@ public class PrintUtils {
                     context.sendBroadcast(printResponseIntent);
 
                     Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
+                }else{
+                    Intent printResponseIntent =
+                            new Intent("com.example.PRINT_RESPONSE")
+                                    .putExtra("fileNotSupported", "File Format is not supported");
+                    context.sendBroadcast(printResponseIntent);
                 }
             } catch (Exception e) {
                 Intent intent =
