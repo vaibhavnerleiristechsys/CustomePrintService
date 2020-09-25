@@ -20,7 +20,8 @@ class PrintActivity : AppCompatActivity() {
     var bundle: Bundle = Bundle()
     var attributesUtils = AttributesUtils()
 
-    var uri:URI? = null
+    var uri: URI? = null
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,12 +48,13 @@ class PrintActivity : AppCompatActivity() {
                 "format Supported -${formatSupported.toString()}"
 
         }
-        uri = URI.create("http://" + bundle.getString("ipAddress") +":${bundle.getString("printerPort")}"+ "/" + "ipp/print")
+        uri =
+            URI.create("http://" + bundle.getString("ipAddress") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
         Log.i("printer", "uri1---->$uri")
 
         btnPrint.setOnClickListener {
 
-           /* val file: File = File(bundle.getString("selectedFile")!!)  */
+            /* val file: File = File(bundle.getString("selectedFile")!!)  */
 
 
             val uri1 = Uri.parse(bundle.getString("selectedFile"))
@@ -60,7 +62,7 @@ class PrintActivity : AppCompatActivity() {
             val inputFile = File(file.absolutePath)
 
             val fileName: String = inputFile.name
-            var format: String? =  null
+            var format: String? = null
 
             if (fileName.contains(".")) {
                 format = PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)
@@ -72,13 +74,13 @@ class PrintActivity : AppCompatActivity() {
             printUtils.print(uri, file, this@PrintActivity)
         }
 
-          /*val att: List<String> =
-            attributesUtils.getAttributesForPrintUtils(uri, this@PrintActivity)
-        try {
-            Thread.sleep(1000)
-        } catch (e: InterruptedException) {
-        }
-        Log.i("printer", "att lst--->${att.toString()}")*/
+        /*val att: List<String> =
+          attributesUtils.getAttributesForPrintUtils(uri, this@PrintActivity)
+      try {
+          Thread.sleep(1000)
+      } catch (e: InterruptedException) {
+      }
+      Log.i("printer", "att lst--->${att.toString()}")*/
 
         /*if(att.contains(format?.trim())){
             txtPrinterActivityIsPrintSupported.text = "Is Print format support - True"
@@ -87,7 +89,6 @@ class PrintActivity : AppCompatActivity() {
             txtPrinterActivityIsPrintSupported.text = "Is Print format support - False"
             Toast.makeText(this@PrintActivity,"File is Not Supported ",Toast.LENGTH_LONG).show()
         }*/
-
 
 
         val filter = IntentFilter()
@@ -103,35 +104,38 @@ class PrintActivity : AppCompatActivity() {
     }
 
     var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        @SuppressLint("SetTextI18n")
         override fun onReceive(context: Context, intent: Intent) {
-
-            try
-            {
-
+            try {
                 var printResponse: String = ""
-                if(intent.getStringExtra("printResponse")!=null) {
-                    printResponse = intent.getStringExtra("printResponse"). toString ()
-                    txtPrinterResponse.text ="Print Response - $printResponse"
+                if (intent.getStringExtra("printResponse") != null) {
+                    printResponse = intent.getStringExtra("printResponse").toString()
+                    txtPrinterResponse.text = "Print Response - $printResponse"
                 }
 
 
                 var printerSupportedFormats: String = ""
 
-                if(intent.getStringExtra("printerSupportedFormats")!=null) {
-                    printerSupportedFormats = intent.getStringExtra("printerSupportedFormats").toString()
-                    txtPrinterActivityFormatSupported.text = "Priter Supported Format - "+printerSupportedFormats
+                if (intent.getStringExtra("printerSupportedFormats") != null) {
+                    printerSupportedFormats =
+                        intent.getStringExtra("printerSupportedFormats").toString()
+                    txtPrinterActivityFormatSupported.text =
+                        "Priter Supported Format - $printerSupportedFormats"
                 }
 
-                var getPrinterAttributes : String = ""
-                if(intent.getStringExtra("getPrinterAttributes")!=null) {
+                var getPrinterAttributes: String = ""
+                if (intent.getStringExtra("getPrinterAttributes") != null) {
                     getPrinterAttributes = intent.getStringExtra("getPrinterAttributes").toString()
-                    txtDignosticInfo.text = "Get Attributes - "+getPrinterAttributes
+                    txtDignosticInfo.text = "Get Attributes - $getPrinterAttributes"
                 }
 
-
-            }
-            catch (e: Exception){
-                txtDignosticInfo.text = e.toString();
+                var exception: String = ""
+                if (intent.getStringExtra("exception") != null) {
+                    exception = intent.getStringExtra("exception").toString()
+                    txtDignosticInfo.text = "Exception Occured - $exception"
+                }
+            } catch (e: Exception) {
+                txtDignosticInfo.text = e.toString()
             }
         }
     }

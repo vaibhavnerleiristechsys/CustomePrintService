@@ -62,16 +62,11 @@ public class PrintUtils {
 
     public void print(URI uri, File file, Context context) {
 
-
         new Thread(() -> {
-
             try {
-
                 File inputFile = new File(file.getAbsolutePath());
                 boolean exists = inputFile.exists();
-
                 Log.i("printer", String.valueOf(exists));
-
                 Log.i("printer", "input File-->" + inputFile);
                 String fileName = inputFile.getName();
                 String format = inputFile.getName();
@@ -82,7 +77,6 @@ public class PrintUtils {
                 }
 
                 List<String> att = getPrinterSupportedFormats(uri, context);
-
                 Log.i("printer", "att array--> " + att.toString());
 
                 if (format != null && att.contains(format)) {
@@ -92,7 +86,6 @@ public class PrintUtils {
                                     documentFormat.of(format))
                             .build();
                     Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
-
 
                     Log.i("printer", "In print utils method");
                     IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
@@ -111,59 +104,66 @@ public class PrintUtils {
                 context.sendBroadcast(intent);
             }
         }).start();
-
-
     }
 
     private List<String> getPrinterSupportedFormats(URI uri, Context context) throws
             IOException {
-        List<String> attributeList = new ArrayList<>();
-        Attribute<String> requested;
-        requested = requestedAttributes.of("all");
-        IppPacket attributeRequest =
-                IppPacket.getPrinterAttributes(uri)
-                        .putOperationAttributes(requestingUserName.of("print"), requested)
-                        .build();
+        List<String> attributeList = null;
+        try {
+            attributeList = new ArrayList<>();
+            Attribute<String> requested;
+            requested = requestedAttributes.of("all");
+            IppPacket attributeRequest =
+                    IppPacket.getPrinterAttributes(uri)
+                            .putOperationAttributes(requestingUserName.of("print"), requested)
+                            .build();
 
-        IppPacketData request = new IppPacketData(attributeRequest);
+            IppPacketData request = new IppPacketData(attributeRequest);
 
+            IppPacketData response = transport.sendData(uri, request);
+            IppPacket responsePacket = response.getPacket();
 
-        IppPacketData response = transport.sendData(uri, request);
-        IppPacket responsePacket = response.getPacket();
+            Intent intent =
+                    new Intent("com.example.PRINT_RESPONSE")
+                            .putExtra("getPrinterAttributes", response.toString());
+            context.sendBroadcast(intent);
 
-        Intent intent =
-                new Intent("com.example.PRINT_RESPONSE")
-                        .putExtra("getPrinterAttributes", response.toString());
-        context.sendBroadcast(intent);
+            List<AttributeGroup> attributeGroupList = responsePacket.getAttributeGroups();
 
-
-        List<AttributeGroup> attributeGroupList = responsePacket.getAttributeGroups();
-
-        for (AttributeGroup attributeGroup : attributeGroupList) {
-            if (attributeGroup.get("document-format-supported") != null) {
-                Log.i("printer", "attribute groups-->" + attributeGroup.get("document-format-supported"));
-                Attribute attribute = attributeGroup.get("document-format-supported");
-                for (int i = 0; i < attribute.size(); i++) {
-                    Object att = attribute.get(i);
-                    if (att instanceof OtherString) {
-                        OtherString attOtherString = (OtherString) att;
-                        ValueTag valueTag = attOtherString.getTag();
-                        String tagName = valueTag.getName();
-                        String tagValue = attOtherString.getValue().trim().toLowerCase();
-                        attributeList.add(tagValue);
+            for (AttributeGroup attributeGroup : attributeGroupList) {
+                if (attributeGroup.get("document-format-supported") != null) {
+                    Log.i("printer", "attribute groups-->" + attributeGroup.get("document-format-supported"));
+                    Attribute attribute = attributeGroup.get("document-format-supported");
+                    for (int i = 0; i < attribute.size(); i++) {
+                        Object att = attribute.get(i);
+                        if (att instanceof OtherString) {
+                            OtherString attOtherString = (OtherString) att;
+                            ValueTag valueTag = attOtherString.getTag();
+                            String tagName = valueTag.getName();
+                            String tagValue = attOtherString.getValue().trim().toLowerCase();
+                            attributeList.add(tagValue);
+                        }
+                        Log.i("printer", "Format: " + i + " " + att);
                     }
-                    Log.i("printer", "Format: " + i + " " + att);
                 }
             }
+
+            Log.i("printer", "attribute list in print utils->>" + attributeList);
+            Intent printerSupportedFormatsIntent =
+                    new Intent("com.example.PRINT_RESPONSE")
+                            .putExtra("printerSupportedFormats", attributeList.toString());
+            context.sendBroadcast(printerSupportedFormatsIntent);
+            return attributeList;
+
+        } catch (Exception e) {
+
+            Intent printerSupportedFormatsIntent =
+                    new Intent("com.example.PRINT_RESPONSE")
+                            .putExtra("exception", e.getMessage());
+            context.sendBroadcast(printerSupportedFormatsIntent);
+            Log.i("printer", "exception message-->" + e.getMessage());
+
         }
-
-        Log.i("printer","attribute list in print utils->>"+attributeList);
-        Intent printerSupportedFormatsIntent =
-                new Intent("com.example.PRINT_RESPONSE")
-                        .putExtra("printerSupportedFormats", attributeList.toString());
-        context.sendBroadcast(printerSupportedFormatsIntent);
-
         return attributeList;
     }
-
 }

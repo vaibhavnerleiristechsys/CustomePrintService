@@ -2,10 +2,7 @@ package com.example.customeprintservice.jipp
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
@@ -25,7 +22,7 @@ import java.net.URI
 class PrinterDiscoveryActivity : AppCompatActivity() {
 
     var bundle = Bundle()
-    var bundle1 =Bundle()
+    var bundle1 = Bundle()
     var attributesUtils = AttributesUtils()
     var printerUri: URI? = null
 
@@ -46,7 +43,6 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
             txtPrinterDiscoverySelectedDocument.text =
                 "Selected Document -${selectedFile.toString()}"
-
         }
 
         btnSelectPrinter.setOnClickListener {
@@ -71,16 +67,6 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         edtAddManualPrinter.setOnClickListener {
             dialogAddManualPrinter()
         }
-
-//        val filter = IntentFilter()
-//        filter.addAction("com.example.CUSTOM_INTENT")
-//        val receiver = broadcastReceiver
-//        registerReceiver(receiver, filter)
-//
-//        val filterSupportedFormat = IntentFilter()
-//        filterSupportedFormat.addAction("com.example.SUPPORTED_FORMAT")
-//        val receiverSupportedFormat = broadcastReceiverSupportedFormat
-//        registerReceiver(receiverSupportedFormat, filterSupportedFormat)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -103,17 +89,23 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         val btnAddPrinterManually = dialog.findViewById<Button>(R.id.btnAddPrinter)
         btnCancel.setOnClickListener { dialog.dismiss() }
 
-        btnAddPrinterManually.setOnClickListener {
+        val printer: PrinterModel = PrinterModel()
 
-            val printer: PrinterModel = PrinterModel()
-            var inetAddress: InetAddress? = null
-            doAsync {
-                inetAddress = InetAddress.getByName(edtAddManualPrinter.text.toString())
+        btnAddPrinterManually.setOnClickListener {
+            try {
+                var inetAddress: InetAddress? = null
+                doAsync {
+                    inetAddress = InetAddress.getByName(edtAddManualPrinter.text.toString())
+                }
+                Thread.sleep(100)
+                if (inetAddress != null) {
+                    printer.printerHost = inetAddress
+                }
+                Log.i("printer", "innet Address->" + inetAddress)
+                printer.serviceName = inetAddress.toString()
+            } catch (e: Exception) {
+                Log.i("printer", e.toString())
             }
-            Thread.sleep(100)
-            printer.printerHost = inetAddress
-            Log.i("printer","innet Address->"+inetAddress)
-            printer.serviceName = inetAddress.toString()
             printer.printerPort = 631
             var flagIsExist: Boolean = false
 
@@ -172,7 +164,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         adapter.itemClick().doOnNext {
             bundle.putString("ipAddress", it.printerHost.toString())
             bundle.putString("printerName", it.serviceName.toString())
-            bundle.putString("printerPort",  it.printerPort.toString())
+            bundle.putString("printerPort", it.printerPort.toString())
             printerUri = URI.create(it.printerHost.toString())
 
             txtPrinterDiscoveryPrinterName.text = "Selected Printer -" + it.serviceName.toString()

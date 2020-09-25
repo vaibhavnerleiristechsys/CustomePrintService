@@ -16,8 +16,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import org.jetbrains.anko.find
 
-class PrinterListAdapter(val context: Context,
-                         val list: List<PrinterModel>):RecyclerView.Adapter<PrinterListAdapter.ViewHolder>() {
+class PrinterListAdapter(
+    val context: Context,
+    val list: List<PrinterModel>
+) : RecyclerView.Adapter<PrinterListAdapter.ViewHolder>() {
 
     private var checkedRadioButton: CompoundButton? = null
     private val publishSubject: PublishSubject<PrinterModel> = PublishSubject.create()
@@ -37,8 +39,10 @@ class PrinterListAdapter(val context: Context,
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: PrinterListAdapter.ViewHolder, position: Int) {
 
-        holder.getPrinterName().text = ""+list[position].serviceName.toString()
-        holder.getIpAddress().text = list[position].printerHost.toString()
+        holder.getPrinterName().text = "" + list[position].serviceName.toString()
+        if (list[position].printerHost.toString() != null) {
+            holder.getIpAddress().text = list[position].printerHost.toString()
+        }
 
         holder.getRadioButton().setOnClickListener {
             publishSubject.onNext(list[position])
@@ -51,10 +55,12 @@ class PrinterListAdapter(val context: Context,
     fun itemClick(): Observable<PrinterModel> {
         return publishSubject.observeOn(AndroidSchedulers.mainThread())
     }
-    private val checkedChangeListener = CompoundButton.OnCheckedChangeListener { compoundButton, isChecked ->
-        checkedRadioButton?.apply { setChecked(!isChecked) }
-        checkedRadioButton = compoundButton.apply { setChecked(isChecked) }
-    }
+
+    private val checkedChangeListener =
+        CompoundButton.OnCheckedChangeListener { compoundButton, isChecked ->
+            checkedRadioButton?.apply { setChecked(!isChecked) }
+            checkedRadioButton = compoundButton.apply { setChecked(isChecked) }
+        }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun getPrinterName(): TextView {
@@ -65,11 +71,11 @@ class PrinterListAdapter(val context: Context,
             return itemView.findViewById(R.id.radioButton)
         }
 
-        fun getCardPrinterList(): CardView{
+        fun getCardPrinterList(): CardView {
             return itemView.findViewById(R.id.cardview)
         }
 
-        fun getIpAddress():TextView{
+        fun getIpAddress(): TextView {
             return itemView.find(R.id.txtIpAddress)
         }
     }
