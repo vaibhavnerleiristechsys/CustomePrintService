@@ -71,7 +71,7 @@ class PrintActivity : AppCompatActivity() {
             }
 
 
-            printUtils.print(uri, file, this@PrintActivity)
+            printUtils.print(uri, file, this@PrintActivity,format)
         }
 
         /*val att: List<String> =
