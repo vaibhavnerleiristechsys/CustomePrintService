@@ -72,15 +72,15 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             dialogAddManualPrinter()
         }
 
-        val filter = IntentFilter()
-        filter.addAction("com.example.CUSTOM_INTENT")
-        val receiver = broadcastReceiver
-        registerReceiver(receiver, filter)
-
-        val filterSupportedFormat = IntentFilter()
-        filterSupportedFormat.addAction("com.example.SUPPORTED_FORMAT")
-        val receiverSupportedFormat = broadcastReceiverSupportedFormat
-        registerReceiver(receiverSupportedFormat, filterSupportedFormat)
+//        val filter = IntentFilter()
+//        filter.addAction("com.example.CUSTOM_INTENT")
+//        val receiver = broadcastReceiver
+//        registerReceiver(receiver, filter)
+//
+//        val filterSupportedFormat = IntentFilter()
+//        filterSupportedFormat.addAction("com.example.SUPPORTED_FORMAT")
+//        val receiverSupportedFormat = broadcastReceiverSupportedFormat
+//        registerReceiver(receiverSupportedFormat, filterSupportedFormat)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -172,34 +172,36 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         adapter.itemClick().doOnNext {
             bundle.putString("ipAddress", it.printerHost.toString())
             bundle.putString("printerName", it.serviceName.toString())
+            bundle.putString("printerPort",  it.printerPort.toString())
             printerUri = URI.create(it.printerHost.toString())
 
             txtPrinterDiscoveryPrinterName.text = "Selected Printer -" + it.serviceName.toString()
             Log.i("printer", "publish subject --->$it")
-            val uri = URI.create("http://$printerUri/ipp/print")
-            val printerAttribute: String =
-                attributesUtils.getAttributes(uri, this@PrinterDiscoveryActivity)
+//            val uri = URI.create("http://${printerUri}:${it.printerPort}/ipp/print")
+//            val printerAttribute: String =
+//                attributesUtils.getAttributes(uri, this@PrinterDiscoveryActivity)
         }.subscribe()
 
         recyclerViewPrinterLst.adapter = adapter
     }
 
 
-    var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val ippPacket: String = intent.getStringExtra("getMessage").toString()
-            Log.i("printer", "msg---->$ippPacket")
-            try {
-                bundle.putString("printerAttribute", ippPacket)
-            } catch (e: Exception) {
-            }
-        }
-    }
-    var broadcastReceiverSupportedFormat: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            val formatSupported = intent.getStringExtra("formatSupported").toString()
-            Log.i("printer", "format Supported in broadcast receiver===>$formatSupported")
-            bundle.putString("formatSupported", formatSupported)
-        }
-    }
+//    var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+//        override fun onReceive(context: Context, intent: Intent) {
+//            val ippPacket: String = intent.getStringExtra("getMessage").toString()
+//            Log.i("printer", "msg---->$ippPacket")
+//            try {
+//                bundle.putString("printerAttribute", ippPacket)
+//            } catch (e: Exception) {
+//            }
+//        }
+//    }
+
+//    var broadcastReceiverSupportedFormat: BroadcastReceiver = object : BroadcastReceiver() {
+//        override fun onReceive(context: Context, intent: Intent) {
+//            val formatSupported = intent.getStringExtra("formatSupported").toString()
+//            Log.i("printer", "format Supported in broadcast receiver===>$formatSupported")
+//            bundle.putString("formatSupported", formatSupported)
+//        }
+//    }
 }
