@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.R
 import kotlinx.android.synthetic.main.activity_print.*
@@ -39,6 +38,7 @@ class PrintActivity : AppCompatActivity() {
             val printerName: String? = bundle.getString("printerName")
             val formatSupported: String? = bundle.getString("formatSupported")
 
+
             txtDignosticInfo.text = bundle.getString("printerAttribute")
             txtPrinterActivitySelectedDocument.text =
                 "Selected Document - ${selectedFile.toString()}"
@@ -46,10 +46,8 @@ class PrintActivity : AppCompatActivity() {
             txtPrinterActivityFormatSupported.text =
                 "format Supported -${formatSupported.toString()}"
 
-            Log.i("printer", "printer Format Support in print activity-->$formatSupported")
-            Log.i("printer", "printer attribute in print activity->"+bundle.getString("printerAttribute"))
         }
-        uri = URI.create("http://" + bundle.getString("ipAddress") + "/" + "ipp/print")
+        uri = URI.create("http://" + bundle.getString("ipAddress") +":${bundle.getString("printerPort")}"+ "/" + "ipp/print")
         Log.i("printer", "uri1---->$uri")
 
         btnPrint.setOnClickListener {
@@ -94,6 +92,7 @@ class PrintActivity : AppCompatActivity() {
 
         val filter = IntentFilter()
         filter.addAction("com.example.PRINT_RESPONSE")
+        //filter.addAction("com.example.PRINT_SUPPORT_FORMATS")
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
     }
@@ -108,9 +107,28 @@ class PrintActivity : AppCompatActivity() {
 
             try
             {
-                val ippPacket: String = intent.getStringExtra("getMessage").toString()
-                Log.i("printer", "msg---->$ippPacket")
-                txtPrinterResponse.text = ippPacket
+
+                var printResponse: String = ""
+                if(intent.getStringExtra("printResponse")!=null) {
+                    printResponse = intent.getStringExtra("printResponse"). toString ()
+                    txtPrinterResponse.text ="Print Response - $printResponse"
+                }
+
+
+                var printerSupportedFormats: String = ""
+
+                if(intent.getStringExtra("printerSupportedFormats")!=null) {
+                    printerSupportedFormats = intent.getStringExtra("printerSupportedFormats").toString()
+                    txtPrinterActivityFormatSupported.text = "Priter Supported Format - "+printerSupportedFormats
+                }
+
+                var getPrinterAttributes : String = ""
+                if(intent.getStringExtra("getPrinterAttributes")!=null) {
+                    getPrinterAttributes = intent.getStringExtra("getPrinterAttributes").toString()
+                    txtDignosticInfo.text = "Get Attributes - "+getPrinterAttributes
+                }
+
+
             }
             catch (e: Exception){
                 txtDignosticInfo.text = e.toString();

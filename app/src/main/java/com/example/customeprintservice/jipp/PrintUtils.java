@@ -96,17 +96,18 @@ public class PrintUtils {
 
                     Log.i("printer", "In print utils method");
                     IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
-                    IppPacketData response = transport.sendData(uri, request);
-                    Intent intent =
+                    IppPacketData printResponse = transport.sendData(uri, request);
+                    Intent printResponseIntent =
                             new Intent("com.example.PRINT_RESPONSE")
-                                    .putExtra("getMessage", response.toString());
-                    context.sendBroadcast(intent);
-                    Log.i("printer", "Received ------>>>" + response.getPacket().prettyPrint(100, "  "));
+                                    .putExtra("printResponse", printResponse.toString());
+                    context.sendBroadcast(printResponseIntent);
+
+                    Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
                 }
             } catch (Exception e) {
                 Intent intent =
                         new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("getMessage", e.toString());
+                                .putExtra("getPrintResponse", e.toString());
                 context.sendBroadcast(intent);
             }
         }).start();
@@ -129,8 +130,14 @@ public class PrintUtils {
 
         IppPacketData response = transport.sendData(uri, request);
         IppPacket responsePacket = response.getPacket();
-        List<AttributeGroup> attributeGroupList = responsePacket.getAttributeGroups();
 
+        Intent intent =
+                new Intent("com.example.PRINT_RESPONSE")
+                        .putExtra("getPrinterAttributes", response.toString());
+        context.sendBroadcast(intent);
+
+
+        List<AttributeGroup> attributeGroupList = responsePacket.getAttributeGroups();
 
         for (AttributeGroup attributeGroup : attributeGroupList) {
             if (attributeGroup.get("document-format-supported") != null) {
@@ -149,6 +156,12 @@ public class PrintUtils {
                 }
             }
         }
+
+        Log.i("printer","attribute list in print utils->>"+attributeList);
+        Intent printerSupportedFormatsIntent =
+                new Intent("com.example.PRINT_RESPONSE")
+                        .putExtra("printerSupportedFormats", attributeList.toString());
+        context.sendBroadcast(printerSupportedFormatsIntent);
 
         return attributeList;
     }
