@@ -49,6 +49,8 @@ class PrintActivity : AppCompatActivity() {
             Log.i("printer", "printer Format Support in print activity-->$formatSupported")
             Log.i("printer", "printer attribute in print activity->"+bundle.getString("printerAttribute"))
         }
+
+        //add printer port to this url
         uri = URI.create("http://" + bundle.getString("ipAddress") + "/" + "ipp/print")
         Log.i("printer", "uri1---->$uri")
 
@@ -106,8 +108,7 @@ class PrintActivity : AppCompatActivity() {
     var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
 
-            try
-            {
+            try {
                 val ippPacket: String = intent.getStringExtra("getMessage").toString()
                 Log.i("printer", "msg---->$ippPacket")
                 txtPrinterResponse.text = ippPacket

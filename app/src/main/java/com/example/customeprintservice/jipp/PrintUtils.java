@@ -149,7 +149,10 @@ public class PrintUtils {
                 }
             }
         }
-
+        Intent intent =
+                new Intent("com.example.PRINT_RESPONSE")
+                        .putExtra("printerSupportedFormats", attributeList.toString());
+        context.sendBroadcast(intent);
         return attributeList;
     }
 
