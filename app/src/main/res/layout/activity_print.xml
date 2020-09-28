@@ -22,6 +22,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <EditText
+        android:id="@+id/edtPrinterActivityEditUrl"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPrint" />
+
     <TextView
         android:id="@+id/txtPrinterActivitySelectedDocument"
         android:layout_width="0dp"
@@ -30,9 +42,11 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/selected_document"
+        android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPrint" />
+        app:layout_constraintTop_toBottomOf="@+id/edtPrinterActivityEditUrl" />
 
     <TextView
         android:id="@+id/txtPrinterActivityPrinterName"
@@ -40,6 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/selected_printer"
+        android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="@+id/txtPrinterActivitySelectedDocument"
         app:layout_constraintStart_toStartOf="@+id/txtPrinterActivitySelectedDocument"
         app:layout_constraintTop_toBottomOf="@+id/txtPrinterActivitySelectedDocument" />
@@ -50,6 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/format_supported"
+        android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="@+id/txtPrinterActivityPrinterName"
         app:layout_constraintStart_toStartOf="@+id/txtPrinterActivityPrinterName"
         app:layout_constraintTop_toBottomOf="@+id/txtPrinterActivityPrinterName" />
@@ -62,6 +78,7 @@
         android:layout_marginTop="14dp"
         android:layout_marginEnd="16dp"
         android:text="@string/get_attribute_response"
+        android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,6 +91,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/printer_response"
+        android:textIsSelectable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/txtDignosticInfo"
         app:layout_constraintHorizontal_bias="0.0"

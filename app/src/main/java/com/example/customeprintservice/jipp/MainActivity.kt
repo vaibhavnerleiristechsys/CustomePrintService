@@ -127,7 +127,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == 1 && resultCode == RESULT_OK) {
             val uri: Uri = data?.data!!
-            val realPath = FileUtils.getPath(this, uri)
+            val realPath = FileUtils.getPath(this@MainActivity, uri)
             val file: File = File(realPath)
 
             txtPath.text = uri.path
@@ -154,12 +154,12 @@ class MainActivity : AppCompatActivity() {
         if (imageUri != null) {
             Log.i("printer", "imageUri=>$imageUri")
             val realPath = FileUtils.getPath(this, imageUri)
-            Log.i("printer","real Path =>"+realPath)
+            Log.i("printer", "real Path =>$realPath")
             txtPath.text = realPath.toString()
             isFileSelected = true
             bundle.putString("selectedFile", realPath)
         } else {
-            Toast.makeText(this, "Error Occured, URI is invalid", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG).show()
         }
     }
 
