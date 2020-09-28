@@ -1,13 +1,11 @@
 package com.example.customeprintservice.jipp
 
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.R
@@ -55,8 +53,6 @@ class PrintActivity : AppCompatActivity() {
 
         edtPrinterActivityEditUrl.setText(uri.toString())
         btnPrint.setOnClickListener {
-
-            val uri1 = Uri.parse(bundle.getString("selectedFile"))
             val file: File = File(bundle.getString("selectedFile")!!)
             val inputFile = File(file.absolutePath)
 
@@ -95,6 +91,7 @@ class PrintActivity : AppCompatActivity() {
         filter.addAction("com.example.PRINT_RESPONSE")
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -102,6 +99,14 @@ class PrintActivity : AppCompatActivity() {
         return true
     }
 
+    fun TextView.copyOnHold(customText: String? = null) {
+        setOnLongClickListener {
+            val clipboardManager = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Copied String", customText ?: text)
+            clipboardManager.setPrimaryClip(clip)
+            true // Or false if not consumed
+        }
+    }
     var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @SuppressLint("SetTextI18n")
         override fun onReceive(context: Context, intent: Intent) {
@@ -112,9 +117,7 @@ class PrintActivity : AppCompatActivity() {
                     txtPrinterResponse.text = "Print Response - $printResponse"
                 }
 
-
                 var printerSupportedFormats: String = ""
-
                 if (intent.getStringExtra("printerSupportedFormats") != null) {
                     printerSupportedFormats =
                         intent.getStringExtra("printerSupportedFormats").toString()
