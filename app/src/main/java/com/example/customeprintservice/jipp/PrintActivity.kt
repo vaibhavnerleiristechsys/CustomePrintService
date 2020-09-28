@@ -50,7 +50,7 @@ class PrintActivity : AppCompatActivity() {
 
         }
         uri =
-            URI.create("http:/" + bundle.getString("ipAddress") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
+            URI.create("http://" + bundle.getString("ipAddress") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
         Log.i("printer", "uri1---->$uri")
 
         edtPrinterActivityEditUrl.setText(uri.toString())
@@ -119,7 +119,7 @@ class PrintActivity : AppCompatActivity() {
                     printerSupportedFormats =
                         intent.getStringExtra("printerSupportedFormats").toString()
                     txtPrinterActivityFormatSupported.text =
-                        "Priter Supported Format - $printerSupportedFormats"
+                        "Printer Supported Format - $printerSupportedFormats"
                 }
 
                 var getPrinterAttributes: String = ""
