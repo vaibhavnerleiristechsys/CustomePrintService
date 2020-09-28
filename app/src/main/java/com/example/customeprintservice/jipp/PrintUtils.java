@@ -97,10 +97,10 @@ public class PrintUtils {
 
                     Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
                 }else{
-                    Intent printResponseIntent =
+                    Intent fileNotSupported =
                             new Intent("com.example.PRINT_RESPONSE")
                                     .putExtra("fileNotSupported", "File Format is not supported");
-                    context.sendBroadcast(printResponseIntent);
+                    context.sendBroadcast(fileNotSupported);
                 }
             } catch (Exception e) {
                 Intent intent =
