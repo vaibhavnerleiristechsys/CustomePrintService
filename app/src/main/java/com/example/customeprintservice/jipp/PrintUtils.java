@@ -60,7 +60,7 @@ public class PrintUtils {
         executor.execute(nsdUtils);
     }
 
-    public void print(URI uri, File file, Context context) {
+    public void print(URI uri, File file, Context context,String fileFormat) {
 
         new Thread(() -> {
             try {

@@ -50,13 +50,11 @@ class PrintActivity : AppCompatActivity() {
 
         }
         uri =
-            URI.create("http://" + bundle.getString("ipAddress") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
+            URI.create("http:/" + bundle.getString("ipAddress") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
         Log.i("printer", "uri1---->$uri")
 
+        edtPrinterActivityEditUrl.setText(uri.toString())
         btnPrint.setOnClickListener {
-
-            /* val file: File = File(bundle.getString("selectedFile")!!)  */
-
 
             val uri1 = Uri.parse(bundle.getString("selectedFile"))
             val file: File = File(bundle.getString("selectedFile")!!)
@@ -71,8 +69,9 @@ class PrintActivity : AppCompatActivity() {
                 Log.i("printer", "format--->$format")
             }
 
-
-            printUtils.print(uri, file, this@PrintActivity)
+            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
+            Log.i("printer", "finalUrl --- >$finalUri")
+            printUtils.print(finalUri, file, this@PrintActivity, format)
         }
 
         /*val att: List<String> =
@@ -94,7 +93,6 @@ class PrintActivity : AppCompatActivity() {
 
         val filter = IntentFilter()
         filter.addAction("com.example.PRINT_RESPONSE")
-        //filter.addAction("com.example.PRINT_SUPPORT_FORMATS")
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
     }
@@ -136,10 +134,10 @@ class PrintActivity : AppCompatActivity() {
                     txtDignosticInfo.text = "Exception Occured - $exception"
                 }
 
-                var fileNotSupported :String =""
+                var fileNotSupported: String = ""
                 if (intent.getStringExtra("fileNotSupported") != null) {
                     fileNotSupported = intent.getStringExtra("fileNotSupported").toString()
-                    Toast.makeText(this@PrintActivity,fileNotSupported,Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@PrintActivity, fileNotSupported, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 txtDignosticInfo.text = e.toString()
