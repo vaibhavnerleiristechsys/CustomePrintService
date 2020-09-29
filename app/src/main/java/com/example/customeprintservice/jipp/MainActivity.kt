@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.MediaStore
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        requestPermission()
         btnSelectDocument.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(this@MainActivity)) {
                 val i = Intent(
@@ -90,6 +92,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                2
+            )
+        } else {
+
+        }
+    }
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
@@ -115,6 +127,23 @@ class MainActivity : AppCompatActivity() {
                     }
                 } else {
                     Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
+            2 -> {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    if ((ContextCompat.checkSelfPermission(
+                            this@MainActivity,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ) ==
+                                PackageManager.PERMISSION_GRANTED)
+                    ) {
+                        Toast.makeText(this, "Permission WRITE Granted", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Permission WRITE Denied", Toast.LENGTH_SHORT).show()
                 }
                 return
             }

@@ -164,9 +164,9 @@ public class PrintUtils {
 
             Intent printerSupportedFormatsIntent =
                     new Intent("com.example.PRINT_RESPONSE")
-                            .putExtra("exception", e.getMessage());
+                            .putExtra("exception", e.toString());
             context.sendBroadcast(printerSupportedFormatsIntent);
-            Log.i("printer", "exception message-->" + e.getMessage());
+            Log.i("printer", "exception message-->" + e.toString());
 
         }
         return attributeList;
