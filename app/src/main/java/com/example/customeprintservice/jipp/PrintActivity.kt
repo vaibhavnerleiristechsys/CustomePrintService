@@ -82,8 +82,9 @@ class PrintActivity : AppCompatActivity() {
 //                convertPDFtoPCL(selectedFile)
 //            }
         }
+
         uri =
-            URI.create("http://" + bundle.getString("ipAddress") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
+            URI.create("http://" + (bundle.getString("ipAddress")?.replace("/","") ?: "") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
         Log.i("printer", "uri1---->$uri")
 
         edtPrinterActivityEditUrl.setText(uri.toString())
@@ -104,6 +105,21 @@ class PrintActivity : AppCompatActivity() {
 //            Log.i("printer", "finalUrl --- >$finalUri")
 //            printUtils.print(finalUri, file, this@PrintActivity, format)
 
+            if (fileName.contains(".")) {
+                format = PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)
+                    .toLowerCase()]
+                Log.i("printer", "format--->$format")
+            }
+
+            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
+            Log.i("printer", "finalUrl --- >$finalUri")
+            printUtils.print(finalUri, file, this@PrintActivity, format)
+
+            printUtils.getJobs(finalUri,this@PrintActivity);
+
+            printUtils.getJobAttributes(finalUri,1,this@PrintActivity);
+
+            printUtils.cancelJob(finalUri,1,this@PrintActivity);
         }
 
         val filter = IntentFilter()

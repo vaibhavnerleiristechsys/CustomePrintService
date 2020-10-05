@@ -14,7 +14,7 @@ import java.util.List;
 
 public class NSDUtils implements Runnable {
 
-    private static final String TAG = "printer";
+    private static final String TAG = "NSDUtils";
     //private static final String SERVICE_TYPE = "_services._dns-sd._udp";
     private static final String SERVICE_TYPE = "_ipp._tcp.";
     private String mServiceName = "_ipp";
@@ -48,7 +48,7 @@ public class NSDUtils implements Runnable {
     public void initializeDiscoveryListener() {
 
 
-        mResolveListener = new NsdManager.ResolveListener() {
+        /*mResolveListener = new NsdManager.ResolveListener() {
 
             @Override
             public void onResolveFailed(NsdServiceInfo nsdServiceInfo, int i) {
@@ -79,7 +79,7 @@ public class NSDUtils implements Runnable {
                 }
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
             }
-        };
+        };*/
 
         // Instantiate a new DiscoveryListener
         mDiscoveryListener = new NsdManager.DiscoveryListener() {
@@ -92,6 +92,12 @@ public class NSDUtils implements Runnable {
 
             @Override
             public void onServiceFound(NsdServiceInfo service) {
+
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // A service was found!  Do something with it.
                 //Log.d(TAG, "Service discovery success" + service);
 
@@ -116,7 +122,7 @@ public class NSDUtils implements Runnable {
                     //mNsdManager.resolveService(service, mResolveListener);
                 }*/
                 else {
-                    mNsdManager.resolveService(service, mResolveListener);
+                    mNsdManager.resolveService(service, initializeResolveListener());
                 }
             }
 
@@ -154,8 +160,8 @@ public class NSDUtils implements Runnable {
 
     }
 
-    public void initializeResolveListener() {
-        mResolveListener = new NsdManager.ResolveListener() {
+    public NsdManager.ResolveListener initializeResolveListener() {
+        NsdManager.ResolveListener resolveListener = new NsdManager.ResolveListener() {
 
             @Override
             public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
@@ -163,18 +169,33 @@ public class NSDUtils implements Runnable {
                 Log.e(TAG, "Resolve failed" + errorCode);
             }
 
+            @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
-                Log.e(TAG, "Resolve Succeeded. " + serviceInfo);
 
-                if (serviceInfo.getServiceName().equals(mServiceName)) {
-                    Log.d(TAG, "Same IP.");
-                    return;
+                InetAddress printerHost = serviceInfo.getHost();
+                int printerPort = serviceInfo.getPort();
+                String serviceName = serviceInfo.getServiceName();
+
+                PrinterModel printerModel = new PrinterModel();
+                printerModel.setPrinterHost(printerHost);
+                printerModel.setPrinterPort(printerPort);
+                printerModel.setServiceName(serviceName);
+
+                printerList.getPrinterList().forEach(p->{
+                    if(p.getPrinterHost().equals(printerHost)){
+                        flagIsExist = true;
+                    }
+                });
+
+                if(!flagIsExist){
+                    printerList.addPrinterModel(printerModel);
                 }
-                mService = serviceInfo;
-                int port = mService.getPort();
-                InetAddress host = mService.getHost();
+                Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
+
             }
         };
+
+        return resolveListener;
     }
 }
