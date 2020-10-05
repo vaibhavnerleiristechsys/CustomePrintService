@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.adapter.PrinterListAdapter
 import com.example.customeprintservice.utils.Inet
 import kotlinx.android.synthetic.main.activity_printer_discovery.*
 import org.jetbrains.anko.doAsync
@@ -41,7 +42,10 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         if (bundle.getString("selectedFile") != null) {
             val selectedFile: String? = bundle.getString("selectedFile")
             bundle.putString("selectedFile", bundle.getString("selectedFile"))
-
+            bundle.putStringArrayList(
+                "selectedFileList",
+                bundle.getStringArrayList("selectedFileList")
+            )
             txtPrinterDiscoverySelectedDocument.text =
                 "Selected Document -${selectedFile.toString()}"
         }

@@ -72,14 +72,14 @@ public class PrintUtils {
                 String format = inputFile.getName();
 
                 if (fileName.contains(".")) {
-                    format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase().trim());
-                    Log.i("printer", "format--->" + format);
+                    format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1));
+                    Log.i("printer", "format--->" + format.toLowerCase().trim());
                 }
 
                 List<String> att = getPrinterSupportedFormats(uri, context);
                 Log.i("printer", "att array--> " + att.toString());
 
-                if (format != null && att.contains(format)) {
+                if (format != null && att.contains(format.toLowerCase().trim())) {
                     IppPacket printRequest = IppPacket.printJob(uri)
                             .putOperationAttributes(
                                     requestingUserName.of(CMD_NAME),

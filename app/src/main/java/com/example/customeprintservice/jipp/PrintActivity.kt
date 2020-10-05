@@ -2,16 +2,24 @@ package com.example.customeprintservice.jipp
 
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.WindowManager
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.adapter.SelectedFileListAdapter
 import com.hp.jipp.model.MediaSource
 import com.hp.jipp.model.Sides
 import com.hp.jipp.pdl.ColorSpace
@@ -33,9 +41,10 @@ class PrintActivity : AppCompatActivity() {
 
     val printUtils = PrintUtils()
     var bundle: Bundle = Bundle()
-    var attributesUtils = AttributesUtils()
-
     var uri: URI? = null
+
+    var list = ArrayList<String>()
+    var selectedFileString = ""
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,13 +63,24 @@ class PrintActivity : AppCompatActivity() {
             val printerName: String? = bundle.getString("printerName")
             val formatSupported: String? = bundle.getString("formatSupported")
 
+            list = bundle.getStringArrayList("selectedFileList")!!
+
+            Log.i(
+                "printer",
+                "selectedFileList----->" + bundle.getStringArrayList("selectedFileList")
+            )
 
             txtDignosticInfo.text = bundle.getString("printerAttribute")
-            txtPrinterActivitySelectedDocument.text = "Selected Document - ${selectedFile.toString()}"
+            txtPrinterActivitySelectedDocument.text =
+                "Selected Document - ${selectedFile.toString()}"
             txtPrinterActivityPrinterName.text = "Printer Name - ${printerName.toString()}"
-            txtPrinterActivityFormatSupported.text = "format Supported -${formatSupported.toString()}"
+            txtPrinterActivityFormatSupported.text =
+                "format Supported -${formatSupported.toString()}"
 
-            convertPDFtoPCL(selectedFile!!)
+//            val file: File = File(selectedFile!!)
+//            if (file.extension.toLowerCase() == "pdf") {
+//                convertPDFtoPCL(selectedFile)
+//            }
         }
         uri =
             URI.create("http://" + bundle.getString("ipAddress") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
@@ -68,21 +88,22 @@ class PrintActivity : AppCompatActivity() {
 
         edtPrinterActivityEditUrl.setText(uri.toString())
         btnPrint.setOnClickListener {
-            val file: File = File(bundle.getString("selectedFile")!!)
-            val inputFile = File(file.absolutePath)
+            dialogSelectedFileList()
+//            val file = File(bundle.getString("selectedFile")!!)
+//            val inputFile = File(file.absolutePath)
+//            val fileName: String = inputFile.name
+//            var format: String? = null
+//            if (fileName.contains(".")) {
+//                format =
+//                    PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)]?.toLowerCase()
+//                        ?.trim()
+//                Log.i("printer", "format--->$format")
+//            }
+//
+//            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
+//            Log.i("printer", "finalUrl --- >$finalUri")
+//            printUtils.print(finalUri, file, this@PrintActivity, format)
 
-            val fileName: String = inputFile.name
-            var format: String? = null
-
-            if (fileName.contains(".")) {
-                format = PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)
-                    .toLowerCase()]
-                Log.i("printer", "format--->$format")
-            }
-
-            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
-            Log.i("printer", "finalUrl --- >$finalUri")
-            printUtils.print(finalUri, file, this@PrintActivity, format)
         }
 
         val filter = IntentFilter()
@@ -139,6 +160,67 @@ class PrintActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("WrongConstant")
+    private fun dialogSelectedFileList() {
+        val dialog = Dialog(this@PrintActivity)
+        dialog.setContentView(R.layout.dialog_selected_file_list)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.show()
+        val metrics = resources.displayMetrics
+        val width = metrics.widthPixels
+        dialog.window?.setLayout((6 * width) / 7, WindowManager.LayoutParams.WRAP_CONTENT)
+
+        val btnProceedPrint = dialog.findViewById<Button>(R.id.btnProceedPrint)
+        val btnCancelDialog = dialog.findViewById<Button>(R.id.btnDialogSelectedFileCancel)
+        btnCancelDialog.setOnClickListener { dialog.cancel() }
+        val recyclerViewSelectedFileLst =
+            dialog.findViewById<RecyclerView>(R.id.recyclerViewSelectedFileList)
+        recyclerViewSelectedFileLst.layoutManager =
+            LinearLayoutManager(
+                this@PrintActivity,
+                LinearLayout.VERTICAL,
+                false
+            )
+
+        val adapter = SelectedFileListAdapter(
+            this@PrintActivity,
+            list
+        )
+        adapter.itemClick().doOnNext {
+            selectedFileString = it
+            Log.i("printer", "selected file in item click -->$selectedFileString")
+        }.subscribe()
+
+        recyclerViewSelectedFileLst.adapter = adapter
+
+        btnProceedPrint.setOnClickListener {
+            var file = File(selectedFileString)
+//            if (file.extension.toLowerCase() == "pdf") {
+//                file = File("/storage/emulated/0/Movies/${file.nameWithoutExtension}.pclm")
+//            } else {
+//                file = File(selectedFileString)
+//            }
+            val inputFile = File(file.absolutePath)
+
+            val fileName: String = inputFile.name
+            var format: String? = null
+
+            if (fileName.contains(".")) {
+                format =
+                    PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)]?.toLowerCase()
+                        ?.trim()
+                Log.i("printer", "format--->$format")
+            }
+
+            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
+            Log.i("printer", "finalUrl --- >$finalUri")
+            printUtils.print(finalUri, file, this@PrintActivity, format)
+            dialog.cancel()
+        }
+    }
+
+
     private val DPI = 300
     private val IMAGE_TYPE = ImageType.RGB
     private val RED_COEFFICIENT = 0.2126
@@ -162,16 +244,24 @@ class PrintActivity : AppCompatActivity() {
             FileOutputStream(File(path, "/$filePclName"))
         )
 
+        Log.i("printer", "file path-- >$path")
         Log.i("printer", "outputStream--->$outputStream")
 
         try {
             CustomPDDocument.load(pdfInputStream).use { document ->
-//                val pdfRenderer = PDFRenderer(document)
+                val pdfRenderer = CustomPDFRenderer(document)
                 val pages = document.pages
                 val renderablePages: MutableList<RenderablePage> = ArrayList()
 
                 Log.i("printer", "in covert method")
+
                 for (pageIndex in 0 until pages.count) {
+                    var bitmapFactory: BitmapFactory
+//                    val bitmap = Bitmap.createBitmap(
+//                        resources.displayMetrics.densityDpi * pages.getWidth() / 72,
+//                        resources.displayMetrics.densityDpi * mCurrentPage.getHeight() / 72,
+//                        Bitmap.Config.ARGB_8888
+//                    )
                     val renderablePage: RenderablePage = object : RenderablePage(1001, 1001) {
                         override fun render(
                             yOffset: Int,

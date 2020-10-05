@@ -3,18 +3,19 @@ package com.example.customeprintservice.jipp
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.adapter.SelectedFileListMainActivityAdapter
+import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
@@ -22,11 +23,10 @@ import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
-
     val bundle = Bundle()
-    val attributesUtils = AttributesUtils()
-    private val PERMISSION_READ_EXTERNAL = 1
     var isFileSelected: Boolean = false
+    private var permissionsHelper: PermissionHelper? = null
+    var list = ArrayList<String>()
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,31 +38,8 @@ class MainActivity : AppCompatActivity() {
         actionBar?.title = "IPP Print Demo"
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
+        checkPermissions()
 
-        if (ContextCompat.checkSelfPermission(
-                this@MainActivity,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            ) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this@MainActivity,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-            ) {
-                ActivityCompat.requestPermissions(
-                    this@MainActivity,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1
-                )
-            } else {
-                ActivityCompat.requestPermissions(
-                    this@MainActivity,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1
-                )
-            }
-        }
-
-        requestPermission()
         btnSelectDocument.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(this@MainActivity)) {
                 val i = Intent(
@@ -82,26 +59,25 @@ class MainActivity : AppCompatActivity() {
 
         btnNext.setOnClickListener {
 
-            if (isFileSelected) {
+            if (isFileSelected && list.size > 0) {
                 val intent = Intent(this@MainActivity, PrinterDiscoveryActivity::class.java)
                 intent.putExtras(bundle)
                 startActivity(intent)
             } else {
-                Toast.makeText(this@MainActivity, "Select Document", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity, "Select the Document", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    private fun requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                2
-            )
-        } else {
-
-        }
+    private fun checkPermissions() {
+        permissionsHelper = PermissionHelper()
+        permissionsHelper!!.checkAndRequestPermissions(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
     }
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
@@ -112,44 +88,8 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            1 -> {
-                if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED
-                ) {
-                    if ((ContextCompat.checkSelfPermission(
-                            this@MainActivity,
-                            Manifest.permission.READ_EXTERNAL_STORAGE
-                        ) ==
-                                PackageManager.PERMISSION_GRANTED)
-                    ) {
-                        Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-            2 -> {
-                if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED
-                ) {
-                    if ((ContextCompat.checkSelfPermission(
-                            this@MainActivity,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ) ==
-                                PackageManager.PERMISSION_GRANTED)
-                    ) {
-                        Toast.makeText(this, "Permission WRITE Granted", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Permission WRITE Denied", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-        }
+        permissionsHelper!!.onRequestPermissionsResult(this, requestCode, permissions, grantResults)
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -158,12 +98,37 @@ class MainActivity : AppCompatActivity() {
             val uri: Uri = data?.data!!
             val realPath = FileUtils.getPath(this@MainActivity, uri)
             val file: File = File(realPath)
-
-            txtPath.text = uri.path
+            if (!list.contains(realPath)) {
+                list.add(realPath)
+            } else {
+                Toast.makeText(this@MainActivity, "File is already selected", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            listUpdate(list)
             isFileSelected = true
             bundle.putString("selectedFile", realPath)
+            bundle.putStringArrayList("selectedFileList", list)
             Log.i("printer", "file choosed-->$file")
+            Log.i("printer", "list of Files-->$list")
         }
+    }
+
+    @SuppressLint("WrongConstant")
+    private fun listUpdate(list: ArrayList<String>) {
+        val recyclerViewSelectedFileLstMainActivity =
+            findViewById<RecyclerView>(R.id.recyclerViewSelectedFileListMainActivity)
+        recyclerViewSelectedFileLstMainActivity.layoutManager =
+            LinearLayoutManager(
+                this@MainActivity,
+                LinearLayout.VERTICAL,
+                false
+            )
+
+        val adapter = SelectedFileListMainActivityAdapter(
+            this@MainActivity,
+            list
+        )
+        recyclerViewSelectedFileLstMainActivity.adapter = adapter
     }
 
     private fun getTextImageFromOtherApp() {
@@ -177,19 +142,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun handleSendImage(intent: Intent) {
         val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri?
         if (imageUri != null) {
             Log.i("printer", "imageUri=>$imageUri")
             val realPath = FileUtils.getPath(this, imageUri)
             Log.i("printer", "real Path =>$realPath")
-            txtPath.text = realPath.toString()
+//            txtPath.text = realPath.toString()
             isFileSelected = true
             bundle.putString("selectedFile", realPath)
         } else {
             Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG).show()
         }
     }
-
 }

@@ -1,4 +1,4 @@
-package com.example.customeprintservice.jipp
+package com.example.customeprintservice.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.jipp.PrinterModel
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -27,9 +28,11 @@ class PrinterListAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): PrinterListAdapter.ViewHolder {
+    ): ViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.card_printer_list, parent, false)
-        return ViewHolder(view)
+        return ViewHolder(
+            view
+        )
     }
 
     override fun getItemCount(): Int {
@@ -37,11 +40,10 @@ class PrinterListAdapter(
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(holder: PrinterListAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         holder.getPrinterName().text = "" + list[position].serviceName
         holder.getIpAddress().text = "" + list[position].printerHost
-
 
         holder.getRadioButton().setOnClickListener {
             publishSubject.onNext(list[position])

@@ -16,4 +16,7 @@
     <string name="Ok">Ok</string>
     <string name="format_supported">Format Supported</string>
     <string name="is_print_supported">Is Print Supported</string>
+    <string name="permission_required">Permission Required</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="ProceedPrint">Proceed Print</string>
 </resources>
