@@ -56,7 +56,7 @@ class PrintActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
-        if (bundle.getString("selectedFile") != null) {
+        if (bundle.getStringArrayList("selectedFileList") != null) {
 
             val selectedFile: String? = bundle.getString("selectedFile")
             val ipAddress: String? = bundle.getString("ipAddress")
@@ -84,7 +84,10 @@ class PrintActivity : AppCompatActivity() {
         }
 
         uri =
-            URI.create("http://" + (bundle.getString("ipAddress")?.replace("/","") ?: "") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print")
+            URI.create(
+                "http://" + (bundle.getString("ipAddress")?.replace("/", "")
+                    ?: "") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print"
+            )
         Log.i("printer", "uri1---->$uri")
 
         edtPrinterActivityEditUrl.setText(uri.toString())
@@ -113,6 +116,11 @@ class PrintActivity : AppCompatActivity() {
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
 
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(broadcastReceiver)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -219,13 +227,11 @@ class PrintActivity : AppCompatActivity() {
             Log.i("printer", "finalUrl --- >$finalUri")
             printUtils.print(finalUri, file, this@PrintActivity, format)
 
-            printUtils.print(finalUri, file, this@PrintActivity, format)
-
-            printUtils.getJobs(finalUri,this@PrintActivity);
-
-            printUtils.getJobAttributes(finalUri,1,this@PrintActivity);
-
-            printUtils.cancelJob(finalUri,1,this@PrintActivity);
+//            printUtils.getJobs(finalUri, this@PrintActivity)
+//
+//            printUtils.getJobAttributes(finalUri, 1, this@PrintActivity)
+//
+//            printUtils.cancelJob(finalUri, 1, this@PrintActivity)
 
             dialog.cancel()
         }

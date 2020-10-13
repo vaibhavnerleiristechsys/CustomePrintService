@@ -62,29 +62,36 @@ public class PrintUtils {
         executor.execute(nsdUtils);
     }
 
-    public void getSpecificPrinterAttributes(URI uri,List<String> attributeList) throws IOException
-    {
+    public void getSpecificPrinterAttributes(URI uri, List<String> attributeList) {
+        new Thread(() -> {
+            try {
+                Attribute<String> requestedAttributeList;
+                requestedAttributeList = requestedAttributes.of(attributeList);
+                IppPacket getSpecificPrinterAttributesRequestPacket =
+                        IppPacket.getPrinterAttributes(uri)
+                                .putOperationAttributes(requestingUserName.of("print"), requestedAttributeList)
+                                .build();
 
-        Attribute<String> requestedAttributeList;
-        requestedAttributeList = requestedAttributes.of(attributeList);
-        IppPacket getSpecificPrinterAttributesRequestPacket =
-                IppPacket.getPrinterAttributes(uri)
-                        .putOperationAttributes(requestingUserName.of("print"), requestedAttributeList)
-                        .build();
+                IppPacketData getSpecificPrinterAttributesRequestPacketData = new IppPacketData(getSpecificPrinterAttributesRequestPacket);
 
-        IppPacketData getSpecificPrinterAttributesRequestPacketData = new IppPacketData(getSpecificPrinterAttributesRequestPacket);
+                IppPacketData getSpecificPrinterAttributesPacketDataResponse = transport.sendData(uri, getSpecificPrinterAttributesRequestPacketData);
+                IppPacket getSpecificPrinterAttributesResponsePacket = getSpecificPrinterAttributesPacketDataResponse.getPacket();
 
-        IppPacketData getSpecificPrinterAttributesPacketDataResponse = transport.sendData(uri, getSpecificPrinterAttributesRequestPacketData);
-        IppPacket getSpecificPrinterAttributesResponsePacket = getSpecificPrinterAttributesPacketDataResponse.getPacket();
+                Intent getSpecificPrinterAttributesIntent =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("getSpecificPrinterAttributesIntent", getSpecificPrinterAttributesResponsePacket.toString());
+                context.sendBroadcast(getSpecificPrinterAttributesIntent);
+            } catch (Exception e) {
+                Intent getSpecificPrinterAttributesIntent =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("getSpecificPrinterAttributesIntent", e.toString());
+                context.sendBroadcast(getSpecificPrinterAttributesIntent);
+            }
 
-        Intent getSpecificPrinterAttributesIntent =
-                new Intent("com.example.PRINT_RESPONSE")
-                        .putExtra("getSpecificPrinterAttributesIntent", getSpecificPrinterAttributesResponsePacket.toString());
-        context.sendBroadcast(getSpecificPrinterAttributesIntent);
-
+        }).start();
     }
 
-    public void cancelJob(URI uri, int jobId,Context context) throws IOException {
+    public void cancelJob(URI uri, int jobId, Context context) throws IOException {
 
         new Thread(() -> {
 
@@ -100,8 +107,7 @@ public class PrintUtils {
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("cancelJobIntent", cancelJobResponsePacket.toString());
                 context.sendBroadcast(cancelJobIntent);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 Intent intent =
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("cancelJobIntent", ex.toString());
@@ -118,20 +124,18 @@ public class PrintUtils {
             try {
 
 
-            IppPacket getJobsRequestPacket = IppPacket.getJobs(uri).build();
-            IppPacketData getJobsRequestPacketData = new IppPacketData(getJobsRequestPacket);
-            IppPacketData getJobsResponsePacketData = transport.sendData(uri, getJobsRequestPacketData);
-            IppPacket getJobsResponsePacket = getJobsResponsePacketData.getPacket();
+                IppPacket getJobsRequestPacket = IppPacket.getJobs(uri).build();
+                IppPacketData getJobsRequestPacketData = new IppPacketData(getJobsRequestPacket);
+                IppPacketData getJobsResponsePacketData = transport.sendData(uri, getJobsRequestPacketData);
+                IppPacket getJobsResponsePacket = getJobsResponsePacketData.getPacket();
 
-            getResponseDetails(getJobsResponsePacket);
+                getResponseDetails(getJobsResponsePacket);
 
-            Intent getJobsIntent =
-                    new Intent("com.example.PRINT_RESPONSE")
-                            .putExtra("getJobsIntent", getJobsResponsePacket.toString());
-            context.sendBroadcast(getJobsIntent);
-            }
-            catch(Exception ex)
-            {
+                Intent getJobsIntent =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("getJobsIntent", getJobsResponsePacket.toString());
+                context.sendBroadcast(getJobsIntent);
+            } catch (Exception ex) {
                 Intent intent =
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("getJobsIntent", ex.toString());
@@ -140,7 +144,7 @@ public class PrintUtils {
         }).start();
     }
 
-    public void getJobAttributes(URI uri, int jobId,Context context) throws IOException {
+    public void getJobAttributes(URI uri, int jobId, Context context) throws IOException {
 
         new Thread(() -> {
 
@@ -156,9 +160,7 @@ public class PrintUtils {
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("getJobAttributesIntent", getJobAttributesResponsePacket.toString());
                 context.sendBroadcast(getJobAttributesIntent);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 Intent intent =
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("getJobAttributesIntent", ex.toString());
@@ -169,7 +171,7 @@ public class PrintUtils {
     }
 
 
-    public void print(URI uri, File file, Context context,String fileFormat) {
+    public void print(URI uri, File file, Context context, String fileFormat) {
 
         new Thread(() -> {
             try {
@@ -205,7 +207,7 @@ public class PrintUtils {
                     context.sendBroadcast(printResponseIntent);
 
                     Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
-                }else{
+                } else {
                     Intent fileNotSupported =
                             new Intent("com.example.PRINT_RESPONSE")
                                     .putExtra("fileNotSupported", "File Format is not supported");
@@ -220,40 +222,38 @@ public class PrintUtils {
         }).start();
     }
 
-    private Map<String,String> getResponseDetails(IppPacket responsePacket){
+    private Map<String, String> getResponseDetails(IppPacket responsePacket) {
 
-        Map<String,String> resultMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
 
-        List<AttributeGroup>  attributeGroupList = responsePacket.getAttributeGroups();
+        List<AttributeGroup> attributeGroupList = responsePacket.getAttributeGroups();
         for (AttributeGroup attributeGroup : attributeGroupList) {
-            for(int i = 0;i<attributeGroup.size();i++){
-               Attribute attribute =  attributeGroup.get(i);
-               resultMap.put(attribute.getName(),attribute.toString());
+            for (int i = 0; i < attributeGroup.size(); i++) {
+                Attribute attribute = attributeGroup.get(i);
+                resultMap.put(attribute.getName(), attribute.toString());
             }
         }
 
         int responseCode = responsePacket.getCode();
 
         Status status = responsePacket.getStatus();
-        String statusString  = status.getName();
+        String statusString = status.getName();
         int statusStringCode = status.getCode();
-        resultMap.put("status",statusString);
+        resultMap.put("status", statusString);
 
-        Operation operation  = responsePacket.getOperation();
+        Operation operation = responsePacket.getOperation();
         String operationName = operation.getName();
-        int operationCode  = operation.getCode();
+        int operationCode = operation.getCode();
         resultMap.put("operationName", operationName);
 
         Integer requestId = new Integer(responsePacket.getRequestId());
         resultMap.put("requestId", requestId.toString());
 
 
-
-
         return resultMap;
 
 
-       // for (AttributeGroup attributeGroup : attributeGroupList) {
+        // for (AttributeGroup attributeGroup : attributeGroupList) {
 
     }
 

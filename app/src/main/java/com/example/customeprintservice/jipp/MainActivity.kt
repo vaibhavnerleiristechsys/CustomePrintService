@@ -17,16 +17,18 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.SelectedFileListMainActivityAdapter
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
+import com.tbruyelle.rxpermissions2.RxPermissions
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 
 
 class MainActivity : AppCompatActivity() {
 
-    val bundle = Bundle()
-    var isFileSelected: Boolean = false
+    private val bundle = Bundle()
+    private var isFileSelected: Boolean = false
     private var permissionsHelper: PermissionHelper? = null
-    var list = ArrayList<String>()
+    private var list = ArrayList<String>()
+    private val rxPermissions = RxPermissions(this)
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +68,17 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this@MainActivity, "Select the Document", Toast.LENGTH_SHORT).show()
             }
+
+//            rxPermissions
+//                .request(Manifest.permission.CAMERA)
+//                .subscribe { granted ->
+//                    if (granted) {
+//                        val intent = Intent(this@MainActivity, QRCodeScanActivity::class.java)
+//                        startActivity(intent)
+//                    } else {
+//                        toast("Camera Permission needed")
+//                    }
+//                }
         }
     }
 
@@ -77,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     }
+
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
@@ -106,7 +120,6 @@ class MainActivity : AppCompatActivity() {
             }
             listUpdate(list)
             isFileSelected = true
-            bundle.putString("selectedFile", realPath)
             bundle.putStringArrayList("selectedFileList", list)
             Log.i("printer", "file choosed-->$file")
             Log.i("printer", "list of Files-->$list")
@@ -133,26 +146,51 @@ class MainActivity : AppCompatActivity() {
 
     private fun getTextImageFromOtherApp() {
         when (intent?.action) {
-            Intent.ACTION_SEND -> {
-                handleSendImage(intent)
-                if (intent.type?.startsWith("image/*") == true) {
+            Intent.ACTION_SEND_MULTIPLE -> {
+                handleSendMultipleImages(intent)
+                if (intent.type?.startsWith("*/*") == true) {
                     Log.i("printer", "in action send text image")
                 }
             }
         }
     }
 
+
     private fun handleSendImage(intent: Intent) {
         val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri?
         if (imageUri != null) {
-            Log.i("printer", "imageUri=>$imageUri")
             val realPath = FileUtils.getPath(this, imageUri)
-            Log.i("printer", "real Path =>$realPath")
-//            txtPath.text = realPath.toString()
             isFileSelected = true
             bundle.putString("selectedFile", realPath)
+
+            if (!list.contains(realPath)) {
+                list.add(realPath)
+            } else {
+                Toast.makeText(this@MainActivity, "File is already selected", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            listUpdate(list)
+            bundle.putStringArrayList("selectedFileList", list)
         } else {
             Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun handleSendMultipleImages(intent: Intent) {
+        intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).let {
+            it?.forEach {
+                val realPath = FileUtils.getPath(this, it)
+                Log.i("printer", "realpath==>" + realPath)
+                if (!list.contains(realPath)) {
+                    list.add(realPath)
+                } else {
+                    Toast.makeText(this@MainActivity, "File is already selected", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        isFileSelected = true
+        listUpdate(list)
+        bundle.putStringArrayList("selectedFileList", list)
+
     }
 }
