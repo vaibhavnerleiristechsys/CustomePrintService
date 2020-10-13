@@ -19,4 +19,12 @@
     <string name="permission_required">Permission Required</string>
     <string name="bluetooth">Bluetooth</string>
     <string name="ProceedPrint">Proceed Print</string>
+    <string name="yourcompany_vasion_com">http://yourcompany.vasion.com</string>
+    <string name="enter_username">Enter Username..</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="or">OR</string>
+    <string name="sign_in_with_okta">Sign In With Okta</string>
+    <string name="sign_in_with_azure_ad">Sign In With Azure AD</string>
+    <string name="sign_in_with_google">Sign In With Google</string>
 </resources>
