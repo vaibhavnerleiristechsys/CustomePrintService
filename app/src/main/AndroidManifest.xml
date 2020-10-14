@@ -19,8 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".signin.SignInActivity"></activity>
-        <activity android:name=".signin.SignInCompany" />
+        <activity android:name=".print.BottomNavigationActivity"></activity>
+
+        <activity
+            android:name=".signin.SignInActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".signin.SignInCompany"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".signin.SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar">

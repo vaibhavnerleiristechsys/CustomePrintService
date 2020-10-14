@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
 
         val actionBar = supportActionBar
         actionBar?.title = "IPP Print Demo"
-        actionBar?.setDisplayHomeAsUpEnabled(true)
 
         checkPermissions()
 
@@ -91,11 +90,6 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
-    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>,

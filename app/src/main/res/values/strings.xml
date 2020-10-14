@@ -27,4 +27,18 @@
     <string name="sign_in_with_okta">Sign In With Okta</string>
     <string name="sign_in_with_azure_ad">Sign In With Azure AD</string>
     <string name="sign_in_with_google">Sign In With Google</string>
+    <string name="print_release">Print Release</string>
+    <string name="printer">Printer</string>
+    <string name="servicePortal">Service Portal</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
