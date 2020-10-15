@@ -39,12 +39,10 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
-        if (bundle.getString("selectedFile") != null) {
+        if (bundle.getStringArrayList("selectedFileList") != null) {
             val selectedFile: String? = bundle.getString("selectedFile")
             bundle.putString("selectedFile", bundle.getString("selectedFile"))
-            bundle.putStringArrayList(
-                "selectedFileList",
-                bundle.getStringArrayList("selectedFileList")
+            bundle.putStringArrayList("selectedFileList", bundle.getStringArrayList("selectedFileList")
             )
             txtPrinterDiscoverySelectedDocument.text =
                 "Selected Document -${selectedFile.toString()}"
@@ -56,7 +54,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
 
         btnNextPrinterDiscovery.setOnClickListener {
-            if (printerUri != null && bundle.getString("selectedFile") != null) {
+            if (printerUri != null && bundle.getStringArrayList("selectedFileList") != null) {
                 val intent = Intent(this@PrinterDiscoveryActivity, PrintActivity::class.java)
                 intent.putExtras(bundle)
                 startActivity(intent)
@@ -149,7 +147,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
     }
 
 
-    @SuppressLint("WrongConstant")
+    @SuppressLint("WrongConstant", "SetTextI18n")
     private fun dialogPrinterList() {
         val dialog = Dialog(this@PrinterDiscoveryActivity)
         dialog.setContentView(R.layout.dialog_printer_list)
@@ -184,11 +182,8 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
             bundle.putString("printerPort", it.printerPort.toString())
             printerUri = URI.create(it.printerHost.toString())
 
-            txtPrinterDiscoveryPrinterName.text = "Selected Printer -" + it.serviceName.toString()
+            txtPrinterDiscoveryPrinterName.text = "Selected Printer -${it.serviceName.toString()}"
             Log.i("printer", "publish subject --->$it")
-//            val uri = URI.create("http://${printerUri}:${it.printerPort}/ipp/print")
-//            val printerAttribute: String =
-//                attributesUtils.getAttributes(uri, this@PrinterDiscoveryActivity)
         }.subscribe()
 
         recyclerViewPrinterLst.adapter = adapter

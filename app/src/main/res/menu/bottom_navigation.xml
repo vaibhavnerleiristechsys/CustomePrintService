@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/printRelease"
+        android:icon="@mipmap/send"
+        android:title="@string/print_release"
+        />
+    <item
+        android:id="@+id/printer"
+        android:icon="@mipmap/print"
+        android:title="@string/printer"
+        />
+    <item
+        android:id="@+id/servicePortal"
+        android:icon="@mipmap/website"
+        android:title="@string/servicePortal"
+        />
+
+</menu>
