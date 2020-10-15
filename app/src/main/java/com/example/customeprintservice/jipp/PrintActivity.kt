@@ -219,13 +219,11 @@ class PrintActivity : AppCompatActivity() {
             Log.i("printer", "finalUrl --- >$finalUri")
             printUtils.print(finalUri, file, this@PrintActivity, format)
 
-            printUtils.print(finalUri, file, this@PrintActivity, format)
-
-            printUtils.getJobs(finalUri,this@PrintActivity);
-
-            printUtils.getJobAttributes(finalUri,1,this@PrintActivity);
-
-            printUtils.cancelJob(finalUri,1,this@PrintActivity);
+//            printUtils.getJobs(finalUri,this@PrintActivity);
+//
+//            printUtils.getJobAttributes(finalUri,1,this@PrintActivity);
+//
+//            printUtils.cancelJob(finalUri,1,this@PrintActivity);
 
             dialog.cancel()
         }
