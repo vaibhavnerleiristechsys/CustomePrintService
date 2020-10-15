@@ -21,6 +21,7 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrintUtils
+import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.FileAttributes
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
@@ -36,7 +37,7 @@ class PrintReleaseFragment : Fragment() {
     private var permissionsHelper: PermissionHelper? = null
     private val bundle = Bundle()
     private var isFileSelected: Boolean = false
-    private var list = ArrayList<FileAttributes>()
+    private var list = ArrayList<String>()
 //    private val rxPermissions = RxPermissions(this)
 
     override fun onCreateView(
@@ -63,6 +64,17 @@ class PrintReleaseFragment : Fragment() {
                 Toast.makeText(context as Activity, "Please accept Permissions", Toast.LENGTH_SHORT)
                     .show()
             }
+        }
+
+        btnFragmentPrintReleaseNext.setOnClickListener {
+            if (isFileSelected && list.size > 0) {
+                val intent = Intent(context, PrinterDiscoveryActivity::class.java)
+                intent.putExtras(bundle)
+                startActivity(intent)
+            } else {
+                Toast.makeText(context, "Select the Document", Toast.LENGTH_SHORT).show()
+            }
+
         }
     }
 
@@ -106,17 +118,17 @@ class PrintReleaseFragment : Fragment() {
             val formattedDate: String = df.format(c.time)
             fileAttribute.fileSelectedDate = formattedDate
 
-            list.add(fileAttribute)
+            list.add(realPath)
             listUpdate(list)
             isFileSelected = true
-//            bundle.putStringArrayList("selectedFileList", list)
+            bundle.putStringArrayList("selectedFileList", list)
             Log.i("printer", "file choosed-->$file")
             Log.i("printer", "list of Files-->$list")
         }
     }
 
     @SuppressLint("WrongConstant")
-    private fun listUpdate(list: ArrayList<FileAttributes>) {
+    private fun listUpdate(list: ArrayList<String>) {
         val recyclerViewDocumentList =
             view?.findViewById<RecyclerView>(R.id.recyclerViewDocumentList)
         recyclerViewDocumentList?.layoutManager =

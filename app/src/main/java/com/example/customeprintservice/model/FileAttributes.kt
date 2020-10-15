@@ -1,5 +1,7 @@
 package com.example.customeprintservice.model
 
+import android.os.Parcelable
+import java.io.Serializable
 import java.util.*
 
 data class FileAttributes(
@@ -7,4 +9,4 @@ data class FileAttributes(
     var fileName: String? = null,
     var fileSize: Long? = null,
     var fileSelectedDate: String? = null
-)
+):Serializable
