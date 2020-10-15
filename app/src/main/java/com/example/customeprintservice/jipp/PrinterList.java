@@ -5,7 +5,7 @@ import java.util.List;
 
 public class PrinterList {
 
-    private static List<PrinterModel> printerList = new ArrayList<>();
+    private static ArrayList<PrinterModel> printerList = new ArrayList<>();
 
     public boolean addPrinterModel(PrinterModel printerModel) {
 
@@ -16,7 +16,7 @@ public class PrinterList {
 
     }
 
-    public List<PrinterModel> getPrinterList() {
+    public ArrayList<PrinterModel> getPrinterList() {
         return printerList;
     }
 
