@@ -59,7 +59,7 @@ class PrintReleaseFragment : Fragment() {
                 )
                 i.type = "*/*"
                 startActivityForResult(i, 1)
-                PrintUtils().setContextAndInitializeJMDNS(context as Activity)
+
             } else {
                 Toast.makeText(context as Activity, "Please accept Permissions", Toast.LENGTH_SHORT)
                     .show()
