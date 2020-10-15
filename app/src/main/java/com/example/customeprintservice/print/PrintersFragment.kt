@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
+import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.utils.Inet
@@ -38,9 +39,12 @@ class PrintersFragment : Fragment() {
     @SuppressLint("WrongConstant")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
         btnAddManuallyPrinter.setOnClickListener {
             dialogAddManualPrinter()
         }
+        updateUi()
 
     }
 
