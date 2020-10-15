@@ -18,7 +18,7 @@ import org.w3c.dom.Text
 
 class FragmentSelectedFileListAdapter(
     val context: Context,
-    val list: ArrayList<String>
+    val list: ArrayList<FileAttributes>
 ) : RecyclerView.Adapter<FragmentSelectedFileListAdapter.ViewHolder>() {
 
     private var checkedRadioButton: CompoundButton? = null
@@ -39,9 +39,9 @@ class FragmentSelectedFileListAdapter(
         holder: FragmentSelectedFileListAdapter.ViewHolder,
         position: Int
     ) {
-        holder.getFileName().text = list[position]
-//        holder.getFileSize().text = list[position].fileSize.toString()+"KB"
-//        holder.getSelectedDate().text = list[position].fileSelectedDate.toString()
+        holder.getFileName().text = list[position].fileName
+        holder.getFileSize().text = list[position].fileSize.toString()+"KB"
+        holder.getSelectedDate().text = list[position].fileSelectedDate.toString()
     }
 
     fun itemClick(): Observable<String> {

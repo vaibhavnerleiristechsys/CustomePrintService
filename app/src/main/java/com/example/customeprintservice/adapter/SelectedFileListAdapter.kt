@@ -9,13 +9,14 @@ import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.model.FileAttributes
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 
 class SelectedFileListAdapter(
     val context: Context,
-    val list: ArrayList<String>
+    val list: ArrayList<FileAttributes>
 ) : RecyclerView.Adapter<SelectedFileListAdapter.ViewHolder>() {
 
     private var checkedRadioButton: CompoundButton? = null
@@ -35,13 +36,13 @@ class SelectedFileListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.getSelectedFileName().text = list[position]
+        holder.getSelectedFileName().text = list[position].fileName
 
         holder.getRadioButton().setOnCheckedChangeListener(checkedChangeListener)
         if (holder.getRadioButton().isChecked) checkedRadioButton = holder.getRadioButton()
 
         holder.getRadioButton().setOnClickListener {
-            publishSubject.onNext(list[position])
+            publishSubject.onNext(list[position].fileRealPath.toString())
             removeAt(position)
         }
     }

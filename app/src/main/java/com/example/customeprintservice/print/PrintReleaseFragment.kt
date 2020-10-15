@@ -37,7 +37,7 @@ class PrintReleaseFragment : Fragment() {
     private var permissionsHelper: PermissionHelper? = null
     private val bundle = Bundle()
     private var isFileSelected: Boolean = false
-    private var list = ArrayList<String>()
+    private var list = ArrayList<FileAttributes>()
 //    private val rxPermissions = RxPermissions(this)
 
     override fun onCreateView(
@@ -118,17 +118,17 @@ class PrintReleaseFragment : Fragment() {
             val formattedDate: String = df.format(c.time)
             fileAttribute.fileSelectedDate = formattedDate
 
-            list.add(realPath)
+            list.add(fileAttribute)
             listUpdate(list)
             isFileSelected = true
-            bundle.putStringArrayList("selectedFileList", list)
+            bundle.putSerializable("selectedFileList", list)
             Log.i("printer", "file choosed-->$file")
             Log.i("printer", "list of Files-->$list")
         }
     }
 
     @SuppressLint("WrongConstant")
-    private fun listUpdate(list: ArrayList<String>) {
+    private fun listUpdate(list: ArrayList<FileAttributes>) {
         val recyclerViewDocumentList =
             view?.findViewById<RecyclerView>(R.id.recyclerViewDocumentList)
         recyclerViewDocumentList?.layoutManager =

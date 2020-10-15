@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.SelectedFileListAdapter
+import com.example.customeprintservice.model.FileAttributes
 import com.hp.jipp.model.MediaSource
 import com.hp.jipp.model.Sides
 import com.hp.jipp.pdl.ColorSpace
@@ -43,7 +44,7 @@ class PrintActivity : AppCompatActivity() {
     var bundle: Bundle = Bundle()
     var uri: URI? = null
 
-    var list = ArrayList<String>()
+    var list = ArrayList<FileAttributes>()
     var selectedFileString = ""
 
     @SuppressLint("SetTextI18n")
@@ -56,14 +57,14 @@ class PrintActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
-        if (bundle.getStringArrayList("selectedFileList") != null) {
+        if (bundle.getSerializable("selectedFileList") != null) {
 
             val selectedFile: String? = bundle.getString("selectedFile")
             val ipAddress: String? = bundle.getString("ipAddress")
             val printerName: String? = bundle.getString("printerName")
             val formatSupported: String? = bundle.getString("formatSupported")
 
-            list = bundle.getStringArrayList("selectedFileList")!!
+            list =  bundle.getSerializable("selectedFileList") as (ArrayList<FileAttributes>)
 
             Log.i(
                 "printer",
