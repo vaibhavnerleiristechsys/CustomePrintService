@@ -8,6 +8,14 @@
     android:background="@color/appBackground"
     tools:context=".signin.SplashScreenActivity">
 
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@mipmap/spark_texture"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="0dp"
@@ -27,12 +35,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="56dp"
         android:layout_marginEnd="16dp"
-        android:alpha="0.23"
+        android:alpha="0.42"
         android:background="@drawable/rounded_edittext"
-        android:ems="12"
+        android:paddingLeft="16dp"
         android:hint="@string/yourcompany_vasion_com"
         android:singleLine="true"
-        android:textColor="@color/bluish"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -42,12 +50,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
+        android:background="@drawable/button_radius"
         android:text="@string/next"
         android:textColor="@color/silver"
-        android:background="@drawable/button_radius"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edtYourCompany" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

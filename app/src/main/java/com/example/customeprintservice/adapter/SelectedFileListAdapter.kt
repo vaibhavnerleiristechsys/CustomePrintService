@@ -16,7 +16,7 @@ import io.reactivex.subjects.PublishSubject
 
 class SelectedFileListAdapter(
     val context: Context,
-    val list: ArrayList<FileAttributes>
+    val list: ArrayList<String>
 ) : RecyclerView.Adapter<SelectedFileListAdapter.ViewHolder>() {
 
     private var checkedRadioButton: CompoundButton? = null
@@ -36,13 +36,13 @@ class SelectedFileListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.getSelectedFileName().text = list[position].fileName
+        holder.getSelectedFileName().text = list[position]
 
         holder.getRadioButton().setOnCheckedChangeListener(checkedChangeListener)
         if (holder.getRadioButton().isChecked) checkedRadioButton = holder.getRadioButton()
 
         holder.getRadioButton().setOnClickListener {
-            publishSubject.onNext(list[position].fileRealPath.toString())
+            publishSubject.onNext(list[position])
             removeAt(position)
         }
     }

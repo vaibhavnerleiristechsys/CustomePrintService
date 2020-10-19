@@ -10,4 +10,6 @@
     <color name="bluish">#287dc1</color>
     <color name="darkSkyBlue">#34b9eb</color>
     <color name="tomato">#e33f33</color>
+    <color name="transpernent">#e33f33</color>
+    <color name="bloodOrange">#ff4702</color>
 </resources>

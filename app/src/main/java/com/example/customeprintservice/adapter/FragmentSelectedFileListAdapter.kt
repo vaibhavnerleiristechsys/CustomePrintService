@@ -5,25 +5,17 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
-import android.widget.RadioButton
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
-import com.example.customeprintservice.model.FileAttributes
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.subjects.PublishSubject
-import org.w3c.dom.Text
 
 class FragmentSelectedFileListAdapter(
     val context: Context,
-    val list: ArrayList<FileAttributes>
+    val list: ArrayList<String>
 ) : RecyclerView.Adapter<FragmentSelectedFileListAdapter.ViewHolder>() {
 
-    private var checkedRadioButton: CompoundButton? = null
-    private val publishSubject: PublishSubject<String> = PublishSubject.create()
-
+    private lateinit var listener: ViewHolder.FragmentSelectedFileAdapterListener
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -34,36 +26,27 @@ class FragmentSelectedFileListAdapter(
         return FragmentSelectedFileListAdapter.ViewHolder(view)
     }
 
+    fun setListener(listener: ViewHolder.FragmentSelectedFileAdapterListener) {
+        this.listener = listener
+    }
+
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(
         holder: FragmentSelectedFileListAdapter.ViewHolder,
         position: Int
     ) {
-        holder.getFileName().text = list[position].fileName
-        holder.getFileSize().text = list[position].fileSize.toString()+"KB"
-        holder.getSelectedDate().text = list[position].fileSelectedDate.toString()
-    }
 
-    fun itemClick(): Observable<String> {
-        return publishSubject.observeOn(AndroidSchedulers.mainThread())
-    }
+        holder.getFileName().text = list[position]
 
-    fun removeAt(position: Int) {
-        list.removeAt(position)
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, list.size)
+        holder.getFileCardView().setOnLongClickListener {
+           listener.onItemLongClick(position)
+            return@setOnLongClickListener true
+        }
     }
 
     override fun getItemCount(): Int {
         return list.size
     }
-
-
-    private val checkedChangeListener =
-        CompoundButton.OnCheckedChangeListener { compoundButton, isChecked ->
-            checkedRadioButton?.apply { setChecked(!isChecked) }
-            checkedRadioButton = compoundButton.apply { setChecked(isChecked) }
-        }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -77,6 +60,15 @@ class FragmentSelectedFileListAdapter(
 
         fun getSelectedDate(): TextView {
             return itemView.findViewById(R.id.txtFileTimeDate)
+        }
+
+        fun getFileCardView(): CardView {
+            return itemView.findViewById(R.id.cardviewFragmentSelectedFileList)
+        }
+
+        interface FragmentSelectedFileAdapterListener {
+            fun onItemClick(position: Int)
+            fun onItemLongClick(position: Int)
         }
     }
 }

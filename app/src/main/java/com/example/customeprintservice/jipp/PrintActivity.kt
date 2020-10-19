@@ -44,7 +44,7 @@ class PrintActivity : AppCompatActivity() {
     var bundle: Bundle = Bundle()
     var uri: URI? = null
 
-    var list = ArrayList<FileAttributes>()
+    var list = ArrayList<String>()
     var selectedFileString = ""
 
     @SuppressLint("SetTextI18n")
@@ -57,14 +57,14 @@ class PrintActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
-        if (bundle.getSerializable("selectedFileList") != null) {
+        if (bundle.getStringArrayList("selectedFileList") != null) {
 
             val selectedFile: String? = bundle.getString("selectedFile")
             val ipAddress: String? = bundle.getString("ipAddress")
             val printerName: String? = bundle.getString("printerName")
             val formatSupported: String? = bundle.getString("formatSupported")
 
-            list =  bundle.getSerializable("selectedFileList") as (ArrayList<FileAttributes>)
+            list = bundle.getStringArrayList("selectedFileList")!!
 
             Log.i(
                 "printer",
@@ -72,8 +72,7 @@ class PrintActivity : AppCompatActivity() {
             )
 
             txtDignosticInfo.text = bundle.getString("printerAttribute")
-            txtPrinterActivitySelectedDocument.text =
-                "Selected Document - ${selectedFile.toString()}"
+
             txtPrinterActivityPrinterName.text = "Printer Name - ${printerName.toString()}"
             txtPrinterActivityFormatSupported.text =
                 "format Supported -${formatSupported.toString()}"

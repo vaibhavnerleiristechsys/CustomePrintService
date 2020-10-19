@@ -3,24 +3,26 @@ package com.example.customeprintservice.print
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
-import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.FileAttributes
 import com.example.customeprintservice.utils.PermissionHelper
@@ -37,8 +39,13 @@ class PrintReleaseFragment : Fragment() {
     private var permissionsHelper: PermissionHelper? = null
     private val bundle = Bundle()
     private var isFileSelected: Boolean = false
-    private var list = ArrayList<FileAttributes>()
+    private var list = ArrayList<String>()
 //    private val rxPermissions = RxPermissions(this)
+
+    private var adapter:FragmentSelectedFileListAdapter?= null
+    private var toolbar:Toolbar?= null
+    private var textToolbar:TextView?= null
+    private var backButton :ImageButton? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +56,7 @@ class PrintReleaseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         checkPermissions()
 
         btnFragmentSelectDoc.setOnClickListener {
@@ -76,7 +84,11 @@ class PrintReleaseFragment : Fragment() {
             }
 
         }
+
     }
+
+
+
 
     private fun checkPermissions() {
         permissionsHelper = PermissionHelper()
@@ -112,23 +124,23 @@ class PrintReleaseFragment : Fragment() {
             val fileAttribute = FileAttributes()
             fileAttribute.fileName = file.name
             fileAttribute.fileRealPath = realPath
-            fileAttribute.fileSize = file.length()/1024
+            fileAttribute.fileSize = file.length() / 1024
             val c = Calendar.getInstance()
             val df = SimpleDateFormat("dd-MM HH:mm ")
             val formattedDate: String = df.format(c.time)
             fileAttribute.fileSelectedDate = formattedDate
 
-            list.add(fileAttribute)
-            listUpdate(list)
+            list.add(realPath)
+            listUpdate(list, context as Activity)
             isFileSelected = true
-            bundle.putSerializable("selectedFileList", list)
+            bundle.putStringArrayList("selectedFileList", list)
             Log.i("printer", "file choosed-->$file")
             Log.i("printer", "list of Files-->$list")
         }
     }
 
     @SuppressLint("WrongConstant")
-    private fun listUpdate(list: ArrayList<FileAttributes>) {
+    private fun listUpdate(list: ArrayList<String>, context: Context) {
         val recyclerViewDocumentList =
             view?.findViewById<RecyclerView>(R.id.recyclerViewDocumentList)
         recyclerViewDocumentList?.layoutManager =
@@ -138,13 +150,57 @@ class PrintReleaseFragment : Fragment() {
                 false
             )
 
-        val adapter = FragmentSelectedFileListAdapter(
-            context as Activity,
-            list
-        )
+         adapter = FragmentSelectedFileListAdapter(
+             context as Activity,
+             list
+         )
         recyclerViewDocumentList?.adapter = adapter
+
+
+        adapter?.setListener(object :
+            FragmentSelectedFileListAdapter.ViewHolder.FragmentSelectedFileAdapterListener {
+            override fun onItemClick(position: Int) {
+//                enableActionMode(position, context)
+            }
+
+            override fun onItemLongClick(position: Int) {
+//                enableActionMode(position, context)
+            }
+        })
     }
 
+    private var actionMode: ActionMode? = null
+
+    private fun enableActionMode(position: Int, context: Context) {
+
+        if (actionMode == null)
+            actionMode = AppCompatActivity().startSupportActionMode(object : ActionMode.Callback {
+                override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                    mode.menuInflater.inflate(R.menu.menu_delete, menu)
+                    return true
+                }
+
+                override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+                    return false
+                }
+
+                override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+                    if (item.itemId == R.id.action_delete) {
+
+                        mode.finish()
+                        return true
+                    }
+                    return false
+                }
+
+                override fun onDestroyActionMode(mode: ActionMode) {
+
+                    adapter?.notifyDataSetChanged()
+                    actionMode = null
+                }
+            })
+
+    }
 
 }
 
