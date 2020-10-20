@@ -16,9 +16,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customeprintservice.Prefs.LoginPrefs
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
-import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.utils.Inet
@@ -39,13 +39,11 @@ class PrintersFragment : Fragment() {
     @SuppressLint("WrongConstant")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
         btnAddManuallyPrinter.setOnClickListener {
             dialogAddManualPrinter()
         }
         updateUi()
-
+        Log.i("printer","Login octa token"+LoginPrefs.getOCTATOKEN(requireContext()))
     }
 
     @SuppressLint("WrongConstant")
@@ -124,7 +122,5 @@ class PrintersFragment : Fragment() {
                 Toast.makeText(context, "IP is not valid", Toast.LENGTH_SHORT).show()
             }
         }
-
     }
-
 }

@@ -15,7 +15,7 @@ interface ApiService {
     @GET("idp")
     fun getIdpResponse(): Call<List<IdpResponse>>
 
-    @GET("devncookta/authn/idp/Okta/desktop/validation/pranav.patil@devnco.co/")
+    @GET(".")
     fun getToken(@Query("expires")expires:String,
                  @Query("sessionId")sessionId:String,
     @Query("signature")signature:String):Call<TokenResponse>

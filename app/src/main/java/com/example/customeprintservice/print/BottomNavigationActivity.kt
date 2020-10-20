@@ -6,6 +6,7 @@ import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.customeprintservice.Prefs.LoginPrefs
 import com.example.customeprintservice.R
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.model.TokenResponse
@@ -18,24 +19,27 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class BottomNavigationActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bottom_navigation)
 
-        var intent = intent.data
+        val intent = intent.data
+        if (intent != null) {
+            Log.i("printer", "intent data--->${intent.encodedPath}")
 
+            val decodeUrl: String = intent.encodedPath?.let { decode(it) }!!
+            val url = Uri.parse(decodeUrl)
+            //https://hostPart+urlPath
 
-        Log.i("printer", "intent data--->${intent?.encodedPath}")
-        val decodeUrl: String = intent?.encodedPath?.let { decode(it) }!!
-        val url = Uri.parse(decodeUrl)
-        val expires: String = url.getQueryParameter("expires").toString()
-        val sessionId: String = url.getQueryParameter("sessionId").toString()
-        val signature: String = url.getQueryParameter("signature").toString()
+            val expires: String = url.getQueryParameter("expires").toString()
+            val sessionId: String = url.getQueryParameter("sessionId").toString()
+            val signature: String = url.getQueryParameter("signature").toString()
 
+            val finalUrl = "https://${url.host + url.path}/"
 
-        Log.i("printer", "decode Url--->${decodeUrl}")
-        getToken(decodeUrl, expires, sessionId, signature)
-
+            getToken(finalUrl, expires, sessionId, signature)
+        }
         PrintUtils().setContextAndInitializeJMDNS(this@BottomNavigationActivity)
         val printReleaseFragment = PrintReleaseFragment()
         val printersFragment = PrintersFragment()
@@ -70,18 +74,22 @@ class BottomNavigationActivity : AppCompatActivity() {
         return String(Base64.decode(encoded.toByteArray(), Base64.URL_SAFE))
     }
 
-
-    private fun getToken(decodeUrl: String, expire: String, sessionId: String, signature: String) {
-        val BASE_URL: String = "https://gw.app.printercloud.com/"
-        val apiService = RetrofitClient.getRetrofitInstance(BASE_URL).create(ApiService::class.java)
+    private fun getToken(
+        finalUrl: String,
+        expire: String,
+        sessionId: String,
+        signature: String
+    ) {
+        val apiService = RetrofitClient.getRetrofitInstance(finalUrl).create(ApiService::class.java)
         val call = apiService.getToken(expire, sessionId, signature)
 
         call.enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
                 Log.i("printer", "token url->" + call.request().url())
                 if (response.isSuccessful) {
-                    val tk = response.body()?.token
-                    Log.i("printer", "tok==>$tk")
+                    val token = response.body()?.token
+                    LoginPrefs.saveOctaToken(this@BottomNavigationActivity, token.toString())
+                    Log.i("printer", "tok==>$token")
                 } else {
                     toast("Response is Not Successful")
                 }

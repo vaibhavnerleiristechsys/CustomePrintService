@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
         intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).let {
             it?.forEach {
                 val realPath = FileUtils.getPath(this, it)
-                Log.i("printer", "realpath==>" + realPath)
+                Log.i("printer", "realpath==>$realPath")
                 if (!list.contains(realPath)) {
                     list.add(realPath)
                 } else {
