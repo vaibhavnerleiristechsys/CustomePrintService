@@ -9,13 +9,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,15 +43,21 @@ class PrintReleaseFragment : Fragment() {
     private var list = ArrayList<String>()
 //    private val rxPermissions = RxPermissions(this)
 
-    private var adapter:FragmentSelectedFileListAdapter?= null
-    private var toolbar:Toolbar?= null
-    private var textToolbar:TextView?= null
-    private var backButton :ImageButton? = null
+    private var adapter: FragmentSelectedFileListAdapter? = null
+    private var toolbar: Toolbar? = null
+    private var textToolbar: TextView? = null
+    private var backButton: ImageButton? = null
+
+    private var bundleList = ArrayList<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        list = this.arguments?.getStringArrayList("sharedFileList") as ArrayList<String>
+        Log.i("printer", "in else=>$bundleList")
+
         return inflater.inflate(R.layout.fragment_print_release, container, false)
     }
 
@@ -58,6 +65,7 @@ class PrintReleaseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         checkPermissions()
+
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
@@ -85,10 +93,12 @@ class PrintReleaseFragment : Fragment() {
 
         }
 
+        if (list.size != 0) {
+            listUpdate(list, context as Activity)
+            isFileSelected = true
+            bundle.putStringArrayList("selectedFileList", list)
+        }
     }
-
-
-
 
     private fun checkPermissions() {
         permissionsHelper = PermissionHelper()
@@ -150,55 +160,55 @@ class PrintReleaseFragment : Fragment() {
                 false
             )
 
-         adapter = FragmentSelectedFileListAdapter(
-             context as Activity,
-             list
-         )
+        adapter = FragmentSelectedFileListAdapter(
+            context as Activity,
+            list
+        )
         recyclerViewDocumentList?.adapter = adapter
 
-
-        adapter?.setListener(object :
-            FragmentSelectedFileListAdapter.ViewHolder.FragmentSelectedFileAdapterListener {
-            override fun onItemClick(position: Int) {
-//                enableActionMode(position, context)
-            }
-
-            override fun onItemLongClick(position: Int) {
-//                enableActionMode(position, context)
-            }
-        })
-    }
-
-    private var actionMode: ActionMode? = null
-
-    private fun enableActionMode(position: Int, context: Context) {
-
-        if (actionMode == null)
-            actionMode = AppCompatActivity().startSupportActionMode(object : ActionMode.Callback {
-                override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                    mode.menuInflater.inflate(R.menu.menu_delete, menu)
-                    return true
-                }
-
-                override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-                    return false
-                }
-
-                override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-                    if (item.itemId == R.id.action_delete) {
-
-                        mode.finish()
-                        return true
-                    }
-                    return false
-                }
-
-                override fun onDestroyActionMode(mode: ActionMode) {
-
-                    adapter?.notifyDataSetChanged()
-                    actionMode = null
-                }
-            })
+//
+//        adapter?.setListener(object :
+//            FragmentSelectedFileListAdapter.ViewHolder.FragmentSelectedFileAdapterListener {
+//            override fun onItemClick(position: Int) {
+////                enableActionMode(position, context)
+//            }
+//
+//            override fun onItemLongClick(position: Int) {
+////                enableActionMode(position, context)
+//            }
+//        })
+//    }
+//
+//    private var actionMode: ActionMode? = null
+//
+//    private fun enableActionMode(position: Int, context: Context) {
+//
+//        if (actionMode == null)
+//            actionMode = AppCompatActivity().startSupportActionMode(object : ActionMode.Callback {
+//                override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+//                    mode.menuInflater.inflate(R.menu.menu_delete, menu)
+//                    return true
+//                }
+//
+//                override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+//                    return false
+//                }
+//
+//                override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+//                    if (item.itemId == R.id.action_delete) {
+//
+//                        mode.finish()
+//                        return true
+//                    }
+//                    return false
+//                }
+//
+//                override fun onDestroyActionMode(mode: ActionMode) {
+//
+//                    adapter?.notifyDataSetChanged()
+//                    actionMode = null
+//                }
+//            })
 
     }
 

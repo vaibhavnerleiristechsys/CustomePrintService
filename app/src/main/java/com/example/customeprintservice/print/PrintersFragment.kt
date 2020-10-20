@@ -16,7 +16,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.customeprintservice.Prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
 import com.example.customeprintservice.jipp.PrinterList
@@ -43,7 +43,7 @@ class PrintersFragment : Fragment() {
             dialogAddManualPrinter()
         }
         updateUi()
-        Log.i("printer","Login octa token"+LoginPrefs.getOCTATOKEN(requireContext()))
+        Log.i("printer","Login octa token"+LoginPrefs.getOCTAToken(requireContext()))
     }
 
     @SuppressLint("WrongConstant")

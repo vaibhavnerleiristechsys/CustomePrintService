@@ -1,4 +1,4 @@
-package com.example.customeprintservice.Prefs
+package com.example.customeprintservice.prefs
 
 import android.content.Context
 import com.example.customeprintservice.utils.Constants.OCTA_TOKEN
@@ -13,7 +13,7 @@ class LoginPrefs {
             editor.putString(TOKEN, token).apply()
         }
 
-        fun getOCTATOKEN(context: Context): String? {
+        fun getOCTAToken(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
             return sharedPreferences.getString(TOKEN, null)
         }

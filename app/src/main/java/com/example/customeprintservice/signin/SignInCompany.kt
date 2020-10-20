@@ -7,12 +7,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.IdpResponse
+import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.CheckInternetConnection
 import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
-import okhttp3.HttpUrl
 import org.jetbrains.anko.toast
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,11 +25,17 @@ class SignInCompany : AppCompatActivity() {
     private var bundle = Bundle()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (LoginPrefs.getOCTAToken(this@SignInCompany) != null) {
+            val intent = Intent(this@SignInCompany, BottomNavigationActivity::class.java)
+            startActivity(intent)
+        }
         setContentView(R.layout.activity_sign_in_company)
         setAlpha()
         if (CheckInternetConnection().isNetworkConnected(this@SignInCompany)) {
-            ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
-            getIdpInfo()
+            if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
+                ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
+                getIdpInfo()
+            }
         } else {
             toast("No Internet Connection")
         }
@@ -60,7 +67,7 @@ class SignInCompany : AppCompatActivity() {
     }
 
     private fun getIdpInfo() {
-        val BASE_URL: String ="https://devncookta.printercloud.com/api/"
+        val BASE_URL: String = "https://devncookta.printercloud.com/api/"
         val apiService = RetrofitClient.getRetrofitInstance(BASE_URL).create(ApiService::class.java)
         val call = apiService.getIdpResponse()
 
@@ -92,4 +99,10 @@ class SignInCompany : AppCompatActivity() {
             }
         })
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
 }
