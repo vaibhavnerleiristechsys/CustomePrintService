@@ -31,21 +31,25 @@ class SignInCompany : AppCompatActivity() {
         }
         setContentView(R.layout.activity_sign_in_company)
         setAlpha()
-        if (CheckInternetConnection().isNetworkConnected(this@SignInCompany)) {
-            if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
-                ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
-                getIdpInfo()
-            }
-        } else {
-            toast("No Internet Connection")
-        }
+
         btnNextSignInCompany.setOnClickListener {
             if (CheckInternetConnection().isNetworkConnected(this@SignInCompany)) {
-                val intent = Intent(this@SignInCompany, SignInActivity::class.java)
-                intent.putExtras(bundle)
-                startActivity(intent)
+                if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
+                    ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
+                    checkValidation()
+                }
             } else {
                 toast("No Internet Connection")
+            }
+        }
+    }
+
+
+    private fun checkValidation() {
+        when {
+            edtYourCompany.text.toString().isEmpty() -> edtYourCompany.error = "Enter URL"
+            else -> {
+                getIdpInfo()
             }
         }
     }
@@ -67,7 +71,7 @@ class SignInCompany : AppCompatActivity() {
     }
 
     private fun getIdpInfo() {
-        val BASE_URL: String = "https://devncookta.printercloud.com/api/"
+        val BASE_URL: String = (edtYourCompany.text.toString()+"/")
         val apiService = RetrofitClient.getRetrofitInstance(BASE_URL).create(ApiService::class.java)
         val call = apiService.getIdpResponse()
 
@@ -87,6 +91,9 @@ class SignInCompany : AppCompatActivity() {
                         }
                     }
                     toast("Idp response getting Success")
+                    val intent = Intent(this@SignInCompany, SignInActivity::class.java)
+                    intent.putExtras(bundle)
+                    startActivity(intent)
                 } else {
                     toast("Response is Not Successful")
                 }

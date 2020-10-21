@@ -12,7 +12,7 @@ interface ApiService {
 
     @Headers("Content-Type: application/json")
 
-    @GET("idp")
+    @GET(".")
     fun getIdpResponse(): Call<List<IdpResponse>>
 
     @GET(".")

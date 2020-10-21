@@ -3,6 +3,7 @@ package com.example.customeprintservice.print
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
@@ -49,8 +50,26 @@ class BottomNavigationActivity : AppCompatActivity() {
                         }
                     }
                 }
-
                 Log.i("printer", "list of shared url=>$list")
+            }
+
+            Intent.ACTION_SEND -> {
+                val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri?
+                if (imageUri != null) {
+                    val realPath = FileUtils.getPath(this, imageUri)
+
+                    if (!list.contains(realPath)) {
+                        list.add(realPath)
+                    } else {
+                        Toast.makeText(
+                            this@BottomNavigationActivity,
+                            "File is already selected",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG).show()
+                }
             }
         }
         val intent = intent.data
