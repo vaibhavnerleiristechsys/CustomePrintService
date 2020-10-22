@@ -39,11 +39,9 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
-        if (bundle.getStringArrayList("selectedFileList") != null) {
+        if (bundle.getSerializable("selectedFileList") != null) {
             val selectedFile: String? = bundle.getString("selectedFile")
-            bundle.putString("selectedFile", bundle.getString("selectedFile"))
-            bundle.putStringArrayList("selectedFileList", bundle.getStringArrayList("selectedFileList")
-            )
+            bundle.putSerializable("selectedFileList", bundle.getSerializable("selectedFileList"))
         }
 
         btnSelectPrinter.setOnClickListener {

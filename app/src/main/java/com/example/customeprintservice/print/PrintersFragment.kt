@@ -16,12 +16,15 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
+import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.SelectedFilePrefs
 import com.example.customeprintservice.utils.Inet
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_printers.*
 import org.jetbrains.anko.doAsync
 import java.net.InetAddress
@@ -43,7 +46,10 @@ class PrintersFragment : Fragment() {
             dialogAddManualPrinter()
         }
         updateUi()
-        Log.i("printer","Login octa token"+LoginPrefs.getOCTAToken(requireContext()))
+        val s = SelectedFilePrefs().getFileList(requireContext())
+
+        Log.i("printer", "select file list=>" + s)
+        Log.i("printer", "Login octa token" + LoginPrefs.getOCTAToken(requireContext()))
     }
 
     @SuppressLint("WrongConstant")

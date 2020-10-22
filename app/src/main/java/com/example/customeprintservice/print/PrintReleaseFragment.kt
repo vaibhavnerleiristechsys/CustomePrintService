@@ -21,13 +21,18 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customeprintservice.PrintService
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.FileAttributes
+import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_print_release.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -40,32 +45,37 @@ class PrintReleaseFragment : Fragment() {
     private var permissionsHelper: PermissionHelper? = null
     private val bundle = Bundle()
     private var isFileSelected: Boolean = false
-    private var list = ArrayList<String>()
+    private var list = ArrayList<SelectedFile>()
 //    private val rxPermissions = RxPermissions(this)
 
+    private lateinit var app: PrintService
     private var adapter: FragmentSelectedFileListAdapter? = null
     private var toolbar: Toolbar? = null
     private var textToolbar: TextView? = null
     private var backButton: ImageButton? = null
 
-    private var bundleList = ArrayList<String>()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        list = this.arguments?.getStringArrayList("sharedFileList") as ArrayList<String>
-        Log.i("printer", "in else=>$bundleList")
-
+        initConfig()
+        Observable.fromCallable {
+            val list = this.arguments?.getSerializable("sharedFileList") as ArrayList<SelectedFile>
+            if (list.size > 0) {
+                app.dbInstance().selectedFileDao().save(list)
+            }
+            list.clear()
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
         return inflater.inflate(R.layout.fragment_print_release, container, false)
     }
 
+    @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         checkPermissions()
-
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
@@ -83,7 +93,7 @@ class PrintReleaseFragment : Fragment() {
         }
 
         btnFragmentPrintReleaseNext.setOnClickListener {
-            if (isFileSelected && list.size > 0) {
+            if (isFileSelected) {
                 val intent = Intent(context, PrinterDiscoveryActivity::class.java)
                 intent.putExtras(bundle)
                 startActivity(intent)
@@ -93,11 +103,17 @@ class PrintReleaseFragment : Fragment() {
 
         }
 
-        if (list.size != 0) {
-            listUpdate(list, context as Activity)
-            isFileSelected = true
-            bundle.putStringArrayList("selectedFileList", list)
-        }
+        Observable.fromCallable {
+            app.dbInstance().selectedFileDao().loadAll()
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                if (it.isNotEmpty()) {
+                    isFileSelected = true
+                    bundle.putSerializable("selectedFileList", it as ArrayList<SelectedFile>)
+                }
+                listUpdate(it as ArrayList<SelectedFile>?, requireContext())
+            }
     }
 
     private fun checkPermissions() {
@@ -122,7 +138,8 @@ class PrintReleaseFragment : Fragment() {
         )
     }
 
-    @SuppressLint("SimpleDateFormat")
+
+    @SuppressLint("SimpleDateFormat", "CheckResult")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -132,27 +149,63 @@ class PrintReleaseFragment : Fragment() {
             val file: File = File(realPath)
 
             val fileAttribute = FileAttributes()
-            fileAttribute.fileName = file.name
-            fileAttribute.fileRealPath = realPath
-            fileAttribute.fileSize = file.length() / 1024
             val c = Calendar.getInstance()
             val df = SimpleDateFormat("dd-MM HH:mm ")
             val formattedDate: String = df.format(c.time)
             fileAttribute.fileSelectedDate = formattedDate
 
-            list.add(realPath)
-            listUpdate(list, context as Activity)
+            Observable.fromCallable {
+                val saveList = ArrayList<SelectedFile>()
+                val selectedFile = SelectedFile()
+                selectedFile.fileName = file.name
+                selectedFile.filePath = realPath
+                selectedFile.fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                saveList.add(selectedFile)
+
+                app.dbInstance().selectedFileDao().save(saveList)
+                app.dbInstance().selectedFileDao().loadAll()
+            }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        Log.i("printer", "it=>${it}")
+                        listUpdate(it as ArrayList<SelectedFile>?, requireContext())
+                    },
+                    {
+                        Log.i("printer", "Error=>${it.message}")
+                    }
+                )
             isFileSelected = true
-            bundle.putStringArrayList("selectedFileList", list)
-            Log.i("printer", "file choosed-->$file")
             Log.i("printer", "list of Files-->$list")
+
+        }
+    }
+
+
+    private fun initConfig() {
+        app = activity?.application as PrintService
+    }
+
+    private fun saveSelectFileInDb(fileList: List<SelectedFile>): Observable<SelectedFile> {
+        return Observable.create {
+            app.dbInstance().selectedFileDao().save(fileList)
+        }
+    }
+
+    private fun fetchList(): Observable<SelectedFile> {
+        return Observable.create {
+            val list = app.dbInstance().selectedFileDao().loadAll().forEach {
+                it.fileName
+            }
+            Log.i("printer", "list fetch=>${list}")
         }
     }
 
     @SuppressLint("WrongConstant")
-    private fun listUpdate(list: ArrayList<String>, context: Context) {
+    private fun listUpdate(list: ArrayList<SelectedFile>?, context: Context) {
         val recyclerViewDocumentList =
             view?.findViewById<RecyclerView>(R.id.recyclerViewDocumentList)
+
         recyclerViewDocumentList?.layoutManager =
             LinearLayoutManager(
                 context,

@@ -11,11 +11,12 @@
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
+        android:name=".PrintService"
         android:allowBackup="true"
-        android:icon="@mipmap/print"
+        android:icon="@drawable/print"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/print"
+        android:roundIcon="@drawable/print"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">

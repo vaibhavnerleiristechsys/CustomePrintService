@@ -1,5 +1,6 @@
 package com.example.customeprintservice.print
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -16,62 +17,82 @@ import com.example.customeprintservice.model.TokenResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
+import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.signin.SignInCompany
 import kotlinx.android.synthetic.main.activity_bottom_navigation.*
-import org.jetbrains.anko.toast
+import org.jetbrains.anko.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class BottomNavigationActivity : AppCompatActivity() {
 
-    private var list = ArrayList<String>()
+    private var list = ArrayList<SelectedFile>()
     private var bundle = Bundle()
     val printReleaseFragment = PrintReleaseFragment()
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bottom_navigation)
-        when (intent.action) {
 
+        when (intent.action) {
             Intent.ACTION_SEND_MULTIPLE -> {
                 Log.i("printer", "in action")
                 intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).let {
                     it?.forEach {
                         val realPath = FileUtils.getPath(this@BottomNavigationActivity, it)
                         Log.i("printer", "realpath==>$realPath")
-                        if (!list.contains(realPath)) {
-                            list.add(realPath)
-                        } else {
-                            Toast.makeText(
-                                this@BottomNavigationActivity,
-                                "File is already selected",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        val selectedFile = SelectedFile()
+                        selectedFile.filePath = realPath
+                        selectedFile.fileName = File(realPath).name
+                        selectedFile.fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                        list.add(selectedFile)
+
                     }
                 }
                 Log.i("printer", "list of shared url=>$list")
+                if (LoginPrefs.getOCTAToken(this@BottomNavigationActivity) == null) {
+
+                    startActivity(intentFor<SignInCompany>().noHistory())
+                    this@BottomNavigationActivity.overridePendingTransition(
+                        R.anim.entry,
+                        R.anim.end
+                    )
+                    finishAffinity()
+                }
             }
 
             Intent.ACTION_SEND -> {
-                val imageUri = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri?
+                val imageUri =
+                    intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM) as Uri?
                 if (imageUri != null) {
                     val realPath = FileUtils.getPath(this, imageUri)
-
-                    if (!list.contains(realPath)) {
-                        list.add(realPath)
-                    } else {
-                        Toast.makeText(
-                            this@BottomNavigationActivity,
-                            "File is already selected",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    val selectedFile = SelectedFile()
+                    selectedFile.filePath = realPath
+                    selectedFile.fileName = File(realPath).name
+                    selectedFile.fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                    list.add(selectedFile)
                 } else {
-                    Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
+                        .show()
+                }
+                if (LoginPrefs.getOCTAToken(this@BottomNavigationActivity) == null) {
+
+                    startActivity(intentFor<SignInCompany>().noHistory())
+                    this@BottomNavigationActivity.overridePendingTransition(
+                        R.anim.entry,
+                        R.anim.end
+                    )
+                    finishAffinity()
                 }
             }
         }
+
         val intent = intent.data
         if (intent != null) {
             Log.i("printer", "intent data--->${intent.encodedPath}")
@@ -92,7 +113,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         val printersFragment = PrintersFragment()
         val servicePortalFragment = ServicePortalFragment()
 
-        bundle.putStringArrayList("sharedFileList", list)
+        bundle.putSerializable("sharedFileList", list)
         printReleaseFragment.arguments = bundle
         setCurrentFragment(printReleaseFragment)
 

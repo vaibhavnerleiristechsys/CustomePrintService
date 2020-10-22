@@ -2,6 +2,7 @@ package com.example.customeprintservice.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,12 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.room.SelectedFile
+import java.io.File
 
 class FragmentSelectedFileListAdapter(
     val context: Context,
-    val list: ArrayList<String>
+    val list: ArrayList<SelectedFile>?
 ) : RecyclerView.Adapter<FragmentSelectedFileListAdapter.ViewHolder>() {
 
     private lateinit var listener: ViewHolder.FragmentSelectedFileAdapterListener
@@ -35,17 +38,20 @@ class FragmentSelectedFileListAdapter(
         holder: FragmentSelectedFileListAdapter.ViewHolder,
         position: Int
     ) {
+        holder.getFileName().text = "" + list!![position].fileName
+        holder.getFileSize().text = "" + (File(list[position].filePath.toString()).length() / 1024) + " KB"
+        holder.getSelectedDate().text = (list[position].fileSelectedDate)
 
-        holder.getFileName().text = list[position]
+        Log.i("printer", "date -->${list[position].fileSelectedDate}")
 
-        holder.getFileCardView().setOnLongClickListener {
-           listener.onItemLongClick(position)
-            return@setOnLongClickListener true
-        }
+//        holder.getFileCardView().setOnLongClickListener {
+//           listener.onItemLongClick(position)
+//            return@setOnLongClickListener true
+//        }
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return list?.size!!
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

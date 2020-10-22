@@ -30,6 +30,7 @@ class SignInCompany : AppCompatActivity() {
             startActivity(intent)
         }
         setContentView(R.layout.activity_sign_in_company)
+
         setAlpha()
 
         btnNextSignInCompany.setOnClickListener {
@@ -71,7 +72,7 @@ class SignInCompany : AppCompatActivity() {
     }
 
     private fun getIdpInfo() {
-        val BASE_URL: String = (edtYourCompany.text.toString()+"/")
+        val BASE_URL: String = (edtYourCompany.text.toString() + "/")
         val apiService = RetrofitClient.getRetrofitInstance(BASE_URL).create(ApiService::class.java)
         val call = apiService.getIdpResponse()
 
