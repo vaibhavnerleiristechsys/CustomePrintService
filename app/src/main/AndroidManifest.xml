@@ -57,17 +57,14 @@
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
             android:name=".signin.SplashScreenActivity"
-            android:launchMode="singleTop"
             android:noHistory="true"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!--            https://stackoverflow.com/questions/49713357/deep-link-does-not-work-on-android-->
         </activity>
         <activity android:name=".jipp.QRCodeScanActivity" />
         <activity
@@ -82,7 +79,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-
         </activity>
 
         <service

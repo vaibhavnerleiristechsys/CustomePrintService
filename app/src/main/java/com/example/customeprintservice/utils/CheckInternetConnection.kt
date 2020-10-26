@@ -5,8 +5,10 @@ import android.net.ConnectivityManager
 
 class CheckInternetConnection {
 
-    fun isNetworkConnected(context: Context): Boolean {
-        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        return cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnectedOrConnecting
+    companion object {
+        fun isNetworkConnected(context: Context): Boolean {
+            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            return cm.activeNetworkInfo != null && cm.activeNetworkInfo!!.isConnectedOrConnecting
+        }
     }
 }

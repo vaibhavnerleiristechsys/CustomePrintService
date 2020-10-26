@@ -50,7 +50,7 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
 
         btnNextPrinterDiscovery.setOnClickListener {
-            if (printerUri != null && bundle.getStringArrayList("selectedFileList") != null) {
+            if (printerUri != null && bundle.getSerializable("selectedFileList") != null) {
                 val intent = Intent(this@PrinterDiscoveryActivity, PrintActivity::class.java)
                 intent.putExtras(bundle)
                 startActivity(intent)

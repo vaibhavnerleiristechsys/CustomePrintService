@@ -12,6 +12,7 @@ import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.CheckInternetConnection
+import com.example.customeprintservice.utils.HideKeyboard
 import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
 import org.jetbrains.anko.toast
@@ -34,7 +35,8 @@ class SignInCompany : AppCompatActivity() {
         setAlpha()
 
         btnNextSignInCompany.setOnClickListener {
-            if (CheckInternetConnection().isNetworkConnected(this@SignInCompany)) {
+            HideKeyboard.hideKeyboard(this@SignInCompany)
+            if (CheckInternetConnection.isNetworkConnected(this@SignInCompany)) {
                 if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
                     ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
                     checkValidation()

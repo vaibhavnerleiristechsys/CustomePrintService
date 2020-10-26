@@ -20,7 +20,9 @@ import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.signin.SignInCompany
 import kotlinx.android.synthetic.main.activity_bottom_navigation.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.intentFor
+import org.jetbrains.anko.noHistory
+import org.jetbrains.anko.toast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,6 +42,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bottom_navigation)
 
+        list.clear()
         when (intent.action) {
             Intent.ACTION_SEND_MULTIPLE -> {
                 Log.i("printer", "in action")
@@ -50,7 +53,8 @@ class BottomNavigationActivity : AppCompatActivity() {
                         val selectedFile = SelectedFile()
                         selectedFile.filePath = realPath
                         selectedFile.fileName = File(realPath).name
-                        selectedFile.fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                        selectedFile.fileSelectedDate =
+                            SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
                         list.add(selectedFile)
 
                     }
@@ -75,7 +79,8 @@ class BottomNavigationActivity : AppCompatActivity() {
                     val selectedFile = SelectedFile()
                     selectedFile.filePath = realPath
                     selectedFile.fileName = File(realPath).name
-                    selectedFile.fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                    selectedFile.fileSelectedDate =
+                        SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
                     list.add(selectedFile)
                 } else {
                     Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
@@ -113,7 +118,9 @@ class BottomNavigationActivity : AppCompatActivity() {
         val printersFragment = PrintersFragment()
         val servicePortalFragment = ServicePortalFragment()
 
-        bundle.putSerializable("sharedFileList", list)
+        if (list.isNotEmpty()) {
+            bundle.putSerializable("sharedFileList", list)
+        }
         printReleaseFragment.arguments = bundle
         setCurrentFragment(printReleaseFragment)
 

@@ -58,7 +58,7 @@ class PrintActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
-        if (bundle.getStringArrayList("selectedFileList") != null) {
+        if ((bundle.getSerializable("selectedFileList") as ArrayList<SelectedFile>?)!! != null) {
 
             val selectedFile: String? = bundle.getString("selectedFile")
             val ipAddress: String? = bundle.getString("ipAddress")

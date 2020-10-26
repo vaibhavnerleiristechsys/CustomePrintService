@@ -26,12 +26,12 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
-import com.example.customeprintservice.model.FileAttributes
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_print_release.*
 import java.io.File
@@ -53,21 +53,30 @@ class PrintReleaseFragment : Fragment() {
     private var toolbar: Toolbar? = null
     private var textToolbar: TextView? = null
     private var backButton: ImageButton? = null
+    private val compositeDisposable = CompositeDisposable()
 
+    @SuppressLint("CheckResult")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         initConfig()
-        Observable.fromCallable {
-            val list = this.arguments?.getSerializable("sharedFileList") as ArrayList<SelectedFile>
-            if (list.size > 0) {
+
+        val disposable = Observable.fromCallable {
+            val list = this.arguments?.getSerializable("sharedFileList") as ArrayList<SelectedFile>?
+            if (list?.size!! > 0) {
                 app.dbInstance().selectedFileDao().save(list)
             }
             list.clear()
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
+            .subscribe({
+                Log.i("printer", "Saved")
+            }, {
+                it.message
+            })
+        compositeDisposable.add(disposable)
+
         return inflater.inflate(R.layout.fragment_print_release, container, false)
     }
 
@@ -103,7 +112,7 @@ class PrintReleaseFragment : Fragment() {
 
         }
 
-        Observable.fromCallable {
+        val disposable2 = Observable.fromCallable {
             app.dbInstance().selectedFileDao().loadAll()
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -114,6 +123,7 @@ class PrintReleaseFragment : Fragment() {
                 }
                 listUpdate(it as ArrayList<SelectedFile>?, requireContext())
             }
+        compositeDisposable.add(disposable2)
     }
 
     private fun checkPermissions() {
@@ -148,13 +158,7 @@ class PrintReleaseFragment : Fragment() {
             val realPath = FileUtils.getPath(context as Activity, uri)
             val file: File = File(realPath)
 
-            val fileAttribute = FileAttributes()
-            val c = Calendar.getInstance()
-            val df = SimpleDateFormat("dd-MM HH:mm ")
-            val formattedDate: String = df.format(c.time)
-            fileAttribute.fileSelectedDate = formattedDate
-
-            Observable.fromCallable {
+            val disposable3 = Observable.fromCallable {
                 val saveList = ArrayList<SelectedFile>()
                 val selectedFile = SelectedFile()
                 selectedFile.fileName = file.name
@@ -175,10 +179,15 @@ class PrintReleaseFragment : Fragment() {
                         Log.i("printer", "Error=>${it.message}")
                     }
                 )
+            compositeDisposable.add(disposable3)
             isFileSelected = true
             Log.i("printer", "list of Files-->$list")
-
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
 
@@ -186,9 +195,12 @@ class PrintReleaseFragment : Fragment() {
         app = activity?.application as PrintService
     }
 
-    private fun saveSelectFileInDb(fileList: List<SelectedFile>): Observable<SelectedFile> {
+    private fun saveSelectFileInDb(fileList: List<SelectedFile>): Observable<Unit> {
         return Observable.create {
-            app.dbInstance().selectedFileDao().save(fileList)
+            it.onNext(app.dbInstance().selectedFileDao().save(fileList))
+            it.onError(Throwable())
+            it.onComplete()
+
         }
     }
 

@@ -10,6 +10,7 @@
         android:id="@+id/printer"
         android:icon="@mipmap/print"
         android:title="@string/printer"
+
         />
     <item
         android:id="@+id/servicePortal"

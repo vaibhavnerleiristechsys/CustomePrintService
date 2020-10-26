@@ -6,10 +6,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.R
 import com.example.customeprintservice.print.BottomNavigationActivity
+import com.example.customeprintservice.utils.HideKeyboard
 import kotlinx.android.synthetic.main.activity_sign_in.*
 
 class SignInActivity : AppCompatActivity() {
@@ -32,11 +34,13 @@ class SignInActivity : AppCompatActivity() {
         showPassword(isShowPass)
 
         btnSignIn.setOnClickListener {
+            HideKeyboard.hideKeyboard(this@SignInActivity)
             val intent = Intent(this@SignInActivity, BottomNavigationActivity::class.java)
             startActivity(intent)
         }
 
         val desktopUrl: String? = bundle.getString("desktopLoginUrl")
+        Log.i("printer","desktopUrl--->${desktopUrl}")
         btnSignInWithOkta.setOnClickListener {
             searchWeb(desktopUrl)
         }

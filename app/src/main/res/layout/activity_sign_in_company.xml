@@ -61,3 +61,5 @@
         app:layout_constraintTop_toBottomOf="@+id/edtYourCompany" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--    android:text="https://devncookta.printercloud.com/api/idp"-->
