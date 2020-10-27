@@ -38,16 +38,15 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         bundle = intent.extras!!
+        Log.i("printer","bundle list"+bundle.getSerializable("selectedFileList"))
 
         if (bundle.getSerializable("selectedFileList") != null) {
-            val selectedFile: String? = bundle.getString("selectedFile")
             bundle.putSerializable("selectedFileList", bundle.getSerializable("selectedFileList"))
         }
 
         btnSelectPrinter.setOnClickListener {
             dialogPrinterList()
         }
-
 
         btnNextPrinterDiscovery.setOnClickListener {
             if (printerUri != null && bundle.getSerializable("selectedFileList") != null) {

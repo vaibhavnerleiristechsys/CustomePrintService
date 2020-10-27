@@ -102,10 +102,16 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
     implementation "androidx.room:room-rxjava2:$room_version"
 
+    //firebase Crashlytics dependencies
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
-    // Declare the dependencies for the Crashlytics and Analytics libraries
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
+
+    //decode Jwt Token
+    implementation 'com.auth0.android:jwtdecode:1.1.1'
+    //map Json to Pojo class
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.8'
+    //it helps to to remove error of duplication of Kclass kotlin
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
 
 }

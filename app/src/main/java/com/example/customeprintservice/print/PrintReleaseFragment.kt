@@ -26,14 +26,26 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
+import com.example.customeprintservice.model.DecodedJWTResponse
+import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.rest.ApiService
+import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.utils.Decoded
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_print_release.*
+import org.jetbrains.anko.toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -85,7 +97,7 @@ class PrintReleaseFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         checkPermissions()
-
+        validateToken()
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
                 val i = Intent(
@@ -173,6 +185,8 @@ class PrintReleaseFragment : Fragment() {
                 .subscribe(
                     {
                         Log.i("printer", "it=>${it}")
+                        isFileSelected = true
+                        bundle.putSerializable("selectedFileList", it as ArrayList<SelectedFile>)
                         listUpdate(it as ArrayList<SelectedFile>?, requireContext())
                     },
                     {
@@ -211,6 +225,44 @@ class PrintReleaseFragment : Fragment() {
             }
             Log.i("printer", "list fetch=>${list}")
         }
+    }
+
+
+    private fun decodeJWT(): String {
+        var userName: String? = null
+        try {
+            val mapper = jacksonObjectMapper()
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(requireContext())?.let { Decoded.decoded(it) }!!)
+            Log.i("printer", "decode JWT Token=>${decoded.user}")
+            userName = decoded.user.toString()
+        } catch (ex: Exception) {
+            requireContext().toast("Failed to Decode Jwt Token")
+        }
+        return userName.toString()
+    }
+
+    private fun validateToken() {
+        Log.i("Printer","IdpUrl->${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}")
+
+        val apiService = RetrofitClient(requireContext())
+            .getRetrofitInstance("${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}/validate-token/")
+            .create(ApiService::class.java)
+        val call = apiService.validateToken(
+            LoginPrefs.getOCTAToken(requireContext()),
+            decodeJWT()
+        )
+
+        call?.enqueue(object : Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                if (response.code() == 204)
+                Log.i("printer", "response validate token=>${response.isSuccessful}")
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.i("printer", "response validate token Error=>${t.message}")
+            }
+        })
     }
 
     @SuppressLint("WrongConstant")
@@ -276,8 +328,8 @@ class PrintReleaseFragment : Fragment() {
 //            })
 
     }
-
 }
+
 
 //https://www.youtube.com/watch?v=vPLKNsQEAEc
 //https://www.youtube.com/watch?v=nC9E9dvw2eY

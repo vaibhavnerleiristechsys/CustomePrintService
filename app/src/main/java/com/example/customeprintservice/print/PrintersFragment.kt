@@ -46,9 +46,7 @@ class PrintersFragment : Fragment() {
             dialogAddManualPrinter()
         }
         updateUi()
-        val s = SelectedFilePrefs().getFileList(requireContext())
 
-        Log.i("printer", "select file list=>" + s)
         Log.i("printer", "Login octa token" + LoginPrefs.getOCTAToken(requireContext()))
     }
 

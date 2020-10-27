@@ -8,6 +8,7 @@ import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
@@ -75,7 +76,9 @@ class SignInCompany : AppCompatActivity() {
 
     private fun getIdpInfo() {
         val BASE_URL: String = (edtYourCompany.text.toString() + "/")
-        val apiService = RetrofitClient.getRetrofitInstance(BASE_URL).create(ApiService::class.java)
+        val apiService = RetrofitClient(this@SignInCompany)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
         val call = apiService.getIdpResponse()
 
         call.enqueue(object : Callback<List<IdpResponse>> {
@@ -86,11 +89,17 @@ class SignInCompany : AppCompatActivity() {
                 if (response.code() == 200) {
                     ProgressDialog.cancelLoading()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
+
                     val list: List<IdpResponse>? = response.body()?.toList()
 
                     list?.forEach { idp ->
                         run {
                             bundle.putString("desktopLoginUrl", idp.desktopLoginUrl)
+
+                            SignInCompanyPrefs.saveIdpUrl(
+                                this@SignInCompany,
+                                idp.tokenUri.toString()
+                            )
                         }
                     }
                     toast("Idp response getting Success")
@@ -114,5 +123,6 @@ class SignInCompany : AppCompatActivity() {
         super.onBackPressed()
         finish()
     }
-
 }
+
+//https://docs.microsoft.com/en-us/azure/active-directory/develop/tutorial-v2-android

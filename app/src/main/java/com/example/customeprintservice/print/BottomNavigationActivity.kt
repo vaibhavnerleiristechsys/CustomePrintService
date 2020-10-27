@@ -158,7 +158,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         sessionId: String,
         signature: String
     ) {
-        val apiService = RetrofitClient.getRetrofitInstance(finalUrl).create(ApiService::class.java)
+        val apiService = RetrofitClient(this).getRetrofitInstance(finalUrl).create(ApiService::class.java)
         val call = apiService.getToken(expire, sessionId, signature)
 
         call.enqueue(object : Callback<TokenResponse> {

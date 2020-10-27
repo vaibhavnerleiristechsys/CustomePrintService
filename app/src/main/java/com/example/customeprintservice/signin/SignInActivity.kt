@@ -13,6 +13,7 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.utils.HideKeyboard
 import kotlinx.android.synthetic.main.activity_sign_in.*
+import org.jetbrains.anko.toast
 
 class SignInActivity : AppCompatActivity() {
 
@@ -22,7 +23,12 @@ class SignInActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
-        bundle = intent.extras!!
+        try {
+            bundle = intent.extras!!
+        } catch (e: Exception) {
+            Log.i("printer","exception=>${e.toString()}")
+            toast("exception=>$e")
+        }
         supportActionBar?.setHomeAsUpIndicator(R.drawable.button_sign_in_google)
         setAlphaEdtUserName()
         setAlphaEdtPassword()
@@ -40,7 +46,7 @@ class SignInActivity : AppCompatActivity() {
         }
 
         val desktopUrl: String? = bundle.getString("desktopLoginUrl")
-        Log.i("printer","desktopUrl--->${desktopUrl}")
+        Log.i("printer", "desktopUrl--->${desktopUrl}")
         btnSignInWithOkta.setOnClickListener {
             searchWeb(desktopUrl)
         }
