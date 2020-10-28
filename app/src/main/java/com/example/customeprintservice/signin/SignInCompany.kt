@@ -95,7 +95,7 @@ class SignInCompany : AppCompatActivity() {
                     list?.forEach { idp ->
                         run {
                             bundle.putString("desktopLoginUrl", idp.desktopLoginUrl)
-
+                            bundle.putString("buttonName",idp.name)
                             SignInCompanyPrefs.saveIdpUrl(
                                 this@SignInCompany,
                                 idp.tokenUri.toString()

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
+import android.view.Gravity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.R
@@ -25,8 +26,24 @@ class SignInActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in)
         try {
             bundle = intent.extras!!
+
+            if (bundle.getString("buttonName") == "Okta") {
+                btnSignInWithOkta.text = bundle.getString("buttonName")
+                btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_okta)
+                val drawable = baseContext.resources.getDrawable(R.mipmap.icon_okta)
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
+                    drawable, null, null, null)
+                btnSignInWithOkta.gravity = Gravity.CENTER
+            } else if (bundle.getString("buttonName") == "Azure AD") {
+                btnSignInWithOkta.text = bundle.getString("buttonName")
+                btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_azure)
+                val drawable = baseContext.resources.getDrawable(R.mipmap.icon_azure)
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
+                    drawable, null, null, null)
+                btnSignInWithOkta.gravity = Gravity.CENTER
+            }
         } catch (e: Exception) {
-            Log.i("printer","exception=>${e.toString()}")
+            Log.i("printer", "exception=>$e")
             toast("exception=>$e")
         }
         supportActionBar?.setHomeAsUpIndicator(R.drawable.button_sign_in_google)

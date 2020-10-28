@@ -1,8 +1,6 @@
 package com.example.customeprintservice.rest
 
 import android.content.Context
-import android.util.Log
-import com.example.customeprintservice.prefs.LoginPrefs
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -40,4 +38,5 @@ class RetrofitClient(context: Context) {
             .build()
         return retrofit
     }
+
 }

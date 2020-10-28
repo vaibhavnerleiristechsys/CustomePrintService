@@ -253,13 +253,15 @@ class PrintReleaseFragment : Fragment() {
             decodeJWT()
         )
 
-        call?.enqueue(object : Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
+        call?.enqueue(object : Callback<Any> {
+            override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 if (response.code() == 204)
                 Log.i("printer", "response validate token=>${response.isSuccessful}")
+                Log.i("printer", "response validate token=>${response.body()}")
+                Log.i("printer", "response validate token=>${response}")
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
+            override fun onFailure(call: Call<Any>, t: Throwable) {
                 Log.i("printer", "response validate token Error=>${t.message}")
             }
         })

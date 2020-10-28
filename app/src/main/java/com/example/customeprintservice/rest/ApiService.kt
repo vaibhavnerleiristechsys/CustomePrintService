@@ -26,6 +26,6 @@ interface ApiService {
     fun validateToken(
         @Field("token") token: String?,
         @Field("userName") userName: String?
-    ): Call<String>?
+    ): Call<Any>?
 
 }
