@@ -5,17 +5,16 @@ import android.util.Log
 import java.io.UnsupportedEncodingException
 import java.nio.charset.StandardCharsets
 
-object Decoded {
+object JwtDecode {
+
     private lateinit var split: Array<String>
+
     @Throws(Exception::class)
     fun decoded(JWTEncoded: String): String {
         try {
             split = JWTEncoded.split("\\.".toRegex()).toTypedArray()
-            Log.d("JWT_DECODED", "Header: " + getJson(split[0]))
             Log.d("JWT_DECODED", "Body: " + getJson(split[1]))
-            Log.d("JWT_DECODED", "Signiture: " + getJson(split[2]))
         } catch (e: UnsupportedEncodingException) {
-            //Error
         }
         return getJson(split[1])
     }

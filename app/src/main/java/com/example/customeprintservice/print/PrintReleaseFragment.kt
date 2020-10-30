@@ -29,10 +29,11 @@ import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.printjobstatus.PrintJobStatuses
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
-import com.example.customeprintservice.utils.Decoded
+import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -96,8 +97,24 @@ class PrintReleaseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).supportActionBar?.hide()
+        /**
+        check read/write permission
+         */
         checkPermissions()
+        /**
+         * validate token
+         */
         validateToken()
+        /**
+         * Print Job Status Web Service
+         */
+        PrintJobStatuses().getPrintJobStatuses(
+            requireContext(),
+            decodeJWT(),
+            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+        )
+
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
                 val i = Intent(
@@ -173,11 +190,12 @@ class PrintReleaseFragment : Fragment() {
             val disposable3 = Observable.fromCallable {
                 val saveList = ArrayList<SelectedFile>()
                 val selectedFile = SelectedFile()
-                selectedFile.fileName = file.name
-                selectedFile.filePath = realPath
-                selectedFile.fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
-                saveList.add(selectedFile)
-
+                selectedFile.apply {
+                    fileName = file.name
+                    filePath = realPath
+                    fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                    saveList.add(this)
+                }
                 app.dbInstance().selectedFileDao().save(saveList)
                 app.dbInstance().selectedFileDao().loadAll()
             }.subscribeOn(Schedulers.io())
@@ -198,6 +216,7 @@ class PrintReleaseFragment : Fragment() {
             Log.i("printer", "list of Files-->$list")
         }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -233,8 +252,9 @@ class PrintReleaseFragment : Fragment() {
         try {
             val mapper = jacksonObjectMapper()
             val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
-                LoginPrefs.getOCTAToken(requireContext())?.let { Decoded.decoded(it) }!!)
-            Log.i("printer", "decode JWT Token=>${decoded.user}")
+                LoginPrefs.getOCTAToken(requireContext())?.let { JwtDecode.decoded(it) }!!
+            )
+            Log.i("printer", "decode JWT Token=>${decoded}")
             userName = decoded.user.toString()
         } catch (ex: Exception) {
             requireContext().toast("Failed to Decode Jwt Token")
@@ -243,10 +263,12 @@ class PrintReleaseFragment : Fragment() {
     }
 
     private fun validateToken() {
-        Log.i("Printer","IdpUrl->${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}")
+//        Log.i("Printer", "IdpUrl->${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}")
 
         val apiService = RetrofitClient(requireContext())
-            .getRetrofitInstance("${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}/validate-token/")
+            .getRetrofitInstance(
+                "${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}/validate-token/"
+            )
             .create(ApiService::class.java)
         val call = apiService.validateToken(
             LoginPrefs.getOCTAToken(requireContext()),
@@ -256,8 +278,7 @@ class PrintReleaseFragment : Fragment() {
         call?.enqueue(object : Callback<Any> {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 if (response.code() == 204)
-                Log.i("printer", "response validate token=>${response.isSuccessful}")
-                Log.i("printer", "response validate token=>${response.body()}")
+                    Log.i("printer", "response validate token=>${response.isSuccessful}")
                 Log.i("printer", "response validate token=>${response}")
             }
 

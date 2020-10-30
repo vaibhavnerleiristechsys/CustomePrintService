@@ -114,4 +114,6 @@ dependencies {
     //it helps to to remove error of duplication of Kclass kotlin
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
 
+    implementation 'commons-codec:commons-codec:1.15'
+
 }

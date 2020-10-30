@@ -102,7 +102,10 @@ class BottomNavigationActivity : AppCompatActivity() {
         if (intent != null) {
             Log.i("printer", "intent data--->${intent.encodedPath}")
 
-            val decodeUrl: String = intent.encodedPath?.let { decode(it) }!!
+            val decodeUrl: String =
+                intent.encodedPath
+                    ?.replaceFirst("/", "").toString().let { decode(it).toString() }
+
             val url = Uri.parse(decodeUrl)
 
             val expires: String = url.getQueryParameter("expires").toString()
@@ -147,9 +150,8 @@ class BottomNavigationActivity : AppCompatActivity() {
             commit()
         }
 
-
     private fun decode(encoded: String): String? {
-        return String(Base64.decode(encoded.toByteArray(), Base64.URL_SAFE))
+        return String(Base64.decode(encoded.toByteArray(), Base64.DEFAULT))
     }
 
     private fun getToken(
@@ -158,7 +160,8 @@ class BottomNavigationActivity : AppCompatActivity() {
         sessionId: String,
         signature: String
     ) {
-        val apiService = RetrofitClient(this).getRetrofitInstance(finalUrl).create(ApiService::class.java)
+        val apiService =
+            RetrofitClient(this).getRetrofitInstance(finalUrl).create(ApiService::class.java)
         val call = apiService.getToken(expire, sessionId, signature)
 
         call.enqueue(object : Callback<TokenResponse> {
@@ -168,7 +171,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     val token = response.body()?.token
                     LoginPrefs.saveOctaToken(this@BottomNavigationActivity, token.toString())
                     Log.i("printer", "tok==>$token")
-                    toast("OCTA Login Successful")
+                    toast("Login Successfully")
                 } else {
                     toast("Response is Not Successful")
                 }
@@ -187,3 +190,6 @@ class BottomNavigationActivity : AppCompatActivity() {
         finish()
     }
 }
+
+
+//eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiJkZjZiZjk5Zi0zNjExLTQzZTUtYTI2MS1hZWQyNjc4ZGRiN2QiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicHJhbmF2LnBhdGlsQGRldm5jby5jbyIsInNlc3Npb24iOiJmM2E1MTE3ZC00OGI1LTQ2YzQtOWM3ZC0wN2FlZWYxOTAwZDYiLCJleHAiOjE2MzU0ODI3MTAsImlhdCI6MTYwMzk0NjcxMCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.TTj-6qa5toLcZ4yk-MCcOxi0H3JQBtvCBCQ3PCN1YuEnAYrbWGZQMkwC-KCWNrDlxQngbK7xn-munOGQN-42mAjlU8LrTG1p4lsXJybKaBgstDgTVOZAXHvOQ_OufNn2QQOBybuIxkPCNR7D7Xbr9x6LWzs4TujX-AcjVTIvtA3bM_l-WC-ak8wtMQBeKG5WTLW42-hUr33IbGfq6NM6lTjibTaxMHl1SknWqcK0sHS4YD7ADnr0RzIyCkB7-7TQu9xhyypzZG2O_5MvRnONhZ6QWC22WuBnnBiNz6h6dYVjmLFblQs3afcGApjIkwnmaGfYYGepfMlXzbWIiQsoNQ
