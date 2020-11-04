@@ -29,7 +29,7 @@ import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
-import com.example.customeprintservice.printjobstatus.PrintJobStatuses
+import com.example.customeprintservice.printjobstatus.PrinterList
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
@@ -104,16 +104,68 @@ class PrintReleaseFragment : Fragment() {
         /**
          * validate token
          */
-        validateToken()
+//        validateToken()
         /**
          * Print Job Status Web Service
          */
-        PrintJobStatuses().getPrintJobStatuses(
+//        PrintJobStatuses().getPrintJobStatuses(
+//            requireContext(),
+//            decodeJWT(),
+//            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+//            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+//        )
+        /**
+         * Print Job status cancel
+         */
+
+//        val jobStatusCancel= JobStatusCancel()
+//        val list = ArrayList<DeleteJobsItem?>()
+//        val deleteJobsItem = DeleteJobsItem()
+//        deleteJobsItem.jobNum=116
+//        deleteJobsItem.jobType=1
+//        deleteJobsItem.queueId=1
+//        deleteJobsItem.workstationId =1
+//        deleteJobsItem.userName = "bala"
+//
+//        list.add(deleteJobsItem)
+//        jobStatusCancel.deleteJobs = list
+//
+//        Log.i("printer","job status object-=>${Gson() to jobStatusCancel}")
+//        PrintJobStatuses().printJobCancel(
+//            requireContext(),
+//            jobStatusCancel,
+//            decodeJWT(),
+//            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+//            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+//        )
+
+        /**
+         * get Session id
+         */
+
+//        PrinterList().getPrinterNodeSession(
+//            requireContext(),
+//            SignInCompanyPrefs.getIdpName(requireContext()).toString(),
+//            true,
+//            decodeJWT(),
+//            "saml2",
+//            LoginPrefs.getOCTAToken(requireContext()).toString(), true
+//
+//        )
+
+        /**
+         * get printer nodes
+         */
+
+        PrinterList().getPrinterNodes(
             requireContext(),
-            decodeJWT(),
-            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-            SignInCompanyPrefs.getIdpName(requireContext()).toString()
-        )
+            "PHPSESSID=06c3f0f9b947267e001f4211954a879f",
+            "0",
+            "",
+            "0",
+            "0",
+            "pull-release-printer",
+            "-1")
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
@@ -228,25 +280,6 @@ class PrintReleaseFragment : Fragment() {
         app = activity?.application as PrintService
     }
 
-    private fun saveSelectFileInDb(fileList: List<SelectedFile>): Observable<Unit> {
-        return Observable.create {
-            it.onNext(app.dbInstance().selectedFileDao().save(fileList))
-            it.onError(Throwable())
-            it.onComplete()
-
-        }
-    }
-
-    private fun fetchList(): Observable<SelectedFile> {
-        return Observable.create {
-            val list = app.dbInstance().selectedFileDao().loadAll().forEach {
-                it.fileName
-            }
-            Log.i("printer", "list fetch=>${list}")
-        }
-    }
-
-
     private fun decodeJWT(): String {
         var userName: String? = null
         try {
@@ -254,7 +287,7 @@ class PrintReleaseFragment : Fragment() {
             val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
                 LoginPrefs.getOCTAToken(requireContext())?.let { JwtDecode.decoded(it) }!!
             )
-            Log.i("printer", "decode JWT Token=>${decoded}")
+//            Log.i("printer", "decode JWT Token=>${decoded}")
             userName = decoded.user.toString()
         } catch (ex: Exception) {
             requireContext().toast("Failed to Decode Jwt Token")

@@ -13,7 +13,7 @@ object JwtDecode {
     fun decoded(JWTEncoded: String): String {
         try {
             split = JWTEncoded.split("\\.".toRegex()).toTypedArray()
-            Log.d("JWT_DECODED", "Body: " + getJson(split[1]))
+//            Log.d("JWT_DECODED", "Body: " + getJson(split[1]))
         } catch (e: UnsupportedEncodingException) {
         }
         return getJson(split[1])

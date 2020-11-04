@@ -113,7 +113,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.8.8'
     //it helps to to remove error of duplication of Kclass kotlin
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.4.10"
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
 
-    implementation 'commons-codec:commons-codec:1.15'
+    implementation "com.squareup.retrofit2:converter-simplexml:2.4.0"
+
+    implementation 'org.jsoup:jsoup:1.10.2'
+
 
 }
