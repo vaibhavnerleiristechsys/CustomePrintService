@@ -2,9 +2,11 @@ package com.example.customeprintservice.printjobstatus
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
+import com.example.customeprintservice.utils.ProgressDialog
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import retrofit2.Call
@@ -12,7 +14,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class PrinterList {
+class PrinterListService {
 
     fun getPrinterNodeSession(
         context: Context,
@@ -39,12 +41,27 @@ class PrinterList {
                 call: Call<PrinterListDesc>,
                 response: Response<PrinterListDesc>
             ) {
+                ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
-                    Log.i("printer", "lis res=>${response.body()}")
+                    Log.i("printer", "lis res=>${response.body()?.desc.toString()}")
+                    Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
+                    getPrinterNodes(
+                      context,
+                        "PHPSESSID="+response.body()?.desc.toString(),
+                        "0",
+                        "",
+                        "0",
+                        "0",
+                        "pull-release-printer",
+                        "-1"
+                    )
+
                 }
             }
 
             override fun onFailure(call: Call<PrinterListDesc>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response==>${t.message.toString()}")
             }
         })
@@ -79,6 +96,7 @@ class PrinterList {
                 if (response.isSuccessful) {
                     try {
                         val html = response.body()?.string()
+                        Toast.makeText(context, "HTML RESPONSE =>${html}", Toast.LENGTH_SHORT).show()
                         val document = Jsoup.parse(html)
                         val element = document.select("input[name=node_id]")
                         element.forEach {
@@ -96,7 +114,7 @@ class PrinterList {
         })
     }
 
-    fun getPrinterDetails(){
+    fun getPrinterDetails() {
 
 
     }

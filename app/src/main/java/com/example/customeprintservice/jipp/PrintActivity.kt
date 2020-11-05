@@ -20,8 +20,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.SelectedFileListAdapter
-import com.example.customeprintservice.model.FileAttributes
+import com.example.customeprintservice.model.DecodedJWTResponse
+import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.printjobstatus.PrintJobStatuses
+import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.utils.JwtDecode
+import com.example.customeprintservice.utils.ProgressDialog
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.hp.jipp.model.MediaSource
 import com.hp.jipp.model.Sides
 import com.hp.jipp.pdl.ColorSpace
@@ -35,6 +43,7 @@ import com.hp.jipp.pdl.pwg.PwgWriter
 import kotlinx.android.synthetic.main.activity_print.*
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException
 import org.apache.pdfbox.rendering.ImageType
+import org.jetbrains.anko.toast
 import java.io.*
 import java.net.URI
 
@@ -116,6 +125,37 @@ class PrintActivity : AppCompatActivity() {
         filter.addAction("com.example.PRINT_RESPONSE")
         val receiver = broadcastReceiver
         registerReceiver(receiver, filter)
+
+
+        btnGetPrintJobStatus.setOnClickListener {
+            /**
+             * Print Job Status Web Service
+             */
+            ProgressDialog.showLoadingDialog(this@PrintActivity, "Getting Job Status")
+            PrintJobStatuses().getPrintJobStatuses(
+                this@PrintActivity,
+                decodeJWT(),
+                SignInCompanyPrefs.getIdpType(this@PrintActivity).toString(),
+                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString()
+            )
+        }
+
+        btnSessionId.setOnClickListener {
+            /**
+             * get Session id
+             */
+            ProgressDialog.showLoadingDialog(this@PrintActivity, "Getting Session and Node id")
+            PrinterListService().getPrinterNodeSession(
+                this@PrintActivity,
+                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString(),
+                true,
+                decodeJWT(),
+                "saml2",
+                LoginPrefs.getOCTAToken(this@PrintActivity).toString(), true
+
+            )
+        }
+
 
     }
 
@@ -238,6 +278,20 @@ class PrintActivity : AppCompatActivity() {
         }
     }
 
+
+    private fun decodeJWT(): String {
+        var userName: String? = null
+        try {
+            val mapper = jacksonObjectMapper()
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(this@PrintActivity)?.let { JwtDecode.decoded(it) }!!
+            )
+            userName = decoded.user.toString()
+        } catch (ex: Exception) {
+            toast("Failed to Decode Jwt Token")
+        }
+        return userName.toString()
+    }
 
     private val DPI = 300
     private val IMAGE_TYPE = ImageType.RGB

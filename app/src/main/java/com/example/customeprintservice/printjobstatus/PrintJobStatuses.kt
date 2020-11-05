@@ -2,12 +2,14 @@ package com.example.customeprintservice.printjobstatus
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.printjobstatus.model.PrintJobStatusResponse
 import com.example.customeprintservice.printjobstatus.model.jobstatus.JobStatusCancel
 import com.example.customeprintservice.printjobstatus.model.jobstatus.JobStatusCanceledResponse
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
+import com.example.customeprintservice.utils.ProgressDialog
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import retrofit2.Call
@@ -35,12 +37,18 @@ class PrintJobStatuses {
                 call: Call<PrintJobStatusResponse>,
                 response: Response<PrintJobStatusResponse>
             ) {
+                ProgressDialog.cancelLoading()
                 val printJobStatusResponse = response.body().toString()
                 Log.i("printer", "printJobStatusResponse=====>>${printJobStatusResponse}")
+
+                Toast.makeText(context, "$printJobStatusResponse", Toast.LENGTH_LONG).show()
             }
 
             override fun onFailure(call: Call<PrintJobStatusResponse>, t: Throwable) {
                 Log.i("printer", "Error=>${t.message}")
+                ProgressDialog.cancelLoading()
+                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+
             }
         })
     }

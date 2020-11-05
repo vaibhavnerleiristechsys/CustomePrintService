@@ -29,7 +29,6 @@ import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
-import com.example.customeprintservice.printjobstatus.PrinterList
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
@@ -105,15 +104,7 @@ class PrintReleaseFragment : Fragment() {
          * validate token
          */
 //        validateToken()
-        /**
-         * Print Job Status Web Service
-         */
-//        PrintJobStatuses().getPrintJobStatuses(
-//            requireContext(),
-//            decodeJWT(),
-//            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-//            SignInCompanyPrefs.getIdpName(requireContext()).toString()
-//        )
+
         /**
          * Print Job status cancel
          */
@@ -139,33 +130,20 @@ class PrintReleaseFragment : Fragment() {
 //            SignInCompanyPrefs.getIdpName(requireContext()).toString()
 //        )
 
-        /**
-         * get Session id
-         */
-
-//        PrinterList().getPrinterNodeSession(
-//            requireContext(),
-//            SignInCompanyPrefs.getIdpName(requireContext()).toString(),
-//            true,
-//            decodeJWT(),
-//            "saml2",
-//            LoginPrefs.getOCTAToken(requireContext()).toString(), true
-//
-//        )
 
         /**
          * get printer nodes
          */
 
-        PrinterList().getPrinterNodes(
-            requireContext(),
-            "PHPSESSID=06c3f0f9b947267e001f4211954a879f",
-            "0",
-            "",
-            "0",
-            "0",
-            "pull-release-printer",
-            "-1")
+//        PrinterList().getPrinterNodes(
+//            requireContext(),
+//            "PHPSESSID=06c3f0f9b947267e001f4211954a879f",
+//            "0",
+//            "",
+//            "0",
+//            "0",
+//            "pull-release-printer",
+//            "-1")
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
