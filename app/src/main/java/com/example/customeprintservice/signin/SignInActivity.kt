@@ -34,11 +34,17 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
                 btnSignInWithOkta.gravity = Gravity.CENTER
-            }
-            else if (bundle.getString("buttonName") == "Azure AD") {
+            } else if (bundle.getString("buttonName") == "Azure AD") {
                 btnSignInWithOkta.text = bundle.getString("buttonName")
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_azure)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_azure)
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
+                    drawable, null, null, null)
+                btnSignInWithOkta.gravity = Gravity.CENTER
+            }else if(bundle.getString("buttonName")=="Google"){
+                btnSignInWithOkta.text = bundle.getString("buttonName")
+                btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_google)
+                val drawable = baseContext.resources.getDrawable(R.mipmap.icon_google)
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
                 btnSignInWithOkta.gravity = Gravity.CENTER

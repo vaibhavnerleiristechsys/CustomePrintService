@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.os.Parcelable
 import android.util.Base64
 import android.util.Log
@@ -28,8 +27,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -75,41 +72,41 @@ class BottomNavigationActivity : AppCompatActivity() {
             }
 
             Intent.ACTION_SEND -> {
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+//                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 val imageUri =
                     intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-
-                Log.i("printer", "image uri=>${imageUri}")
-                val fileImage = File(imageUri.toString())
-                Log.i("printer", "file image =>${fileImage.name + " path =>${fileImage.path}"}")
-
-                var bmpUri: Uri? = null
-                try {
-                    val file = File(
-                        Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_DOWNLOADS
-                        ), "share_image_$imageUri"
-                    )
-                    file.parentFile?.mkdirs()
-                    val inputStream = contentResolver.openInputStream(Uri.parse(imageUri.toString()))
-                    Log.i("printer", "Input stream ===>${inputStream?.readBytes()}")
-
-                    val fileUtils =  org.apache.commons.io.FileUtils.copyToFile(inputStream,file)
-
-                } catch (e: IOException) {
-                    Log.i("printer", "exception ===>${e.message}")
-
-                }
+//
+//                Log.i("printer", "image uri=>${imageUri}")
+//                val fileImage = File(imageUri.toString())
+//                Log.i("printer", "file image =>${fileImage.name + " path =>${fileImage.path}"}")
+//
+//                var bmpUri: Uri? = null
+//                try {
+//                    val file = File(
+//                        Environment.getExternalStoragePublicDirectory(
+//                            Environment.DIRECTORY_DOWNLOADS
+//                        ), "share_image_$imageUri"
+//                    )
+//                    file.parentFile?.mkdirs()
+//                    val inputStream = contentResolver.openInputStream(Uri.parse(imageUri.toString()))
+//                    Log.i("printer", "Input stream ===>${inputStream?.readBytes()}")
+//
+//                    val fileUtils =  org.apache.commons.io.FileUtils.copyToFile(inputStream,file)
+//
+//                } catch (e: IOException) {
+//                    Log.i("printer", "exception ===>${e.message}")
+//
+//                }
 
                 if (imageUri != null) {
-//                    val realPath = FileUtils.getPath(this, imageUri as Uri?)
-//                    val selectedFile = SelectedFile()
-//                    selectedFile.filePath = realPath
-//                    selectedFile.fileName = File(realPath).name
-//                    selectedFile.fileSelectedDate =
-//                        SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
-//                    list.add(selectedFile)
+                    val realPath = FileUtils.getPath(this, imageUri as Uri?)
+                    val selectedFile = SelectedFile()
+                    selectedFile.filePath = realPath
+                    selectedFile.fileName = File(realPath).name
+                    selectedFile.fileSelectedDate =
+                        SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
+                    list.add(selectedFile)
                 } else {
                     Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
                         .show()

@@ -201,10 +201,10 @@ public class PrintUtils {
                     Log.i("printer", "In print utils method");
                     IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                     IppPacketData printResponse = transport.sendData(uri, request);
-                    Intent printResponseIntent =
-                            new Intent("com.example.PRINT_RESPONSE")
-                                    .putExtra("printResponse", printResponse.toString());
-                    context.sendBroadcast(printResponseIntent);
+//                    Intent printResponseIntent =
+//                            new Intent("com.example.PRINT_RESPONSE")
+//                                    .putExtra("printResponse", printResponse.toString());
+//                    context.sendBroadcast(printResponseIntent);
 
                     Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
                 } else {
@@ -246,7 +246,7 @@ public class PrintUtils {
         int operationCode = operation.getCode();
         resultMap.put("operationName", operationName);
 
-        Integer requestId = new Integer(responsePacket.getRequestId());
+        Integer requestId = Integer.valueOf(responsePacket.getRequestId());
         resultMap.put("requestId", requestId.toString());
 
 
@@ -257,7 +257,7 @@ public class PrintUtils {
 
     }
 
-    private List<String> getPrinterSupportedFormats(URI uri, Context context) throws
+    public List<String> getPrinterSupportedFormats(URI uri, Context context) throws
             IOException {
         List<String> attributeList = null;
         try {

@@ -4,7 +4,9 @@ import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
+import android.print.PrinterId;
 import android.print.PrinterInfo;
+import android.printservice.PrintService;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -175,6 +177,7 @@ public class NSDUtils implements Runnable {
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
                 List<PrinterInfo> printerInfoList  = new ArrayList<>();
 
+//                PrinterId printerId = generatePrinterId("");
                 InetAddress printerHost = serviceInfo.getHost();
                 int printerPort = serviceInfo.getPort();
                 String serviceName = serviceInfo.getServiceName();
