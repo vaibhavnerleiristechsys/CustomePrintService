@@ -20,7 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".print.BottomNavigationActivity"
+
+        <activity
+            android:name=".print.BottomNavigationActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -30,7 +32,6 @@
 
                 <data android:scheme="printerlogicidp" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -45,9 +46,7 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".signin.SignInActivity"
             android:noHistory="true"
@@ -65,10 +64,10 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".jipp.QRCodeScanActivity" />
         <activity

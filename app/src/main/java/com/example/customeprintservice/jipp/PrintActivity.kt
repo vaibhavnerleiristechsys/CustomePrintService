@@ -62,6 +62,8 @@ class PrintActivity : AppCompatActivity() {
 
         bundle = intent.extras!!
 
+
+
         if ((bundle.getSerializable("selectedFileList") as ArrayList<SelectedFile>?)!! != null) {
 
             val selectedFile: String? = bundle.getString("selectedFile")
@@ -148,6 +150,17 @@ class PrintActivity : AppCompatActivity() {
                 "saml2",
                 LoginPrefs.getOCTAToken(this@PrintActivity).toString(), true
 
+            )
+        }
+
+        btnGetPrinterDetails.setOnClickListener {
+            ProgressDialog.showLoadingDialog(this@PrintActivity, "Getting Printer Details")
+            PrinterListService().getPrinterDetails(
+                this@PrintActivity,
+                LoginPrefs.getOCTAToken(this@PrintActivity).toString(),
+                decodeJWT(),
+                SignInCompanyPrefs.getIdpType(this@PrintActivity).toString(),
+                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString()
             )
         }
 
@@ -241,17 +254,21 @@ class PrintActivity : AppCompatActivity() {
         recyclerViewSelectedFileLst.adapter = adapter
 
         btnProceedPrint.setOnClickListener {
+            ProgressDialog.showLoadingDialog(this@PrintActivity, "Proceeding...")
             var file = File(selectedFileString)
-            if (file.extension.toLowerCase() == "docx") {
+            if (file.extension.toLowerCase() == "docx" || file.extension.toLowerCase() == "doc") {
                 Log.i("printer", "selected doc file")
 //                file = File("/storage/emulated/0/Movies/${file.nameWithoutExtension}.pdf")
 //                DocToPDF().ConvertToPDF(selectedFileString,"/storage/emulated/0/Movies/${file.nameWithoutExtension}.pdf")
 
-                val inputStream = contentResolver.openInputStream(Uri.fromFile(File(selectedFileString)))
+                val inputStream =
+                    contentResolver.openInputStream(Uri.fromFile(File(selectedFileString)))
                 val document = Document(inputStream)
+                document.watermark.remove()
+
                 document.save(outputPDF)
-                Log.i("printer","path saved =>${outputPDF}")
-                file  = File(outputPDF)
+                Log.i("printer", "path saved =>${outputPDF}")
+                file = File(outputPDF)
             } else {
                 file = File(selectedFileString)
             }
@@ -277,6 +294,7 @@ class PrintActivity : AppCompatActivity() {
 //            printUtils.cancelJob(finalUri, 1, this@PrintActivity)
 
             dialog.cancel()
+            ProgressDialog.cancelLoading()
         }
     }
 

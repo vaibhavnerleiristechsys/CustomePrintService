@@ -14,13 +14,7 @@ import androidx.annotation.RequiresApi
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
-import java.io.File
-import java.io.FileInputStream
 import java.net.URI
-import java.nio.file.FileSystem
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -126,46 +120,81 @@ class MyPrintService : PrintService() {
 //            )
 //            Log.i(TAG, "Printer supported format==>$att")
 //        }
-
         val file = printJob?.document?.data
 
         val fileDescriptor = printJob?.document?.data?.fileDescriptor
-        val input = FileInputStream(fileDescriptor)
-        val fd = input.fd
-        val method = fd.javaClass.getMethod("getInt$")
-        val fdId = method.invoke(fd)
-        val path = Paths.get("/proc/self/fd/$fdId")
-        val filePath = Files.readSymbolicLink(path)
-        Log.d(TAG, "filePath===========>:$filePath")
 
+        val printerdoc = printJob?.document?.info
+
+        Log.i(TAG, "info --->${printerdoc}")
+//        var br: BufferedReader? = null
+//        var bw: BufferedWriter? = null
+//        val output = File.createTempFile(
+//            "vaibhav", ".jpeg",
+//            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+//        )
         try {
+//            val fr = FileReader(fileDescriptor)
+
+//            val fw = FileWriter(input)
+////            br = BufferedReader(fr)
+////            bw = BufferedWriter(fw)
+//            val buf = ByteArray(1024)
+//            var bytesRead: Int
+//            while (fr.reabuf).also { bytesRead = it } > 0) {
+//                bw.write(buf, 0, bytesRead)
+//                Log.i(TAG,"bw==>${buf}")
+//            }
+//            bw.flush()
+
+//            try {
+//                FileInputStream(fileDescriptor).use { inputStream ->
+//                    FileOutputStream(output).use({ outputStream ->
+//                        var byteRead: Int? = null
+//                        while (inputStream.read().also({ byteRead = it }) != -1) {
+//                            byteRead?.let { outputStream.write(it) }
+//                        }
+//                    })
+//                }
+//            } catch (ex: IOException) {
+//                ex.printStackTrace()
+//            }
+
+        } catch (e: Exception) {
+            Log.i(TAG, "e ==>${e.message}")
+        }
+
+        val outputFile = FileDescriptorConverter().convertFile(fileDescriptor)
+        Log.i("printer", "outputFile==>${outputFile.path}")
+
+        printUtils.print(URI.create(finalUrl), outputFile, applicationContext, "")
+
+
+//        try {
 //            val read: Int
-//            val bytes = ByteArray(4096)
+//            val bytes = ByteArray(1024)
+//            val parcelFileDescriptor1 = ParcelFileDescriptor.AutoCloseInputStream(file?.dup())
 //            val input = FileInputStream(file?.fileDescriptor)
 //            val outputFile = File.createTempFile("image","temp",
 //                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
+//
 //            val tempFileName = outputFile.absolutePath
 //            val output = FileOutputStream(tempFileName)
-//            read = input.read(bytes)
-//            while (read != -1) {
+//            read = parcelFileDescriptor1.read(bytes)
+//            while (read > 0) {
 //                output.write(bytes, 0, read)
 //            }
-//            try {
-//                if (input != null) {
-//                    input.close()
-//                    output.close()
-//                }
-//            } catch (e: Exception) {
-//                Log.i(TAG,"e=>${e.message}")
-//            }
-//            Log.i(TAG, "get file path==${tempFileName}")
-        val file =
-            File("/storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20201109-WA0003.jpg")
-            printUtils.print(URI.create(finalUrl), file, applicationContext, ".jpg")
+//            parcelFileDescriptor1.close()
+//            output.close()
 
-        } catch (ex: Exception) {
-            Log.i(TAG, "exception $ex")
-        }
+//            Log.i(TAG, "get file path==${tempFileName}")
+//            val file =
+//                File("/storage/emulated/0/WhatsApp/Media/WhatsApp Images/IMG-20201109-WA0003.jpg")
+//            printUtils.print(URI.create(finalUrl), outputFile , applicationContext, "")
+//        } catch (ex: Exception) {
+//            Log.i(TAG, "exception $ex")
+//        }
     }
+
 
 }
