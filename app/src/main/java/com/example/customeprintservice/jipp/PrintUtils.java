@@ -201,10 +201,10 @@ public class PrintUtils {
                     Log.i("printer", "In print utils method");
                     IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                     IppPacketData printResponse = transport.sendData(uri, request);
-//                    Intent printResponseIntent =
-//                            new Intent("com.example.PRINT_RESPONSE")
-//                                    .putExtra("printResponse", printResponse.toString());
-//                    context.sendBroadcast(printResponseIntent);
+                    Intent printResponseIntent =
+                            new Intent("com.example.PRINT_RESPONSE")
+                                    .putExtra("printResponse", printResponse.toString());
+                    context.sendBroadcast(printResponseIntent);
 
                     Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
                 } else {
