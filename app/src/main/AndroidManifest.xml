@@ -85,7 +85,7 @@
         </activity>
 
         <service
-            android:name=".ThermalPrintService"
+            android:name=".PrinterLogicPrintService"
             android:permission="android.permission.BIND_PRINT_SERVICE">
             <intent-filter>
                 <action android:name="android.printservice.PrintService" />
