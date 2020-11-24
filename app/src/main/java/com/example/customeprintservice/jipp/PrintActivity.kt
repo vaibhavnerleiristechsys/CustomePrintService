@@ -29,6 +29,7 @@ import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.printjobstatus.PrintJobStatuses
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.signin.SignInCompany
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -59,12 +60,19 @@ class PrintActivity : AppCompatActivity() {
         val actionBar = supportActionBar
         actionBar?.title = "Print"
         actionBar?.setDisplayHomeAsUpEnabled(true)
-
+        if (LoginPrefs.getOCTAToken(this@PrintActivity) == null) {
+            val intent = Intent(this@PrintActivity, SignInCompany::class.java)
+            startActivity(intent)
+        }
         bundle = intent.extras!!
 
-
-
-        if ((bundle.getSerializable("selectedFileList") as ArrayList<SelectedFile>?)!! != null) {
+        if (bundle.getString("fromPrintService") == "fromPrintService") {
+            val url = bundle.getString("finalUrl")
+            val filePath = bundle.getString("filePath")
+            val file = File(filePath)
+            Log.i("printer", "url in bundle---->$url")
+            edtPrinterActivityEditUrl.setText(url)
+        } else if ((bundle.getSerializable("selectedFileList") as ArrayList<SelectedFile>?)!! != null) {
 
             val selectedFile: String? = bundle.getString("selectedFile")
             val ipAddress: String? = bundle.getString("ipAddress")
@@ -84,38 +92,26 @@ class PrintActivity : AppCompatActivity() {
             txtPrinterActivityFormatSupported.text =
                 "format Supported -${formatSupported.toString()}"
 
-//            val file: File = File(selectedFile!!)
-//            if (file.extension.toLowerCase() == "pdf") {
-//                convertPDFtoPCL(selectedFile)
-//            }
+            uri =
+                URI.create(
+                    "http://" + (bundle.getString("ipAddress")?.replace("/", "")
+                        ?: "") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print"
+                )
+            Log.i("printer", "uri1---->$uri")
+
+            edtPrinterActivityEditUrl.setText(uri.toString())
         }
 
-        uri =
-            URI.create(
-                "http://" + (bundle.getString("ipAddress")?.replace("/", "")
-                    ?: "") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print"
-            )
-        Log.i("printer", "uri1---->$uri")
 
-        edtPrinterActivityEditUrl.setText(uri.toString())
         btnPrint.setOnClickListener {
-            dialogSelectedFileList()
-//            val file = File(bundle.getString("selectedFile")!!)
-//            val inputFile = File(file.absolutePath)
-//            val fileName: String = inputFile.name
-//            var format: String? = null
-//            if (fileName.contains(".")) {
-//                format =
-//                    PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)]?.toLowerCase()
-//                        ?.trim()
-//                Log.i("printer", "format--->$format")
-//            }
-//
-//            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
-//            Log.i("printer", "finalUrl --- >$finalUri")
-//            printUtils.print(finalUri, file, this@PrintActivity, format)
-
-
+            if (bundle.getString("fromPrintService") == "fromPrintService") {
+                val url = bundle.getString("finalUrl")
+                val filePath = bundle.getString("filePath")
+                val file = File(filePath)
+                printUtils.print(URI.create(url), file, this@PrintActivity, "")
+            } else {
+                dialogSelectedFileList()
+            }
         }
 
         val filter = IntentFilter()

@@ -122,8 +122,6 @@ public class PrintUtils {
         new Thread(() -> {
 
             try {
-
-
                 IppPacket getJobsRequestPacket = IppPacket.getJobs(uri).build();
                 IppPacketData getJobsRequestPacketData = new IppPacketData(getJobsRequestPacket);
                 IppPacketData getJobsResponsePacketData = transport.sendData(uri, getJobsRequestPacketData);
@@ -240,6 +238,7 @@ public class PrintUtils {
         String statusString = status.getName();
         int statusStringCode = status.getCode();
         resultMap.put("status", statusString);
+        Log.i("printer","print status===>"+status +"\nprint status String===>"+statusString);
 
         Operation operation = responsePacket.getOperation();
         String operationName = operation.getName();

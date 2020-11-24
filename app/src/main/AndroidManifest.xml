@@ -20,7 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".CustomePrintActivity">
 
+        </activity>
         <activity
             android:name=".print.BottomNavigationActivity"
             android:screenOrientation="portrait">
