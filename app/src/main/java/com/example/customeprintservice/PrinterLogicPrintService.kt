@@ -172,7 +172,7 @@ internal class ThermalPrinterDiscoverySession(
             e.printStackTrace()
         }
         val printers: MutableList<PrinterInfo?> = ArrayList()
-        val printerId = ArrayList<PrinterId>(1)
+        val printerId = arrayOfNulls<PrinterId>(1)
         val printerList = PrinterList()
         printerList.printerList.forEach(Consumer { p: PrinterModel ->
             printerId[0] = thermalPrintService.generatePrinterId(p.printerHost.toString())
@@ -180,17 +180,21 @@ internal class ThermalPrinterDiscoverySession(
                 thermalPrintService.generatePrinterId(p.printerHost.toString()),
                 p.serviceName, PrinterInfo.STATUS_IDLE
             ).build()
-            val capabilities = PrinterCapabilitiesInfo.Builder(printerId[0])
-                .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
-                .addResolution(PrintAttributes.Resolution("1234", "Default", 200, 200), true)
-                .setColorModes(
-                    PrintAttributes.COLOR_MODE_MONOCHROME,
-                    PrintAttributes.COLOR_MODE_MONOCHROME
-                )
-                .build()
-            printerInfo = PrinterInfo.Builder(builder)
-                .setCapabilities(capabilities)
-                .build()
+            val capabilities = printerId[0]?.let {
+                PrinterCapabilitiesInfo.Builder(it)
+                    .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
+                    .addResolution(PrintAttributes.Resolution("1234", "Default", 200, 200), true)
+                    .setColorModes(
+                        PrintAttributes.COLOR_MODE_MONOCHROME,
+                        PrintAttributes.COLOR_MODE_MONOCHROME
+                    )
+                    .build()
+            }
+            printerInfo = capabilities?.let {
+                PrinterInfo.Builder(builder)
+                    .setCapabilities(it)
+                    .build()
+            }
             printers.add(printerInfo)
             addPrinters(printers)
             val printerHashmap = PrinterHashmap()

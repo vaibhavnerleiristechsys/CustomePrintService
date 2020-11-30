@@ -29,6 +29,9 @@ import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobRequest
+import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobResponse
+import com.example.customeprintservice.printjobstatus.model.canceljob.DeleteJobsItem
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.PrintQueueJobStatusItem
 import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobRequest
@@ -115,15 +118,6 @@ class PrintReleaseFragment : Fragment() {
          */
 //        validateToken()
 
-//
-//        val expires = this.arguments?.getString("expires")
-//        val sessionId = this.arguments?.getString("sessionId")
-//        val signature = this.arguments?.getString("signature")
-//        val finalUrl = this.arguments?.getString("finalUrl")
-//
-//        if (finalUrl != null && expires != null && sessionId != null && signature != null) {
-//            BottomNavigationActivity().getToken(finalUrl, expires, sessionId, signature)
-//        }
         ProgressDialog.showLoadingDialog(requireContext(), "Getting Hold jobs")
         getJobStatuses(
             requireContext(),
@@ -141,27 +135,10 @@ class PrintReleaseFragment : Fragment() {
          * Print Job status cancel
          */
 
-//        val jobStatusCancel= JobStatusCancel()
-//        val list = ArrayList<DeleteJobsItem?>()
-//        val deleteJobsItem = DeleteJobsItem()
-//        deleteJobsItem.jobNum=116
-//        deleteJobsItem.jobType=1
-//        deleteJobsItem.queueId=1
-//        deleteJobsItem.workstationId =1
-//        deleteJobsItem.userName = "bala"
-//
-//        list.add(deleteJobsItem)
-//        jobStatusCancel.deleteJobs = list
-//
-//        Log.i("printer","job status object-=>${Gson() to jobStatusCancel}")
-//        PrintJobStatuses().printJobCancel(
-//            requireContext(),
-//            jobStatusCancel,
-//            decodeJWT(),
-//            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-//            SignInCompanyPrefs.getIdpName(requireContext()).toString()
-//        )
-
+        btnDeleteJobs.setOnClickListener {
+            ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
+            cancelJob()
+        }
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
@@ -203,6 +180,58 @@ class PrintReleaseFragment : Fragment() {
         compositeDisposable.add(disposable2)
     }
 
+    fun cancelJob() {
+        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/cancel/"
+        val apiService = RetrofitClient(requireContext())
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val jobStatusCancel = CancelJobRequest()
+        val deleteJobs = ArrayList<DeleteJobsItem>()
+        releaseJobCheckedList.forEach {
+            val deleteJobsItem = DeleteJobsItem()
+            deleteJobsItem.jobNum = it.jobNum
+            deleteJobsItem.jobType = it.jobType
+            deleteJobsItem.queueId = it.queueId
+            deleteJobsItem.userName = it.userName
+            deleteJobsItem.workstationId = it.workStationId
+            deleteJobs.add(deleteJobsItem)
+        }
+        jobStatusCancel.deleteJobs = deleteJobs
+        val call = apiService.jobStatusCancel(
+            "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
+            decodeJWT(),
+            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+            SignInCompanyPrefs.getIdpName(requireContext()).toString(),
+            jobStatusCancel
+        )
+
+        call.enqueue(object : Callback<CancelJobResponse> {
+            override fun onResponse(
+                call: Call<CancelJobResponse>,
+                response: Response<CancelJobResponse>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.code() == 200) {
+                    val resp = response.body().toString()
+                    Log.i("printer", "response cancel job==>${resp}")
+                    ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
+                    getJobStatuses(
+                        requireContext(),
+                        decodeJWT(),
+                        SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+                        SignInCompanyPrefs.getIdpName(requireContext()).toString()
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<CancelJobResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
+                Log.i("printer", "Error response cancel job==>${t.message}")
+            }
+        })
+    }
 
     fun releaseJob() {
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"

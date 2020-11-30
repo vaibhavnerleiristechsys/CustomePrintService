@@ -19,6 +19,7 @@ import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.signin.SignInCompany
+import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_bottom_navigation.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.noHistory
@@ -140,13 +141,12 @@ class BottomNavigationActivity : AppCompatActivity() {
             val signature: String = url.getQueryParameter("signature").toString()
 
             val finalUrl = "https://${url.host + url.path}/"
-            
-            bundle.putString("expire", expires)
-            bundle.putString("sessionId", sessionId)
-            bundle.putString("signature", signature)
-            bundle.putString("finalUrl", finalUrl)
 
+            ProgressDialog.showLoadingDialog(this@BottomNavigationActivity, "getting Token")
             getToken(finalUrl, expires, sessionId, signature)
+        } else {
+            printReleaseFragment.arguments = bundle
+            setCurrentFragment(printReleaseFragment)
         }
         PrintUtils().setContextAndInitializeJMDNS(this@BottomNavigationActivity)
 
@@ -156,8 +156,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         if (list.isNotEmpty()) {
             bundle.putSerializable("sharedFileList", list)
         }
-        printReleaseFragment.arguments = bundle
-        setCurrentFragment(printReleaseFragment)
+
 
         bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -186,7 +185,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         return String(Base64.decode(encoded.toByteArray(), Base64.DEFAULT))
     }
 
-     fun getToken(
+    fun getToken(
         finalUrl: String,
         expire: String,
         sessionId: String,
@@ -199,10 +198,14 @@ class BottomNavigationActivity : AppCompatActivity() {
         call.enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
                 Log.i("printer", "token url->" + call.request().url())
+
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     LoginPrefs.saveOctaToken(this@BottomNavigationActivity, token.toString())
                     Log.i("printer", "tok==>$token")
+                    ProgressDialog.cancelLoading()
+                    printReleaseFragment.arguments = bundle
+                    setCurrentFragment(printReleaseFragment)
                     toast("Login Successfully")
                 } else {
                     toast("Response is Not Successful")
@@ -210,6 +213,7 @@ class BottomNavigationActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<TokenResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
                 Log.i("printer", "token url->" + call.request().url())
                 Log.i("printer", "Token error response-->" + t.message)
                 toast("Error-" + t.message)
