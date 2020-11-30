@@ -35,6 +35,7 @@ public class PrintUtils {
     protected final static Map<String, String> extensionTypes = new HashMap<String, String>() {{
         put("pdf", FORMAT_PDF);
         put("pclm", "application/PCLm");
+        put("pcl", "application/PCLm");
         put("pwg", "image/pwg-raster");
         put("jpeg", "image/jpeg");
         put("jpg", "image/jpeg");

@@ -4,14 +4,14 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.example.customeprintservice.prefs.LoginPrefs
-import com.example.customeprintservice.printjobstatus.model.PrintJobStatusResponse
+import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
 import com.example.customeprintservice.printjobstatus.model.jobstatus.JobStatusCancel
 import com.example.customeprintservice.printjobstatus.model.jobstatus.JobStatusCanceledResponse
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,21 +30,23 @@ class PrintJobStatuses {
             .create(ApiService::class.java)
 
         val call =
-            apiService.printJobstatus(LoginPrefs.getOCTAToken(context), userName, idpType, idpName)
+            apiService.printJobstatus(
+                "Bearer " + LoginPrefs.getOCTAToken(context).toString(), userName, idpType, idpName
+            )
 
-        call?.enqueue(object : Callback<PrintJobStatusResponse> {
+        call?.enqueue(object : Callback<ResponseBody> {
             override fun onResponse(
-                call: Call<PrintJobStatusResponse>,
-                response: Response<PrintJobStatusResponse>
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
             ) {
                 ProgressDialog.cancelLoading()
-                val printJobStatusResponse = response.body().toString()
-                Log.i("printer", "printJobStatusResponse=====>>${printJobStatusResponse}")
+//                val printJobStatusResponse = response.body().toString()
+                Log.i("printer", "printJobStatusResponse=====>>${response.body().toString()}")
 
-                Toast.makeText(context, "$printJobStatusResponse", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "$response.body().toString()", Toast.LENGTH_LONG).show()
             }
 
-            override fun onFailure(call: Call<PrintJobStatusResponse>, t: Throwable) {
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.i("printer", "Error=>${t.message}")
                 ProgressDialog.cancelLoading()
                 Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
@@ -66,8 +68,8 @@ class PrintJobStatuses {
             .create(ApiService::class.java)
 
         val call = apiService.jobStatusCancel(
-            "Bearer "+LoginPrefs.getOCTAToken(context).toString(),
-            userName, idpType, idpName,jobStatusCancel
+            "Bearer " + LoginPrefs.getOCTAToken(context).toString(),
+            userName, idpType, idpName, jobStatusCancel
         )
 
         call.enqueue(object : Callback<JobStatusCanceledResponse> {
@@ -75,8 +77,8 @@ class PrintJobStatuses {
                 call: Call<JobStatusCanceledResponse>,
                 response: Response<JobStatusCanceledResponse>
             ) {
-                Log.i("printer","request body=>${Gson().toJson(call.request().body())}")
-                Log.i("printer","request url=>${call.request().url()}")
+                Log.i("printer", "request body=>${Gson().toJson(call.request().body())}")
+                Log.i("printer", "request url=>${call.request().url()}")
                 Log.i("printer", "printJobCancel result==>${response.body().toString()}")
             }
 
@@ -85,4 +87,33 @@ class PrintJobStatuses {
             }
         })
     }
+
+//
+//    fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
+//        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+//        val apiService = RetrofitClient(context)
+//            .getRetrofitInstance(BASE_URL)
+//            .create(ApiService::class.java)
+//
+//        val call = apiService.getPrintJobStatuses(
+//            "Bearer " + LoginPrefs.getOCTAToken(context),
+//            userName,
+//            idpType,
+//            idpName
+//        )
+//        call.enqueue(object : Callback<GetJobStatusesResponse> {
+//            override fun onResponse(
+//                call: Call<GetJobStatusesResponse>,
+//                response: Response<GetJobStatusesResponse>
+//            ) {
+//                val getJobStatusesResponse = response.body().toString()
+//
+//
+//            }
+//
+//            override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
+//                Log.i("printer", t.message.toString())
+//            }
+//        })
+//    }
 }

@@ -15,4 +15,7 @@ interface SelectedFileDao {
     @Query("SELECT * FROM selectedfile")
     fun loadAll(): List<SelectedFile>
 
+    @Query("delete from selectedfile where is_from_api = 1")
+    fun deleteItemsFromApi()
+
 }

@@ -53,6 +53,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                         val selectedFile = SelectedFile()
                         selectedFile.filePath = realPath
                         selectedFile.fileName = File(realPath).name
+                        selectedFile.isFromApi = false
                         selectedFile.fileSelectedDate =
                             SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
                         list.add(selectedFile)
@@ -104,6 +105,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     val selectedFile = SelectedFile()
                     selectedFile.filePath = realPath
                     selectedFile.fileName = File(realPath).name
+                    selectedFile.isFromApi = false
                     selectedFile.fileSelectedDate =
                         SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
                     list.add(selectedFile)
@@ -138,6 +140,11 @@ class BottomNavigationActivity : AppCompatActivity() {
             val signature: String = url.getQueryParameter("signature").toString()
 
             val finalUrl = "https://${url.host + url.path}/"
+            
+            bundle.putString("expire", expires)
+            bundle.putString("sessionId", sessionId)
+            bundle.putString("signature", signature)
+            bundle.putString("finalUrl", finalUrl)
 
             getToken(finalUrl, expires, sessionId, signature)
         }
@@ -179,7 +186,7 @@ class BottomNavigationActivity : AppCompatActivity() {
         return String(Base64.decode(encoded.toByteArray(), Base64.DEFAULT))
     }
 
-    private fun getToken(
+     fun getToken(
         finalUrl: String,
         expire: String,
         sessionId: String,

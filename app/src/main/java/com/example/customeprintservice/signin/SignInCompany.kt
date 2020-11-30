@@ -107,7 +107,7 @@ class SignInCompany : AppCompatActivity() {
                             )
                         }
                     }
-                    toast("Idp response getting Success")
+                    toast("Idp response getting Successful")
                     val intent = Intent(this@SignInCompany, SignInActivity::class.java)
                     intent.putExtras(bundle)
                     startActivity(intent)

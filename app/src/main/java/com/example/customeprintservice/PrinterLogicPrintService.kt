@@ -21,6 +21,7 @@ import com.example.customeprintservice.jipp.PrinterModel
 import java.io.*
 import java.util.*
 import java.util.function.Consumer
+import kotlin.collections.ArrayList
 
 class PrinterLogicPrintService : PrintService() {
     private val builder: PrinterInfo? = null
@@ -65,7 +66,6 @@ class PrinterLogicPrintService : PrintService() {
         val message =
             mHandler!!.obtainMessage(MSG_HANDLE_PRINT_JOB, printJob)
         mHandler!!.sendMessageDelayed(message, 0)
-
 //        val printManager = this
 //            .getSystemService(Context.PRINT_SERVICE) as PrintManager
 //        val jobName: String = this.getString(R.string.app_name).toString() +
@@ -77,7 +77,7 @@ class PrinterLogicPrintService : PrintService() {
     }
 
     private fun handleHandleQueuedPrintJob(printJob: PrintJob) {
-        Log.i(TAG, "handle Handle Queued Print Job")
+        Log.i(TAG, "Handle Queued Print Job")
         if (printJob.isQueued) {
             printJob.start()
         }
@@ -108,13 +108,13 @@ class PrinterLogicPrintService : PrintService() {
             val printJobIdDesc = printJobId.describeContents()
 
             val bundle = Bundle()
-            bundle.putString("fromPrintService","fromPrintService")
+            bundle.putString("fromPrintService", "fromPrintService")
             bundle.putString("finalUrl", finalUrl)
-            bundle.putString("filePath",file.path)
+            bundle.putString("filePath", file.path)
             val intent = Intent(applicationContext, PrintActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             intent.putExtras(bundle)
-            this.startActivity(intent)
+            applicationContext.startActivity(intent)
 
             printJob.complete()
 
@@ -172,7 +172,7 @@ internal class ThermalPrinterDiscoverySession(
             e.printStackTrace()
         }
         val printers: MutableList<PrinterInfo?> = ArrayList()
-        val printerId = arrayOfNulls<PrinterId>(1)
+        val printerId = ArrayList<PrinterId>(1)
         val printerList = PrinterList()
         printerList.printerList.forEach(Consumer { p: PrinterModel ->
             printerId[0] = thermalPrintService.generatePrinterId(p.printerHost.toString())
@@ -180,7 +180,7 @@ internal class ThermalPrinterDiscoverySession(
                 thermalPrintService.generatePrinterId(p.printerHost.toString()),
                 p.serviceName, PrinterInfo.STATUS_IDLE
             ).build()
-            val capabilities = PrinterCapabilitiesInfo.Builder(printerId[0]!!)
+            val capabilities = PrinterCapabilitiesInfo.Builder(printerId[0])
                 .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
                 .addResolution(PrintAttributes.Resolution("1234", "Default", 200, 200), true)
                 .setColorModes(

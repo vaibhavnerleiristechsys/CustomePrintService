@@ -29,12 +29,18 @@ import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
+import com.example.customeprintservice.printjobstatus.model.getjobstatuses.PrintQueueJobStatusItem
+import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobRequest
+import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobResponse
+import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobsItem
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
+import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.reactivex.Observable
@@ -66,6 +72,8 @@ class PrintReleaseFragment : Fragment() {
     private var textToolbar: TextView? = null
     private var backButton: ImageButton? = null
     private val compositeDisposable = CompositeDisposable()
+    private val releaseJobRequest = ReleaseJobRequest()
+    private val releaseJobCheckedList = ArrayList<SelectedFile>()
 
     @SuppressLint("CheckResult")
     override fun onCreateView(
@@ -73,6 +81,8 @@ class PrintReleaseFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         initConfig()
+
+        releaseJobCheckedList.clear()
 
         val disposable = Observable.fromCallable {
             val list = this.arguments?.getSerializable("sharedFileList") as ArrayList<SelectedFile>?
@@ -105,6 +115,28 @@ class PrintReleaseFragment : Fragment() {
          */
 //        validateToken()
 
+//
+//        val expires = this.arguments?.getString("expires")
+//        val sessionId = this.arguments?.getString("sessionId")
+//        val signature = this.arguments?.getString("signature")
+//        val finalUrl = this.arguments?.getString("finalUrl")
+//
+//        if (finalUrl != null && expires != null && sessionId != null && signature != null) {
+//            BottomNavigationActivity().getToken(finalUrl, expires, sessionId, signature)
+//        }
+        ProgressDialog.showLoadingDialog(requireContext(), "Getting Hold jobs")
+        getJobStatuses(
+            requireContext(),
+            decodeJWT(),
+            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+        )
+
+        btnRelease.setOnClickListener {
+            ProgressDialog.showLoadingDialog(requireContext(), "Released Job")
+            releaseJob()
+        }
+
         /**
          * Print Job status cancel
          */
@@ -130,20 +162,6 @@ class PrintReleaseFragment : Fragment() {
 //            SignInCompanyPrefs.getIdpName(requireContext()).toString()
 //        )
 
-
-        /**
-         * get printer nodes
-         */
-
-//        PrinterList().getPrinterNodes(
-//            requireContext(),
-//            "PHPSESSID=06c3f0f9b947267e001f4211954a879f",
-//            "0",
-//            "",
-//            "0",
-//            "0",
-//            "pull-release-printer",
-//            "-1")
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
@@ -185,6 +203,131 @@ class PrintReleaseFragment : Fragment() {
         compositeDisposable.add(disposable2)
     }
 
+
+    fun releaseJob() {
+        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
+        val apiService = RetrofitClient(requireContext())
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val releaseJobRequest = ReleaseJobRequest()
+        val releaseJobs = ArrayList<ReleaseJobsItem>()
+        releaseJobCheckedList.forEach {
+            val releaseJobsItem = ReleaseJobsItem()
+            releaseJobsItem.jobNum = it.jobNum
+            releaseJobsItem.jobType = it.jobType
+            releaseJobsItem.queueId = it.queueId
+            releaseJobsItem.userName = it.userName
+            releaseJobsItem.workstationId = it.workStationId
+            releaseJobs.add(releaseJobsItem)
+        }
+        releaseJobRequest.releaseJobs = releaseJobs
+
+        val call = apiService.releaseJob(
+            releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
+            decodeJWT(),
+            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+        )
+
+        call.enqueue(object : Callback<ReleaseJobResponse> {
+            override fun onResponse(
+                call: Call<ReleaseJobResponse>,
+                response: Response<ReleaseJobResponse>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.code() == 200) {
+                    val response = response.body().toString()
+                    Log.i("printer", "response release job==>${response}")
+                    ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
+                    getJobStatuses(
+                        requireContext(),
+                        decodeJWT(),
+                        SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+                        SignInCompanyPrefs.getIdpName(requireContext()).toString()
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<ReleaseJobResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
+                Log.i("printer", "Error response release job==>${t.message}")
+            }
+
+        })
+    }
+
+    fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
+
+        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+        val apiService = RetrofitClient(context)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val call = apiService.getPrintJobStatuses(
+            "Bearer " + LoginPrefs.getOCTAToken(context),
+            userName,
+            idpType,
+            idpName
+        )
+        call.enqueue(object : Callback<GetJobStatusesResponse> {
+            override fun onResponse(
+                call: Call<GetJobStatusesResponse>,
+                response: Response<GetJobStatusesResponse>
+            ) {
+                ProgressDialog.cancelLoading()
+                val getJobStatusesResponse = response.body()?.printQueueJobStatus
+                if (getJobStatusesResponse?.size == 0) {
+                    Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    val parseList: List<PrintQueueJobStatusItem?>? =
+                        getJobStatusesResponse
+                    val disposable4 = Observable.fromCallable {
+                        val selectedFileList = ArrayList<SelectedFile>()
+                        parseList?.forEach {
+                            val selectedFile = SelectedFile()
+                            selectedFile.isFromApi = true
+                            selectedFile.fileName = it?.documentTitle
+                            selectedFile.fileSelectedDate = it?.submittedAtRelative
+                            selectedFile.filePath = it?.jobSize.toString()
+                            selectedFile.jobNum = it?.jobNumber
+                            selectedFile.jobType = 1
+                            selectedFile.queueId = it?.printerDeviceQueueId
+                            selectedFile.userName = it?.userName
+                            selectedFile.workStationId = it?.workstationId
+                            selectedFileList.add(selectedFile)
+                        }
+                        app.dbInstance().selectedFileDao().deleteItemsFromApi()
+                        app.dbInstance().selectedFileDao().save(selectedFileList)
+                        app.dbInstance().selectedFileDao().loadAll()
+                    }.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            {
+                                Log.i("printer", "it=>${it}")
+                                listUpdate(it as ArrayList<SelectedFile>?, requireContext())
+                            },
+                            {
+                                Log.i("printer", "Error=>${it.message}")
+                            }
+                        )
+                    compositeDisposable.add(disposable4)
+                    isFileSelected = true
+                    Log.i("printer", "list of Files-->$list")
+                }
+
+            }
+
+            override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
+                Log.i("printer", t.message.toString())
+            }
+        })
+    }
+
     private fun checkPermissions() {
         permissionsHelper = PermissionHelper()
         permissionsHelper!!.checkAndRequestPermissions(
@@ -223,6 +366,7 @@ class PrintReleaseFragment : Fragment() {
                 selectedFile.apply {
                     fileName = file.name
                     filePath = realPath
+                    isFromApi = false
                     fileSelectedDate = SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
                     saveList.add(this)
                 }
@@ -265,7 +409,6 @@ class PrintReleaseFragment : Fragment() {
             val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
                 LoginPrefs.getOCTAToken(requireContext())?.let { JwtDecode.decoded(it) }!!
             )
-//            Log.i("printer", "decode JWT Token=>${decoded}")
             userName = decoded.user.toString()
         } catch (ex: Exception) {
             requireContext().toast("Failed to Decode Jwt Token")
@@ -315,7 +458,12 @@ class PrintReleaseFragment : Fragment() {
             context as Activity,
             list
         )
+        adapter?.itemClick()?.doOnNext {
+            Log.i("printer", "item checked ===>${it}")
+            releaseJobCheckedList.add(it)
+        }?.subscribe()
         recyclerViewDocumentList?.adapter = adapter
+
 
 //
 //        adapter?.setListener(object :

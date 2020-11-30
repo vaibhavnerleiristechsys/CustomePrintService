@@ -3,20 +3,19 @@ package com.example.customeprintservice.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import com.example.customeprintservice.room.SelectedFile
-import com.example.customeprintservice.utils.DateTime
-import java.io.File
-import java.text.DateFormat
-import java.text.SimpleDateFormat
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 
 
@@ -26,6 +25,7 @@ class FragmentSelectedFileListAdapter(
 ) : RecyclerView.Adapter<FragmentSelectedFileListAdapter.ViewHolder>() {
 
     private lateinit var listener: ViewHolder.FragmentSelectedFileAdapterListener
+    private val publishSubject: PublishSubject<SelectedFile> = PublishSubject.create()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -40,6 +40,10 @@ class FragmentSelectedFileListAdapter(
         this.listener = listener
     }
 
+    fun itemClick(): Observable<SelectedFile> {
+        return publishSubject.observeOn(AndroidSchedulers.mainThread())
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(
@@ -47,22 +51,32 @@ class FragmentSelectedFileListAdapter(
         position: Int
     ) {
         holder.getFileName().text = "" + list!![position].fileName
-        holder.getFileSize().text =
-            "" + (File(list[position].filePath.toString()).length() / 1024) + " KB"
 
-
-        try {
-
-            val stringDate = list[position].fileSelectedDate
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-            val date = dateFormat.parse(stringDate)
-            val longDate:Long = date.time
-            Log.i("printer","simple date format=>${DateTime.getDisplayableTime(longDate)}")
-
-            holder.getSelectedDate().text = DateTime.getDisplayableTime(longDate)
-        } catch (ex: Exception) {
-
+        holder.getSelectedDate().text = "" + list[position].fileSelectedDate
+        holder.getFileSize().text = "" + ((list[position].filePath)?.length)
+        holder.getCheckbox().setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                publishSubject.onNext(list[position])
+            }
         }
+
+//        holder.getFileSize().text =
+//            "" + (File(list[position].filePath.toString()).length() / 1024) + " KB"
+//        if (list[position].isFromApi == true) {
+//            holder.getFileCardView()
+//                .setCardBackgroundColor(ContextCompat.getColor(context, R.color.battleshipGrey))
+//        }
+//        try {
+//            val stringDate = list[position].fileSelectedDate
+//            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
+//            val date = dateFormat.parse(stringDate)
+//            val longDate:Long = date.time
+//            Log.i("printer","simple date format=>${DateTime.getDisplayableTime(longDate)}")
+//
+//            holder.getSelectedDate().text = DateTime.getDisplayableTime(longDate)
+//        } catch (ex: Exception) {
+//
+//        }
 //        holder.getFileCardView().setOnLongClickListener {
 //           listener.onItemLongClick(position)
 //            return@setOnLongClickListener true
@@ -89,6 +103,10 @@ class FragmentSelectedFileListAdapter(
 
         fun getFileCardView(): CardView {
             return itemView.findViewById(R.id.cardviewFragmentSelectedFileList)
+        }
+
+        fun getCheckbox(): CheckBox {
+            return itemView.findViewById(R.id.checkbox)
         }
 
         interface FragmentSelectedFileAdapterListener {

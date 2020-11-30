@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 
-@Database(entities = arrayOf(SelectedFile::class), version = 1)
+@Database(entities = arrayOf(SelectedFile::class), version = 3)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun selectedFileDao(): SelectedFileDao

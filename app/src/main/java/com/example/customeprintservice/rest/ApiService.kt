@@ -3,11 +3,14 @@ package com.example.customeprintservice.rest
 import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.model.TokenResponse
 import com.example.customeprintservice.printjobstatus.model.PrintJobStatusResponse
+import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
 import com.example.customeprintservice.printjobstatus.model.jobstatus.JobStatusCancel
 import com.example.customeprintservice.printjobstatus.model.jobstatus.JobStatusCanceledResponse
 import com.example.customeprintservice.printjobstatus.model.printerdetails.Data
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
+import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobRequest
+import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobResponse
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -38,11 +41,11 @@ interface ApiService {
 
     @GET(".")
     fun printJobstatus(
-        @Header("Authorization") Authorization: String?,
-        @Header("X-User-Name") userName: String?,
-        @Header("X-Idp_Type") idpType: String?,
-        @Header("X-Idp-Name") idpName: String?
-    ): Call<PrintJobStatusResponse>?
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-Idp_Type") idpType: String,
+        @Header("X-Idp-Name") idpName: String
+    ): Call<ResponseBody>?
 
     @POST(".")
     fun jobStatusCancel(
@@ -82,4 +85,22 @@ interface ApiService {
         @Header("X-IdP-Type")idpType:String,
         @Header("X-IdP-Name")idpName:String
     ):Call<PrinterDetailsResponse>
+
+    @GET(".")
+    fun getPrintJobStatuses(
+        @Header("Authorization")authorization: String,
+        @Header("X-User-Name")userName: String,
+        @Header("X-IdP-Type")idpType: String,
+        @Header("X-IdP-Name")idpName: String
+    ) :Call<GetJobStatusesResponse>
+
+
+    @POST(".")
+    fun releaseJob(
+        @Body releaseJobRequest: ReleaseJobRequest,
+        @Header("Authorization")authorization: String,
+        @Header("X-User-Name")userName: String,
+        @Header("X-IdP-Type")idpType: String,
+        @Header("X-IdP-Name")idpName: String
+    ):Call<ReleaseJobResponse>
 }

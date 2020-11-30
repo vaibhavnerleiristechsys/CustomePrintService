@@ -26,7 +26,6 @@ import com.example.customeprintservice.adapter.SelectedFileListAdapter
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
-import com.example.customeprintservice.printjobstatus.PrintJobStatuses
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.signin.SignInCompany
@@ -34,6 +33,9 @@ import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_print.*
 import org.jetbrains.anko.toast
 import java.io.File
@@ -52,11 +54,17 @@ class PrintActivity : AppCompatActivity() {
         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             .toString() + File.separator
     private val outputPDF = storageDir + "Converted_PDF.pdf"
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_print)
+        firebaseAnalytics = Firebase.analytics
+//        val storageDir =
+//            File(cacheDir,"ConvertPDF.pdf")
+//        outputPDF = storageDir.name
+
         val actionBar = supportActionBar
         actionBar?.title = "Print"
         actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -120,18 +128,18 @@ class PrintActivity : AppCompatActivity() {
         registerReceiver(receiver, filter)
 
 
-        btnGetPrintJobStatus.setOnClickListener {
-            /**
-             * Print Job Status Web Service
-             */
-            ProgressDialog.showLoadingDialog(this@PrintActivity, "Getting Job Status")
-            PrintJobStatuses().getPrintJobStatuses(
-                this@PrintActivity,
-                decodeJWT(),
-                SignInCompanyPrefs.getIdpType(this@PrintActivity).toString(),
-                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString()
-            )
-        }
+//        btnGetPrintJobStatus.setOnClickListener {
+//            /**
+//             * Print Job Status Web Service
+//             */
+//            ProgressDialog.showLoadingDialog(this@PrintActivity, "Getting Job Status")
+//            PrintJobStatuses().getPrintJobStatuses(
+//                this@PrintActivity,
+//                decodeJWT(),
+//                SignInCompanyPrefs.getIdpType(this@PrintActivity).toString(),
+//                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString()
+//            )
+//        }
 
         btnSessionId.setOnClickListener {
             /**
@@ -250,7 +258,7 @@ class PrintActivity : AppCompatActivity() {
         recyclerViewSelectedFileLst.adapter = adapter
 
         btnProceedPrint.setOnClickListener {
-            ProgressDialog.showLoadingDialog(this@PrintActivity, "Proceeding...")
+            ProgressDialog.showLoadingDialog(dialog.context, "Proceeding...")
             var file = File(selectedFileString)
             if (file.extension.toLowerCase() == "docx" || file.extension.toLowerCase() == "doc") {
                 Log.i("printer", "selected doc file")
@@ -261,11 +269,23 @@ class PrintActivity : AppCompatActivity() {
                     contentResolver.openInputStream(Uri.fromFile(File(selectedFileString)))
                 val document = Document(inputStream)
                 document.watermark.remove()
-
                 document.save(outputPDF)
+                val bundle = Bundle()
+                bundle.putString("file_path", "Test msg")
+                firebaseAnalytics.logEvent("pdf_file", bundle)
                 Log.i("printer", "path saved =>${outputPDF}")
                 file = File(outputPDF)
-            } else {
+            }
+//            else if (file.extension.toLowerCase() == "pdf") {
+//                val inputStream =
+//                    contentResolver.openInputStream(Uri.fromFile(File(selectedFileString)))
+//                val document = DocumentinputStream)
+//                document.watermark.remove()
+//                document.save(outputPDF, SaveFormat.PCL)
+//                Log.i("printer", "path saved =>${outputPDF}")
+//                file = File(outputPDF)
+//            }
+            else {
                 file = File(selectedFileString)
             }
 
