@@ -4,12 +4,12 @@ import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
-import android.print.PrinterId;
 import android.print.PrinterInfo;
-import android.printservice.PrintService;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
+
+import com.google.gson.Gson;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -35,6 +35,8 @@ public class NSDUtils implements Runnable {
     public void setContext(Context context) {
         this.context = context;
     }
+
+
 
     @Override
     public void run() {
@@ -175,7 +177,7 @@ public class NSDUtils implements Runnable {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
-                List<PrinterInfo> printerInfoList  = new ArrayList<>();
+                List<PrinterInfo> printerInfoList = new ArrayList<>();
 
 //                PrinterId printerId = generatePrinterId("");
                 InetAddress printerHost = serviceInfo.getHost();
@@ -188,13 +190,13 @@ public class NSDUtils implements Runnable {
                 printerModel.setPrinterPort(printerPort);
                 printerModel.setServiceName(serviceName);
 
-                printerList.getPrinterList().forEach(p->{
-                    if(p.getPrinterHost().equals(printerHost)){
+                printerList.getPrinterList().forEach(p -> {
+                    if (p.getPrinterHost().equals(printerHost)) {
                         flagIsExist = true;
                     }
                 });
 
-                if(!flagIsExist){
+                if (!flagIsExist) {
                     printerList.addPrinterModel(printerModel);
                 }
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);

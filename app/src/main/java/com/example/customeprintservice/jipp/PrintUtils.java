@@ -2,6 +2,7 @@ package com.example.customeprintservice.jipp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.hp.jipp.encoding.Attribute;
@@ -62,6 +63,31 @@ public class PrintUtils {
         nsdUtils.setContext(context);
         executor.execute(nsdUtils);
     }
+
+    void debugString(String str,String key){
+
+        int strLength = str.length();
+        int strLengthMod = strLength%100;
+        Bundle bundle = new Bundle();
+
+        //55
+
+        for(int i=0;i<strLengthMod;i++)
+        {
+            //655
+            String subStr = str.substring(i*100,i*100+99);
+            bundle.putString(key+i,subStr);
+        }
+
+        int remainingChars =  strLength - strLengthMod*100;
+
+        String remainingSubstring = str.substring(strLengthMod*100,strLengthMod*100+remainingChars-1);
+        bundle.putString(key+"remaining",remainingSubstring);
+
+        //bundle.putString("key","value");
+    }
+
+
 
     public void getSpecificPrinterAttributes(URI uri, List<String> attributeList) {
         new Thread(() -> {
@@ -187,7 +213,7 @@ public class PrintUtils {
                 }
 
                 List<String> att = getPrinterSupportedFormats(uri, context);
-                Log.i("printer", "att array--> " + att.toString());
+                Log.i("printer", "att array--> " + att.toString().length());
 
                 if (format != null && att.contains(format.toLowerCase().trim())) {
                     IppPacket printRequest = IppPacket.printJob(uri)
@@ -236,10 +262,14 @@ public class PrintUtils {
         int responseCode = responsePacket.getCode();
 
         Status status = responsePacket.getStatus();
+        Bundle bundle = new Bundle();
+        bundle.putString("status", status.toString());
+
+
         String statusString = status.getName();
         int statusStringCode = status.getCode();
         resultMap.put("status", statusString);
-        Log.i("printer","print status===>"+status +"\nprint status String===>"+statusString);
+        Log.i("printer", "print status===>" + status + "\nprint status String===>" + statusString);
 
         Operation operation = responsePacket.getOperation();
         String operationName = operation.getName();
@@ -249,9 +279,7 @@ public class PrintUtils {
         Integer requestId = Integer.valueOf(responsePacket.getRequestId());
         resultMap.put("requestId", requestId.toString());
 
-
         return resultMap;
-
 
         // for (AttributeGroup attributeGroup : attributeGroupList) {
 

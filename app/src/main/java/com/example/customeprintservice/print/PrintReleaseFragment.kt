@@ -320,7 +320,7 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.isFromApi = true
                             selectedFile.fileName = it?.documentTitle
                             selectedFile.fileSelectedDate = it?.submittedAtRelative
-                            selectedFile.filePath = it?.jobSize.toString()
+                            selectedFile.filePath = it?.documentTitle.toString()
                             selectedFile.jobNum = it?.jobNumber
                             selectedFile.jobType = 1
                             selectedFile.queueId = it?.printerDeviceQueueId

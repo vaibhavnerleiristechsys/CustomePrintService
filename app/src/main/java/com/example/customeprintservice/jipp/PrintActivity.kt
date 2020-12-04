@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -17,6 +18,7 @@ import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,14 +58,24 @@ class PrintActivity : AppCompatActivity() {
     private val outputPDF = storageDir + "Converted_PDF.pdf"
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_print)
         firebaseAnalytics = Firebase.analytics
-//        val storageDir =
-//            File(cacheDir,"ConvertPDF.pdf")
-//        outputPDF = storageDir.name
+
+        val printerList = PrinterList()
+        val printerNameList = ArrayList<String>()
+        printerList.printerList.forEach { s ->
+            run {
+                printerNameList.add(s.serviceName)
+            }
+        }
+        val printerCommavalues = printerNameList.joinToString()
+        Log.i("printer", "printerNamelist ==>${printerCommavalues}")
+
+        firebaseAnalytics.setDefaultEventParameters(debugString(printerCommavalues,"printerName"))
 
         val actionBar = supportActionBar
         actionBar?.title = "Print"
@@ -128,19 +140,6 @@ class PrintActivity : AppCompatActivity() {
         registerReceiver(receiver, filter)
 
 
-//        btnGetPrintJobStatus.setOnClickListener {
-//            /**
-//             * Print Job Status Web Service
-//             */
-//            ProgressDialog.showLoadingDialog(this@PrintActivity, "Getting Job Status")
-//            PrintJobStatuses().getPrintJobStatuses(
-//                this@PrintActivity,
-//                decodeJWT(),
-//                SignInCompanyPrefs.getIdpType(this@PrintActivity).toString(),
-//                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString()
-//            )
-//        }
-
         btnSessionId.setOnClickListener {
             /**
              * get Session id
@@ -190,6 +189,8 @@ class PrintActivity : AppCompatActivity() {
                 if (intent.getStringExtra("printResponse") != null) {
                     printResponse = intent.getStringExtra("printResponse").toString()
                     txtPrinterResponse.text = "Print Response - $printResponse"
+
+                    firebaseAnalytics.setDefaultEventParameters(debugString(printResponse,"printResponse"))
                 }
 
                 var printerSupportedFormats: String = ""
@@ -198,12 +199,16 @@ class PrintActivity : AppCompatActivity() {
                         intent.getStringExtra("printerSupportedFormats").toString()
                     txtPrinterActivityFormatSupported.text =
                         "Printer Supported Format - $printerSupportedFormats"
+                    firebaseAnalytics.setDefaultEventParameters(debugString(printerSupportedFormats,"printerSupportedFormats"))
                 }
 
                 var getPrinterAttributes: String = ""
                 if (intent.getStringExtra("getPrinterAttributes") != null) {
                     getPrinterAttributes = intent.getStringExtra("getPrinterAttributes").toString()
                     txtDignosticInfo.text = "Get Attributes - $getPrinterAttributes"
+
+//                    firebaseAnalytics.setDefaultEventParameters(debugString(getPrinterAttributes,"attributes"))
+
                 }
 
                 var exception: String = ""
@@ -216,11 +221,30 @@ class PrintActivity : AppCompatActivity() {
                 if (intent.getStringExtra("fileNotSupported") != null) {
                     fileNotSupported = intent.getStringExtra("fileNotSupported").toString()
                     Toast.makeText(this@PrintActivity, fileNotSupported, Toast.LENGTH_LONG).show()
+
                 }
             } catch (e: Exception) {
                 txtDignosticInfo.text = e.toString()
             }
         }
+    }
+    fun debugString(str: String, key: String):Bundle {
+        val strLength = str.length
+        val strLengthMod = strLength / 100
+        val bundle = Bundle()
+
+        //55
+        for (i in 0 until strLengthMod) {
+            //655
+            val subStr = str.substring(i * 100, i * 100 + 99)
+            bundle.putString(key + i, subStr)
+        }
+        val remainingChars = strLength - strLengthMod * 100
+        val remainingSubstring =
+            str.substring(strLengthMod * 100, strLengthMod * 100 + remainingChars - 1)
+        bundle.putString(key + "remaining", remainingSubstring)
+        //bundle.putString("key","value");
+        return bundle
     }
 
     @SuppressLint("WrongConstant")
@@ -270,22 +294,22 @@ class PrintActivity : AppCompatActivity() {
                 val document = Document(inputStream)
                 document.watermark.remove()
                 document.save(outputPDF)
-                val bundle = Bundle()
-                bundle.putString("file_path", "Test msg")
-                firebaseAnalytics.logEvent("pdf_file", bundle)
+
+                val parameters = Bundle().apply {
+                    this.putString("outputpdf", outputPDF)
+                }
+                firebaseAnalytics.setDefaultEventParameters(parameters)
+
                 Log.i("printer", "path saved =>${outputPDF}")
                 file = File(outputPDF)
-            }
-//            else if (file.extension.toLowerCase() == "pdf") {
+            } else if (file.extension.toLowerCase() == "pdf") {
 //                val inputStream =
 //                    contentResolver.openInputStream(Uri.fromFile(File(selectedFileString)))
-//                val document = DocumentinputStream)
-//                document.watermark.remove()
+//                val document = com.aspose.pdf.Document(selectedFileString)
 //                document.save(outputPDF, SaveFormat.PCL)
 //                Log.i("printer", "path saved =>${outputPDF}")
 //                file = File(outputPDF)
-//            }
-            else {
+            } else {
                 file = File(selectedFileString)
             }
 

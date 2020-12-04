@@ -18,6 +18,9 @@ import com.example.customeprintservice.jipp.PrintActivity
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import java.io.*
 import java.util.*
 import java.util.function.Consumer
@@ -26,6 +29,7 @@ import kotlin.collections.ArrayList
 class PrinterLogicPrintService : PrintService() {
     private val builder: PrinterInfo? = null
     private var mHandler: Handler? = null
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     companion object {
         const val MSG_HANDLE_PRINT_JOB = 3
@@ -35,6 +39,7 @@ class PrinterLogicPrintService : PrintService() {
     override fun onConnected() {
         Log.i(TAG, "#onConnected()")
         mHandler = PrintHandler(mainLooper)
+        firebaseAnalytics = Firebase.analytics
     }
 
     override fun onDisconnected() {
@@ -103,10 +108,11 @@ class PrinterLogicPrintService : PrintService() {
             val printUtils = PrintUtils()
 
 //            printUtils.print(URI.create(finalUrl), file, applicationContext, "")
-
-            val printJobId = printJob.id
-            val printJobIdDesc = printJobId.describeContents()
-
+            val parameters = Bundle().apply {
+                val isFileExists = file.exists()
+                this.putString("isFileExists", isFileExists.toString())
+            }
+            firebaseAnalytics.setDefaultEventParameters(parameters)
             val bundle = Bundle()
             bundle.putString("fromPrintService", "fromPrintService")
             bundle.putString("finalUrl", finalUrl)
@@ -115,23 +121,12 @@ class PrinterLogicPrintService : PrintService() {
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             intent.putExtras(bundle)
             applicationContext.startActivity(intent)
-
             printJob.complete()
 
         } catch (ioe: IOException) {
         }
     }
 
-    private val trackedJobs = HashMap<PrintJob, Array<String?>>()
-
-    @Synchronized
-    fun trackJob(job: PrintJob) {
-        trackedJobs.put(job, arrayOf(job.tag, job.info.printerId?.localId))
-        Log.d(
-            TAG, "Started tracking job: " + job.tag + " printer " + job.info.printerId!!
-                .localId
-        )
-    }
 
     private inner class PrintHandler(looper: Looper?) : Handler(looper!!) {
         override fun handleMessage(message: Message) {
@@ -164,6 +159,7 @@ internal class ThermalPrinterDiscoverySession(
     @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onStartPrinterDiscovery(priorityList: List<PrinterId>) {
         Log.d("customprintservices", "onStartPrinterDiscovery")
+
         val printUtils = PrintUtils()
         printUtils.setContextAndInitializeJMDNS(appContext)
         try {
@@ -172,16 +168,16 @@ internal class ThermalPrinterDiscoverySession(
             e.printStackTrace()
         }
         val printers: MutableList<PrinterInfo?> = ArrayList()
-        val printerId = arrayOfNulls<PrinterId>(1)
+        val printerId = ArrayList<PrinterId>()
         val printerList = PrinterList()
         printerList.printerList.forEach(Consumer { p: PrinterModel ->
-            printerId[0] = thermalPrintService.generatePrinterId(p.printerHost.toString())
+            printerId.add(thermalPrintService.generatePrinterId(p.printerHost.toString()))
             val builder = PrinterInfo.Builder(
                 thermalPrintService.generatePrinterId(p.printerHost.toString()),
                 p.serviceName, PrinterInfo.STATUS_IDLE
             ).build()
-            val capabilities = printerId[0]?.let {
-                PrinterCapabilitiesInfo.Builder(it)
+            val capabilities = printerId.let {
+                PrinterCapabilitiesInfo.Builder(it.get(0))
                     .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
                     .addResolution(PrintAttributes.Resolution("1234", "Default", 200, 200), true)
                     .setColorModes(
@@ -190,7 +186,7 @@ internal class ThermalPrinterDiscoverySession(
                     )
                     .build()
             }
-            printerInfo = capabilities?.let {
+            printerInfo = capabilities.let {
                 PrinterInfo.Builder(builder)
                     .setCapabilities(it)
                     .build()
