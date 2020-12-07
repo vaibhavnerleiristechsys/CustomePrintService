@@ -64,29 +64,27 @@ public class PrintUtils {
         executor.execute(nsdUtils);
     }
 
-    void debugString(String str,String key){
+    void debugString(String str, String key) {
 
         int strLength = str.length();
-        int strLengthMod = strLength%100;
+        int strLengthMod = strLength % 100;
         Bundle bundle = new Bundle();
 
         //55
 
-        for(int i=0;i<strLengthMod;i++)
-        {
+        for (int i = 0; i < strLengthMod; i++) {
             //655
-            String subStr = str.substring(i*100,i*100+99);
-            bundle.putString(key+i,subStr);
+            String subStr = str.substring(i * 100, i * 100 + 99);
+            bundle.putString(key + i, subStr);
         }
 
-        int remainingChars =  strLength - strLengthMod*100;
+        int remainingChars = strLength - strLengthMod * 100;
 
-        String remainingSubstring = str.substring(strLengthMod*100,strLengthMod*100+remainingChars-1);
-        bundle.putString(key+"remaining",remainingSubstring);
+        String remainingSubstring = str.substring(strLengthMod * 100, strLengthMod * 100 + remainingChars - 1);
+        bundle.putString(key + "remaining", remainingSubstring);
 
         //bundle.putString("key","value");
     }
-
 
 
     public void getSpecificPrinterAttributes(URI uri, List<String> attributeList) {
@@ -196,55 +194,58 @@ public class PrintUtils {
     }
 
 
-    public void print(URI uri, File file, Context context, String fileFormat) {
+    public Map<String, String> print(URI uri, File file, Context context, String fileFormat) {
+        Map<String, String> resultMap = new HashMap<>();
+        try {
+            File inputFile = new File(file.getAbsolutePath());
+            boolean exists = inputFile.exists();
+            Log.i("printer", String.valueOf(exists));
+            Log.i("printer", "input File-->" + inputFile);
+            String fileName = inputFile.getName();
+            String format = inputFile.getName();
 
-        new Thread(() -> {
-            try {
-                File inputFile = new File(file.getAbsolutePath());
-                boolean exists = inputFile.exists();
-                Log.i("printer", String.valueOf(exists));
-                Log.i("printer", "input File-->" + inputFile);
-                String fileName = inputFile.getName();
-                String format = inputFile.getName();
-
-                if (fileName.contains(".")) {
-                    format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1));
-                    Log.i("printer", "format--->" + format.toLowerCase().trim());
-                }
-
-                List<String> att = getPrinterSupportedFormats(uri, context);
-                Log.i("printer", "att array--> " + att.toString().length());
-
-                if (format != null && att.contains(format.toLowerCase().trim())) {
-                    IppPacket printRequest = IppPacket.printJob(uri)
-                            .putOperationAttributes(
-                                    requestingUserName.of(CMD_NAME),
-                                    documentFormat.of(format))
-                            .build();
-                    Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
-
-                    Log.i("printer", "In print utils method");
-                    IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
-                    IppPacketData printResponse = transport.sendData(uri, request);
-                    Intent printResponseIntent =
-                            new Intent("com.example.PRINT_RESPONSE")
-                                    .putExtra("printResponse", printResponse.toString());
-                    context.sendBroadcast(printResponseIntent);
-
-                    Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
-                } else {
-                    Intent fileNotSupported =
-                            new Intent("com.example.PRINT_RESPONSE")
-                                    .putExtra("fileNotSupported", "File Format is not supported");
-                    context.sendBroadcast(fileNotSupported);
-                }
-            } catch (Exception e) {
-                Intent intent =
-                        new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("getPrintResponse", e.toString());
-                context.sendBroadcast(intent);
+            if (fileName.contains(".")) {
+                format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1));
+                Log.i("printer", "format--->" + format.toLowerCase().trim());
             }
-        }).start();
+
+            List<String> att = getPrinterSupportedFormats(uri, context);
+
+            if (format != null && att.contains(format.toLowerCase().trim())) {
+                IppPacket printRequest = IppPacket.printJob(uri)
+                        .putOperationAttributes(
+                                requestingUserName.of(CMD_NAME),
+                                documentFormat.of(format))
+                        .build();
+                Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
+
+                Log.i("printer", "In print utils method");
+                IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
+                IppPacketData printResponse = transport.sendData(uri, request);
+
+                IppPacket ippPacket = printResponse.getPacket();
+                resultMap.putAll(getResponseDetails(ippPacket));
+
+                Intent printResponseIntent =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("printResponse", printResponse.toString());
+                context.sendBroadcast(printResponseIntent);
+
+                Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
+            } else {
+                Intent fileNotSupported =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("fileNotSupported", "File Format is not supported");
+                context.sendBroadcast(fileNotSupported);
+            }
+            return resultMap;
+        } catch (Exception e) {
+            Intent intent =
+                    new Intent("com.example.PRINT_RESPONSE")
+                            .putExtra("getPrintResponse", e.toString());
+            context.sendBroadcast(intent);
+        }
+        return resultMap;
     }
 
     private Map<String, String> getResponseDetails(IppPacket responsePacket) {
@@ -262,10 +263,6 @@ public class PrintUtils {
         int responseCode = responsePacket.getCode();
 
         Status status = responsePacket.getStatus();
-        Bundle bundle = new Bundle();
-        bundle.putString("status", status.toString());
-
-
         String statusString = status.getName();
         int statusStringCode = status.getCode();
         resultMap.put("status", statusString);

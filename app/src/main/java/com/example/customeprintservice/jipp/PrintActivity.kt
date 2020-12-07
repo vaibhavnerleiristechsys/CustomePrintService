@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -38,9 +39,12 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.PDPageTree
+import com.tom_roush.pdfbox.rendering.PDFRenderer
 import kotlinx.android.synthetic.main.activity_print.*
 import org.jetbrains.anko.toast
-import java.io.File
+import java.io.*
 import java.net.URI
 
 
@@ -75,7 +79,7 @@ class PrintActivity : AppCompatActivity() {
         val printerCommavalues = printerNameList.joinToString()
         Log.i("printer", "printerNamelist ==>${printerCommavalues}")
 
-        firebaseAnalytics.setDefaultEventParameters(debugString(printerCommavalues,"printerName"))
+        firebaseAnalytics.setDefaultEventParameters(debugString(printerCommavalues, "printerName"))
 
         val actionBar = supportActionBar
         actionBar?.title = "Print"
@@ -181,6 +185,7 @@ class PrintActivity : AppCompatActivity() {
     }
 
 
+    var printResponseStatus: String = ""
     var broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @SuppressLint("SetTextI18n")
         override fun onReceive(context: Context, intent: Intent) {
@@ -190,7 +195,12 @@ class PrintActivity : AppCompatActivity() {
                     printResponse = intent.getStringExtra("printResponse").toString()
                     txtPrinterResponse.text = "Print Response - $printResponse"
 
-                    firebaseAnalytics.setDefaultEventParameters(debugString(printResponse,"printResponse"))
+                    firebaseAnalytics.setDefaultEventParameters(
+                        debugString(
+                            printResponse,
+                            "printResponse"
+                        )
+                    )
                 }
 
                 var printerSupportedFormats: String = ""
@@ -199,7 +209,12 @@ class PrintActivity : AppCompatActivity() {
                         intent.getStringExtra("printerSupportedFormats").toString()
                     txtPrinterActivityFormatSupported.text =
                         "Printer Supported Format - $printerSupportedFormats"
-                    firebaseAnalytics.setDefaultEventParameters(debugString(printerSupportedFormats,"printerSupportedFormats"))
+                    firebaseAnalytics.setDefaultEventParameters(
+                        debugString(
+                            printerSupportedFormats,
+                            "printerSupportedFormats"
+                        )
+                    )
                 }
 
                 var getPrinterAttributes: String = ""
@@ -223,12 +238,17 @@ class PrintActivity : AppCompatActivity() {
                     Toast.makeText(this@PrintActivity, fileNotSupported, Toast.LENGTH_LONG).show()
 
                 }
+                if (intent.getStringExtra("printResponseStatus") != null) {
+                    printResponseStatus = intent.getStringExtra("printResponseStatus").toString()
+                    Log.i("printer", "printResponseStatus=>$printResponseStatus")
+                }
             } catch (e: Exception) {
                 txtDignosticInfo.text = e.toString()
             }
         }
     }
-    fun debugString(str: String, key: String):Bundle {
+
+    fun debugString(str: String, key: String): Bundle {
         val strLength = str.length
         val strLengthMod = strLength / 100
         val bundle = Bundle()
@@ -280,7 +300,7 @@ class PrintActivity : AppCompatActivity() {
         }.subscribe()
 
         recyclerViewSelectedFileLst.adapter = adapter
-
+        var pageImage: Bitmap
         btnProceedPrint.setOnClickListener {
             ProgressDialog.showLoadingDialog(dialog.context, "Proceeding...")
             var file = File(selectedFileString)
@@ -303,12 +323,64 @@ class PrintActivity : AppCompatActivity() {
                 Log.i("printer", "path saved =>${outputPDF}")
                 file = File(outputPDF)
             } else if (file.extension.toLowerCase() == "pdf") {
-//                val inputStream =
-//                    contentResolver.openInputStream(Uri.fromFile(File(selectedFileString)))
-//                val document = com.aspose.pdf.Document(selectedFileString)
-//                document.save(outputPDF, SaveFormat.PCL)
-//                Log.i("printer", "path saved =>${outputPDF}")
-//                file = File(outputPDF)
+                try {
+                    val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
+
+                    val pdfInputStream: InputStream =
+                        BufferedInputStream(FileInputStream(file))
+
+                    val document: PDDocument = PDDocument.load(pdfInputStream)
+                    val pages: PDPageTree = document.pages
+                    val renderer = PDFRenderer(document)
+
+                    val totalNoOfPages: Int = pages.count
+                    var pagePrintCounter: Int = 0
+
+                    val thread = Thread {
+                        while (pagePrintCounter < totalNoOfPages) {
+                            pageImage =
+                                renderer.renderImage(pagePrintCounter, 1F, Bitmap.Config.RGB_565)
+                            val path = "/storage/self/primary/sample-$pagePrintCounter.jpg"
+                            val renderFile = File(path)
+                            val fileOut = FileOutputStream(renderFile)
+                            pageImage.compress(Bitmap.CompressFormat.JPEG, 100, fileOut)
+                            fileOut.close()
+                            val map = printUtils.print(finalUri, renderFile, this@PrintActivity, "")
+
+                            if (map.get("status") == "server-error-busy") {
+                                Thread.sleep(5000)
+                            } else {
+                                pagePrintCounter++
+                            }
+                        }
+
+
+//                        for (pageIndex: Int in 0 until pages.count) {
+//                            pageImage = renderer.renderImage(pageIndex, 1F, Bitmap.Config.RGB_565)
+//                            val path = "/storage/self/primary/sample-$pageIndex.jpg"
+//                            val renderFile = File(path)
+//                            val fileOut = FileOutputStream(renderFile)
+//                            pageImage.compress(Bitmap.CompressFormat.JPEG, 100, fileOut)
+//                            fileOut.close()
+//
+//                            val map = printUtils.print(finalUri, renderFile, this@PrintActivity, "")
+//                            Log.i("printer", "map of print response =>$map")
+//
+//                            if (map.get("status") == "server-error-busy") {
+//
+//                            } else {
+//                                continue
+//                            }
+                        // status = printutils.print
+//                                if(status == printer busy) call thread sleep
+                        // else increment the counter pageIndex++
+//                        }
+
+
+                    }.start()
+                } catch (e: IOException) {
+                    Log.e("printer", "Exception=>", e)
+                }
             } else {
                 file = File(selectedFileString)
             }
@@ -323,9 +395,9 @@ class PrintActivity : AppCompatActivity() {
                 Log.i("printer", "format--->$format")
             }
 
-            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
-            Log.i("printer", "finalUrl --- >$finalUri")
-            printUtils.print(finalUri, file, this@PrintActivity, format)
+//            val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
+//            Log.i("printer", "finalUrl --- >$finalUri")
+//            printUtils.print(finalUri, file, this@PrintActivity, format)
 
 //            printUtils.getJobs(finalUri, this@PrintActivity)
 //

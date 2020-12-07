@@ -51,6 +51,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_print_release.*
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
 import retrofit2.Call
 import retrofit2.Callback
@@ -305,12 +306,17 @@ class PrintReleaseFragment : Fragment() {
                 call: Call<GetJobStatusesResponse>,
                 response: Response<GetJobStatusesResponse>
             ) {
-                ProgressDialog.cancelLoading()
+
                 val getJobStatusesResponse = response.body()?.printQueueJobStatus
                 if (getJobStatusesResponse?.size == 0) {
+                    doAsync {
+                        app.dbInstance().selectedFileDao().deleteItemsFromApi()
+                    }
                     Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
                         .show()
+                    ProgressDialog.cancelLoading()
                 } else {
+                    ProgressDialog.cancelLoading()
                     val parseList: List<PrintQueueJobStatusItem?>? =
                         getJobStatusesResponse
                     val disposable4 = Observable.fromCallable {

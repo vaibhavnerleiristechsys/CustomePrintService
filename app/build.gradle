@@ -124,6 +124,8 @@ dependencies {
     //HTML parsing dependency
     implementation 'org.jsoup:jsoup:1.10.2'
 
+    implementation 'com.tom_roush:pdfbox-android:1.8.10.1'
+
     implementation 'com.android.support:multidex:2.0.0'
     implementation (group: 'com.aspose', name: 'aspose-words', version: '20.9', classifier: 'android.via.java')
 //    implementation (group: 'com.aspose', name: 'aspose-pdf', version: '20.11', classifier: 'android.via.java')
