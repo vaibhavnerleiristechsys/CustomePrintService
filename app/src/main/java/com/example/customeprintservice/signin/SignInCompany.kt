@@ -13,6 +13,7 @@ import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.CheckInternetConnection
+import com.example.customeprintservice.utils.GoogleAPI
 import com.example.customeprintservice.utils.HideKeyboard
 import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
@@ -41,6 +42,10 @@ class SignInCompany : AppCompatActivity() {
                 if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
                     ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
                     checkValidation()
+                 //   GoogleAPI.getGoogleData(this@SignInCompany)
+                }
+                else{
+                    GoogleAPI.getGoogleData(this@SignInCompany)
                 }
             } else {
                 toast("No Internet Connection")
