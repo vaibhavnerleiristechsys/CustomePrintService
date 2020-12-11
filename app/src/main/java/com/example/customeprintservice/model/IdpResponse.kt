@@ -25,6 +25,10 @@ data class IdpResponse(
 	@field:SerializedName("name")
 	val name: String? = null,
 
+	@field:SerializedName("client_id")
+	val client_id: String? = null,
+
+
 	@field:SerializedName("idp_type")
 	val idpType: String? = null,
 

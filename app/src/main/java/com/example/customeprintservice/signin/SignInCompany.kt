@@ -42,11 +42,13 @@ class SignInCompany : AppCompatActivity() {
                 if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
                     ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
                     checkValidation()
-                 //   GoogleAPI.getGoogleData(this@SignInCompany)
+
+                   if(edtYourCompany.text.toString().contains("googleid")) {
+                      GoogleAPI.getGoogleData(this@SignInCompany);
+
+                    }
                 }
-                else{
-                    GoogleAPI.getGoogleData(this@SignInCompany)
-                }
+
             } else {
                 toast("No Internet Connection")
             }
@@ -101,6 +103,7 @@ class SignInCompany : AppCompatActivity() {
                         run {
                             bundle.putString("desktopLoginUrl", idp.desktopLoginUrl)
                             bundle.putString("buttonName", idp.name)
+                            bundle.putString("clientId",idp.client_id)
                             SignInCompanyPrefs.saveIdpUrl(
                                 this@SignInCompany,
                                 idp.tokenUri.toString()

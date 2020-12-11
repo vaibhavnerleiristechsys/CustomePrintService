@@ -1,9 +1,12 @@
 package com.example.customeprintservice.prefs
 
 import android.content.Context
+import com.example.customeprintservice.signin.GoogleLoginActivity
 import com.example.customeprintservice.utils.Constants
 
 class SignInCompanyPrefs {
+
+
     companion object {
 
         fun saveIdpUrl(context: Context, idpUrl: String) {
@@ -44,6 +47,7 @@ class SignInCompanyPrefs {
                 context.getSharedPreferences(Constants.IDP_NAME, Context.MODE_PRIVATE)
             return sharedPreferences.getString(Constants.IDP_NAME, null)
         }
+
 
     }
 }

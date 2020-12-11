@@ -21,6 +21,7 @@ class SignInActivity : AppCompatActivity() {
     private var isShowPass = false
     private var bundle = Bundle()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
@@ -72,7 +73,18 @@ class SignInActivity : AppCompatActivity() {
         val desktopUrl: String? = bundle.getString("desktopLoginUrl")
         Log.i("printer", "desktopUrl--->${desktopUrl}")
         btnSignInWithOkta.setOnClickListener {
-            searchWeb(desktopUrl)
+            if (bundle.getString("buttonName") == "Okta") {
+                searchWeb(desktopUrl)
+            }
+            else if(bundle.getString("buttonName")=="Google"){
+
+                val intent = Intent(this@SignInActivity, GoogleLoginActivity::class.java)
+                intent.putExtras(bundle)
+                startActivity(intent)
+            }
+            else{
+                searchWeb(desktopUrl)
+            }
         }
     }
 
