@@ -39,7 +39,7 @@
         android:background="@drawable/rounded_edittext"
         android:paddingLeft="16dp"
         android:hint="@string/yourcompany_vasion_com"
-        android:text="https://googleid.printercloud.com/api/idp"
+        android:text="https://devncookta.printercloud.com/api/idp"
         android:singleLine="true"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
