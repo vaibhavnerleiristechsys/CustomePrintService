@@ -10,6 +10,7 @@ import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.print.BottomNavigationActivity
+import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.CheckInternetConnection
@@ -42,11 +43,15 @@ class SignInCompany : AppCompatActivity() {
                 if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
                     ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
                     checkValidation()
-                 //   GoogleAPI.getGoogleData(this@SignInCompany)
+                  //  PrinterListService().getPrinterList( this@SignInCompany)
+
+                   if(edtYourCompany.text.toString().contains("googleid")) {
+                      GoogleAPI.getGoogleData(this@SignInCompany);
+
+
+                    }
                 }
-                else{
-                    GoogleAPI.getGoogleData(this@SignInCompany)
-                }
+
             } else {
                 toast("No Internet Connection")
             }
@@ -101,6 +106,7 @@ class SignInCompany : AppCompatActivity() {
                         run {
                             bundle.putString("desktopLoginUrl", idp.desktopLoginUrl)
                             bundle.putString("buttonName", idp.name)
+                            bundle.putString("clientId",idp.client_id)
                             SignInCompanyPrefs.saveIdpUrl(
                                 this@SignInCompany,
                                 idp.tokenUri.toString()

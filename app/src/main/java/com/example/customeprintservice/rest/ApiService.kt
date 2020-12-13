@@ -68,6 +68,20 @@ interface ApiService {
         @Field("release_station_configuration_id") releaseStationConfId: String
     ): Call<ResponseBody>
 
+
+    @FormUrlEncoded
+    @POST(".")
+    fun getPrinterList(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") XUserName: String,
+        @Header("X-IdP-Type") XIdPType: String,
+        @Header("X-IdP-Name") XIdPName: String,
+        @Field("checkin") checkin: String,
+        @Field("configuration") configuration: String
+    ): Call<ResponseBody>
+
+
     @GET(".")
     fun getPrinterDetailsByNodeId(
         @Header("Authorization") authorization: String,

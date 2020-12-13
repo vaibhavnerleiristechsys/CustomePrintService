@@ -2,6 +2,9 @@ package com.example.customeprintservice.utils;
 
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,12 +14,16 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.customeprintservice.prefs.SignInCompanyPrefs;
+import com.example.customeprintservice.signin.SignInActivity;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.MessageDigest;
@@ -30,9 +37,12 @@ import java.util.Locale;
 import java.util.Map;
 
 public class GoogleAPI {
+    static String clientId;
 
 
-   public static void getGoogleData(Context context) {
+    public static void getGoogleData(Context context) {
+
+
         RequestQueue queue = Volley.newRequestQueue(context);
         String url = "https://googleid.printercloud.com/api/idp";
        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest (Request.Method.GET,url,null,
@@ -42,6 +52,24 @@ public class GoogleAPI {
 
                        JSONArray GoogleApiData=response;
                        Log.d("google api data:",GoogleApiData.toString());
+                       JSONObject jsonObject = null;
+                       try {
+                           jsonObject = GoogleApiData.getJSONObject(0);
+                            clientId =  jsonObject.getString("client_id");
+                           SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+                           SharedPreferences.Editor myEdit= sharedPreferences.edit();
+                           myEdit.putString("clientIdForGoogleLogin",clientId);
+                           myEdit.commit();
+
+                           Log.d("client_id:",clientId);
+
+
+                       } catch (JSONException e) {
+                           e.printStackTrace();
+                       }
+
+
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -60,7 +88,7 @@ public class GoogleAPI {
 
                 try {
                     Log.d("formattedDate",formattedDate);
-                    String s1="PrinterLogicIdpAuthentication "+formattedDate;
+                    String s1="PrinterLogicIdpAuthentication"+formattedDate;
                     Log.d("s1",s1);
                     MessageDigest md = MessageDigest.getInstance("SHA-512");
                     byte[] digest = md.digest(s1.getBytes());
@@ -80,6 +108,8 @@ public class GoogleAPI {
             }
         };
         queue.add(jsonObjectRequest);
+
+
     }
 
 
@@ -97,4 +127,7 @@ public class GoogleAPI {
         }
        Log.d("SHA512",sb.toString());
     }*/
+
+
 }
+

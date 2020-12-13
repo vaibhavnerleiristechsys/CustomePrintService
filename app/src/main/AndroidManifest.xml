@@ -20,9 +20,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".CustomePrintActivity">
+        <activity android:name=".signin.GoogleLoginActivity">
+         <!--   <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>" -->
         </activity>
+        <activity android:name=".CustomePrintActivity"></activity>
         <activity
             android:name=".print.BottomNavigationActivity"
             android:screenOrientation="portrait">
@@ -64,7 +70,7 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
-            <intent-filter>
+          <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
