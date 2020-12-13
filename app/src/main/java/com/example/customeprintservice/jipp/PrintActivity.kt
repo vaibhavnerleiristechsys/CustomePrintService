@@ -323,7 +323,13 @@ class PrintActivity : AppCompatActivity() {
                 Log.i("printer", "path saved =>${outputPDF}")
                 file = File(outputPDF)
             } else if (file.extension.toLowerCase() == "pdf") {
-                try {
+
+                val printRenderUtils = PrintRenderUtils()
+
+                printRenderUtils.renderPage(file,edtPrinterActivityEditUrl.text.toString(),this@PrintActivity)
+
+
+                /*try {
                     val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
 
                     val pdfInputStream: InputStream =
@@ -355,32 +361,13 @@ class PrintActivity : AppCompatActivity() {
                         }
 
 
-//                        for (pageIndex: Int in 0 until pages.count) {
-//                            pageImage = renderer.renderImage(pageIndex, 1F, Bitmap.Config.RGB_565)
-//                            val path = "/storage/self/primary/sample-$pageIndex.jpg"
-//                            val renderFile = File(path)
-//                            val fileOut = FileOutputStream(renderFile)
-//                            pageImage.compress(Bitmap.CompressFormat.JPEG, 100, fileOut)
-//                            fileOut.close()
 //
-//                            val map = printUtils.print(finalUri, renderFile, this@PrintActivity, "")
-//                            Log.i("printer", "map of print response =>$map")
-//
-//                            if (map.get("status") == "server-error-busy") {
-//
-//                            } else {
-//                                continue
-//                            }
-                        // status = printutils.print
-//                                if(status == printer busy) call thread sleep
-                        // else increment the counter pageIndex++
-//                        }
-
 
                     }.start()
                 } catch (e: IOException) {
                     Log.e("printer", "Exception=>", e)
-                }
+                }*/
+
             } else {
                 file = File(selectedFileString)
             }
