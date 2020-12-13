@@ -326,7 +326,9 @@ class PrintActivity : AppCompatActivity() {
 
                 val printRenderUtils = PrintRenderUtils()
 
-                printRenderUtils.renderPage(file,edtPrinterActivityEditUrl.text.toString(),this@PrintActivity)
+                //printRenderUtils.renderPage(file,edtPrinterActivityEditUrl.text.toString(),this@PrintActivity)
+                printRenderUtils.renderPageUsingDefaultPdfRenderer(file,edtPrinterActivityEditUrl.text.toString(),this@PrintActivity)
+
 
 
                 /*try {
