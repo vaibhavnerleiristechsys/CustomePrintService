@@ -43,7 +43,7 @@ class SignInCompany : AppCompatActivity() {
                 if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
                     ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
                     checkValidation()
-                  //  PrinterListService().getPrinterList( this@SignInCompany)
+                   PrinterListService().getPrinterList( this@SignInCompany)
 
                    if(edtYourCompany.text.toString().contains("googleid")) {
                       GoogleAPI.getGoogleData(this@SignInCompany);

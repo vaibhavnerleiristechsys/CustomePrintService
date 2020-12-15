@@ -39,12 +39,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
-import com.tom_roush.pdfbox.pdmodel.PDDocument
-import com.tom_roush.pdfbox.pdmodel.PDPageTree
-import com.tom_roush.pdfbox.rendering.PDFRenderer
 import kotlinx.android.synthetic.main.activity_print.*
 import org.jetbrains.anko.toast
-import java.io.*
+import java.io.File
 import java.net.URI
 
 
@@ -327,8 +324,11 @@ class PrintActivity : AppCompatActivity() {
                 val printRenderUtils = PrintRenderUtils()
 
                 //printRenderUtils.renderPage(file,edtPrinterActivityEditUrl.text.toString(),this@PrintActivity)
-                printRenderUtils.renderPageUsingDefaultPdfRenderer(file,edtPrinterActivityEditUrl.text.toString(),this@PrintActivity)
-
+                printRenderUtils.renderPageUsingDefaultPdfRenderer(
+                    file,
+                    edtPrinterActivityEditUrl.text.toString(),
+                    this@PrintActivity
+                )
 
 
                 /*try {
@@ -372,6 +372,11 @@ class PrintActivity : AppCompatActivity() {
 
             } else {
                 file = File(selectedFileString)
+                Log.i("printer", "in else")
+                val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
+                Thread {
+                   val map =  printUtils.print(finalUri, file, this@PrintActivity, "")
+                }.start()
             }
 
             val fileName: String = file.name

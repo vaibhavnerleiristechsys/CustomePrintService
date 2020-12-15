@@ -2,7 +2,6 @@ package com.example.customeprintservice
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
@@ -14,7 +13,7 @@ import android.printservice.PrintService
 import android.printservice.PrinterDiscoverySession
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.customeprintservice.jipp.PrintActivity
+import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
@@ -26,10 +25,12 @@ import java.util.*
 import java.util.function.Consumer
 import kotlin.collections.ArrayList
 
+
 class PrinterLogicPrintService : PrintService() {
     private val builder: PrinterInfo? = null
     private var mHandler: Handler? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
+
 
     companion object {
         const val MSG_HANDLE_PRINT_JOB = 3
@@ -81,6 +82,7 @@ class PrinterLogicPrintService : PrintService() {
 //        )
     }
 
+    @SuppressLint("WrongConstant")
     private fun handleHandleQueuedPrintJob(printJob: PrintJob) {
         Log.i(TAG, "Handle Queued Print Job")
         if (printJob.isQueued) {
@@ -105,24 +107,44 @@ class PrinterLogicPrintService : PrintService() {
             `in`.close()
             out.flush()
             out.close()
-            val printUtils = PrintUtils()
+            val printRenderUtils = PrintRenderUtils()
 
-//            printUtils.print(URI.create(finalUrl), file, applicationContext, "")
-            val parameters = Bundle().apply {
-                val isFileExists = file.exists()
-                this.putString("isFileExists", isFileExists.toString())
-            }
-            firebaseAnalytics.setDefaultEventParameters(parameters)
-            val bundle = Bundle()
-            bundle.putString("fromPrintService", "fromPrintService")
-            bundle.putString("finalUrl", finalUrl)
-            bundle.putString("filePath", file.path)
-            val intent = Intent(applicationContext, PrintActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            intent.putExtras(bundle)
-            applicationContext.startActivity(intent)
+            printRenderUtils.renderPageUsingDefaultPdfRenderer(
+                file,
+                finalUrl,
+                this@PrinterLogicPrintService
+            )
+
+
+//            val parameters = Bundle().apply {
+//                val isFileExists = file.exists()
+//                this.putString("isFileExists", isFileExists.toString())
+//            }
+//            firebaseAnalytics.setDefaultEventParameters(parameters)
+//            val bundle = Bundle()
+//            bundle.putString("fromPrintService", "fromPrintService")
+//            bundle.putString("finalUrl", finalUrl)
+//            bundle.putString("filePath", file.path)
+
+//            val intent = Intent("android.intent.action.VIEW")
+////            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//            intent.addFlags(268435456)
+//            intent.setClass(this, PrintActivity::class.java)
+//            intent.putExtras(bundle)
+//            if (Build.VERSION.SDK_INT > 29) {
+//                toast("api version is more than 29 ")
+//            } else {
+//                this.startActivity(intent)
+//            }
+
+//            val intent = Intent(Intent.ACTION_VIEW)
+////            intent.setDataAndType(Uri.fromFile(file), "application/pdf")
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//            intent.putExtras(bundle)
+//            intent.setClass(applicationContext, PrintActivity::class.java)
+//            startActivity(intent, null)
+
             printJob.complete()
-
         } catch (ioe: IOException) {
         }
     }
