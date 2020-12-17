@@ -79,6 +79,8 @@ class PrintReleaseFragment : Fragment() {
     private val releaseJobRequest = ReleaseJobRequest()
     private val releaseJobCheckedList = ArrayList<SelectedFile>()
 
+    var selectedServerFilelist = ArrayList<SelectedFile>()
+
     @SuppressLint("CheckResult")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -135,6 +137,11 @@ class PrintReleaseFragment : Fragment() {
         /**
          * Print Job status cancel
          */
+
+        serverPrintScreen.setOnClickListener {
+            val intent = Intent(context, BottomNavigationActivityForServerPrint::class.java)
+            startActivity(intent)
+        }
 
         btnDeleteJobs.setOnClickListener {
             ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
@@ -240,59 +247,61 @@ class PrintReleaseFragment : Fragment() {
         })
     }
 
-    fun releaseJob() {
-        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
-        val apiService = RetrofitClient(requireContext())
-            .getRetrofitInstance(BASE_URL)
-            .create(ApiService::class.java)
+        fun releaseJob() {
+            val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
+            val apiService = RetrofitClient(requireContext())
+                .getRetrofitInstance(BASE_URL)
+                .create(ApiService::class.java)
 
-        val releaseJobRequest = ReleaseJobRequest()
-        val releaseJobs = ArrayList<ReleaseJobsItem>()
-        releaseJobCheckedList.forEach {
-            val releaseJobsItem = ReleaseJobsItem()
-            releaseJobsItem.jobNum = it.jobNum
-            releaseJobsItem.jobType = it.jobType
-            releaseJobsItem.queueId = it.queueId
-            releaseJobsItem.userName = it.userName
-            releaseJobsItem.workstationId = it.workStationId
-            releaseJobs.add(releaseJobsItem)
-        }
-        releaseJobRequest.releaseJobs = releaseJobs
+            val releaseJobRequest = ReleaseJobRequest()
+            val releaseJobs = ArrayList<ReleaseJobsItem>()
+            releaseJobCheckedList.forEach {
+                val releaseJobsItem = ReleaseJobsItem()
+                releaseJobsItem.jobNum = it.jobNum
+                releaseJobsItem.jobType = it.jobType
+                releaseJobsItem.queueId = it.queueId
+                releaseJobsItem.userName = it.userName
+                releaseJobsItem.workstationId = it.workStationId
+                releaseJobs.add(releaseJobsItem)
+            }
+            releaseJobRequest.releaseJobs = releaseJobs
 
-        val call = apiService.releaseJob(
-            releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
-            decodeJWT(),
-            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-            SignInCompanyPrefs.getIdpName(requireContext()).toString()
-        )
+            val call = apiService.releaseJob(
+                releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
+                decodeJWT(),
+                SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+                SignInCompanyPrefs.getIdpName(requireContext()).toString()
+            )
 
-        call.enqueue(object : Callback<ReleaseJobResponse> {
-            override fun onResponse(
-                call: Call<ReleaseJobResponse>,
-                response: Response<ReleaseJobResponse>
-            ) {
-                ProgressDialog.cancelLoading()
-                if (response.code() == 200) {
-                    val response = response.body().toString()
-                    Log.i("printer", "response release job==>${response}")
-                    ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
-                    getJobStatuses(
-                        requireContext(),
-                        decodeJWT(),
-                        SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-                        SignInCompanyPrefs.getIdpName(requireContext()).toString()
-                    )
+            call.enqueue(object : Callback<ReleaseJobResponse> {
+                override fun onResponse(
+                    call: Call<ReleaseJobResponse>,
+                    response: Response<ReleaseJobResponse>
+                ) {
+                    ProgressDialog.cancelLoading()
+                    if (response.code() == 200) {
+                        val response = response.body().toString()
+                        Log.i("printer", "response release job==>${response}")
+                        ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
+                        getJobStatuses(
+                            requireContext(),
+                            decodeJWT(),
+                            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+                            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+                        )
+                    }
                 }
-            }
 
-            override fun onFailure(call: Call<ReleaseJobResponse>, t: Throwable) {
-                ProgressDialog.cancelLoading()
-                Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
-                Log.i("printer", "Error response release job==>${t.message}")
-            }
+                override fun onFailure(call: Call<ReleaseJobResponse>, t: Throwable) {
+                    ProgressDialog.cancelLoading()
+                    Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
+                    Log.i("printer", "Error response release job==>${t.message}")
+                }
 
-        })
-    }
+            })
+        }
+
+
 
     fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
 
@@ -341,6 +350,7 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFileList.add(selectedFile)
+                            ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
                         }
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                         app.dbInstance().selectedFileDao().save(selectedFileList)
@@ -454,7 +464,22 @@ class PrintReleaseFragment : Fragment() {
             )
             userName = decoded.user.toString()
         } catch (ex: Exception) {
-            requireContext().toast("Failed to Decode Jwt Token")
+            requireContext()?.toast("Failed to Decode Jwt Token")
+        }
+        return userName.toString()
+    }
+
+
+    public fun decodeJWT(context: Context): String {
+        var userName: String? = null
+        try {
+            val mapper = jacksonObjectMapper()
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(context)?.let { JwtDecode.decoded(it) }!!
+            )
+            userName = decoded.user.toString()
+        } catch (ex: Exception) {
+            context.toast("Failed to Decode Jwt Token")
         }
         return userName.toString()
     }
@@ -553,8 +578,86 @@ class PrintReleaseFragment : Fragment() {
 //            })
 
     }
-}
 
+
+
+    fun getJobStatusesForServerList(context:Context) {
+
+        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+        val apiService = RetrofitClient(context)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val call = apiService.getPrintJobStatuses(
+            "Bearer " + LoginPrefs.getOCTAToken(context),
+            decodeJWT(context),
+            SignInCompanyPrefs.getIdpType(context).toString(),
+            SignInCompanyPrefs.getIdpName(context).toString()
+        )
+        call.enqueue(object : Callback<GetJobStatusesResponse> {
+            override fun onResponse(
+                call: Call<GetJobStatusesResponse>,
+                response: Response<GetJobStatusesResponse>
+            ) {
+
+                val getJobStatusesResponse = response.body()?.printQueueJobStatus
+                if (getJobStatusesResponse?.size == 0) {
+                    doAsync {
+                        app.dbInstance().selectedFileDao().deleteItemsFromApi()
+                    }
+                    Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT)
+                        .show()
+                    ProgressDialog.cancelLoading()
+                } else {
+                    ProgressDialog.cancelLoading()
+                    val parseList: List<PrintQueueJobStatusItem?>? =
+                        getJobStatusesResponse
+                    ServerPrintRelaseFragment.serverDocumentlist.clear();
+                    val disposable4 = Observable.fromCallable {
+                        val selectedFileList = ArrayList<SelectedFile>()
+                        parseList?.forEach {
+                            val selectedFile = SelectedFile()
+                            selectedFile.isFromApi = true
+                            selectedFile.fileName = it?.documentTitle
+                            selectedFile.fileSelectedDate = it?.submittedAtRelative
+                            selectedFile.filePath = it?.documentTitle.toString()
+                            selectedFile.jobNum = it?.jobNumber
+                            selectedFile.jobType = 1
+                            selectedFile.queueId = it?.printerDeviceQueueId
+                            selectedFile.userName = it?.userName
+                            selectedFile.workStationId = it?.workstationId
+                            selectedFileList.add(selectedFile)
+                            ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
+                        }
+                        app.dbInstance().selectedFileDao().deleteItemsFromApi()
+                        app.dbInstance().selectedFileDao().save(selectedFileList)
+                        app.dbInstance().selectedFileDao().loadAll()
+                    }.subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            {
+                                Log.i("printer", "it=>${it}")
+                              //  listUpdate(it as ArrayList<SelectedFile>?, context)
+                            },
+                            {
+                                Log.i("printer", "Error=>${it.message}")
+                            }
+                        )
+                    compositeDisposable.add(disposable4)
+                    isFileSelected = true
+                    Log.i("printer", "list of Files-->$list")
+                }
+
+            }
+
+            override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
+                Log.i("printer", t.message.toString())
+            }
+        })
+    }
+}
 
 //https://www.youtube.com/watch?v=vPLKNsQEAEc
 //https://www.youtube.com/watch?v=nC9E9dvw2eY
