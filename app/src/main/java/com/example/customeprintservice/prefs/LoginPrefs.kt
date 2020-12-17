@@ -17,5 +17,11 @@ class LoginPrefs {
             val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
             return sharedPreferences.getString(TOKEN, null)
         }
+
+        fun deleteToken(context: Context) {
+            val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit().clear()
+            editor.apply()
+        }
     }
 }

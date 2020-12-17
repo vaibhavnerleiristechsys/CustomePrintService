@@ -40,6 +40,7 @@ import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJo
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.signin.SignInCompany
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
@@ -51,7 +52,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_print_release.*
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.toast
 import retrofit2.Call
 import retrofit2.Callback
@@ -140,7 +140,13 @@ class PrintReleaseFragment : Fragment() {
             ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
             cancelJob()
         }
-
+        imgLogout.setOnClickListener {
+            Toast.makeText(requireContext(), "Click on Logout", Toast.LENGTH_SHORT).show()
+            LoginPrefs.deleteToken(requireContext())
+            val intent = Intent(requireContext(), SignInCompany::class.java)
+            startActivity(intent)
+            activity?.finish()
+        }
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
                 val i = Intent(
@@ -309,9 +315,11 @@ class PrintReleaseFragment : Fragment() {
 
                 val getJobStatusesResponse = response.body()?.printQueueJobStatus
                 if (getJobStatusesResponse?.size == 0) {
-                    doAsync {
+
+                    Thread {
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
-                    }
+                    }.start()
+                    Thread.sleep(1000)
                     Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
                         .show()
                     ProgressDialog.cancelLoading()
@@ -437,7 +445,7 @@ class PrintReleaseFragment : Fragment() {
         app = activity?.application as PrintService
     }
 
-    public fun decodeJWT(): String {
+    fun decodeJWT(): String {
         var userName: String? = null
         try {
             val mapper = jacksonObjectMapper()

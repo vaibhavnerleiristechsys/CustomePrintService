@@ -21,8 +21,20 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:titleTextColor="@color/white"
-            app:title="@string/print" />
+            app:title="@string/print"
+            app:titleTextColor="@color/white">
+
+            <ImageView
+                android:id="@+id/imgLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="right"
+                android:layout_marginRight="16dp"
+                android:foregroundGravity="right"
+                android:src="@drawable/sign_out"
+                tools:ignore="RtlHardcoded" />
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <Button

@@ -13,4 +13,5 @@
     <color name="transpernent">#e33f33</color>
     <color name="bloodOrange">#ff4702</color>
     <color name="battleshipGrey">#707273</color>
+    <color name="darkGrey">#161718</color>
 </resources>

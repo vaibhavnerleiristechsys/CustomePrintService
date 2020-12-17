@@ -7,14 +7,8 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,6 +22,7 @@ import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.Inet
 import com.example.customeprintservice.utils.ProgressDialog
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_printers.*
 import okhttp3.ResponseBody
 import org.jetbrains.anko.doAsync
@@ -54,7 +49,8 @@ class PrintersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnAddManuallyPrinter.setOnClickListener {
-            dialogAddManualPrinter()
+//            dialogAddManualPrinter()
+            dialogSelectPrinter()
         }
         updateUi()
         getPrinterList(requireContext())
@@ -79,6 +75,10 @@ class PrintersFragment : Fragment() {
         recyclerViewPrinterLst?.adapter = adapter
     }
 
+
+    fun updatePrinterDialog() {
+
+    }
 
     fun getPrinterList(
         context: Context
@@ -133,8 +133,6 @@ class PrintersFragment : Fragment() {
                     try {
                         val html = response.body()?.string()
 
-                        Toast.makeText(context, "HTML RESPONSE =>${html}", Toast.LENGTH_SHORT)
-                            .show()
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
                         val element = document.select("command")
                         val inetAddress = InetAddress.getByName("192.168.1.1")
@@ -164,6 +162,53 @@ class PrintersFragment : Fragment() {
                 Log.i("printer", "Error html response==>${t.message.toString()}")
             }
         })
+    }
+
+    @SuppressLint("WrongConstant")
+    private fun dialogSelectPrinter() {
+        val dialog = Dialog(context as Activity)
+        dialog.setContentView(R.layout.dialog_select_printer)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(true)
+        val window = dialog.window
+        window!!.setLayout(
+            AbsListView.LayoutParams.MATCH_PARENT,
+            AbsListView.LayoutParams.MATCH_PARENT
+        )
+//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        val wlp = window.attributes
+        wlp.gravity = Gravity.BOTTOM
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        window.setDimAmount(0.5f)
+        window.attributes = wlp
+
+        val printerRecyclerView =
+            dialog.findViewById<RecyclerView>(R.id.dialogSelectPrinterRecyclerView)
+        val imgCancel = dialog.findViewById<ImageView>(R.id.imgDialogSelectPrinterCancel)
+        val floatButton =
+            dialog.findViewById<FloatingActionButton>(R.id.dialogSelectPrinterFloatingButton)
+
+        printerRecyclerView?.layoutManager =
+            LinearLayoutManager(
+                context,
+                LinearLayout.VERTICAL,
+                false
+            )
+        val adapter = FragmentPrinterListAdapter(
+            context as Activity,
+            PrinterList().printerList
+        )
+        printerRecyclerView?.adapter = adapter
+        dialog.show()
+
+        imgCancel.setOnClickListener {
+            dialog.cancel()
+        }
+
+        floatButton.setOnClickListener {
+            Toast.makeText(requireContext(), "Click on float btn", Toast.LENGTH_SHORT).show()
+        }
     }
 
     @SuppressLint("WrongConstant")
