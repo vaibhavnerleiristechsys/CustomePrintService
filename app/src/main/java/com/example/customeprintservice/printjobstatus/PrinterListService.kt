@@ -10,6 +10,7 @@ import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
+import org.jsoup.parser.Parser
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -158,75 +159,4 @@ class PrinterListService {
     }
 
 
-    fun getPrinterList(
-        context: Context
-    ) {
-        val BASE_URL =
-            "https://devncookta.printercloud.com/client/gateway.php/"
-
-        val apiService = RetrofitClient(context)
-            .getRetrofitInstance(BASE_URL)
-            .create(ApiService::class.java)
-
-        val call = apiService.getPrinterList(
-            "devncookta",
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyMjMxN2RlMC05NDRkLTRhNjItOGIxNy03YjYyZWQ5OGM5Y2EiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicmFuamVldGEuYmFsYWtyaXNobmFuQGRldm5jby5jbyIsInNlc3Npb24iOiJhOGI0NmE1Yi0wYWFlLTQ4ZjUtOWUxMS04NTM5YzljZDdkMTIiLCJleHAiOjE2MzkyMTQ0MzgsImlhdCI6MTYwNzY3ODQzOCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.HKiyYRd0QNql6zRsz276L6nGgiQG0GHcYpA6s6h7dOZQoAJZI5G5nZfdPARUEX3vvnEqpy4E8xDrKepk24SoKOQB4dXoSfwg0B6D1B5sz7Dl8Pf6D0N0wvXQl9cEC2LNpv3WqI_qXPYXS6ihO926XSa6f7mo2j3pwmzPZkrO_Q8PSaAjNoXhfCgVXh4oDApTb8A-kO7D67ky9w-GjoMfLdieVqoD1DcWMKkGfFKIdAHDWsEuxamR7xvmtBVvtNnOKIEAxKwf_SqL2JDpMt4PEqvcGd1Cp2_WqREHpq5UG1t0go52PCY7YqCt9e6AypWE0KcxbOo9uoauXKIn5e95sA",
-            "ranjeeta.balakrishnan@devnco.co",
-            "saml2",
-            "Okta",
-            "1",
-            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                    "<system driverless=\"1\">\n" +
-                    "  <machine>\n" +
-                    "    <ips>\n" +
-                    "      <ip mask=\"255.255.255.0\"> my-ip </ip>\n" +
-                    "    </ips>\n" +
-                    "  </machine>\n" +
-                    "  <idp>\n" +
-                    "    {\"idpName\": \"Okta\",\n" +
-                    "      \"username\": \"ranjeeta.balakrishnan@devnco.co\",\n" +
-                    "      \"isLoggedIn\": \"true\",\n" +
-                    "      \"type\": \"auth-type\",\n" +
-                    "      \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyMjMxN2RlMC05NDRkLTRhNjItOGIxNy03YjYyZWQ5OGM5Y2EiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicmFuamVldGEuYmFsYWtyaXNobmFuQGRldm5jby5jbyIsInNlc3Npb24iOiJhOGI0NmE1Yi0wYWFlLTQ4ZjUtOWUxMS04NTM5YzljZDdkMTIiLCJleHAiOjE2MzkyMTQ0MzgsImlhdCI6MTYwNzY3ODQzOCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.HKiyYRd0QNql6zRsz276L6nGgiQG0GHcYpA6s6h7dOZQoAJZI5G5nZfdPARUEX3vvnEqpy4E8xDrKepk24SoKOQB4dXoSfwg0B6D1B5sz7Dl8Pf6D0N0wvXQl9cEC2LNpv3WqI_qXPYXS6ihO926XSa6f7mo2j3pwmzPZkrO_Q8PSaAjNoXhfCgVXh4oDApTb8A-kO7D67ky9w-GjoMfLdieVqoD1DcWMKkGfFKIdAHDWsEuxamR7xvmtBVvtNnOKIEAxKwf_SqL2JDpMt4PEqvcGd1Cp2_WqREHpq5UG1t0go52PCY7YqCt9e6AypWE0KcxbOo9uoauXKIn5e95sA\"}\n" +
-                    "  </idp>\n" +
-                    "  <memberships>\n" +
-                    "    <computer />\n" +
-                    "    <user>\n" +
-                    "      <guid>S-1-1-0</guid>\n" +
-                    "    </user>\n" +
-                    "  </memberships>\n" +
-                    "</system>"
-
-        )
-
-        call.enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(
-                call: Call<ResponseBody>,
-                response: Response<ResponseBody>
-            ) {
-                ProgressDialog.cancelLoading()
-                if (response.isSuccessful) {
-                    try {
-                        val html = response.body()?.string()
-
-                        Toast.makeText(context, "HTML RESPONSE =>${html}", Toast.LENGTH_SHORT)
-                            .show()
-                        val document = Jsoup.parse(html)
-                        val element = document.select("commands")
-
-                        element.forEach {
-                           Log.i("printer", "html res=>${it}")
-                        }
-                    } catch (e: Exception) {
-                        Log.i("printer", "e=>${e.message.toString()}")
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                ProgressDialog.cancelLoading()
-                Log.i("printer", "Error html response==>${t.message.toString()}")
-            }
-        })
-    }
 }

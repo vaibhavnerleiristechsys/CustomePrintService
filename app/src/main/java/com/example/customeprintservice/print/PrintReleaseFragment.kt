@@ -437,7 +437,7 @@ class PrintReleaseFragment : Fragment() {
         app = activity?.application as PrintService
     }
 
-    private fun decodeJWT(): String {
+    public fun decodeJWT(): String {
         var userName: String? = null
         try {
             val mapper = jacksonObjectMapper()
