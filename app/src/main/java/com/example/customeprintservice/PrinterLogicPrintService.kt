@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Service
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
@@ -15,7 +16,9 @@ import android.printservice.PrintJob
 import android.printservice.PrintService
 import android.printservice.PrinterDiscoverySession
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
@@ -34,7 +37,7 @@ class PrinterLogicPrintService : PrintService() {
     private val builder: PrinterInfo? = null
     private var mHandler: Handler? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
-
+    private var permissionsHelper: PermissionHelper? = null
 
     companion object {
         const val MSG_HANDLE_PRINT_JOB = 3
@@ -45,8 +48,22 @@ class PrinterLogicPrintService : PrintService() {
         Log.i(TAG, "#onConnected()")
         mHandler = PrintHandler(mainLooper)
         firebaseAnalytics = Firebase.analytics
-    }
 
+        val permissionWrite = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        val permissionRead = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+
+
+
+        if (permissionWrite != PackageManager.PERMISSION_GRANTED
+            || permissionRead != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission to record denied")
+            Toast.makeText(this,"Please login to Printerlogic app",Toast.LENGTH_LONG).show()
+        }
+
+    }
 
     override fun onDisconnected() {
         super.onDisconnected()
@@ -74,6 +91,24 @@ class PrinterLogicPrintService : PrintService() {
 
     override fun onPrintJobQueued(printJob: PrintJob) {
         Log.i(TAG, "override on Print Job Queued ")
+
+        val permissionWrite = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        val permissionRead = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+
+
+
+        if (permissionWrite != PackageManager.PERMISSION_GRANTED
+            || permissionRead != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission to write files denied")
+            Toast.makeText(this,"Please login to Printerlogic app",Toast.LENGTH_LONG).show()
+            printJob.complete()
+            return
+        }
+
+
         val message =
             mHandler!!.obtainMessage(MSG_HANDLE_PRINT_JOB, printJob)
         mHandler!!.sendMessageDelayed(message, 0)
@@ -95,9 +130,11 @@ class PrinterLogicPrintService : PrintService() {
         }
         val printerId = printJob.info.printerId
         val printerHashmap = PrinterHashmap()
-        val finalUrl = "http" + "://" + (printerHashmap.hashMap[printerId]!!.printerHost).toString()
-            .replace("/", "") +
-                ":" + printerHashmap.hashMap[printerId]!!.printerPort + "/ipp/print"
+        var finalUrl = "http" + "://" + printerHashmap.hashMap[printerId]!!
+            .printerHost + ":" + printerHashmap.hashMap[printerId]!!.printerPort + "/ipp/print"
+
+        finalUrl = finalUrl.replace("///","//")
+
         val info = printJob.info
         val file = File(filesDir, info.label + ".pdf")
         var `in`: InputStream? = null
@@ -171,6 +208,8 @@ class PrinterLogicPrintService : PrintService() {
         }
 
     }
+
+
 }
 
 internal class ThermalPrinterDiscoverySession(
@@ -363,4 +402,6 @@ class MyPrintDocumentAdapter(var context: Context) :
         }
         callback.onWriteFinished(pageRanges)
     }
+
+
 }
