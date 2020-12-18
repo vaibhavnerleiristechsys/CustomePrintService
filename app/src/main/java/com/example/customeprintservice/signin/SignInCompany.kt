@@ -10,7 +10,6 @@ import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.print.BottomNavigationActivity
-import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.CheckInternetConnection

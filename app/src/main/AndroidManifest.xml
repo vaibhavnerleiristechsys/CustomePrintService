@@ -20,9 +20,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
+        <activity
+            android:name=".print.NavigationDrawerActivity"
+            android:label="@string/title_activity_navigation_drawer"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
         <activity
             android:name=".print.BottomNavigationActivityForServerPrint"
-            android:label="@string/title_activity_bottom_navigation_for_server_print"></activity>
+            android:label="@string/title_activity_bottom_navigation_for_server_print" />
         <activity android:name=".signin.GoogleLoginActivity">
 
             <!--

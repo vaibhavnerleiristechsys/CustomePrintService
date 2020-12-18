@@ -1,6 +1,9 @@
 package com.example.customeprintservice
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Service
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
@@ -17,6 +20,7 @@ import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
+import com.example.customeprintservice.utils.PermissionHelper
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
@@ -42,6 +46,7 @@ class PrinterLogicPrintService : PrintService() {
         mHandler = PrintHandler(mainLooper)
         firebaseAnalytics = Firebase.analytics
     }
+
 
     override fun onDisconnected() {
         super.onDisconnected()
@@ -90,8 +95,9 @@ class PrinterLogicPrintService : PrintService() {
         }
         val printerId = printJob.info.printerId
         val printerHashmap = PrinterHashmap()
-        val finalUrl = "http" + "://" + printerHashmap.hashMap[printerId]!!
-            .printerHost + ":" + printerHashmap.hashMap[printerId]!!.printerPort + "/ipp/print"
+        val finalUrl = "http" + "://" + (printerHashmap.hashMap[printerId]!!.printerHost).toString()
+            .replace("/", "") +
+                ":" + printerHashmap.hashMap[printerId]!!.printerPort + "/ipp/print"
         val info = printJob.info
         val file = File(filesDir, info.label + ".pdf")
         var `in`: InputStream? = null

@@ -115,8 +115,7 @@ class PrintActivity : AppCompatActivity() {
 
             uri =
                 URI.create(
-                    "http://" + (bundle.getString("ipAddress")?.replace("/", "")
-                        ?: "") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print"
+                    "http://" + (bundle.getString("ipAddress")?.replace("/", "") ?: "") + ":${bundle.getString("printerPort")}" + "/" + "ipp/print"
                 )
             Log.i("printer", "uri1---->$uri")
 
