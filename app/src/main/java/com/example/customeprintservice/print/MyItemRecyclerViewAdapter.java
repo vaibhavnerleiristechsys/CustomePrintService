@@ -2,6 +2,7 @@ package com.example.customeprintservice.print;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,8 +56,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
                Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
-
-
             }
 
         });
@@ -82,6 +81,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mContentView = (TextView) view.findViewById(R.id.content);
             serverDocument = (LinearLayout)view.findViewById(R.id.serverDocument);
             checkBox = (CheckBox)view.findViewById(R.id.checkbox);
+
         }
 
         @Override

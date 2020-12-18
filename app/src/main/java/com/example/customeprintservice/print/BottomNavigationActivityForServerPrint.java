@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +21,8 @@ import com.example.customeprintservice.R;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BottomNavigationActivityForServerPrint extends AppCompatActivity {
     public static Set<SelectedFile> selectedServerFile =new HashSet<SelectedFile>();
@@ -27,6 +30,10 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Logger LOG = LoggerFactory.getLogger(BottomNavigationActivityForServerPrint.class);
+        LOG.info("Papertrail log management demo",selectedServerFile);
+
         setContentView(R.layout.activity_bottom_navigation_for_server_print);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
@@ -80,4 +87,6 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity {
     }
         return(super.onOptionsItemSelected(item));
     }
+
+
 }
