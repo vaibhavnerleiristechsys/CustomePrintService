@@ -60,7 +60,7 @@ class PrinterLogicPrintService : PrintService() {
         if (permissionWrite != PackageManager.PERMISSION_GRANTED
             || permissionRead != PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "Permission to record denied")
-            Toast.makeText(this,"Please login to Printerlogic app",Toast.LENGTH_LONG)
+            Toast.makeText(this,"Please login to Printerlogic app",Toast.LENGTH_LONG).show()
         }
 
     }
@@ -91,6 +91,24 @@ class PrinterLogicPrintService : PrintService() {
 
     override fun onPrintJobQueued(printJob: PrintJob) {
         Log.i(TAG, "override on Print Job Queued ")
+
+        val permissionWrite = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        val permissionRead = ContextCompat.checkSelfPermission(this,
+            Manifest.permission.READ_EXTERNAL_STORAGE)
+
+
+
+        if (permissionWrite != PackageManager.PERMISSION_GRANTED
+            || permissionRead != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "Permission to write files denied")
+            Toast.makeText(this,"Please login to Printerlogic app",Toast.LENGTH_LONG).show()
+            printJob.complete()
+            return
+        }
+
+
         val message =
             mHandler!!.obtainMessage(MSG_HANDLE_PRINT_JOB, printJob)
         mHandler!!.sendMessageDelayed(message, 0)
