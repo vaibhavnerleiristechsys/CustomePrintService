@@ -145,4 +145,9 @@ dependencies {
     implementation 'com.google.api-client:google-api-client-android:1.30.5'
     implementation 'com.google.apis:google-api-services-people:v1-rev99-1.22.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'com.github.tony19:logback-android:1.1.1-12'
+    compile ('com.papertrailapp:logback-syslog4j:1.0.0') {
+        exclude group: 'ch.qos.logback'
+    }
 }

@@ -18,6 +18,7 @@ import com.example.customeprintservice.R;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
+import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -26,6 +27,9 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GoogleLoginActivity extends AppCompatActivity {
     GoogleSignInClient googleApiClient;
@@ -50,7 +54,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
         Log.d("clientIdForGoogleLogin:",clientIdForGoogleLogin);
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("212495772338-q5ghg2v6beme02a6c0hrfmbc6gig6i41.apps.googleusercontent.com")
+                .requestIdToken("179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com")
                 //.requestEmail()
                 .build();
         googleApiClient = GoogleSignIn.getClient(this,googleSignInOptions);
@@ -91,6 +95,8 @@ public class GoogleLoginActivity extends AppCompatActivity {
             GoogleSignInAccount account =completedTask.getResult(ApiException.class);
             String idToken=account.getIdToken();
             Log.d("idToken",idToken);
+            Logger LOG = LoggerFactory.getLogger(BottomNavigationActivityForServerPrint.class);
+            LOG.info("Papertrail idToken log management demo"+idToken);
             SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
             SharedPreferences.Editor myEdit= sharedPreferences.edit();
             myEdit.putString("idToken",idToken);
