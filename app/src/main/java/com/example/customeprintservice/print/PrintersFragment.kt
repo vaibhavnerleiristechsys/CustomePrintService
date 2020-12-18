@@ -54,7 +54,7 @@ class PrintersFragment : Fragment() {
         }
         updateUi()
         getPrinterList(requireContext())
-        Log.i("printer", "Login octa token" + LoginPrefs.getOCTAToken(requireContext()))
+        Log.i("printer", "Login okta token" + LoginPrefs.getOCTAToken(requireContext()))
     }
 
     @SuppressLint("WrongConstant")
@@ -165,7 +165,7 @@ class PrintersFragment : Fragment() {
     }
 
     @SuppressLint("WrongConstant")
-    private fun dialogSelectPrinter() {
+     fun dialogSelectPrinter() {
         val dialog = Dialog(context as Activity)
         dialog.setContentView(R.layout.dialog_select_printer)
         dialog.setCancelable(false)

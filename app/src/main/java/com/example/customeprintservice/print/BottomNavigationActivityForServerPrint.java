@@ -1,27 +1,40 @@
 package com.example.customeprintservice.print;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.customeprintservice.room.SelectedFile;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.customeprintservice.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class BottomNavigationActivityForServerPrint extends AppCompatActivity {
+import static com.example.customeprintservice.print.ServerPrintRelaseFragment.serverDocumentlist;
+
+public class BottomNavigationActivityForServerPrint extends AppCompatActivity  implements BottomNavigationView.OnNavigationItemSelectedListener{
     public static Set<SelectedFile> selectedServerFile =new HashSet<SelectedFile>();
 
     @Override
@@ -39,6 +52,8 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity {
       //  NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
       //  NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
      //   NavigationUI.setupWithNavController(navView, navController);
+        BottomNavigationView navigation = findViewById(R.id.nav_view);
+        navigation.setOnNavigationItemSelectedListener(this);
     }
 
 
@@ -54,30 +69,18 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity {
         return false;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-
-     /*   MenuItem item = menu.findItem(R.id.print);
-        item.setVisible(false);
-        if (selectedServerFile.size()>0) {
-            item.setVisible(true);
-        }*/
-
-        return true;
-    }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) { switch(item.getItemId()) {
-        case R.id.download:
-            Log.d("documents download",selectedServerFile.toString());
-            return(true);
-        case R.id.print:
-             Log.d("documents print",selectedServerFile.toString());
-            return(true);
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment fragment = null;
+        switch (item.getItemId()) {
+            case R.id.printRelease:
+                fragment = new ServerPrintRelaseFragment();
+                break;
+            case R.id.printer:
+                fragment = new PrintersFragment();
+                break;
 
-    }
-        return(super.onOptionsItemSelected(item));
-    }
+        }
+        return loadFragment(fragment);    }
 }

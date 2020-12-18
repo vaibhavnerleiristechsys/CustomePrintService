@@ -330,8 +330,8 @@ class PrintReleaseFragment : Fragment() {
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                     }.start()
                     Thread.sleep(1000)
-                    Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
-                        .show()
+//                    Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
+//                        .show()
                     ProgressDialog.cancelLoading()
                 } else {
                     ProgressDialog.cancelLoading()

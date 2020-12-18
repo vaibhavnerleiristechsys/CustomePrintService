@@ -1,22 +1,28 @@
 package com.example.customeprintservice.print;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.AbsListView;
+import android.widget.ImageView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import com.example.customeprintservice.R;
-import com.example.customeprintservice.prefs.SignInCompanyPrefs;
-import com.example.customeprintservice.print.dummy.DummyContent;
 import com.example.customeprintservice.room.SelectedFile;
-import com.example.customeprintservice.room.ServerSelectedFile;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 
@@ -25,12 +31,12 @@ import java.util.ArrayList;
  */
 public class ServerPrintRelaseFragment extends Fragment {
 
-    public static ArrayList serverDocumentlist = new ArrayList<SelectedFile>();
-
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
+    public static ArrayList serverDocumentlist = new ArrayList<SelectedFile>();
     // TODO: Customize parameters
     private int mColumnCount = 1;
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -52,7 +58,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setHasOptionsMenu(true);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -74,12 +80,61 @@ public class ServerPrintRelaseFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
+            PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
             printReleaseFragment.getJobStatusesForServerList(context);
 
-         //   recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS));
+            //   recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS));
             recyclerView.setAdapter(new MyItemRecyclerViewAdapter(serverDocumentlist));
         }
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_main, menu);
+ /*   MenuItem item = menu.findItem(R.id.print);
+    item.setVisible(false);
+    if (selectedServerFile.size()>0) {
+        item.setVisible(true);
+    }*/
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.download:
+                //   Log.d("documents download",selectedServerFile.toString());
+                return (true);
+            case R.id.print:
+                selectePrinterDialog();
+                return (true);
+        }
+        return (super.onOptionsItemSelected(item));
+    }
+
+    private void selectePrinterDialog() {
+        Dialog dialog = new Dialog(requireContext());
+        dialog.setContentView(R.layout.dialog_select_printer);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+
+        Window window = dialog.getWindow();
+        window.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.BOTTOM;
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setDimAmount(0.5f);
+        window.setAttributes(wlp);
+
+        RecyclerView printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
+        ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
+        FloatingActionButton floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
+
+
+        printerRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        printerRecyclerView.setAdapter(new MyItemRecyclerViewAdapter(serverDocumentlist));
+
+        dialog.show();
     }
 }

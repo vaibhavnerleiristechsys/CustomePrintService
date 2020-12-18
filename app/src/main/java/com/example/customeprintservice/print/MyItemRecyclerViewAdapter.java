@@ -1,35 +1,31 @@
 package com.example.customeprintservice.print;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.customeprintservice.R;
-import com.example.customeprintservice.print.dummy.DummyContent.DummyItem;
 import com.example.customeprintservice.room.SelectedFile;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
+    public static Set<SelectedFile> selectedServerFile = new HashSet<SelectedFile>();
     private final List<SelectedFile> mValues;
-    public static Set<SelectedFile> selectedServerFile =new HashSet<SelectedFile>();
     Menu menu;
 
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
@@ -53,9 +49,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
 
-               Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
+                Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
-
 
             }
 
@@ -78,10 +73,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
-            serverDocument = (LinearLayout)view.findViewById(R.id.serverDocument);
-            checkBox = (CheckBox)view.findViewById(R.id.checkbox);
+            mIdView = view.findViewById(R.id.item_number);
+            mContentView = view.findViewById(R.id.content);
+            serverDocument = view.findViewById(R.id.serverDocument);
+            checkBox = view.findViewById(R.id.checkbox);
         }
 
         @Override
