@@ -2,6 +2,7 @@ package com.example.customeprintservice.print;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,6 +40,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     public static ArrayList serverDocumentlist = new ArrayList<SelectedFile>();
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    Context context;
 
 
     /**
@@ -74,7 +77,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
         // Set the adapter
         if (view instanceof RecyclerView) {
-            Context context = view.getContext();
+             context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -107,7 +110,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.download:
                 PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
-                printReleaseFragment.cancelJob();
+                printReleaseFragment.cancelJob(context);
                 return (true);
             case R.id.print:
                 selectePrinterDialog();
@@ -146,8 +149,18 @@ public class ServerPrintRelaseFragment extends Fragment {
         );
 
         floatingActionButton.setOnClickListener(v -> {
-
+            PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
+            printReleaseFragment.releaseJob();
         });
         dialog.show();
+    }
+
+
+    public void selectePrinterChangeFloatingBtn(Context context) {
+        Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_select_printer);
+        FloatingActionButton floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
+        floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.bloodOrange));
+
     }
 }

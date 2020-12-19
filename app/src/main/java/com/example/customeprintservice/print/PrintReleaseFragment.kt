@@ -147,7 +147,7 @@ class PrintReleaseFragment : Fragment() {
 
         btnDeleteJobs.setOnClickListener {
             ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
-            cancelJob()
+           // cancelJob()
         }
         imgLogout.setOnClickListener {
             Toast.makeText(requireContext(), "Click on Logout", Toast.LENGTH_SHORT).show()
@@ -196,10 +196,10 @@ class PrintReleaseFragment : Fragment() {
         compositeDisposable.add(disposable2)
     }
 
-    fun cancelJob() {
+    fun cancelJob(context: Context) {
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/cancel/"
-        val apiService = RetrofitClient(requireContext())
+        val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
@@ -216,10 +216,10 @@ class PrintReleaseFragment : Fragment() {
         }
         jobStatusCancel.deleteJobs = deleteJobs
         val call = apiService.jobStatusCancel(
-            "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
+            "Bearer " + LoginPrefs.getOCTAToken(context),
             decodeJWT(),
-            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-            SignInCompanyPrefs.getIdpName(requireContext()).toString(),
+            SignInCompanyPrefs.getIdpType(context).toString(),
+            SignInCompanyPrefs.getIdpName(context).toString(),
             jobStatusCancel
         )
 
@@ -232,25 +232,27 @@ class PrintReleaseFragment : Fragment() {
                 if (response.code() == 200) {
                     val resp = response.body().toString()
                     Log.i("printer", "response cancel job==>${resp}")
-                    ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
+                    ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         requireContext(),
-                        decodeJWT(),
-                        SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-                        SignInCompanyPrefs.getIdpName(requireContext()).toString()
+                        decodeJWT(context),
+                        SignInCompanyPrefs.getIdpType(context).toString(),
+                        SignInCompanyPrefs.getIdpName(context).toString()
                     )
                 }
             }
 
             override fun onFailure(call: Call<CancelJobResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Validation Failed", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response cancel job==>${t.message}")
             }
         })
     }
 
     fun releaseJob() {
+
+        releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
         val apiService = RetrofitClient(requireContext())
             .getRetrofitInstance(BASE_URL)
@@ -258,7 +260,7 @@ class PrintReleaseFragment : Fragment() {
 
         val releaseJobRequest = ReleaseJobRequest()
         val releaseJobs = ArrayList<ReleaseJobsItem>()
-        releaseJobCheckedList.forEach {
+        releaseJobCheckedListForServer.forEach {
             val releaseJobsItem = ReleaseJobsItem()
             releaseJobsItem.jobNum = it.jobNum
             releaseJobsItem.jobType = it.jobType

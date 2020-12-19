@@ -14,6 +14,7 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
@@ -52,6 +53,7 @@ class FragmentPrinterListAdapter(
                 SignInCompanyPrefs.getIdpName(context).toString(),
                 list[position].nodeId.toString()
             )
+            ServerPrintRelaseFragment().selectePrinterChangeFloatingBtn(context)
         }
 //        holder.bind(list?.get(position))
 //
