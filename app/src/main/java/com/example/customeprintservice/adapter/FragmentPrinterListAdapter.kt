@@ -61,10 +61,10 @@ class FragmentPrinterListAdapter(
             return itemView.findViewById(R.id.txtFragmentBuildingName)
         }
 
-        fun getCardview(): CardView{
+        fun getCardview(): CardView {
             return itemView.findViewById(R.id.cardviewFragmentPrinterList)
         }
 
-        }
     }
+}
 

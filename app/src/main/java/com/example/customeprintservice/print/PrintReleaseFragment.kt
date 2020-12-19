@@ -248,60 +248,59 @@ class PrintReleaseFragment : Fragment() {
         })
     }
 
-        fun releaseJob() {
-            val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
-            val apiService = RetrofitClient(requireContext())
-                .getRetrofitInstance(BASE_URL)
-                .create(ApiService::class.java)
+    fun releaseJob() {
+        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
+        val apiService = RetrofitClient(requireContext())
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
 
-            val releaseJobRequest = ReleaseJobRequest()
-            val releaseJobs = ArrayList<ReleaseJobsItem>()
-            releaseJobCheckedList.forEach {
-                val releaseJobsItem = ReleaseJobsItem()
-                releaseJobsItem.jobNum = it.jobNum
-                releaseJobsItem.jobType = it.jobType
-                releaseJobsItem.queueId = it.queueId
-                releaseJobsItem.userName = it.userName
-                releaseJobsItem.workstationId = it.workStationId
-                releaseJobs.add(releaseJobsItem)
-            }
-            releaseJobRequest.releaseJobs = releaseJobs
-
-            val call = apiService.releaseJob(
-                releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
-                decodeJWT(),
-                SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-                SignInCompanyPrefs.getIdpName(requireContext()).toString()
-            )
-
-            call.enqueue(object : Callback<ReleaseJobResponse> {
-                override fun onResponse(
-                    call: Call<ReleaseJobResponse>,
-                    response: Response<ReleaseJobResponse>
-                ) {
-                    ProgressDialog.cancelLoading()
-                    if (response.code() == 200) {
-                        val response = response.body().toString()
-                        Log.i("printer", "response release job==>${response}")
-                        ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
-                        getJobStatuses(
-                            requireContext(),
-                            decodeJWT(),
-                            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-                            SignInCompanyPrefs.getIdpName(requireContext()).toString()
-                        )
-                    }
-                }
-
-                override fun onFailure(call: Call<ReleaseJobResponse>, t: Throwable) {
-                    ProgressDialog.cancelLoading()
-                    Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
-                    Log.i("printer", "Error response release job==>${t.message}")
-                }
-
-            })
+        val releaseJobRequest = ReleaseJobRequest()
+        val releaseJobs = ArrayList<ReleaseJobsItem>()
+        releaseJobCheckedList.forEach {
+            val releaseJobsItem = ReleaseJobsItem()
+            releaseJobsItem.jobNum = it.jobNum
+            releaseJobsItem.jobType = it.jobType
+            releaseJobsItem.queueId = it.queueId
+            releaseJobsItem.userName = it.userName
+            releaseJobsItem.workstationId = it.workStationId
+            releaseJobs.add(releaseJobsItem)
         }
+        releaseJobRequest.releaseJobs = releaseJobs
 
+        val call = apiService.releaseJob(
+            releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
+            decodeJWT(),
+            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+        )
+
+        call.enqueue(object : Callback<ReleaseJobResponse> {
+            override fun onResponse(
+                call: Call<ReleaseJobResponse>,
+                response: Response<ReleaseJobResponse>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.code() == 200) {
+                    val response = response.body().toString()
+                    Log.i("printer", "response release job==>${response}")
+                    ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
+                    getJobStatuses(
+                        requireContext(),
+                        decodeJWT(),
+                        SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+                        SignInCompanyPrefs.getIdpName(requireContext()).toString()
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<ReleaseJobResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
+                Log.i("printer", "Error response release job==>${t.message}")
+            }
+
+        })
+    }
 
 
     fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
@@ -465,13 +464,13 @@ class PrintReleaseFragment : Fragment() {
             )
             userName = decoded.user.toString()
         } catch (ex: Exception) {
-            requireContext()?.toast("Failed to Decode Jwt Token")
+            requireContext().toast("Failed to Decode Jwt Token")
         }
         return userName.toString()
     }
 
 
-    public fun decodeJWT(context: Context): String {
+    fun decodeJWT(context: Context): String {
         var userName: String? = null
         try {
             val mapper = jacksonObjectMapper()
@@ -581,8 +580,7 @@ class PrintReleaseFragment : Fragment() {
     }
 
 
-
-    fun getJobStatusesForServerList(context:Context) {
+    fun getJobStatusesForServerList(context: Context) {
 
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
         val apiService = RetrofitClient(context)
@@ -613,7 +611,7 @@ class PrintReleaseFragment : Fragment() {
                     ProgressDialog.cancelLoading()
                     val parseList: List<PrintQueueJobStatusItem?>? =
                         getJobStatusesResponse
-                    ServerPrintRelaseFragment.serverDocumentlist.clear();
+                    ServerPrintRelaseFragment.serverDocumentlist.clear()
                     val disposable4 = Observable.fromCallable {
                         val selectedFileList = ArrayList<SelectedFile>()
                         parseList?.forEach {
@@ -638,7 +636,7 @@ class PrintReleaseFragment : Fragment() {
                         .subscribe(
                             {
                                 Log.i("printer", "it=>${it}")
-                              //  listUpdate(it as ArrayList<SelectedFile>?, context)
+                                //  listUpdate(it as ArrayList<SelectedFile>?, context)
                             },
                             {
                                 Log.i("printer", "Error=>${it.message}")

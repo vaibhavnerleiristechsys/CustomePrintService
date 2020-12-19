@@ -140,13 +140,18 @@ class PrintersFragment : Fragment() {
                         PrinterList().printerList.removeIf {
                             it.fromServer == true
                         }
+                        val nodeId = document.select("command")
 
+                        nodeId.forEach {
+                            Log.i("printer","it==>${it.attr("node_id")}")
+                        }
                         element.forEach {
                             val printerModel: PrinterModel = PrinterModel()
                             printerModel.serviceName = it.text()
                             printerModel.printerHost = inetAddress
                             printerModel.printerPort = 631
                             printerModel.fromServer = true
+
                             Log.i("printer", "html res=>${it.text()}")
                             PrinterList().addPrinterModel(printerModel)
                         }
