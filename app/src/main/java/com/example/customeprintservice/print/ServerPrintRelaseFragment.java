@@ -21,6 +21,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.customeprintservice.R;
+import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
+import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.room.SelectedFile;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -120,7 +122,8 @@ public class ServerPrintRelaseFragment extends Fragment {
         dialog.setCanceledOnTouchOutside(true);
 
         Window window = dialog.getWindow();
-        window.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
+        assert window != null;
+        window.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT);
         WindowManager.LayoutParams wlp = window.getAttributes();
         wlp.gravity = Gravity.BOTTOM;
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
@@ -133,8 +136,17 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        printerRecyclerView.setAdapter(new MyItemRecyclerViewAdapter(serverDocumentlist));
+        PrinterList printerList = new PrinterList();
+        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(requireContext(), printerList.getPrinterList()));
 
+
+        imgCancel.setOnClickListener(v ->
+                dialog.cancel()
+        );
+
+        floatingActionButton.setOnClickListener(v -> {
+
+        });
         dialog.show();
     }
 }

@@ -195,7 +195,7 @@ class PrintersFragment : Fragment() {
                 LinearLayout.VERTICAL,
                 false
             )
-        val adapter = FragmentPrinterListAdapter(
+            val adapter = FragmentPrinterListAdapter(
             context as Activity,
             PrinterList().printerList
         )
