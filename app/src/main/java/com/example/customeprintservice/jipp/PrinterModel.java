@@ -14,6 +14,17 @@ public class PrinterModel {
 
     private Boolean isFromServer = false;
 
+    private String nodeId;
+
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
+
     public Boolean getManual() {
         return manual;
     }

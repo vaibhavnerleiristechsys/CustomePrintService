@@ -151,7 +151,7 @@ class PrintersFragment : Fragment() {
                             printerModel.printerHost = inetAddress
                             printerModel.printerPort = 631
                             printerModel.fromServer = true
-
+                            printerModel.nodeId =it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
                             PrinterList().addPrinterModel(printerModel)
                         }
