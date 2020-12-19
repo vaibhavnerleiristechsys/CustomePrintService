@@ -79,6 +79,7 @@ class PrintReleaseFragment : Fragment() {
     private val compositeDisposable = CompositeDisposable()
     private val releaseJobRequest = ReleaseJobRequest()
     private val releaseJobCheckedList = ArrayList<SelectedFile>()
+    private var releaseJobCheckedListForServer = HashSet<SelectedFile>()
 
     var selectedServerFilelist = ArrayList<SelectedFile>()
 
@@ -196,6 +197,7 @@ class PrintReleaseFragment : Fragment() {
     }
 
     fun cancelJob() {
+        releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/cancel/"
         val apiService = RetrofitClient(requireContext())
             .getRetrofitInstance(BASE_URL)
@@ -203,7 +205,7 @@ class PrintReleaseFragment : Fragment() {
 
         val jobStatusCancel = CancelJobRequest()
         val deleteJobs = ArrayList<DeleteJobsItem>()
-        releaseJobCheckedList.forEach {
+        releaseJobCheckedListForServer.forEach {
             val deleteJobsItem = DeleteJobsItem()
             deleteJobsItem.jobNum = it.jobNum
             deleteJobsItem.jobType = it.jobType

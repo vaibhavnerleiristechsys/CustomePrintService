@@ -106,7 +106,8 @@ public class ServerPrintRelaseFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                //   Log.d("documents download",selectedServerFile.toString());
+                PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
+                printReleaseFragment.cancelJob();
                 return (true);
             case R.id.print:
                 selectePrinterDialog();

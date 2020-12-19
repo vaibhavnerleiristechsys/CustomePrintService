@@ -125,10 +125,11 @@ class PrinterListService {
         authorization: String,
         userName: String,
         idpType: String,
-        idpName: String
+        idpName: String,
+        nodeId: String
     ) {
         val BASE_URL =
-            "https://gw.app.printercloud.com/devncookta/tree/api/node/4/printer/"
+            "https://gw.app.printercloud.com/devncookta/tree/api/node/"+nodeId+"/printer/"
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
@@ -146,6 +147,7 @@ class PrinterListService {
                 ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
                     Log.i("printer", "lis res=>${response.body().toString()}")
+                    Log.i("printer id", "lis res=>${response.body()?.data?.id.toString()}")
                     Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
                 }
             }

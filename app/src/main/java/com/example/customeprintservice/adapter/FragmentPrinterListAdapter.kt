@@ -2,6 +2,7 @@ package com.example.customeprintservice.adapter
 
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,15 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import com.example.customeprintservice.jipp.PrinterModel
+import com.example.customeprintservice.model.DecodedJWTResponse
+import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.printjobstatus.PrinterListService
+import com.example.customeprintservice.utils.JwtDecode
+import com.example.customeprintservice.utils.ProgressDialog
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import org.jetbrains.anko.toast
 
 
 class FragmentPrinterListAdapter(
@@ -30,6 +40,18 @@ class FragmentPrinterListAdapter(
         holder.getPrinterName().text = list[position].serviceName.toString()
         holder.getCardview().setOnClickListener {
             it.setBackgroundColor(Color.GRAY)
+            Log.d("selected printerdetails",list[position].serviceName.toString())
+            Log.d("selected printerdetails",list[position].nodeId.toString())
+            Log.d("selected printerdetails",list[position].printerHost.toString())
+            ProgressDialog.showLoadingDialog(context, "Getting Printer Details")
+            PrinterListService().getPrinterDetails(
+                context,
+                LoginPrefs.getOCTAToken(context).toString(),
+                decodeJWT(),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString(),
+                list[position].nodeId.toString()
+            )
         }
 //        holder.bind(list?.get(position))
 //
@@ -65,6 +87,23 @@ class FragmentPrinterListAdapter(
             return itemView.findViewById(R.id.cardviewFragmentPrinterList)
         }
 
+
+
+    }
+
+
+    private fun decodeJWT(): String {
+        var userName: String? = null
+        try {
+            val mapper = jacksonObjectMapper()
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(context)?.let { JwtDecode.decoded(it) }!!
+            )
+            userName = decoded.user.toString()
+        } catch (ex: Exception) {
+
+        }
+        return userName.toString()
     }
 }
 

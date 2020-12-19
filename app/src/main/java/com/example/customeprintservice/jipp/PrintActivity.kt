@@ -163,7 +163,8 @@ class PrintActivity : AppCompatActivity() {
                 LoginPrefs.getOCTAToken(this@PrintActivity).toString(),
                 decodeJWT(),
                 SignInCompanyPrefs.getIdpType(this@PrintActivity).toString(),
-                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString()
+                SignInCompanyPrefs.getIdpName(this@PrintActivity).toString(),
+                ""
             )
         }
 
