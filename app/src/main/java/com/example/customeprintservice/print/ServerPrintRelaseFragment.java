@@ -42,6 +42,9 @@ public class ServerPrintRelaseFragment extends Fragment {
     private int mColumnCount = 1;
     Context context;
     Dialog dialog;
+    View v = null;
+    FloatingActionButton floatingActionButton;
+    public static String checkMenu="search";
 
 
     /**
@@ -98,12 +101,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_main, menu);
- /*   MenuItem item = menu.findItem(R.id.print);
-    item.setVisible(false);
-    if (selectedServerFile.size()>0) {
-        item.setVisible(true);
-    }*/
+            inflater.inflate(R.menu.menu_main, menu);
     }
 
     @Override
@@ -122,7 +120,9 @@ public class ServerPrintRelaseFragment extends Fragment {
 
     private void selectePrinterDialog() {
         dialog = new Dialog(requireContext());
-        dialog.setContentView(R.layout.dialog_select_printer);
+      //  dialog.setContentView(R.layout.dialog_select_printer);
+        v = LayoutInflater.from(context).inflate(R.layout.dialog_select_printer, null);
+        dialog.setContentView(v);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(true);
         Window window = dialog.getWindow();
@@ -136,7 +136,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
         RecyclerView printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
         ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
-        FloatingActionButton floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
+        floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
         floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.paleGray));
 
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -155,12 +155,4 @@ public class ServerPrintRelaseFragment extends Fragment {
         dialog.show();
     }
 
-
-    public void selectePrinterChangeFloatingBtn(Context context) {
-       // Dialog dialog = new Dialog(context);
-        // dialog.setContentView(R.layout.dialog_select_printer);
-       // FloatingActionButton floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
-       // floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.bloodOrange));
-        // dialog.show();
-    }
 }

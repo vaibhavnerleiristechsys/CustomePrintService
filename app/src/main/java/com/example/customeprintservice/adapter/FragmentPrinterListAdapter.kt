@@ -53,7 +53,7 @@ class FragmentPrinterListAdapter(
                 SignInCompanyPrefs.getIdpName(context).toString(),
                 list[position].nodeId.toString()
             )
-            ServerPrintRelaseFragment().selectePrinterChangeFloatingBtn(context)
+
         }
 //        holder.bind(list?.get(position))
 //

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -12,6 +13,13 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         />  -->
+  <ImageView
+      android:id="@+id/documenticon"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="16dp"
+      app:srcCompat="@drawable/documenticon" />
   <CheckBox
       android:id="@+id/checkbox"
       android:layout_width="wrap_content"
@@ -19,19 +27,21 @@
       android:layout_marginStart="16dp"
       android:layout_marginTop="16dp"
       android:button="@drawable/custom_checkbox"
-       />
+      />
 
-    <TextView
-        android:id="@+id/item_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+  <TextView
+      android:id="@+id/item_number"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/text_margin"
+      android:textAppearance="?attr/textAppearanceListItem" />
 
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+  <TextView
+      android:id="@+id/content"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_margin="@dimen/text_margin"
+      android:textAppearance="?attr/textAppearanceListItem" />
+
+
 </LinearLayout>

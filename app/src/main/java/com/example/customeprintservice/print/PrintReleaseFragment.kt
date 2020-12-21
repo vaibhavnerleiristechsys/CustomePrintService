@@ -230,6 +230,7 @@ class PrintReleaseFragment : Fragment() {
             ) {
                 ProgressDialog.cancelLoading()
                 if (response.code() == 200) {
+                    BottomNavigationActivityForServerPrint.selectedServerFile.clear()
                     val resp = response.body().toString()
                     Log.i("printer", "response cancel job==>${resp}")
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
@@ -251,7 +252,7 @@ class PrintReleaseFragment : Fragment() {
     }
 
     fun releaseJob(context: Context) {
-
+        ProgressDialog.showLoadingDialog(context, "Released Job")
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
         val apiService = RetrofitClient(context)
@@ -354,7 +355,7 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFileList.add(selectedFile)
-                            ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
+
                         }
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                         app.dbInstance().selectedFileDao().save(selectedFileList)

@@ -1,11 +1,13 @@
 package com.example.customeprintservice.print;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.room.SelectedFile;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +30,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public static Set<SelectedFile> selectedServerFile = new HashSet<SelectedFile>();
     private final List<SelectedFile> mValues;
     Menu menu;
-
+    List<ViewHolder> holders= new ArrayList<ViewHolder>();
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
         mValues = items;
     }
@@ -45,12 +48,15 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mIdView.setText(mValues.get(position).getFileName());
         holder.mContentView.setText(mValues.get(position).getFileSelectedDate());
 
+        holders.add(holder);
+
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+
 
             }
 
@@ -69,7 +75,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final LinearLayout serverDocument;
         public final CheckBox checkBox;
         public SelectedFile mItem;
-
+       public ImageView documenticon;
+         List a =new ArrayList<View>();
         public ViewHolder(View view) {
             super(view);
             mView = view;
@@ -77,11 +84,44 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mContentView = view.findViewById(R.id.content);
             serverDocument = view.findViewById(R.id.serverDocument);
             checkBox = view.findViewById(R.id.checkbox);
+            checkBox.setVisibility(View.GONE);
+            documenticon =view.findViewById(R.id.documenticon);
+
+
+            documenticon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                   Log.d( "document click", ":successfull");
+                    setDocument();
+                }
+
+            });
+
+            serverDocument.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Log.d( "document click", ":successfull");
+                    setDocument();
+                }
+
+            });
+
+
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
+        }
+
+        public void setDocument(){
+            for(int i=0;i<holders.size();i++){
+                ViewHolder holder1 = holders.get(i);
+                holder1.checkBox.setVisibility(View.VISIBLE);
+                holder1.documenticon.setVisibility(View.GONE);
+            }
         }
     }
 }
