@@ -133,7 +133,7 @@ class PrintReleaseFragment : Fragment() {
 
         btnRelease.setOnClickListener {
             ProgressDialog.showLoadingDialog(requireContext(), "Released Job")
-            releaseJob()
+            releaseJob(requireContext())
         }
 
         /**
@@ -217,7 +217,7 @@ class PrintReleaseFragment : Fragment() {
         jobStatusCancel.deleteJobs = deleteJobs
         val call = apiService.jobStatusCancel(
             "Bearer " + LoginPrefs.getOCTAToken(context),
-            decodeJWT(),
+            decodeJWT(context),
             SignInCompanyPrefs.getIdpType(context).toString(),
             SignInCompanyPrefs.getIdpName(context).toString(),
             jobStatusCancel
@@ -234,7 +234,7 @@ class PrintReleaseFragment : Fragment() {
                     Log.i("printer", "response cancel job==>${resp}")
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
-                        requireContext(),
+                        context,
                         decodeJWT(context),
                         SignInCompanyPrefs.getIdpType(context).toString(),
                         SignInCompanyPrefs.getIdpName(context).toString()
@@ -250,11 +250,11 @@ class PrintReleaseFragment : Fragment() {
         })
     }
 
-    fun releaseJob() {
+    fun releaseJob(context: Context) {
 
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
-        val apiService = RetrofitClient(requireContext())
+        val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
@@ -272,10 +272,10 @@ class PrintReleaseFragment : Fragment() {
         releaseJobRequest.releaseJobs = releaseJobs
 
         val call = apiService.releaseJob(
-            releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(requireContext()),
-            decodeJWT(),
-            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-            SignInCompanyPrefs.getIdpName(requireContext()).toString()
+            releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+            decodeJWT(context),
+            SignInCompanyPrefs.getIdpType(context).toString(),
+            SignInCompanyPrefs.getIdpName(context).toString()
         )
 
         call.enqueue(object : Callback<ReleaseJobResponse> {
@@ -287,19 +287,19 @@ class PrintReleaseFragment : Fragment() {
                 if (response.code() == 200) {
                     val response = response.body().toString()
                     Log.i("printer", "response release job==>${response}")
-                    ProgressDialog.showLoadingDialog(requireContext(), "Refreshing Job List")
+                    ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
-                        requireContext(),
-                        decodeJWT(),
-                        SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-                        SignInCompanyPrefs.getIdpName(requireContext()).toString()
+                        context,
+                        decodeJWT(context),
+                        SignInCompanyPrefs.getIdpType(context).toString(),
+                        SignInCompanyPrefs.getIdpName(context).toString()
                     )
                 }
             }
 
             override fun onFailure(call: Call<ReleaseJobResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                Toast.makeText(requireContext(), "Validation Failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Validation Failed", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response release job==>${t.message}")
             }
 
@@ -468,7 +468,7 @@ class PrintReleaseFragment : Fragment() {
             )
             userName = decoded.user.toString()
         } catch (ex: Exception) {
-            requireContext().toast("Failed to Decode Jwt Token")
+            //context.toast("Failed to Decode Jwt Token")
         }
         return userName.toString()
     }

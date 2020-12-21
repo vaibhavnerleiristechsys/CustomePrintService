@@ -41,6 +41,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     Context context;
+    Dialog dialog;
 
 
     /**
@@ -120,11 +121,10 @@ public class ServerPrintRelaseFragment extends Fragment {
     }
 
     private void selectePrinterDialog() {
-        Dialog dialog = new Dialog(requireContext());
+        dialog = new Dialog(requireContext());
         dialog.setContentView(R.layout.dialog_select_printer);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(true);
-
         Window window = dialog.getWindow();
         assert window != null;
         window.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT);
@@ -137,7 +137,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         RecyclerView printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
         ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
         FloatingActionButton floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
-
+        floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.paleGray));
 
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         PrinterList printerList = new PrinterList();
@@ -150,17 +150,17 @@ public class ServerPrintRelaseFragment extends Fragment {
 
         floatingActionButton.setOnClickListener(v -> {
             PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
-            printReleaseFragment.releaseJob();
+            printReleaseFragment.releaseJob(context);
         });
         dialog.show();
     }
 
 
     public void selectePrinterChangeFloatingBtn(Context context) {
-        Dialog dialog = new Dialog(context);
-        dialog.setContentView(R.layout.dialog_select_printer);
-        FloatingActionButton floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
-        floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.bloodOrange));
-
+       // Dialog dialog = new Dialog(context);
+        // dialog.setContentView(R.layout.dialog_select_printer);
+       // FloatingActionButton floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
+       // floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.bloodOrange));
+        // dialog.show();
     }
 }
