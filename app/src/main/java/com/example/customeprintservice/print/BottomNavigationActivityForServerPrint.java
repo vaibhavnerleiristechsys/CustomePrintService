@@ -42,6 +42,9 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity  i
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bottom_navigation_for_server_print);
         BottomNavigationView navView = findViewById(R.id.nav_view);
+        selectedServerFile.clear();
+        PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
+        printReleaseFragment.getJobStatusesForServerList(getApplicationContext());
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
 //        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -57,7 +60,7 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity  i
     }
 
 
-    private boolean loadFragment(Fragment fragment) {
+    public  boolean loadFragment(Fragment fragment) {
         //switching fragment
         if (fragment != null) {
             getSupportFragmentManager()

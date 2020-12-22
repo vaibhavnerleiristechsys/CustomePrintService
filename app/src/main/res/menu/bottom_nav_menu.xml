@@ -18,12 +18,12 @@
     <item
         android:id="@+id/printRelease"
         android:icon="@mipmap/send"
-        android:title="@string/print_release"
+        android:title="@string/print_releaseForServer"
         />
     <item
         android:id="@+id/printer"
         android:icon="@mipmap/print"
-        android:title="@string/printer"
+        android:title="@string/printerForServer"
 
         />
 

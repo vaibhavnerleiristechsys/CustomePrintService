@@ -130,12 +130,12 @@ class PrintReleaseFragment : Fragment() {
             SignInCompanyPrefs.getIdpType(requireContext()).toString(),
             SignInCompanyPrefs.getIdpName(requireContext()).toString()
         )
-
+/*
         btnRelease.setOnClickListener {
             ProgressDialog.showLoadingDialog(requireContext(), "Released Job")
             releaseJob(requireContext())
         }
-
+*/
         /**
          * Print Job status cancel
          */
@@ -145,10 +145,10 @@ class PrintReleaseFragment : Fragment() {
             startActivity(intent)
         }
 
-        btnDeleteJobs.setOnClickListener {
+       /* btnDeleteJobs.setOnClickListener {
             ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
            // cancelJob()
-        }
+        }*/
         imgLogout.setOnClickListener {
             Toast.makeText(requireContext(), "Click on Logout", Toast.LENGTH_SHORT).show()
             LoginPrefs.deleteToken(requireContext())
@@ -197,6 +197,7 @@ class PrintReleaseFragment : Fragment() {
     }
 
     fun cancelJob(context: Context) {
+        ProgressDialog.showLoadingDialog(context, "Delete Job")
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
         val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/cancel/"
         val apiService = RetrofitClient(context)
@@ -240,6 +241,8 @@ class PrintReleaseFragment : Fragment() {
                         SignInCompanyPrefs.getIdpType(context).toString(),
                         SignInCompanyPrefs.getIdpName(context).toString()
                     )
+
+
                 }
             }
 
@@ -288,6 +291,7 @@ class PrintReleaseFragment : Fragment() {
                 if (response.code() == 200) {
                     val response = response.body().toString()
                     Log.i("printer", "response release job==>${response}")
+                    BottomNavigationActivityForServerPrint.selectedServerFile.clear()
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         context,
@@ -343,6 +347,7 @@ class PrintReleaseFragment : Fragment() {
                         getJobStatusesResponse
                     val disposable4 = Observable.fromCallable {
                         val selectedFileList = ArrayList<SelectedFile>()
+                        ServerPrintRelaseFragment.serverDocumentlist.clear()
                         parseList?.forEach {
                             val selectedFile = SelectedFile()
                             selectedFile.isFromApi = true
@@ -355,6 +360,7 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFileList.add(selectedFile)
+                            ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
 
                         }
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()

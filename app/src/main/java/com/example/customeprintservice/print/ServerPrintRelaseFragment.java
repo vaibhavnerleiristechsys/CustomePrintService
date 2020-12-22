@@ -68,10 +68,14 @@ public class ServerPrintRelaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        //PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
+        //printReleaseFragment.getJobStatusesForServerList(getContext());
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+
     }
 
     @Override
@@ -82,6 +86,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
              context = view.getContext();
+
             RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -89,11 +94,11 @@ public class ServerPrintRelaseFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-            PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
-            printReleaseFragment.getJobStatusesForServerList(context);
 
-            //   recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS));
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(serverDocumentlist));
+
+              //   recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS));
+              recyclerView.setAdapter(new MyItemRecyclerViewAdapter(serverDocumentlist));
+
         }
         return view;
     }
