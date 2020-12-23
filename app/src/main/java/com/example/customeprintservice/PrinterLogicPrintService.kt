@@ -2,16 +2,13 @@ package com.example.customeprintservice
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.app.Service
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.pdf.PdfDocument
-import android.os.*
-import android.print.*
-import android.print.pdf.PrintedPdfDocument
+import android.os.Build
+import android.print.PrintAttributes
+import android.print.PrinterCapabilitiesInfo
+import android.print.PrinterId
+import android.print.PrinterInfo
 import android.printservice.PrintJob
 import android.printservice.PrintService
 import android.printservice.PrinterDiscoverySession
@@ -23,10 +20,6 @@ import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
-import com.example.customeprintservice.utils.PermissionHelper
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import java.io.*
 import java.util.*
 import java.util.function.Consumer
@@ -35,9 +28,6 @@ import kotlin.collections.ArrayList
 
 class PrinterLogicPrintService : PrintService() {
     private val builder: PrinterInfo? = null
-    private var mHandler: Handler? = null
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
-    private var permissionsHelper: PermissionHelper? = null
 
     companion object {
         const val MSG_HANDLE_PRINT_JOB = 3
@@ -46,21 +36,22 @@ class PrinterLogicPrintService : PrintService() {
 
     override fun onConnected() {
         Log.i(TAG, "#onConnected()")
-        mHandler = PrintHandler(mainLooper)
-        firebaseAnalytics = Firebase.analytics
 
-        val permissionWrite = ContextCompat.checkSelfPermission(this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val permissionWrite = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
 
-        val permissionRead = ContextCompat.checkSelfPermission(this,
-            Manifest.permission.READ_EXTERNAL_STORAGE)
+        val permissionRead = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
 
-
-
-        if (permissionWrite != PackageManager.PERMISSION_GRANTED
-            || permissionRead != PackageManager.PERMISSION_GRANTED) {
+       if (permissionWrite != PackageManager.PERMISSION_GRANTED
+            || permissionRead != PackageManager.PERMISSION_GRANTED
+        ) {
             Log.i(TAG, "Permission to record denied")
-            Toast.makeText(this,"Please login to Printerlogic app",Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Please login to Printerlogic app", Toast.LENGTH_LONG).show()
         }
 
     }
@@ -72,58 +63,38 @@ class PrinterLogicPrintService : PrintService() {
     }
 
     override fun onCreatePrinterDiscoverySession(): PrinterDiscoverySession? {
-        return ThermalPrinterDiscoverySession(builder, applicationContext, this)
+        return PrinterDiscoverySession(builder, applicationContext, this)
     }
 
     override fun onRequestCancelPrintJob(printJob: PrintJob) {
+        printJob.cancel()
         Log.i(TAG, "#onRequestCancelPrintJob() printJobId: " + printJob.id)
-        if (mHandler!!.hasMessages(MSG_HANDLE_PRINT_JOB)) {
-            mHandler!!.removeMessages(MSG_HANDLE_PRINT_JOB)
-            if (printJob.isQueued || printJob.isStarted) {
-                printJob.cancel()
-            }
-        } else {
-            if (printJob.isQueued || printJob.isStarted) {
-                printJob.cancel()
-            }
-        }
+
     }
 
     override fun onPrintJobQueued(printJob: PrintJob) {
         Log.i(TAG, "override on Print Job Queued ")
 
-        val permissionWrite = ContextCompat.checkSelfPermission(this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        val permissionWrite = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
 
-        val permissionRead = ContextCompat.checkSelfPermission(this,
-            Manifest.permission.READ_EXTERNAL_STORAGE)
-
-
+        val permissionRead = ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
 
         if (permissionWrite != PackageManager.PERMISSION_GRANTED
-            || permissionRead != PackageManager.PERMISSION_GRANTED) {
+            || permissionRead != PackageManager.PERMISSION_GRANTED
+        ) {
             Log.i(TAG, "Permission to write files denied")
-            Toast.makeText(this,"Please login to Printerlogic app",Toast.LENGTH_LONG).show()
-            printJob.complete()
+            Toast.makeText(this, "Please login to Printerlogic app", Toast.LENGTH_LONG).show()
+            printJob.cancel()
             return
         }
 
 
-        val message =
-            mHandler!!.obtainMessage(MSG_HANDLE_PRINT_JOB, printJob)
-        mHandler!!.sendMessageDelayed(message, 0)
-//        val printManager = this
-//            .getSystemService(Context.PRINT_SERVICE) as PrintManager
-//        val jobName: String = this.getString(R.string.app_name).toString() +
-//                " Document"
-//        printManager.print(
-//            jobName, MyPrintDocumentAdapter(this),
-//            null
-//        )
-    }
-
-    @SuppressLint("WrongConstant")
-    private fun handleHandleQueuedPrintJob(printJob: PrintJob) {
         Log.i(TAG, "Handle Queued Print Job")
         if (printJob.isQueued) {
             printJob.start()
@@ -133,7 +104,7 @@ class PrinterLogicPrintService : PrintService() {
         var finalUrl = "http" + "://" + printerHashmap.hashMap[printerId]!!
             .printerHost + ":" + printerHashmap.hashMap[printerId]!!.printerPort + "/ipp/print"
 
-        finalUrl = finalUrl.replace("///","//")
+        finalUrl = finalUrl.replace("///", "//")
 
         val info = printJob.info
         val file = File(filesDir, info.label + ".pdf")
@@ -158,66 +129,20 @@ class PrinterLogicPrintService : PrintService() {
                 this@PrinterLogicPrintService
             )
 
-
-//            val parameters = Bundle().apply {
-//                val isFileExists = file.exists()
-//                this.putString("isFileExists", isFileExists.toString())
-//            }
-//            firebaseAnalytics.setDefaultEventParameters(parameters)
-//            val bundle = Bundle()
-//            bundle.putString("fromPrintService", "fromPrintService")
-//            bundle.putString("finalUrl", finalUrl)
-//            bundle.putString("filePath", file.path)
-
-//            val intent = Intent("android.intent.action.VIEW")
-////            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//            intent.addFlags(268435456)
-//            intent.setClass(this, PrintActivity::class.java)
-//            intent.putExtras(bundle)
-//            if (Build.VERSION.SDK_INT > 29) {
-//                toast("api version is more than 29 ")
-//            } else {
-//                this.startActivity(intent)
-//            }
-
-//            val intent = Intent(Intent.ACTION_VIEW)
-////            intent.setDataAndType(Uri.fromFile(file), "application/pdf")
-//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//            intent.putExtras(bundle)
-//            intent.setClass(applicationContext, PrintActivity::class.java)
-//            startActivity(intent, null)
-
             printJob.complete()
         } catch (ioe: IOException) {
         }
     }
 
 
-    private inner class PrintHandler(looper: Looper?) : Handler(looper!!) {
-        override fun handleMessage(message: Message) {
-            Log.i(TAG, "---------------in Handle message----------")
-            when (message.what) {
-                Companion.MSG_HANDLE_PRINT_JOB -> {
-                    val printJob = message.obj as PrintJob
-                    handleHandleQueuedPrintJob(printJob)
-
-
-//                  PrintUtils().getJobAttributes(URI.create(finalUrl),printJob,applicationContext)
-                }
-            }
-        }
-
-    }
-
-
 }
 
-internal class ThermalPrinterDiscoverySession(
+internal class PrinterDiscoverySession(
     printerInfo: PrinterInfo?,
     context: Context?,
     printService: PrinterLogicPrintService
 ) : PrinterDiscoverySession() {
-    var thermalPrintService: PrinterLogicPrintService
+    var printService: PrinterLogicPrintService
     private var printerInfo: PrinterInfo? = null
     private var appContext: Context? = null
 
@@ -238,9 +163,9 @@ internal class ThermalPrinterDiscoverySession(
         val printerId = ArrayList<PrinterId>()
         val printerList = PrinterList()
         printerList.printerList.forEach(Consumer { p: PrinterModel ->
-            printerId.add(thermalPrintService.generatePrinterId(p.printerHost.toString()))
+            printerId.add(printService.generatePrinterId(p.printerHost.toString()))
             val builder = PrinterInfo.Builder(
-                thermalPrintService.generatePrinterId(p.printerHost.toString()),
+                printService.generatePrinterId(p.printerHost.toString()),
                 p.serviceName, PrinterInfo.STATUS_IDLE
             ).build()
             val capabilities = printerId.let {
@@ -275,7 +200,7 @@ internal class ThermalPrinterDiscoverySession(
 
     init {
         appContext = context
-        thermalPrintService = printService
+        this.printService = printService
     }
 }
 
@@ -292,116 +217,3 @@ internal class PrinterHashmap {
 }
 
 
-class MyPrintDocumentAdapter(var context: Context) :
-    PrintDocumentAdapter() {
-    var myPdfDocument: PdfDocument? = null
-    var totalpages = 4
-    private var pageHeight = 0
-    private var pageWidth = 0
-    private fun pageInRange(pageRanges: Array<PageRange>, page: Int): Boolean {
-        for (i in pageRanges.indices) {
-            if (page >= pageRanges[i].start &&
-                page <= pageRanges[i].end
-            ) return true
-        }
-        return false
-    }
-
-    private fun drawPage(
-        page: PdfDocument.Page,
-        pagenumber: Int
-    ) {
-        var pagenumber = pagenumber
-        val canvas = page.canvas
-        pagenumber++ // Make sure page numbers start at 1
-        val titleBaseLine = 72
-        val leftMargin = 54
-        val paint = Paint()
-        paint.color = Color.BLACK
-        paint.textSize = 40f
-        canvas.drawText(
-            "Test Print Document Page $pagenumber",
-            leftMargin.toFloat(),
-            titleBaseLine.toFloat(),
-            paint
-        )
-        paint.textSize = 14f
-        canvas.drawText(
-            "This is some test content to verify that custom document printing works",
-            leftMargin.toFloat(), titleBaseLine + 35.toFloat(), paint
-        )
-        if (pagenumber % 2 == 0) paint.color = Color.RED else paint.color = Color.GREEN
-        val pageInfo = page.info
-        canvas.drawCircle(
-            pageInfo.pageWidth / 2.toFloat(),
-            pageInfo.pageHeight / 2.toFloat(), 150f,
-            paint
-        )
-    }
-
-    override fun onLayout(
-        oldAttributes: PrintAttributes,
-        newAttributes: PrintAttributes,
-        cancellationSignal: CancellationSignal,
-        callback: LayoutResultCallback,
-        metadata: Bundle
-    ) {
-        myPdfDocument = PrintedPdfDocument(context, newAttributes)
-        pageHeight = newAttributes.mediaSize!!.heightMils / 1000 * 72
-        pageWidth = newAttributes.mediaSize!!.widthMils / 1000 * 72
-        if (cancellationSignal.isCanceled) {
-            callback.onLayoutCancelled()
-            return
-        }
-        if (totalpages > 0) {
-            val builder = PrintDocumentInfo.Builder("print_output.pdf")
-                .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
-                .setPageCount(totalpages)
-            val info = builder.build()
-            callback.onLayoutFinished(info, true)
-        } else {
-            callback.onLayoutFailed("Page count is zero.")
-        }
-    }
-
-    override fun onWrite(
-        pageRanges: Array<PageRange>,
-        destination: ParcelFileDescriptor,
-        cancellationSignal: CancellationSignal,
-        callback: WriteResultCallback
-    ) {
-        for (i in 0 until totalpages) {
-            if (pageInRange(pageRanges, i)) {
-                val newPage = PdfDocument.PageInfo.Builder(
-                    pageWidth,
-                    pageHeight, i
-                ).create()
-                val page = myPdfDocument!!.startPage(newPage)
-                if (cancellationSignal.isCanceled) {
-                    callback.onWriteCancelled()
-                    myPdfDocument!!.close()
-                    myPdfDocument = null
-                    return
-                }
-                drawPage(page, i)
-                myPdfDocument!!.finishPage(page)
-            }
-        }
-        try {
-            myPdfDocument!!.writeTo(
-                FileOutputStream(
-                    destination.fileDescriptor
-                )
-            )
-        } catch (e: IOException) {
-            callback.onWriteFailed(e.toString())
-            return
-        } finally {
-            myPdfDocument!!.close()
-            myPdfDocument = null
-        }
-        callback.onWriteFinished(pageRanges)
-    }
-
-
-}

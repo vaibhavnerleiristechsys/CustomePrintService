@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.hp.jipp.encoding.Attribute;
 import com.hp.jipp.encoding.AttributeGroup;
@@ -210,6 +211,13 @@ public class PrintUtils {
             }
 
             List<String> att = getPrinterSupportedFormats(uri, context);
+
+            if(att.isEmpty())
+            {
+                resultMap.put("status","getAttributefailed") ;
+                return resultMap;
+
+            }
 
             if (format != null && att.contains(format.toLowerCase().trim())) {
                 IppPacket printRequest = IppPacket.printJob(uri)
