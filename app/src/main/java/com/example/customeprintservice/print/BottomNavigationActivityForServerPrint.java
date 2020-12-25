@@ -1,6 +1,7 @@
 package com.example.customeprintservice.print;
 
 import android.app.Dialog;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -45,6 +46,9 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity  i
         selectedServerFile.clear();
         PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
         printReleaseFragment.getJobStatusesForServerList(getApplicationContext());
+
+        PrintersFragment printersFragment = new PrintersFragment();
+        printersFragment.getPrinterList(getApplicationContext());
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
 //        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -60,7 +64,7 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity  i
     }
 
 
-    public  boolean loadFragment(Fragment fragment) {
+    public boolean loadFragment(Fragment fragment) {
         //switching fragment
         if (fragment != null) {
             getSupportFragmentManager()
@@ -71,6 +75,8 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity  i
         }
         return false;
     }
+
+
 
 
     @Override

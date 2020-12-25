@@ -292,6 +292,11 @@ class PrintReleaseFragment : Fragment() {
                     val response = response.body().toString()
                     Log.i("printer", "response release job==>${response}")
                     BottomNavigationActivityForServerPrint.selectedServerFile.clear()
+                    val activity: Activity? = activity
+                    if (activity != null) {
+
+                    }
+
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         context,
@@ -380,6 +385,7 @@ class PrintReleaseFragment : Fragment() {
                     compositeDisposable.add(disposable4)
                     isFileSelected = true
                     Log.i("printer", "list of Files-->$list")
+
                 }
 
             }
@@ -656,6 +662,7 @@ class PrintReleaseFragment : Fragment() {
                     compositeDisposable.add(disposable4)
                     isFileSelected = true
                     Log.i("printer", "list of Files-->$list")
+
                 }
 
             }
@@ -667,6 +674,11 @@ class PrintReleaseFragment : Fragment() {
             }
         })
     }
+
+
+
+
+
 }
 
 //https://www.youtube.com/watch?v=vPLKNsQEAEc

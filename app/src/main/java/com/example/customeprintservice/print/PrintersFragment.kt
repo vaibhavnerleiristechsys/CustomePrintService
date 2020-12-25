@@ -92,7 +92,7 @@ class PrintersFragment : Fragment() {
 
         val call = apiService.getPrinterList(
             "devncookta",
-            "Bearer ${LoginPrefs.getOCTAToken(requireContext())}",
+            "Bearer ${LoginPrefs.getOCTAToken(context)}",
             "ranjeeta.balakrishnan@devnco.co",
             "saml2",
             "Okta",
