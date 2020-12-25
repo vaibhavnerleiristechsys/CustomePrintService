@@ -41,9 +41,12 @@ class FragmentPrinterListAdapter(
         holder.getPrinterName().text = list[position].serviceName.toString()
         holder.getCardview().setOnClickListener {
             it.setBackgroundColor(Color.GRAY)
-            Log.d("selected printerdetails",list[position].serviceName.toString())
-            Log.d("selected printerdetails",list[position].nodeId.toString())
-            Log.d("selected printerdetails",list[position].printerHost.toString())
+
+            if(list[position].nodeId != null){
+            Log.d("selected printerdetails", list[position].serviceName.toString())
+            Log.d("selected printerdetails", list[position].nodeId.toString())
+            Log.d("selected printerdetails", list[position].printerHost.toString())
+
             ProgressDialog.showLoadingDialog(context, "Getting Printer Details")
             PrinterListService().getPrinterDetails(
                 context,
@@ -53,6 +56,7 @@ class FragmentPrinterListAdapter(
                 SignInCompanyPrefs.getIdpName(context).toString(),
                 list[position].nodeId.toString()
             )
+        }
 
         }
 //        holder.bind(list?.get(position))
