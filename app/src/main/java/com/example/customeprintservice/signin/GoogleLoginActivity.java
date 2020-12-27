@@ -54,7 +54,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
         Log.d("clientIdForGoogleLogin:",clientIdForGoogleLogin);
 
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com")
+                .requestIdToken("212495772338-q5ghg2v6beme02a6c0hrfmbc6gig6i41.apps.googleusercontent.com")
                 //.requestEmail()
                 .build();
         googleApiClient = GoogleSignIn.getClient(this,googleSignInOptions);
