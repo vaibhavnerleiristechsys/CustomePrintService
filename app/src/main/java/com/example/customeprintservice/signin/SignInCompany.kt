@@ -96,6 +96,11 @@ class SignInCompany : AppCompatActivity() {
                     ProgressDialog.cancelLoading()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
 
+                    if(edtYourCompany.text.toString().contains("devncoldap")){
+                        bundle.putString("desktopLoginUrl","https://gw.app.printercloud.com/devncoldap/authn/idp/Ldap/saml2/login?return-to=https%3A%2F%2Fgw.app.printercloud.com%2Fdevncoldap%2Fauthn%2Fidp%2FLdap%2Fdesktop%2Fassertion" )
+                        bundle.putString("buttonName", "LDAP")
+                    }
+
                     val list: List<IdpResponse>? = response.body()?.toList()
 
                     list?.forEach { idp ->

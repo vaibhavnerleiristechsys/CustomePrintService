@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.customeprintservice.print.ui.home.HomeFragment"
+        android:name="com.example.customeprintservice.print.PrintReleaseFragment"
         android:label="@string/menu_work_space"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_print_release" />
 
     <fragment
         android:id="@+id/nav_gallery"
