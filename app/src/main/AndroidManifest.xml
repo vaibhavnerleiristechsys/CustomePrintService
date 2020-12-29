@@ -22,25 +22,24 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".print.NavigationDrawerActivity"
-            android:label="@string/title_activity_navigation_drawer"
+            android:name=".MainActivity"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
+           <!-- <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>  -->
         </activity>
-        <activity
+
+
+             <activity
             android:name=".print.BottomNavigationActivityForServerPrint"
             android:label="@string/title_activity_bottom_navigation_for_server_print" />
         <activity android:name=".signin.GoogleLoginActivity">
 
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+             </activity>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>"
-            -->
-        </activity>
         <activity android:name=".CustomePrintActivity" />
         <activity
             android:name=".print.BottomNavigationActivity"
@@ -83,7 +82,7 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
-            <intent-filter>
+        <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />

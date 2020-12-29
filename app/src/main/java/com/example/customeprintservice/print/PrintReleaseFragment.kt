@@ -21,6 +21,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.PrintService
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
@@ -140,6 +141,10 @@ class PrintReleaseFragment : Fragment() {
          * Print Job status cancel
          */
 
+        drawer.setOnClickListener {
+               val intent = Intent(context, MainActivity::class.java)
+             startActivity(intent)
+        }
         serverPrintScreen.setOnClickListener {
             val intent = Intent(context, BottomNavigationActivityForServerPrint::class.java)
             startActivity(intent)

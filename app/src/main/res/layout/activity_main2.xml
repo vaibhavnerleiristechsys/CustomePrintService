@@ -15,11 +15,24 @@
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
-        android:layout_width="135dp"
+        android:layout_width="115dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:itemIconSize="26dp"
-        app:menu="@menu/activity_main_drawer"
-        />
+        app:itemIconSize="56dp"
+        app:itemHorizontalPadding="30dp"
+        app:itemMaxLines="5"
+        app:menu="@menu/activity_main_drawer" >
+        <Button
+            android:id="@+id/footer_item_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="20dp"
+            android:text="logout" />
+    </com.google.android.material.navigation.NavigationView>
+
+
+
+
 </androidx.drawerlayout.widget.DrawerLayout>

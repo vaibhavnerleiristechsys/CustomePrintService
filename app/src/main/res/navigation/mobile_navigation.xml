@@ -3,23 +3,55 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/bottom_home">
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.customeprintservice.print.PrintReleaseFragment"
-        android:label="@string/menu_work_space"
-        tools:layout="@layout/fragment_print_release" />
+        android:name="com.example.customeprintservice.print.ui.home.HomeFragment"
+        android:label="Workspace"
+        tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.example.customeprintservice.print.ui.gallery.GalleryFragment"
-        android:label="@string/menu_reports"
+        android:label="Reports"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="com.example.customeprintservice.print.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_storage"
+        android:label="Storage"
         tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_tools"
+        android:name="com.example.customeprintservice.print.ui.tools.ToolsFragment"
+        android:label="Forms"
+        tools:layout="@layout/fragment_tools" />
+
+    <fragment
+        android:id="@+id/nav_share"
+        android:name="com.example.customeprintservice.print.ui.share.ShareFragment"
+        android:label="Print"
+        tools:layout="@layout/fragment_share" />
+
+    <fragment
+        android:id="@+id/nav_send"
+        android:name="com.example.customeprintservice.print.ui.send.SendFragment"
+        android:label="@string/menu_send"
+        tools:layout="@layout/fragment_send" />
+
+    <fragment
+        android:id="@+id/bottom_home"
+        android:name="com.example.customeprintservice.print.ServerPrintRelaseFragment"
+        android:label="@string/print"
+        tools:layout="@layout/fragment_server_print_relase" />
+
+    <fragment
+        android:id="@+id/bottom_dashboard"
+        android:name="com.example.customeprintservice.print.PrintersFragment"
+        android:label="@string/print"
+        tools:layout="@layout/fragment_printers" />
+
+
 </navigation>

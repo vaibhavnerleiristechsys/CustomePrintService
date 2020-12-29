@@ -7,14 +7,37 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/appiconworkspace"
-            android:title="@string/menu_work_space" />
+            android:title="Workspace" />
+
+
         <item
             android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_reports" />
+            android:icon="@drawable/reporticon"
+            android:title="Reports" />
+
         <item
             android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_storage" />
+            android:icon="@drawable/storageicon"
+            android:title="Storage" />
+        <item
+            android:id="@+id/nav_tools"
+            android:icon="@drawable/forms"
+            android:title="Forms" />
+
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/printicon"
+            android:title="Print" />
     </group>
+<!--
+    <item android:title="Communicate">
+        <menu>
+
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="@string/menu_send" />
+        </menu>
+    </item>
+-->
 </menu>

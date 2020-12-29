@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.prefs.LoginPrefs;
@@ -53,12 +54,12 @@ public class GoogleLoginActivity extends AppCompatActivity {
         String clientIdForGoogleLogin = sh.getString("clientIdForGoogleLogin", "");
         Log.d("clientIdForGoogleLogin:",clientIdForGoogleLogin);
 
-        /*GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com")
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+               // .requestIdToken("179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com")
 
-                //.requestEmail()
+                .requestEmail()
                 .build();
-        googleApiClient = GoogleSignIn.getClient(this,googleSignInOptions);*/
+        googleApiClient = GoogleSignIn.getClient(this,googleSignInOptions);
 
         getIdToken();
         btnSignInWithOkta.setOnClickListener(new View.OnClickListener() {
@@ -95,20 +96,24 @@ public class GoogleLoginActivity extends AppCompatActivity {
         try{
             GoogleSignInAccount account =completedTask.getResult(ApiException.class);
             String idToken=account.getIdToken();
+            String username=account.getEmail();
             Log.d("idToken",idToken);
-            Logger LOG = LoggerFactory.getLogger(BottomNavigationActivityForServerPrint.class);
+            Toast.makeText(getApplicationContext(), idToken, Toast.LENGTH_SHORT).show();
+           Logger LOG = LoggerFactory.getLogger(BottomNavigationActivityForServerPrint.class);
             LOG.info("Papertrail idToken log management demo"+idToken);
             SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
             SharedPreferences.Editor myEdit= sharedPreferences.edit();
             myEdit.putString("idToken",idToken);
             myEdit.commit();
-           // LoginPrefs.saveOctaToken(this@BottomNavigationActivity, token.toString())
+            LoginPrefs.Companion.saveOctaToken(this, idToken.toString());
+
 
             Intent intent = new Intent(GoogleLoginActivity.this, BottomNavigationActivity.class);
             startActivity(intent);
             signOut();
         } catch (ApiException e) {
             e.printStackTrace();
+            Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

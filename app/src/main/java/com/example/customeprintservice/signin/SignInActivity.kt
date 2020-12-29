@@ -87,9 +87,9 @@ class SignInActivity : AppCompatActivity() {
 
                 val intent = Intent(this@SignInActivity, GoogleLoginActivity::class.java)
                 intent.putExtras(bundle)
-                //startActivity(intent)
-                val desktopUrl = "https://accounts.google.com/o/oauth2/v2/auth?scope=email&response_type=code&redirect_uri=https://localhost:8080/oauth2redirect&client_id=212495772338-q5ghg2v6beme02a6c0hrfmbc6gig6i41.apps.googleusercontent.com"
-                searchWeb(desktopUrl)
+                startActivity(intent)
+             //   val desktopUrl = "https://accounts.google.com/o/oauth2/v2/auth?scope=email&response_type=code&redirect_uri=https://gw.app.printercloud.com/devncookta/authn/idp/Okta/desktop/assertion&client_id=212495772338-q5ghg2v6beme02a6c0hrfmbc6gig6i41.apps.googleusercontent.com"
+             //   searchWeb(desktopUrl)
             }else if (bundle.getString("buttonName") == "LDAP") {
                 searchWeb(desktopUrl)
             }
