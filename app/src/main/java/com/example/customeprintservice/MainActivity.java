@@ -1,7 +1,15 @@
 package com.example.customeprintservice;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.example.customeprintservice.prefs.LoginPrefs;
+import com.example.customeprintservice.print.BottomNavigationActivity;
+import com.example.customeprintservice.signin.SignInCompany;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -9,7 +17,9 @@ import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -23,6 +33,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.example.customeprintservice.R;
 import android.view.Menu;
+import android.widget.Button;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,16 +45,41 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private BottomNavigationView bottomNavView;
     private CoordinatorLayout contentView;
+    private Button signout;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        signout =findViewById(R.id.signout);
+        fab = findViewById(R.id.fab);
+        fab.setVisibility(View.VISIBLE);
+
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("qrcodefloatingbutton"));
 
         initToolbar();
         initFab();
         initNavigation();
         //showBottomNavigation(false);
+
+
+        signout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Click on Logout", Toast.LENGTH_SHORT).show();
+                LoginPrefs.Companion.deleteToken(getApplicationContext());
+                SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+                SharedPreferences.Editor myEdit= sharedPreferences.edit();
+                myEdit.putString("IsLdap","Others");
+                myEdit.commit();
+                Intent intent = new Intent(getApplicationContext(), SignInCompany.class);
+                startActivity(intent);
+
+
+            }
+        });
     }
 
     private void initToolbar() {
@@ -54,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initFab() {
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -64,6 +101,22 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String qrCodeScanBtn= intent.getStringExtra("qrCodeScanBtn");
+            if(fab!=null) {
+                fab.setVisibility(View.INVISIBLE);
+            }
+
+            if(qrCodeScanBtn.equals("Active")){
+                fab.setVisibility(View.VISIBLE);
+            }
+        }
+    };
+
 
     private void initNavigation() {
 
@@ -139,5 +192,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+
+
+
+
+
 
 }

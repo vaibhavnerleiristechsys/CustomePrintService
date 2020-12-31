@@ -1,6 +1,7 @@
 package com.example.customeprintservice.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,24 +9,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
-import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.jetbrains.anko.toast
 
 
 class FragmentPrinterListAdapter(
     val context: Context,
     val list: ArrayList<PrinterModel>
+
+
 ) : RecyclerView.Adapter<FragmentPrinterListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -57,6 +59,9 @@ class FragmentPrinterListAdapter(
                 list[position].nodeId.toString()
             )
         }
+            val intent = Intent("message_subject_intent")
+            intent.putExtra("name", "message")
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
         }
 //        holder.bind(list?.get(position))

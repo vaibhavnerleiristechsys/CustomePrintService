@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
@@ -58,6 +60,9 @@ class PrintersFragment : Fragment() {
         updateUi()
         getPrinterList(requireContext())
         Log.i("printer", "Login okta token" + LoginPrefs.getOCTAToken(requireContext()))
+        val intent = Intent("qrcodefloatingbutton")
+        intent.putExtra("qrCodeScanBtn", "InActive")
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
     }
 
     @SuppressLint("WrongConstant")

@@ -1,8 +1,10 @@
 package com.example.customeprintservice.print;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -16,10 +18,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -101,7 +105,15 @@ public class ServerPrintRelaseFragment extends Fragment {
               //   recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS));
               recyclerView.setAdapter(new MyItemRecyclerViewAdapter(serverDocumentlist));
 
+            Intent intent = new Intent("qrcodefloatingbutton");
+            intent.putExtra("qrCodeScanBtn","Active");
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
+            LocalBroadcastManager.getInstance(context).registerReceiver(mMessageReceiver,
+                    new IntentFilter("message_subject_intent"));
         }
+
+
         return view;
     }
 
@@ -126,6 +138,19 @@ public class ServerPrintRelaseFragment extends Fragment {
         }
         return (super.onOptionsItemSelected(item));
     }
+
+
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String name= intent.getStringExtra("name");
+            if(floatingActionButton!=null) {
+                floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.bloodOrange));
+            }
+        }
+    };
+
+
 
     private void selectePrinterDialog() {
         dialog = new Dialog(requireContext());
