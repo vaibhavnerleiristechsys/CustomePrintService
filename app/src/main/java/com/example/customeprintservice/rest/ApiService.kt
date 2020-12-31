@@ -82,6 +82,8 @@ interface ApiService {
     ): Call<ResponseBody>
 
 
+
+
     @GET(".")
     fun getPrinterDetailsByNodeId(
         @Header("Authorization") authorization: String,
@@ -91,12 +93,50 @@ interface ApiService {
     ): Call<PrinterDetailsResponse>
 
     @GET(".")
+    fun getPrinterForLdap(
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String
+    ): Call<ResponseBody>
+
+    @GET(".")
     fun getPrintJobStatuses(
         @Header("Authorization") authorization: String,
         @Header("X-User-Name") userName: String,
         @Header("X-IdP-Type") idpType: String,
         @Header("X-IdP-Name") idpName: String
     ): Call<GetJobStatusesResponse>
+    @GET(".")
+    fun getPrintJobStatusesForLdap(
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String
+    ): Call<GetJobStatusesResponse>
+
+    @POST(".")
+    fun releaseJobForLdap(
+        @Body releaseJobRequest: ReleaseJobRequest,
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String
+    ): Call<ReleaseJobResponse>
+
+    @FormUrlEncoded
+    @POST(".")
+    fun getPrinterListForLdap(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String,
+        @Field("checkin") checkin: String,
+        @Field("configuration") configuration: String
+    ): Call<ResponseBody>
+
+    fun jobStatusCancelForLdap(
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String,
+        @Body jobStatusCancel: CancelJobRequest
+    ): Call<CancelJobResponse>
 
 
     @POST(".")

@@ -2,19 +2,31 @@ package com.example.customeprintservice.signin
 
 import android.annotation.SuppressLint
 import android.app.SearchManager
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.Gravity
+import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.R
 import com.example.customeprintservice.print.BottomNavigationActivity
-import com.example.customeprintservice.utils.HideKeyboard
+import com.example.customeprintservice.rest.ApiService
+import com.example.customeprintservice.rest.RetrofitClient
+import com.example.customeprintservice.utils.GoogleAPI
+import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_sign_in.*
+import okhttp3.ResponseBody
 import org.jetbrains.anko.toast
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SignInActivity : AppCompatActivity() {
 
@@ -27,6 +39,16 @@ class SignInActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in)
         try {
             bundle = intent.extras!!
+            btnSignInWithOkta.visibility= View.VISIBLE
+            txtOr.visibility= View.VISIBLE
+            val sharedPreferences: SharedPreferences =
+                getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+            val myEdit = sharedPreferences.edit()
+            myEdit.putString("IsLdap","");
+            myEdit.putString("LdapUsername","");
+            myEdit.putString("LdapPassword","");
+            myEdit.commit()
+
 
             if (bundle.getString("buttonName") == "Okta") {
                 btnSignInWithOkta.text = bundle.getString("buttonName")
@@ -50,12 +72,8 @@ class SignInActivity : AppCompatActivity() {
                     drawable, null, null, null)
                 btnSignInWithOkta.gravity = Gravity.CENTER
             }else  if (bundle.getString("buttonName") == "LDAP") {
-                btnSignInWithOkta.text = bundle.getString("buttonName")
-                btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_okta)
-                val drawable = baseContext.resources.getDrawable(R.mipmap.icon_okta)
-                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
-                    drawable, null, null, null)
-                btnSignInWithOkta.gravity = Gravity.CENTER
+                btnSignInWithOkta.visibility= View.GONE
+                txtOr.visibility= View.GONE
             }
         } catch (e: Exception) {
             Log.i("printer", "exception=>$e")
@@ -72,9 +90,16 @@ class SignInActivity : AppCompatActivity() {
         showPassword(isShowPass)
 
         btnSignIn.setOnClickListener {
-            HideKeyboard.hideKeyboard(this@SignInActivity)
-            val intent = Intent(this@SignInActivity, BottomNavigationActivity::class.java)
-            startActivity(intent)
+          //  HideKeyboard.hideKeyboard(this@SignInActivity)
+           // val intent = Intent(this@SignInActivity, BottomNavigationActivity::class.java)
+           // startActivity(intent)
+            val username = edtUserName.text.toString()
+            val password = edtPassword.text.toString()
+
+           Log.d("username",edtUserName.text.toString())
+                   Log.d("password",edtPassword.text.toString())
+            getPrinterListForCheckLdapLogin(this@SignInActivity,username,password)
+
         }
 
         val desktopUrl: String? = bundle.getString("desktopLoginUrl")
@@ -90,8 +115,6 @@ class SignInActivity : AppCompatActivity() {
                 startActivity(intent)
              //   val desktopUrl = "https://accounts.google.com/o/oauth2/v2/auth?scope=email&response_type=code&redirect_uri=https://gw.app.printercloud.com/devncookta/authn/idp/Okta/desktop/assertion&client_id=212495772338-q5ghg2v6beme02a6c0hrfmbc6gig6i41.apps.googleusercontent.com"
              //   searchWeb(desktopUrl)
-            }else if (bundle.getString("buttonName") == "LDAP") {
-                searchWeb(desktopUrl)
             }
             else{
                 searchWeb(desktopUrl)
@@ -157,5 +180,55 @@ class SignInActivity : AppCompatActivity() {
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+    }
+
+    fun getPrinterListForCheckLdapLogin(
+        context: Context,username:String,password:String
+    ) {
+        val BASE_URL =
+            "https://gw.app.printercloud.com/devncoldap/prs/v1/printers/1/"
+
+        val apiService = RetrofitClient(context)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val call = apiService.getPrinterForLdap(
+            "devncoldap",
+            username,
+            password
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.isSuccessful) {
+                    Log.i("LDAP printers Response",response.toString())
+                    toast("Login Successfully")
+                    val sharedPreferences: SharedPreferences =
+                        getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+                    val myEdit = sharedPreferences.edit()
+                    myEdit.putString("IsLdap","LDAP");
+                    myEdit.putString("LdapUsername",username);
+                    myEdit.putString("LdapPassword",password);
+                    myEdit.commit()
+                    val intent = Intent(this@SignInActivity,BottomNavigationActivity::class.java)
+                     startActivity(intent)
+                }
+                if (response.code()==401){
+                    toast("Login Not Successfully Please Try Again")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Log.i("printer", "Error html response==>${t.message.toString()}")
+                toast("Login Not Successfully Please Try Again")
+            }
+        })
     }
 }

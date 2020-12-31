@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +19,7 @@ import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.Inet
@@ -84,43 +86,88 @@ class PrintersFragment : Fragment() {
     fun getPrinterList(
         context: Context
     ) {
-        val BASE_URL =
-            "https://devncookta.printercloud.com/client/gateway.php/"
+        @SuppressLint("WrongConstant")val sh: SharedPreferences =
+            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+        var BASE_URL =""
+        if(IsLdap.equals("LDAP"))
+        {
+            BASE_URL = "https://devncoldap.printercloud.com/client/gateway.php/"
+        }
+        else{
+            BASE_URL = "https://devncookta.printercloud.com/client/gateway.php/"
+        }
+
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
-        val call = apiService.getPrinterList(
-            "devncookta",
-            "Bearer ${LoginPrefs.getOCTAToken(context)}",
-            "ranjeeta.balakrishnan@devnco.co",
-            "saml2",
-            "Okta",
-            "1",
-            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                    "<system driverless=\"1\">\n" +
-                    "  <machine>\n" +
-                    "    <ips>\n" +
-                    "      <ip mask=\"255.255.255.0\"> my-ip </ip>\n" +
-                    "    </ips>\n" +
-                    "  </machine>\n" +
-                    "  <idp>\n" +
-                    "    {\"idpName\": \"Okta\",\n" +
-                    "      \"username\": \"ranjeeta.balakrishnan@devnco.co\",\n" +
-                    "      \"isLoggedIn\": \"true\",\n" +
-                    "      \"type\": \"auth-type\",\n" +
-                    "      \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyMjMxN2RlMC05NDRkLTRhNjItOGIxNy03YjYyZWQ5OGM5Y2EiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicmFuamVldGEuYmFsYWtyaXNobmFuQGRldm5jby5jbyIsInNlc3Npb24iOiJhOGI0NmE1Yi0wYWFlLTQ4ZjUtOWUxMS04NTM5YzljZDdkMTIiLCJleHAiOjE2MzkyMTQ0MzgsImlhdCI6MTYwNzY3ODQzOCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.HKiyYRd0QNql6zRsz276L6nGgiQG0GHcYpA6s6h7dOZQoAJZI5G5nZfdPARUEX3vvnEqpy4E8xDrKepk24SoKOQB4dXoSfwg0B6D1B5sz7Dl8Pf6D0N0wvXQl9cEC2LNpv3WqI_qXPYXS6ihO926XSa6f7mo2j3pwmzPZkrO_Q8PSaAjNoXhfCgVXh4oDApTb8A-kO7D67ky9w-GjoMfLdieVqoD1DcWMKkGfFKIdAHDWsEuxamR7xvmtBVvtNnOKIEAxKwf_SqL2JDpMt4PEqvcGd1Cp2_WqREHpq5UG1t0go52PCY7YqCt9e6AypWE0KcxbOo9uoauXKIn5e95sA\"}\n" +
-                    "  </idp>\n" +
-                    "  <memberships>\n" +
-                    "    <computer />\n" +
-                    "    <user>\n" +
-                    "      <guid>S-1-1-0</guid>\n" +
-                    "    </user>\n" +
-                    "  </memberships>\n" +
-                    "</system>"
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.getPrinterListForLdap(
+                "devncoldap",
+                LdapUsername.toString(),
+                LdapPassword.toString(),
+                "1",
+                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                        "<system driverless=\"1\">\n" +
+                        "  <machine>\n" +
+                        "    <ips>\n" +
+                        "      <ip mask=\"255.255.255.0\"> my-ip </ip>\n" +
+                        "    </ips>\n" +
+                        "  </machine>\n" +
+                        "  <idp>\n" +
+                        "    {\"idpName\": \"Okta\",\n" +
+                        "      \"username\": \"ranjeeta.balakrishnan@devnco.co\",\n" +
+                        "      \"isLoggedIn\": \"true\",\n" +
+                        "      \"type\": \"auth-type\",\n" +
+                        "      \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyMjMxN2RlMC05NDRkLTRhNjItOGIxNy03YjYyZWQ5OGM5Y2EiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicmFuamVldGEuYmFsYWtyaXNobmFuQGRldm5jby5jbyIsInNlc3Npb24iOiJhOGI0NmE1Yi0wYWFlLTQ4ZjUtOWUxMS04NTM5YzljZDdkMTIiLCJleHAiOjE2MzkyMTQ0MzgsImlhdCI6MTYwNzY3ODQzOCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.HKiyYRd0QNql6zRsz276L6nGgiQG0GHcYpA6s6h7dOZQoAJZI5G5nZfdPARUEX3vvnEqpy4E8xDrKepk24SoKOQB4dXoSfwg0B6D1B5sz7Dl8Pf6D0N0wvXQl9cEC2LNpv3WqI_qXPYXS6ihO926XSa6f7mo2j3pwmzPZkrO_Q8PSaAjNoXhfCgVXh4oDApTb8A-kO7D67ky9w-GjoMfLdieVqoD1DcWMKkGfFKIdAHDWsEuxamR7xvmtBVvtNnOKIEAxKwf_SqL2JDpMt4PEqvcGd1Cp2_WqREHpq5UG1t0go52PCY7YqCt9e6AypWE0KcxbOo9uoauXKIn5e95sA\"}\n" +
+                        "  </idp>\n" +
+                        "  <memberships>\n" +
+                        "    <computer />\n" +
+                        "    <user>\n" +
+                        "      <guid>S-1-1-0</guid>\n" +
+                        "    </user>\n" +
+                        "  </memberships>\n" +
+                        "</system>"
+            )
+        }else{
+            apiService.getPrinterList(
+                "devncookta",
+                "Bearer ${LoginPrefs.getOCTAToken(context)}",
+                "ranjeeta.balakrishnan@devnco.co",
+                "saml2",
+                "Okta",
+                "1",
+                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                        "<system driverless=\"1\">\n" +
+                        "  <machine>\n" +
+                        "    <ips>\n" +
+                        "      <ip mask=\"255.255.255.0\"> my-ip </ip>\n" +
+                        "    </ips>\n" +
+                        "  </machine>\n" +
+                        "  <idp>\n" +
+                        "    {\"idpName\": \"Okta\",\n" +
+                        "      \"username\": \"ranjeeta.balakrishnan@devnco.co\",\n" +
+                        "      \"isLoggedIn\": \"true\",\n" +
+                        "      \"type\": \"auth-type\",\n" +
+                        "      \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyMjMxN2RlMC05NDRkLTRhNjItOGIxNy03YjYyZWQ5OGM5Y2EiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicmFuamVldGEuYmFsYWtyaXNobmFuQGRldm5jby5jbyIsInNlc3Npb24iOiJhOGI0NmE1Yi0wYWFlLTQ4ZjUtOWUxMS04NTM5YzljZDdkMTIiLCJleHAiOjE2MzkyMTQ0MzgsImlhdCI6MTYwNzY3ODQzOCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.HKiyYRd0QNql6zRsz276L6nGgiQG0GHcYpA6s6h7dOZQoAJZI5G5nZfdPARUEX3vvnEqpy4E8xDrKepk24SoKOQB4dXoSfwg0B6D1B5sz7Dl8Pf6D0N0wvXQl9cEC2LNpv3WqI_qXPYXS6ihO926XSa6f7mo2j3pwmzPZkrO_Q8PSaAjNoXhfCgVXh4oDApTb8A-kO7D67ky9w-GjoMfLdieVqoD1DcWMKkGfFKIdAHDWsEuxamR7xvmtBVvtNnOKIEAxKwf_SqL2JDpMt4PEqvcGd1Cp2_WqREHpq5UG1t0go52PCY7YqCt9e6AypWE0KcxbOo9uoauXKIn5e95sA\"}\n" +
+                        "  </idp>\n" +
+                        "  <memberships>\n" +
+                        "    <computer />\n" +
+                        "    <user>\n" +
+                        "      <guid>S-1-1-0</guid>\n" +
+                        "    </user>\n" +
+                        "  </memberships>\n" +
+                        "</system>"
 
-        )
+            )
+        }
+
+
+
 
         call.enqueue(object : Callback<ResponseBody> {
 

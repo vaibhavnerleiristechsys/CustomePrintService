@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -157,6 +158,12 @@ class PrintReleaseFragment : Fragment() {
         imgLogout.setOnClickListener {
             Toast.makeText(requireContext(), "Click on Logout", Toast.LENGTH_SHORT).show()
             LoginPrefs.deleteToken(requireContext())
+            val sharedPreferences: SharedPreferences =
+                requireContext().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+            val myEdit = sharedPreferences.edit()
+            myEdit.putString("IsLdap","Others");
+            myEdit.commit()
+
             val intent = Intent(requireContext(), SignInCompany::class.java)
             startActivity(intent)
             activity?.finish()
@@ -202,9 +209,25 @@ class PrintReleaseFragment : Fragment() {
     }
 
     fun cancelJob(context: Context) {
+        @SuppressLint("WrongConstant")val sh: SharedPreferences =
+            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+
+
         ProgressDialog.showLoadingDialog(context, "Delete Job")
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
-        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/cancel/"
+
+        var BASE_URL =""
+        if(IsLdap.equals("LDAP"))
+        {
+            BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/cancel/"
+        }
+        else{
+            BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/cancel/"
+        }
+
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
@@ -221,13 +244,26 @@ class PrintReleaseFragment : Fragment() {
             deleteJobs.add(deleteJobsItem)
         }
         jobStatusCancel.deleteJobs = deleteJobs
-        val call = apiService.jobStatusCancel(
-            "Bearer " + LoginPrefs.getOCTAToken(context),
-            decodeJWT(context),
-            SignInCompanyPrefs.getIdpType(context).toString(),
-            SignInCompanyPrefs.getIdpName(context).toString(),
-            jobStatusCancel
-        )
+
+
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.jobStatusCancelForLdap(
+                "devncoldap",
+                LdapUsername.toString(),
+                LdapPassword.toString(),
+                jobStatusCancel
+            )
+        }else{
+            apiService.jobStatusCancel(
+                "Bearer " + LoginPrefs.getOCTAToken(context),
+                decodeJWT(context),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString(),
+                jobStatusCancel
+            )
+        }
+
+
 
         call.enqueue(object : Callback<CancelJobResponse> {
             override fun onResponse(
@@ -260,9 +296,26 @@ class PrintReleaseFragment : Fragment() {
     }
 
     fun releaseJob(context: Context) {
+        @SuppressLint("WrongConstant")val sh: SharedPreferences =
+            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+
+        Log.d("IsLdap:", IsLdap!!)
+
         ProgressDialog.showLoadingDialog(context, "Released Job")
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
-        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
+        var BASE_URL =""
+        if(IsLdap.equals("LDAP"))
+        {
+            BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/release/"
+        }
+        else{
+            BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
+        }
+
+
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
@@ -280,12 +333,22 @@ class PrintReleaseFragment : Fragment() {
         }
         releaseJobRequest.releaseJobs = releaseJobs
 
-        val call = apiService.releaseJob(
-            releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
-            decodeJWT(context),
-            SignInCompanyPrefs.getIdpType(context).toString(),
-            SignInCompanyPrefs.getIdpName(context).toString()
-        )
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.releaseJobForLdap(
+                releaseJobRequest,
+                "devncoldap",
+                LdapUsername.toString(),
+                LdapPassword.toString()
+            )
+        }else{
+            apiService.releaseJob(
+                releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                decodeJWT(context),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString()
+            )
+        }
+
 
         call.enqueue(object : Callback<ReleaseJobResponse> {
             override fun onResponse(
@@ -322,19 +385,41 @@ class PrintReleaseFragment : Fragment() {
     }
 
 
-    fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
 
-        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+    fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
+        @SuppressLint("WrongConstant")val sh: SharedPreferences =
+            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+
+        Log.d("IsLdap:", IsLdap!!)
+      var BASE_URL =""
+        if(IsLdap.equals("LDAP"))
+        {
+             BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/"
+        }
+        else{
+             BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+        }
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
-        val call = apiService.getPrintJobStatuses(
-            "Bearer " + LoginPrefs.getOCTAToken(context),
-            userName,
-            idpType,
-            idpName
-        )
+        val call = if(IsLdap.equals("LDAP")){
+         apiService.getPrintJobStatusesForLdap(
+             "devncoldap",
+             LdapUsername.toString(),
+             LdapPassword.toString()
+         )
+        }else{
+            apiService.getPrintJobStatuses(
+               "Bearer " + LoginPrefs.getOCTAToken(context),
+               userName,
+               idpType,
+               idpName)
+       }
+
         call.enqueue(object : Callback<GetJobStatusesResponse> {
             override fun onResponse(
                 call: Call<GetJobStatusesResponse>,
@@ -604,17 +689,40 @@ class PrintReleaseFragment : Fragment() {
 
     fun getJobStatusesForServerList(context: Context) {
 
-        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+        @SuppressLint("WrongConstant")val sh: SharedPreferences =
+            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+
+        Log.d("IsLdap:", IsLdap!!)
+        var BASE_URL =""
+
+        if(IsLdap.equals("LDAP"))
+        {
+            BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/"
+        }
+        else{
+            BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+        }
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
-        val call = apiService.getPrintJobStatuses(
-            "Bearer " + LoginPrefs.getOCTAToken(context),
-            decodeJWT(context),
-            SignInCompanyPrefs.getIdpType(context).toString(),
-            SignInCompanyPrefs.getIdpName(context).toString()
-        )
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.getPrintJobStatusesForLdap(
+                "devncoldap",
+                LdapUsername.toString(),
+                LdapPassword.toString()
+            )
+        }else{
+            apiService.getPrintJobStatuses(
+                "Bearer " + LoginPrefs.getOCTAToken(context),
+                decodeJWT(context),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString())
+        }
+
         call.enqueue(object : Callback<GetJobStatusesResponse> {
             override fun onResponse(
                 call: Call<GetJobStatusesResponse>,
