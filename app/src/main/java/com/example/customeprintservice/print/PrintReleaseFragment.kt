@@ -115,7 +115,7 @@ class PrintReleaseFragment : Fragment() {
     @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
+       // (requireActivity() as AppCompatActivity).supportActionBar?.hide()
         /**
         check read/write permission
          */
@@ -156,7 +156,7 @@ class PrintReleaseFragment : Fragment() {
             ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
            // cancelJob()
         }*/
-        imgLogout.setOnClickListener {
+      /*  imgLogout.setOnClickListener {
             Toast.makeText(requireContext(), "Click on Logout", Toast.LENGTH_SHORT).show()
             LoginPrefs.deleteToken(requireContext())
             val sharedPreferences: SharedPreferences =
@@ -169,6 +169,9 @@ class PrintReleaseFragment : Fragment() {
             startActivity(intent)
             activity?.finish()
         }
+
+       */
+
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
                 val i = Intent(

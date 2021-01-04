@@ -31,9 +31,9 @@
 
     <fragment
         android:id="@+id/nav_share"
-        android:name="com.example.customeprintservice.print.ui.share.ShareFragment"
+        android:name="com.example.customeprintservice.print.PrintReleaseFragment"
         android:label="Print"
-        tools:layout="@layout/fragment_share" />
+        tools:layout="@layout/fragment_print_release" />
 
     <fragment
         android:id="@+id/nav_send"

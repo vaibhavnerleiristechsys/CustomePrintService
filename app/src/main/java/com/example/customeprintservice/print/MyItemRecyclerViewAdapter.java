@@ -1,7 +1,5 @@
 package com.example.customeprintservice.print;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.customeprintservice.R;
@@ -37,10 +34,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
         mValues = items;
     }
-    Context context;
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        context =parent.getContext();
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_server_print_relase, parent, false);
         return new ViewHolder(view);
@@ -79,8 +75,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final LinearLayout serverDocument;
         public final CheckBox checkBox;
         public SelectedFile mItem;
-       public ImageView documenticon;
-         List a =new ArrayList<View>();
+        public ImageView documenticon;
+        List a =new ArrayList<View>();
         public ViewHolder(View view) {
             super(view);
             mView = view;
@@ -96,7 +92,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 @Override
                 public void onClick(View view) {
 
-                   Log.d( "document click", ":successfull");
+                    Log.d( "document click", ":successfull");
                     setDocument();
                 }
 

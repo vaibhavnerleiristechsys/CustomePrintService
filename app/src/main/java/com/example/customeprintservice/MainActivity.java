@@ -14,6 +14,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -139,6 +140,19 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationUI.setupWithNavController(navigationView, navController);
         NavigationUI.setupWithNavController(bottomNavView, navController);
+
+     //   NavigationView navigationView= findViewById(R.id.nav_id_in_layout)
+
+        Menu menuNav=navigationView.getMenu();
+        MenuItem workspace = menuNav.findItem(R.id.nav_home);
+        MenuItem reports = menuNav.findItem(R.id.nav_gallery);
+        MenuItem storage = menuNav.findItem(R.id.nav_slideshow);
+        MenuItem forms = menuNav.findItem(R.id.nav_tools);
+
+        workspace.setEnabled(false);
+        reports.setEnabled(false);
+        storage.setEnabled(false);
+        forms.setEnabled(false);
 
 
         animateNavigationDrawer();

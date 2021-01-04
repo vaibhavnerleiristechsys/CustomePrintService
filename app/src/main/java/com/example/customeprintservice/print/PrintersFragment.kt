@@ -20,12 +20,16 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
+import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.Inet
+import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.fragment_printers.*
 import okhttp3.ResponseBody
@@ -139,10 +143,12 @@ class PrintersFragment : Fragment() {
                         "</system>"
             )
         }else{
+
+
             apiService.getPrinterList(
                 "devncookta",
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
-                "ranjeeta.balakrishnan@devnco.co",
+                decodeJWT(),
                 "saml2",
                 "Okta",
                 "1",
@@ -155,10 +161,10 @@ class PrintersFragment : Fragment() {
                         "  </machine>\n" +
                         "  <idp>\n" +
                         "    {\"idpName\": \"Okta\",\n" +
-                        "      \"username\": \"ranjeeta.balakrishnan@devnco.co\",\n" +
+                        "      \"username\":\""+decodeJWT()+"\",\n" +
                         "      \"isLoggedIn\": \"true\",\n" +
                         "      \"type\": \"auth-type\",\n" +
-                        "      \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyMjMxN2RlMC05NDRkLTRhNjItOGIxNy03YjYyZWQ5OGM5Y2EiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicmFuamVldGEuYmFsYWtyaXNobmFuQGRldm5jby5jbyIsInNlc3Npb24iOiJhOGI0NmE1Yi0wYWFlLTQ4ZjUtOWUxMS04NTM5YzljZDdkMTIiLCJleHAiOjE2MzkyMTQ0MzgsImlhdCI6MTYwNzY3ODQzOCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.HKiyYRd0QNql6zRsz276L6nGgiQG0GHcYpA6s6h7dOZQoAJZI5G5nZfdPARUEX3vvnEqpy4E8xDrKepk24SoKOQB4dXoSfwg0B6D1B5sz7Dl8Pf6D0N0wvXQl9cEC2LNpv3WqI_qXPYXS6ihO926XSa6f7mo2j3pwmzPZkrO_Q8PSaAjNoXhfCgVXh4oDApTb8A-kO7D67ky9w-GjoMfLdieVqoD1DcWMKkGfFKIdAHDWsEuxamR7xvmtBVvtNnOKIEAxKwf_SqL2JDpMt4PEqvcGd1Cp2_WqREHpq5UG1t0go52PCY7YqCt9e6AypWE0KcxbOo9uoauXKIn5e95sA\"}\n" +
+                        "      \"token\":\""+LoginPrefs.getOCTAToken(context)+ "\"}\n" +
                         "  </idp>\n" +
                         "  <memberships>\n" +
                         "    <computer />\n" +
@@ -331,5 +337,18 @@ class PrintersFragment : Fragment() {
 
 
 
+    fun decodeJWT(): String {
+        var userName: String? = null
+        try {
+            val mapper = jacksonObjectMapper()
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(requireContext())?.let { JwtDecode.decoded(it) }!!
+            )
+            userName = decoded.user.toString()
+        } catch (ex: Exception) {
+            //context.toast("Failed to Decode Jwt Token")
+        }
+        return userName.toString()
+    }
 
 }
