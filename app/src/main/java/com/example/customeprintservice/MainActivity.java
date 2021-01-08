@@ -5,15 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
+import com.example.customeprintservice.print.ServerPrintRelaseFragment;
+import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -37,6 +42,12 @@ import android.view.Menu;
 import android.widget.Button;
 import android.widget.Toast;
 
+import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final float END_SCALE = 0.85f;
@@ -48,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private CoordinatorLayout contentView;
     private Button signout;
     private FloatingActionButton fab;
+    public  ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +69,53 @@ public class MainActivity extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
 
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        list.clear();
+
+        if(action !=null){
+        switch (action) {
+            case Intent.ACTION_SEND_MULTIPLE:
+
+                for (int i = 0; i < intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM).size(); i++) {
+
+                    ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                }
+
+
+            case Intent.ACTION_SEND:
+                Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                if (imageUri != null) {
+                    String realPath = FileUtils.getPath(this, imageUri);
+                    SelectedFile selectedFile = new SelectedFile();
+                    File file = new File(realPath);
+                    selectedFile.setFileName(file.getName());
+                    selectedFile.setFilePath(realPath);
+                    selectedFile.setFromApi(false);
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    Date date = new Date();
+                    String strDate = dateFormat.format(date);
+                    selectedFile.setFileSelectedDate(strDate);
+                    list.add(selectedFile);
+                    ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
+                    Toast.makeText(this, "file added", Toast.LENGTH_LONG)
+                            .show();
+                } else {
+                    Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
+                            .show();
+                }
+
+        }
+
+        }
+        Uri intent2 = intent.getData();
+        if(intent2 !=null) {
+            String decodeUrl = intent2.getEncodedPath().replaceFirst("/", "").toString();
+
+            BottomNavigationActivity bottomNavigationActivity=new BottomNavigationActivity();
+            String decode =bottomNavigationActivity.decode(decodeUrl);
+            bottomNavigationActivity.getTokenFromMainAcitivity(decode,this);
+        }
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("qrcodefloatingbutton"));
 

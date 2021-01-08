@@ -3,9 +3,9 @@ package com.example.customeprintservice.print
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.os.Parcelable
 import android.util.Base64
 import android.util.Log
@@ -15,13 +15,17 @@ import androidx.fragment.app.Fragment
 import com.example.customeprintservice.R
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrintUtils
+import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.model.TokenResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.signin.SignInCompany
+import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.android.synthetic.main.activity_bottom_navigation.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.noHistory
@@ -44,6 +48,8 @@ class BottomNavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bottom_navigation)
+        val printersFragment1 = PrintersFragment()
+        printersFragment1.getPrinterList(applicationContext,decodeJWT(applicationContext))
 
         list.clear()
         when (intent.action) {
@@ -129,6 +135,8 @@ class BottomNavigationActivity : AppCompatActivity() {
         }
 
         val intent = intent.data
+
+
         if (intent != null) {
             Log.i("printer", "intent data--->${intent.encodedPath}")
 
@@ -145,13 +153,16 @@ class BottomNavigationActivity : AppCompatActivity() {
             val finalUrl = "https://${url.host + url.path}/"
 
             ProgressDialog.showLoadingDialog(this@BottomNavigationActivity, "getting Token")
-            getToken(finalUrl, expires, sessionId, signature)
+            getToken(finalUrl, expires, sessionId, signature,this@BottomNavigationActivity)
 
         } else {
+
+
             printReleaseFragment.arguments = bundle
-            setCurrentFragment(printReleaseFragment)
         }
-        PrintUtils().setContextAndInitializeJMDNS(this@BottomNavigationActivity)
+
+
+
 
         val printersFragment = PrintersFragment()
         val servicePortalFragment = ServicePortalFragment()
@@ -161,30 +172,17 @@ class BottomNavigationActivity : AppCompatActivity() {
         }
 
 
-        bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.printRelease -> {
-                    setCurrentFragment(printReleaseFragment)
-                }
-                R.id.printer -> {
-                    setCurrentFragment(printersFragment)
-                }
-                R.id.servicePortal -> {
-                    setCurrentFragment(servicePortalFragment)
-                }
-            }
-            true
-        }
+        Handler().postDelayed({
+            //doSomethingHere()
+            PrintUtils().setContextAndInitializeJMDNS(this@BottomNavigationActivity)
+        }, 5000)
+
     }
 
 
-    private fun setCurrentFragment(fragment: Fragment) =
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.fragmentContainer, fragment)
-            commit()
-        }
 
-    private fun decode(encoded: String): String? {
+
+     fun decode(encoded: String): String? {
         return String(Base64.decode(encoded.toByteArray(), Base64.DEFAULT))
     }
 
@@ -192,10 +190,11 @@ class BottomNavigationActivity : AppCompatActivity() {
         finalUrl: String,
         expire: String,
         sessionId: String,
-        signature: String
+        signature: String,
+        context:Context
     ) {
         val apiService =
-            RetrofitClient(this).getRetrofitInstance(finalUrl).create(ApiService::class.java)
+            RetrofitClient(context).getRetrofitInstance(finalUrl).create(ApiService::class.java)
         val call = apiService.getToken(expire, sessionId, signature)
 
         call.enqueue(object : Callback<TokenResponse> {
@@ -204,12 +203,13 @@ class BottomNavigationActivity : AppCompatActivity() {
 
                 if (response.isSuccessful) {
                     val token = response.body()?.token
-                    LoginPrefs.saveOctaToken(this@BottomNavigationActivity, token.toString())
+                    LoginPrefs.saveOctaToken(context, token.toString())
                     Log.i("printer", "tok==>$token")
                     ProgressDialog.cancelLoading()
                     printReleaseFragment.arguments = bundle
-                    setCurrentFragment(printReleaseFragment)
-                    toast("Login Successfully")
+
+                    val printersFragment1 = PrintersFragment()
+                    printersFragment1.getPrinterList(context,decodeJWT(context))
                 } else {
                     toast("Response is Not Successful")
                 }
@@ -228,6 +228,35 @@ class BottomNavigationActivity : AppCompatActivity() {
         super.onBackPressed()
         finish()
     }
+
+
+    fun decodeJWT(context:Context): String {
+        var userName: String? = null
+        try {
+            val mapper = jacksonObjectMapper()
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(context)?.let { JwtDecode.decoded(it) }!!
+            )
+            userName = decoded.user.toString()
+        } catch (ex: Exception) {
+            //context.toast("Failed to Decode Jwt Token")
+        }
+        return userName.toString()
+    }
+
+    fun getTokenFromMainAcitivity(decodeUrl: String,context: Context){
+        val url = Uri.parse(decodeUrl)
+
+        val expires: String = url.getQueryParameter("expires").toString()
+        val sessionId: String = url.getQueryParameter("sessionId").toString()
+        val signature: String = url.getQueryParameter("signature").toString()
+
+        val finalUrl = "https://${url.host + url.path}/"
+
+        ProgressDialog.showLoadingDialog(context, "getting Token")
+        getToken(finalUrl, expires, sessionId, signature,context)
+    }
+
 }
 
 

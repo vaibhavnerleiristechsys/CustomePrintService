@@ -15,6 +15,7 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
+import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
@@ -216,7 +217,7 @@ class SignInActivity : AppCompatActivity() {
                     myEdit.putString("LdapUsername",username);
                     myEdit.putString("LdapPassword",password);
                     myEdit.commit()
-                    val intent = Intent(this@SignInActivity,BottomNavigationActivity::class.java)
+                    val intent = Intent(this@SignInActivity,MainActivity::class.java)
                      startActivity(intent)
                 }
                 if (response.code()==401){

@@ -9,6 +9,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.customeprintservice.print.PrintersFragment;
 import com.google.gson.Gson;
 
 import java.net.InetAddress;
@@ -51,7 +52,15 @@ public class NSDUtils implements Runnable {
     }
 
     public void initializeDiscoveryListener() {
+        Log.d("get Printer list",PrintersFragment.Companion.getPrinterListForCheckIppPrinters().toString());
+       /* for(int i=0;i<PrintersFragment.Companion.getPrinterListForCheckIppPrinters().size();i++){
+            PrinterModel printerModel =PrintersFragment.Companion.getPrinterListForCheckIppPrinters().get(i);
+            Log.i("printer nodeid", printerModel.getNodeId());
+            Log.i("printer serv name", printerModel.getServiceName());
+            Log.i("printer host", printerModel.getPrinterHost().toString());
+            Log.i("printer port ", printerModel.getPrinterPort().toString());
 
+        }*/
 
         /*mResolveListener = new NsdManager.ResolveListener() {
 

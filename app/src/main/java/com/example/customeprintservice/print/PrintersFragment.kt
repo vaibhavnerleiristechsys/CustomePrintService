@@ -22,7 +22,6 @@ import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
-import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.Inet
@@ -44,6 +43,9 @@ import java.net.InetAddress
 class PrintersFragment : Fragment() {
 
     val printerList = ArrayList<PrinterModel>()
+    companion object {
+        public val printerListForCheckIppPrinters = java.util.ArrayList<PrinterModel>()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,7 +64,7 @@ class PrintersFragment : Fragment() {
             dialogSelectPrinter()
         }
         updateUi()
-        getPrinterList(requireContext())
+        getPrinterList(requireContext(),decodeJWT())
         Log.i("printer", "Login okta token" + LoginPrefs.getOCTAToken(requireContext()))
         val intent = Intent("qrcodefloatingbutton")
         intent.putExtra("qrCodeScanBtn", "InActive")
@@ -93,8 +95,9 @@ class PrintersFragment : Fragment() {
     }
 
     fun getPrinterList(
-        context: Context
+        context: Context,username:String
     ) {
+
         @SuppressLint("WrongConstant")val sh: SharedPreferences =
             context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
         val IsLdap = sh.getString("IsLdap", "")
@@ -148,7 +151,7 @@ class PrintersFragment : Fragment() {
             apiService.getPrinterList(
                 "devncookta",
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
-                decodeJWT(),
+                username,
                 "saml2",
                 "Okta",
                 "1",
@@ -161,7 +164,7 @@ class PrintersFragment : Fragment() {
                         "  </machine>\n" +
                         "  <idp>\n" +
                         "    {\"idpName\": \"Okta\",\n" +
-                        "      \"username\":\""+decodeJWT()+"\",\n" +
+                        "      \"username\":\""+username+"\",\n" +
                         "      \"isLoggedIn\": \"true\",\n" +
                         "      \"type\": \"auth-type\",\n" +
                         "      \"token\":\""+LoginPrefs.getOCTAToken(context)+ "\"}\n" +
@@ -191,7 +194,7 @@ class PrintersFragment : Fragment() {
                 if (response.isSuccessful) {
                     try {
                         val html = response.body()?.string()
-
+                        printerListForCheckIppPrinters.clear()
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
                         val element = document.select("command")
                         val inetAddress = InetAddress.getByName("192.168.1.1")
@@ -213,6 +216,8 @@ class PrintersFragment : Fragment() {
                             printerModel.nodeId =it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
                             PrinterList().addPrinterModel(printerModel)
+                            printerListForCheckIppPrinters.add(printerModel);
+
                         }
 
                     } catch (e: Exception) {

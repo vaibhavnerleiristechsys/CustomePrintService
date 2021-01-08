@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.room.SelectedFile;
 
+import org.spongycastle.asn1.x509.Holder;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +32,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public static Set<SelectedFile> selectedServerFile = new HashSet<SelectedFile>();
     private final List<SelectedFile> mValues;
     Menu menu;
+    private int selectedPosition = -1;
     List<ViewHolder> holders= new ArrayList<ViewHolder>();
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
         mValues = items;
@@ -49,15 +52,23 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mContentView.setText(mValues.get(position).getFileSelectedDate());
 
         holders.add(holder);
-
+        this.selectedPosition = position;
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
-                BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
 
-
+                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+               for(int i=0;i<holders.size();i++) {
+                    ViewHolder holder = holders.get(i);
+                    if (i == position) {
+                        holder.checkBox.setChecked(true);
+                        BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                    } else {
+                        holder.checkBox.setChecked(false);
+                    }
+                }
             }
 
         });

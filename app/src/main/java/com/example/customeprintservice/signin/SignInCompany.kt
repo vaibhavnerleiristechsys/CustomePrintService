@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
+import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.prefs.LoginPrefs
@@ -29,7 +30,8 @@ class SignInCompany : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (LoginPrefs.getOCTAToken(this@SignInCompany) != null) {
-            val intent = Intent(this@SignInCompany, BottomNavigationActivity::class.java)
+        //    val intent = Intent(this@SignInCompany, BottomNavigationActivity::class.java)
+            val intent = Intent(this@SignInCompany, MainActivity::class.java)
             startActivity(intent)
         }
         setContentView(R.layout.activity_sign_in_company)
@@ -59,7 +61,17 @@ class SignInCompany : AppCompatActivity() {
         when {
             edtYourCompany.text.toString().isEmpty() -> edtYourCompany.error = "Enter URL"
             else -> {
-                getIdpInfo()
+                if(edtYourCompany.text.toString().equals("https://devncookta.printercloud.com/api/idp") ||
+                   edtYourCompany.text.toString().equals("https://devncoazure.printercloud.com/api/idp") ||
+                   edtYourCompany.text.toString().equals("https://devncoping.printercloud.com/api/idp") ||
+                   edtYourCompany.text.toString().equals("https://googleid.printercloud.com/api/idp")   ||
+                    edtYourCompany.text.toString().equals("https://devncoldap.printercloud.com/api/idp")) {
+                    getIdpInfo()
+                }else{
+                    toast("please check url")
+                    ProgressDialog.cancelLoading()
+                }
+
             }
         }
     }

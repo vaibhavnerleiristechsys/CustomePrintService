@@ -30,20 +30,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>  -->
-        </activity>
-
-
-             <activity
-            android:name=".print.BottomNavigationActivityForServerPrint"
-            android:label="@string/title_activity_bottom_navigation_for_server_print" />
-        <activity android:name=".signin.GoogleLoginActivity">
-
-             </activity>
-
-        <activity android:name=".CustomePrintActivity" />
-        <activity
-            android:name=".print.BottomNavigationActivity"
-            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -66,6 +52,21 @@
 
                 <data android:mimeType="*/*" />
             </intent-filter>
+        </activity>
+
+
+             <activity
+            android:name=".print.BottomNavigationActivityForServerPrint"
+            android:label="@string/title_activity_bottom_navigation_for_server_print" />
+        <activity android:name=".signin.GoogleLoginActivity">
+
+             </activity>
+
+        <activity android:name=".CustomePrintActivity" />
+        <activity
+            android:name=".print.BottomNavigationActivity"
+            android:screenOrientation="portrait">
+
         </activity>
         <activity
             android:name=".signin.SignInActivity"

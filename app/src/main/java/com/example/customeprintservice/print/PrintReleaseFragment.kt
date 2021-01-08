@@ -151,7 +151,7 @@ class PrintReleaseFragment : Fragment() {
             startActivity(intent)
         }
         val printersFragment =PrintersFragment()
-        printersFragment.getPrinterList(requireContext());
+        printersFragment.getPrinterList(requireContext(),decodeJWT());
        /* btnDeleteJobs.setOnClickListener {
             ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
            // cancelJob()
