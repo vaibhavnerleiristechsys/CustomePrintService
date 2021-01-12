@@ -3,6 +3,7 @@ package com.example.customeprintservice.printjobstatus
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
 import com.example.customeprintservice.rest.ApiService
@@ -10,7 +11,6 @@ import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
-import org.jsoup.parser.Parser
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -146,8 +146,17 @@ class PrinterListService {
             ) {
                 ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
-                    Log.i("printer", "lis res=>${response.body().toString()}")
-                    Log.i("printer id", "lis res=>${response.body()?.data?.id.toString()}")
+                    Log.i("printer", "lis res=>${response.body()?.data?.attributes.toString()}")
+
+
+                    Log.i("printer id", "lis res=>${response.body()?.data?.type.toString()}")
+                    var finalLocalurl = "http" + "://" + response.body()?.data?.attributes?.host_address.toString() + ":" +response.body()?.data?.attributes?.port_number.toString()  + "/ipp/print"
+
+                    finalLocalurl = finalLocalurl.replace("///", "//")
+                    ServerPrintRelaseFragment.localPrinturl=finalLocalurl
+                    ServerPrintRelaseFragment.secure_release= response.body()?.data?.attributes?.secure_release!!
+                    // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
+
                     Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
                 }
             }

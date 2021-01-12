@@ -9,8 +9,12 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.customeprintservice.jipp.FileUtils;
+import com.example.customeprintservice.jipp.QRCodeScanActivity;
 import com.example.customeprintservice.prefs.LoginPrefs;
+import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
+import com.example.customeprintservice.print.PrintReleaseFragment;
+import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.print.ServerPrintRelaseFragment;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
@@ -18,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,11 +43,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.example.customeprintservice.R;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -59,8 +68,10 @@ public class MainActivity extends AppCompatActivity {
     private CoordinatorLayout contentView;
     private Button signout;
     private FloatingActionButton fab;
-    public  ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
+    public static ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
+    public  ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
 
+    public PrintService app;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
         signout =findViewById(R.id.signout);
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
+        BottomNavigationActivity bottomNavigationActivity1=new BottomNavigationActivity();
+
+
+
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -97,12 +112,30 @@ public class MainActivity extends AppCompatActivity {
                     String strDate = dateFormat.format(date);
                     selectedFile.setFileSelectedDate(strDate);
                     list.add(selectedFile);
-                    ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
+
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                    Gson gson = new Gson();
+                    String json1 = prefs.getString("localdocumentlist", null);
+                    Type type = new TypeToken<ArrayList<SelectedFile>>() {}.getType();
+                    localDocumentSharedPreflist=  gson.fromJson(json1, type);
+                    if(localDocumentSharedPreflist !=null) {
+                        list.addAll(localDocumentSharedPreflist);
+                    }
+                    SharedPreferences.Editor editor = prefs.edit();
+
+                    String json = gson.toJson(list);
+                    editor.putString("localdocumentlist", json);
+                    editor.apply();
+                    // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
                     Toast.makeText(this, "file added", Toast.LENGTH_LONG)
                             .show();
                 } else {
                     Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
                             .show();
+                }
+                if(LoginPrefs.Companion.getOCTAToken(this)==null){
+                    Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                    startActivity(intent1);
                 }
 
         }
@@ -140,6 +173,10 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
+        PrintersFragment  printersFragment1 =new PrintersFragment();
+        printersFragment1.getPrinterList(this,bottomNavigationActivity1.decodeJWT(this));
     }
 
     private void initToolbar() {
@@ -155,8 +192,9 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(getApplicationContext(), QRCodeScanActivity.class);
+                startActivity(intent);
+
             }
         });
 

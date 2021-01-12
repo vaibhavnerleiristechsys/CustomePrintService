@@ -30,13 +30,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.customeprintservice.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
 import static com.example.customeprintservice.print.ServerPrintRelaseFragment.serverDocumentlist;
 
 public class BottomNavigationActivityForServerPrint extends AppCompatActivity  implements BottomNavigationView.OnNavigationItemSelectedListener{
-    public static Set<SelectedFile> selectedServerFile =new HashSet<SelectedFile>();
+    public static ArrayList<SelectedFile> selectedServerFile =new ArrayList<SelectedFile>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

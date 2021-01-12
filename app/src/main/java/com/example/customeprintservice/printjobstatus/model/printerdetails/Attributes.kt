@@ -53,7 +53,7 @@ data class Attributes(
 	val jobCostTemplate: Int? = null,
 
 	@field:JsonProperty("host_address")
-	val hostAddress: String? = null,
+	val host_address: String? = null,
 
 	@field:JsonProperty("direct_email_address")
 	val directEmailAddress: String? = null,
@@ -158,7 +158,7 @@ data class Attributes(
 	val consolePrinting: Int? = null,
 
 	@field:JsonProperty("secure_release")
-	val secureRelease: Int? = null,
+	val secure_release: Int? = null,
 
 	@field:JsonProperty("omplus_enabled")
 	val omplusEnabled: Int? = null,
@@ -179,7 +179,7 @@ data class Attributes(
 	val badgeScan: Int? = null,
 
 	@field:JsonProperty("port_number")
-	val portNumber: Int? = null,
+	val port_number: Int? = null,
 
 	@field:JsonProperty("location")
 	val location: String? = null,

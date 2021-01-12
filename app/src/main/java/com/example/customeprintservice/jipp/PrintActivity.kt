@@ -575,4 +575,62 @@ class PrintActivity : AppCompatActivity() {
 //            }
 //        }
 //    }
+
+
+
+
+   fun locaPrint(selectedFileString:String,printerString:String,context: Context){
+       Toast.makeText(context, printerString.toString(), Toast.LENGTH_LONG)
+           .show()
+       var file = File(selectedFileString)
+       if (file.extension.toLowerCase() == "docx" || file.extension.toLowerCase() == "doc") {
+           Log.i("printer", "selected doc file")
+
+
+           val inputStream =
+               contentResolver.openInputStream(Uri.fromFile(File(selectedFileString)))
+           val document = Document(inputStream)
+           document.watermark.remove()
+           document.save(outputPDF)
+
+           val parameters = Bundle().apply {
+               this.putString("outputpdf", outputPDF)
+           }
+           firebaseAnalytics.setDefaultEventParameters(parameters)
+
+           Log.i("printer", "path saved =>${outputPDF}")
+           file = File(outputPDF)
+       } else if (file.extension.toLowerCase() == "pdf") {
+
+           val printRenderUtils = PrintRenderUtils()
+
+           printRenderUtils.renderPageUsingDefaultPdfRenderer(
+               file,
+               printerString,
+               context
+           )
+
+
+
+       } else {
+           file = File(selectedFileString)
+           Log.i("printer", "in else")
+           val finalUri = URI.create(printerString)
+           Thread {
+               val map =  printUtils.print(finalUri, file, context, "")
+           }.start()
+       }
+
+       val fileName: String = file.name
+       var format: String? = null
+
+       if (fileName.contains(".")) {
+           format =
+               PrintUtils.extensionTypes[fileName.substring(fileName.lastIndexOf(".") + 1)]?.toLowerCase()
+                   ?.trim()
+           Log.i("printer", "format--->$format")
+       }
+       ProgressDialog.cancelLoading()
+   }
+
 }

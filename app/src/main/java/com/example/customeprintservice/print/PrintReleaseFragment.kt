@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.MainActivity
@@ -42,13 +44,14 @@ import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJo
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
-import com.example.customeprintservice.signin.SignInCompany
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.PermissionHelper
 import com.example.customeprintservice.utils.Permissions
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -60,6 +63,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -84,7 +88,7 @@ class PrintReleaseFragment : Fragment() {
     private var releaseJobCheckedListForServer = HashSet<SelectedFile>()
 
     var selectedServerFilelist = ArrayList<SelectedFile>()
-
+     var localdocumentFromsharedPrefences = ArrayList<SelectedFile>()
     @SuppressLint("CheckResult")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -439,6 +443,15 @@ class PrintReleaseFragment : Fragment() {
                     Thread.sleep(1000)
 //                    Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
 //                        .show()
+                    ServerPrintRelaseFragment.serverDocumentlist.clear()
+                    val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                    val gson = Gson()
+                    val jsonText: String? = prefs.getString("localdocumentlist", null)
+                    val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                    localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+
+                    ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+
                     ProgressDialog.cancelLoading()
                 } else {
                     ProgressDialog.cancelLoading()
@@ -462,6 +475,19 @@ class PrintReleaseFragment : Fragment() {
                             ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
 
                         }
+                        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                        val gson = Gson()
+                        val jsonText: String? = prefs.getString("localdocumentlist", null)
+                        val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                        localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+
+                        ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+
+                        val intent = Intent("refreshdocumentadapter")
+                        intent.putExtra("refreshdocumentadapter", "refresh")
+                        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
+
+
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                         app.dbInstance().selectedFileDao().save(selectedFileList)
                         app.dbInstance().selectedFileDao().loadAll()
@@ -738,8 +764,23 @@ class PrintReleaseFragment : Fragment() {
                     doAsync {
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                     }
+                    ServerPrintRelaseFragment.serverDocumentlist.clear()
                     Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT)
                         .show()
+
+                    val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                    val gson = Gson()
+                    val jsonText: String? = prefs.getString("localdocumentlist", null)
+                    val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                    localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+
+                    ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+
+
+                    val intent = Intent("refreshdocumentadapter")
+                    intent.putExtra("refreshdocumentadapter", "refresh")
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+
                     ProgressDialog.cancelLoading()
                 } else {
                     ProgressDialog.cancelLoading()
@@ -762,6 +803,16 @@ class PrintReleaseFragment : Fragment() {
                             selectedFileList.add(selectedFile)
                             ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
                         }
+                        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                        val gson = Gson()
+                        val jsonText: String? = prefs.getString("localdocumentlist", null)
+                        val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                        localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+
+                        ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                       // ServerPrintRelaseFragment.serverDocumentlist.addAll(MainActivity.list);
+
+
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                         app.dbInstance().selectedFileDao().save(selectedFileList)
                         app.dbInstance().selectedFileDao().loadAll()
@@ -790,6 +841,9 @@ class PrintReleaseFragment : Fragment() {
                 Log.i("printer", t.message.toString())
             }
         })
+
+
+
     }
 
 

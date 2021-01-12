@@ -23,7 +23,7 @@ data class SelectedFile(
     @ColumnInfo(name = "work_station_id")
     var workStationId: Int? = null,
 
-    @ColumnInfo(name = "queue_id")
+    @ColumnInfo(name = "Fqueue_id")
     var queueId: Int? = null,
 
     @ColumnInfo(name = "job_num")
