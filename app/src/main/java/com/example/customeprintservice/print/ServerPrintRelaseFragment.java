@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,12 +39,27 @@ import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterList;
+import com.example.customeprintservice.prefs.LoginPrefs;
+import com.example.customeprintservice.prefs.SignInCompanyPrefs;
+import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse;
+import com.example.customeprintservice.printjobstatus.model.getjobstatuses.PrintQueueJobStatusItem;
+import com.example.customeprintservice.rest.ApiService;
+import com.example.customeprintservice.rest.RetrofitClient;
 import com.example.customeprintservice.room.SelectedFile;
+import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.net.URI;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -62,7 +79,8 @@ public class ServerPrintRelaseFragment extends Fragment {
     public static String checkMenu="search";
     public static String localPrinturl;
     public static int secure_release;
-
+    public  ArrayList<SelectedFile> localdocumentFromsharedPrefences =new ArrayList<SelectedFile>();
+    RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -90,9 +108,9 @@ public class ServerPrintRelaseFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-
-        PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
-        printReleaseFragment.getJobStatusesForServerList(requireContext());
+        getjobListStatus();
+    //    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
+     //   printReleaseFragment.getJobStatusesForServerList(requireContext());
 
 
     }
@@ -105,7 +123,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
              context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+             recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -125,7 +143,10 @@ public class ServerPrintRelaseFragment extends Fragment {
                     new IntentFilter("message_subject_intent"));
 
 
-            recyclerView.setAdapter(new MyItemRecyclerViewAdapter(serverDocumentlist));
+
+            //    recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
+
+
         }
 
 
@@ -149,7 +170,7 @@ public class ServerPrintRelaseFragment extends Fragment {
             case R.id.download:
                 PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
                 printReleaseFragment.cancelJob(context);
-                Intent myIntent = new Intent(getActivity(), BottomNavigationActivity.class);
+                Intent myIntent = new Intent(getActivity(), MainActivity.class);
                 getActivity().startActivity(myIntent);
                 return (true);
             case R.id.print:
@@ -227,8 +248,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
                }
                else if(secure_release == 5 || secure_release ==6){
-                   Toast.makeText(requireContext(), "prompt dialog open", Toast.LENGTH_LONG)
-                           .show();
+
                    dialogPromptPrinter();
                }
 
@@ -238,7 +258,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                      String FilePath =selectedFile.getFilePath();
                     PrintActivity printActivity =new PrintActivity();
                     printActivity.locaPrint(FilePath,localPrinturl,context);
-
+                   removeDocumentFromSharedPreferences();
                    Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG)
                            .show();
                        dialog.cancel();
@@ -253,8 +273,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                    getActivity().startActivity(myIntent);
                }
                else if(secure_release == 5 || secure_release ==6){
-                   Toast.makeText(requireContext(), "prompt dialog open", Toast.LENGTH_LONG)
-                           .show();
+
                    dialogPromptPrinter();
                }
 
@@ -291,6 +310,8 @@ public class ServerPrintRelaseFragment extends Fragment {
             public void onClick(View view) {
                 dialog.cancel();
                 dialog1.cancel();
+                Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                getActivity().startActivity(myIntent);
             }
         });
 
@@ -303,16 +324,115 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                 }
                 if(selectedFile.isFromApi()==true) {
-
+                    PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
+                    printReleaseFragment.releaseJob(context);
+                    dialog.cancel();
+                    dialog1.cancel();
+                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                    getActivity().startActivity(myIntent);
                 }else{
                       String FilePath =selectedFile.getFilePath();
                      PrintActivity printActivity =new PrintActivity();
                      printActivity.locaPrint(FilePath,localPrinturl,context);
+                    removeDocumentFromSharedPreferences();
+                    dialog.cancel();
+                    dialog1.cancel();
+                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                    getActivity().startActivity(myIntent);
                 }
 
                 }
 
         });
+
+    }
+
+   public void removeDocumentFromSharedPreferences(){
+       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+       Gson gson = new Gson();
+       String json = prefs.getString("localdocumentlist", null);
+       Type type = new TypeToken<ArrayList<SelectedFile>>() {}.getType();
+       localdocumentFromsharedPrefences = gson.fromJson(json, type);
+       SelectedFile selectedFile=new SelectedFile();
+
+       if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+           selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+       }
+
+       for(int i=0;i<localdocumentFromsharedPrefences.size();i++){
+           SelectedFile selectedFile1 =  localdocumentFromsharedPrefences.get(i);
+           if(selectedFile1.getFilePath().equals(selectedFile.getFilePath())){
+                   localdocumentFromsharedPrefences.remove(i);
+           }
+       }
+
+       SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+       Gson gson1 = new Gson();
+       SharedPreferences.Editor editor = prefs1.edit();
+       String json1 = gson1.toJson(localdocumentFromsharedPrefences);
+       editor.putString("localdocumentlist", json1);
+       editor.apply();
+
+    }
+
+
+    public void getjobListStatus(){
+        PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
+        PrintReleaseFragment.Companion.getGetdocumentList().clear();
+        String BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/";
+        ApiService apiService = new RetrofitClient(requireContext())
+                .getRetrofitInstance(BASE_URL)
+                .create(ApiService.class);
+
+
+        Call call = apiService.getPrintJobStatuses(
+                "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
+                printReleaseFragment.decodeJWT(requireContext()),
+                SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
+                SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString()
+        );
+        call.enqueue(new Callback<GetJobStatusesResponse>() {
+            public void onResponse(Call<GetJobStatusesResponse> call, Response<GetJobStatusesResponse> response) {
+                if(response.isSuccessful()){
+                List<PrintQueueJobStatusItem> getJobStatusesResponse = response.body().getPrintQueueJobStatus();
+                    PrintReleaseFragment.Companion.getGetdocumentList().clear();
+                for (int i = 0; i < getJobStatusesResponse.size(); i++) {
+                    PrintQueueJobStatusItem PrintQueueJobStatusItem = getJobStatusesResponse.get(i);
+                    SelectedFile selectedFile = new SelectedFile();
+                    selectedFile.setFromApi(true);
+                    selectedFile.setFileName(PrintQueueJobStatusItem.getDocumentTitle());
+                    selectedFile.setFileSelectedDate(PrintQueueJobStatusItem.getSubmittedAtRelative());
+                    selectedFile.setFilePath(PrintQueueJobStatusItem.getDocumentTitle());
+                    selectedFile.setJobNum(PrintQueueJobStatusItem.getJobNumber());
+                    selectedFile.setJobType(1);
+                    selectedFile.setQueueId(PrintQueueJobStatusItem.getPrinterDeviceQueueId());
+                    selectedFile.setUserName(PrintQueueJobStatusItem.getUserName());
+                    selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
+                    PrintReleaseFragment.Companion.getGetdocumentList().add(selectedFile);
+                }
+                localdocumentFromsharedPrefences.clear();
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                Gson gson = new Gson();
+                String json = prefs.getString("localdocumentlist", null);
+                Type type = new TypeToken<ArrayList<SelectedFile>>() {
+                }.getType();
+                localdocumentFromsharedPrefences = gson.fromJson(json, type);
+
+                if(localdocumentFromsharedPrefences!=null) {
+                    PrintReleaseFragment.Companion.getGetdocumentList().addAll(localdocumentFromsharedPrefences);
+                }
+                recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
+            }
+        }
+
+            @Override
+            public void onFailure(Call<GetJobStatusesResponse> call, Throwable t) {
+                call.cancel();
+            }
+        });
+
+
+
 
     }
 }

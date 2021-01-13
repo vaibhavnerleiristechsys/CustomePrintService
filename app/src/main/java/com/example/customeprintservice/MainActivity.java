@@ -82,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationActivity bottomNavigationActivity1=new BottomNavigationActivity();
 
 
-
-
         Intent intent = getIntent();
         String action = intent.getAction();
         list.clear();

@@ -27,7 +27,7 @@ class QRCodeScanActivity : AppCompatActivity() {
         val permisison2 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
         if (permisison2 != PackageManager.PERMISSION_GRANTED) {
             makeRequest2()
-        } else {
+        }
 
             codeScanner = CodeScanner(this, scannerView)
             codeScanner.camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id
@@ -45,22 +45,24 @@ class QRCodeScanActivity : AppCompatActivity() {
             }
             codeScanner.errorCallback = ErrorCallback {
                 runOnUiThread {
-                    Toast.makeText(
+                    /*Toast.makeText(
                         this, "Camera initialization error: ${it.message}",
                         Toast.LENGTH_LONG
-                    ).show()
+                    ).show()*/
                 }
             }
 
             scannerView.setOnClickListener {
                 codeScanner.startPreview()
             }
-        }
+
 
     }
         override fun onResume() {
             super.onResume()
-            codeScanner.startPreview()
+            if(codeScanner!=null) {
+                codeScanner.startPreview()
+            }
         }
 
         override fun onPause() {

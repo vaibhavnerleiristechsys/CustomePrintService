@@ -147,6 +147,8 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
+    implementation 'org.apache.commons:commons-lang3:3.6'
+
     // Dependencies for the REST API example
     implementation 'com.google.api-client:google-api-client:1.30.5'
     implementation 'com.google.api-client:google-api-client-android:1.30.5'

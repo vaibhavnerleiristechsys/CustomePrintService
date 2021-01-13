@@ -30,6 +30,7 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
+import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -85,7 +86,11 @@ class PrintReleaseFragment : Fragment() {
     private val compositeDisposable = CompositeDisposable()
     private val releaseJobRequest = ReleaseJobRequest()
     private val releaseJobCheckedList = ArrayList<SelectedFile>()
-    private var releaseJobCheckedListForServer = HashSet<SelectedFile>()
+    private var releaseJobCheckedListForServer = ArrayList<SelectedFile>()
+
+    companion object {
+        public val getdocumentList = java.util.ArrayList<SelectedFile>()
+    }
 
     var selectedServerFilelist = ArrayList<SelectedFile>()
      var localdocumentFromsharedPrefences = ArrayList<SelectedFile>()
@@ -225,7 +230,7 @@ class PrintReleaseFragment : Fragment() {
 
 
         ProgressDialog.showLoadingDialog(context, "Delete Job")
-        releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
+        releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as ArrayList<SelectedFile>
 
         var BASE_URL =""
         if(IsLdap.equals("LDAP"))
@@ -313,7 +318,7 @@ class PrintReleaseFragment : Fragment() {
         Log.d("IsLdap:", IsLdap!!)
 
         ProgressDialog.showLoadingDialog(context, "Released Job")
-        releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as HashSet<SelectedFile>
+        releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as ArrayList<SelectedFile>
         var BASE_URL =""
         if(IsLdap.equals("LDAP"))
         {
@@ -443,15 +448,16 @@ class PrintReleaseFragment : Fragment() {
                     Thread.sleep(1000)
 //                    Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
 //                        .show()
-                    ServerPrintRelaseFragment.serverDocumentlist.clear()
+                  //  ServerPrintRelaseFragment.serverDocumentlist.clear()
+                    getdocumentList.clear()
                     val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
                     val gson = Gson()
                     val jsonText: String? = prefs.getString("localdocumentlist", null)
                     val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
                     localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
 
-                    ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
-
+                   // ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                    getdocumentList.addAll(localdocumentFromsharedPrefences)
                     ProgressDialog.cancelLoading()
                 } else {
                     ProgressDialog.cancelLoading()
@@ -459,7 +465,8 @@ class PrintReleaseFragment : Fragment() {
                         getJobStatusesResponse
                     val disposable4 = Observable.fromCallable {
                         val selectedFileList = ArrayList<SelectedFile>()
-                        ServerPrintRelaseFragment.serverDocumentlist.clear()
+                        //ServerPrintRelaseFragment.serverDocumentlist.clear()
+                        getdocumentList.clear()
                         parseList?.forEach {
                             val selectedFile = SelectedFile()
                             selectedFile.isFromApi = true
@@ -472,8 +479,8 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFileList.add(selectedFile)
-                            ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
-
+                           // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
+                            getdocumentList.add(selectedFile)
                         }
                         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
                         val gson = Gson()
@@ -481,7 +488,8 @@ class PrintReleaseFragment : Fragment() {
                         val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
                         localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
 
-                        ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                        //ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                        getdocumentList.addAll(localdocumentFromsharedPrefences)
 
                         val intent = Intent("refreshdocumentadapter")
                         intent.putExtra("refreshdocumentadapter", "refresh")
@@ -616,7 +624,7 @@ class PrintReleaseFragment : Fragment() {
             )
             userName = decoded.user.toString()
         } catch (ex: Exception) {
-            context.toast("Failed to Decode Jwt Token")
+           // context.toast("Failed to Decode Jwt Token")
         }
         return userName.toString()
     }
@@ -764,7 +772,8 @@ class PrintReleaseFragment : Fragment() {
                     doAsync {
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                     }
-                    ServerPrintRelaseFragment.serverDocumentlist.clear()
+                   // ServerPrintRelaseFragment.serverDocumentlist.clear()
+                    getdocumentList.clear();
                     Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT)
                         .show()
 
@@ -774,8 +783,8 @@ class PrintReleaseFragment : Fragment() {
                     val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
                     localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
 
-                    ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
-
+                //    ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                    getdocumentList.addAll(localdocumentFromsharedPrefences)
 
                     val intent = Intent("refreshdocumentadapter")
                     intent.putExtra("refreshdocumentadapter", "refresh")
@@ -786,7 +795,8 @@ class PrintReleaseFragment : Fragment() {
                     ProgressDialog.cancelLoading()
                     val parseList: List<PrintQueueJobStatusItem?>? =
                         getJobStatusesResponse
-                    ServerPrintRelaseFragment.serverDocumentlist.clear()
+                  //  ServerPrintRelaseFragment.serverDocumentlist.clear()
+                    getdocumentList.clear()
                     val disposable4 = Observable.fromCallable {
                         val selectedFileList = ArrayList<SelectedFile>()
                         parseList?.forEach {
@@ -801,7 +811,8 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFileList.add(selectedFile)
-                            ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
+                           // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
+                            getdocumentList.add(selectedFile)
                         }
                         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
                         val gson = Gson()
@@ -809,7 +820,8 @@ class PrintReleaseFragment : Fragment() {
                         val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
                         localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
 
-                        ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                       // ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                        getdocumentList.addAll(localdocumentFromsharedPrefences)
                        // ServerPrintRelaseFragment.serverDocumentlist.addAll(MainActivity.list);
 
 

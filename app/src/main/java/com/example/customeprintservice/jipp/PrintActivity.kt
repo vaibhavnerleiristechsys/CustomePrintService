@@ -414,7 +414,7 @@ class PrintActivity : AppCompatActivity() {
             )
             userName = decoded.user.toString()
         } catch (ex: Exception) {
-            toast("Failed to Decode Jwt Token")
+          //  toast("Failed to Decode Jwt Token")
         }
         return userName.toString()
     }
