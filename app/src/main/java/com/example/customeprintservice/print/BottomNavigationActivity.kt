@@ -205,7 +205,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     val token = response.body()?.token
                     LoginPrefs.saveOctaToken(context, token.toString())
                     Log.i("printer", "tok==>$token")
-                    ProgressDialog.cancelLoading()
+               //     ProgressDialog.cancelLoading()
                     printReleaseFragment.arguments = bundle
 
                     val printersFragment1 = PrintersFragment()

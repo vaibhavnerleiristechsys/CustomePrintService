@@ -46,6 +46,7 @@ import com.example.customeprintservice.printjobstatus.model.getjobstatuses.Print
 import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
 import com.example.customeprintservice.room.SelectedFile;
+import com.example.customeprintservice.utils.ProgressDialog;
 import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -108,7 +109,14 @@ public class ServerPrintRelaseFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        ProgressDialog.Companion.showLoadingDialog(requireContext(), "please wait");
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
         getjobListStatus();
+            }
+        }, 5000);
     //    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
      //   printReleaseFragment.getJobStatusesForServerList(requireContext());
 
@@ -377,6 +385,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
     public void getjobListStatus(){
+        ProgressDialog.Companion.showLoadingDialog(requireContext(), "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
         String BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/";
@@ -422,11 +431,14 @@ public class ServerPrintRelaseFragment extends Fragment {
                     PrintReleaseFragment.Companion.getGetdocumentList().addAll(localdocumentFromsharedPrefences);
                 }
                 recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
+
+                    ProgressDialog.Companion.cancelLoading();
             }
         }
 
             @Override
             public void onFailure(Call<GetJobStatusesResponse> call, Throwable t) {
+                ProgressDialog.Companion.cancelLoading();
                 call.cancel();
             }
         });

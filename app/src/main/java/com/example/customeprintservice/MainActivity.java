@@ -22,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
@@ -150,9 +151,13 @@ public class MainActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("qrcodefloatingbutton"));
 
-        initToolbar();
-        initFab();
-        initNavigation();
+
+                initToolbar();
+                initFab();
+                initNavigation();
+
+
+
         //showBottomNavigation(false);
 
 
