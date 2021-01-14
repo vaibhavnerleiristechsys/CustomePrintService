@@ -19,7 +19,9 @@ import com.hp.jipp.trans.IppPacketData;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -211,7 +213,7 @@ public class PrintUtils {
             }
 
             List<String> att = getPrinterSupportedFormats(uri, context);
-
+            resultMap.put("getPrinterSupportedFormatsatt",att.toString()) ;
             if(att.isEmpty())
             {
                 resultMap.put("status","getAttributefailed") ;
@@ -304,6 +306,7 @@ public class PrintUtils {
 
             IppPacketData request = new IppPacketData(attributeRequest);
             IppPacketData response = transport.sendData(uri, request);
+            attributeList.add(response.toString());
             IppPacket responsePacket = response.getPacket();
 
             Intent intent =
@@ -346,8 +349,31 @@ public class PrintUtils {
                             .putExtra("exception", e.toString());
             context.sendBroadcast(printerSupportedFormatsIntent);
             Log.i("printer", "exception message-->" + e.toString());
-
+            attributeList.add( e.toString());
         }
         return attributeList;
+    }
+
+
+    public  String mapToString(Map<String, String> map) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (String key : map.keySet()) {
+            if (stringBuilder.length() > 0) {
+                stringBuilder.append("&");
+            }
+            String value = map.get(key);
+            try {
+                stringBuilder.append((key != null ? URLEncoder.encode(key, "UTF-8") : ""));
+                stringBuilder.append("=");
+                stringBuilder.append(value != null ? URLEncoder.encode(value, "UTF-8") : "");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("This method requires UTF-8 encoding support", e);
+            }
+        }
+
+
+
+        return stringBuilder.toString();
     }
 }

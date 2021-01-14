@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -39,8 +40,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.hp.jipp.model.TimeoutPredicate.activity
 import kotlinx.android.synthetic.main.activity_print.*
-import org.jetbrains.anko.toast
 import java.io.File
 import java.net.URI
 
@@ -621,10 +622,21 @@ class PrintActivity : AppCompatActivity() {
            file = File(selectedFileString)
            Log.i("printer", "in else")
            val finalUri = URI.create(printerString)
+           var stringMap=""
            Thread {
 
                val map =  printUtils.print(finalUri, file, context, "")
+                stringMap = printUtils.mapToString(map);
+               Log.i("printer map", stringMap)
+             //  dialogPrinterDiagnostics(stringMap,context)
+               runOnUiThread {
+                   Toast.makeText(context, stringMap.toString(), Toast.LENGTH_LONG).show()
+               }
+
+               map.toString()
            }.start()
+
+
        }
 
        val fileName: String = file.name
@@ -638,5 +650,26 @@ class PrintActivity : AppCompatActivity() {
        }
        ProgressDialog.cancelLoading()
    }
+
+
+
+
+    private fun dialogPrinterDiagnostics(map:String,context: Context) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.dialog_printer_diagnostics)
+        dialog.setCancelable(true)
+        dialog.setCanceledOnTouchOutside(true)
+        dialog.show()
+        dialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
+
+        val edtAddManualPrinter = dialog.findViewById<TextView>(R.id.textViewForDiagnostics)
+
+        edtAddManualPrinter.text=map
+
+
+
+
+    }
+
 
 }
