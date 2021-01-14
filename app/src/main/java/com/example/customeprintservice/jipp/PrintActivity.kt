@@ -192,12 +192,13 @@ class PrintActivity : AppCompatActivity() {
                     printResponse = intent.getStringExtra("printResponse").toString()
                     txtPrinterResponse.text = "Print Response - $printResponse"
 
-                    firebaseAnalytics.setDefaultEventParameters(
+                  /*  firebaseAnalytics.setDefaultEventParameters(
                         debugString(
                             printResponse,
                             "printResponse"
                         )
-                    )
+                    )*/
+                    Toast.makeText(context,"Print Response"+printResponse,Toast.LENGTH_LONG).show()
                 }
 
                 var printerSupportedFormats: String = ""
@@ -218,7 +219,7 @@ class PrintActivity : AppCompatActivity() {
                 if (intent.getStringExtra("getPrinterAttributes") != null) {
                     getPrinterAttributes = intent.getStringExtra("getPrinterAttributes").toString()
                     txtDignosticInfo.text = "Get Attributes - $getPrinterAttributes"
-
+                    Toast.makeText(context,"Print getPrinterAttributes  Response"+getPrinterAttributes,Toast.LENGTH_LONG).show()
 //                    firebaseAnalytics.setDefaultEventParameters(debugString(getPrinterAttributes,"attributes"))
 
                 }
@@ -227,6 +228,7 @@ class PrintActivity : AppCompatActivity() {
                 if (intent.getStringExtra("exception") != null) {
                     exception = intent.getStringExtra("exception").toString()
                     txtDignosticInfo.text = "Exception Occured - $exception"
+                    Toast.makeText(context,"Print exception"+exception,Toast.LENGTH_LONG).show()
                 }
 
                 var fileNotSupported: String = ""
@@ -235,9 +237,10 @@ class PrintActivity : AppCompatActivity() {
                     Toast.makeText(this@PrintActivity, fileNotSupported, Toast.LENGTH_LONG).show()
 
                 }
-                if (intent.getStringExtra("printResponseStatus") != null) {
-                    printResponseStatus = intent.getStringExtra("printResponseStatus").toString()
+                if (intent.getStringExtra("getPrintResponse") != null) {
+                    printResponseStatus = intent.getStringExtra("getPrintResponse").toString()
                     Log.i("printer", "printResponseStatus=>$printResponseStatus")
+                    Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 txtDignosticInfo.text = e.toString()
@@ -613,10 +616,13 @@ class PrintActivity : AppCompatActivity() {
 
 
        } else {
+           Toast.makeText(context,"file type:jpg,png" , Toast.LENGTH_LONG)
+               .show()
            file = File(selectedFileString)
            Log.i("printer", "in else")
            val finalUri = URI.create(printerString)
            Thread {
+
                val map =  printUtils.print(finalUri, file, context, "")
            }.start()
        }

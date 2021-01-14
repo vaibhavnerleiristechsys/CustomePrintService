@@ -113,6 +113,14 @@
                 <action android:name="android.printservice.PrintService" />
             </intent-filter>
         </service>
+
+        <receiver android:name=".jipp.MyReceiver">
+            <intent-filter>
+                <action android:name="com.example.PRINT_RESPONSE">
+                </action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

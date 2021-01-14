@@ -303,7 +303,6 @@ public class PrintUtils {
                             .build();
 
             IppPacketData request = new IppPacketData(attributeRequest);
-
             IppPacketData response = transport.sendData(uri, request);
             IppPacket responsePacket = response.getPacket();
 

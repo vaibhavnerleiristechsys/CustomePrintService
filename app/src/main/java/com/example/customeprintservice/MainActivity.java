@@ -82,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         fab.setVisibility(View.VISIBLE);
         BottomNavigationActivity bottomNavigationActivity1=new BottomNavigationActivity();
 
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver1,
+                new IntentFilter("om.example.PRINT_RESPONSE"));
+
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -279,6 +282,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public BroadcastReceiver mMessageReceiver1 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getStringExtra("getPrintResponse") != null) {
+               String printResponseStatus = intent.getStringExtra("getPrintResponse").toString();
+               // Log.i("printer", "printResponseStatus=>$printResponseStatus")
+                Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show();
+            }
+
+        }
+    };
 
 
     @Override

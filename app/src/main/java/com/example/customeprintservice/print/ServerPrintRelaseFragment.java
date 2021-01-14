@@ -114,7 +114,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-        getjobListStatus();
+               getjobListStatus();
             }
         }, 5000);
     //    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
