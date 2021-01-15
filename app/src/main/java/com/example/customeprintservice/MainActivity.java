@@ -1,5 +1,6 @@
 package com.example.customeprintservice;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.print.ServerPrintRelaseFragment;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
+import com.example.customeprintservice.utils.PermissionHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -79,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        checkPermissions();
+
         setContentView(R.layout.activity_main2);
         signout =findViewById(R.id.signout);
         fab = findViewById(R.id.fab);
@@ -186,6 +191,15 @@ public class MainActivity extends AppCompatActivity {
 
         PrintersFragment  printersFragment1 =new PrintersFragment();
         printersFragment1.getPrinterList(this,bottomNavigationActivity1.decodeJWT(this));
+    }
+
+    private void checkPermissions() {
+        PermissionHelper permissionsHelper = new PermissionHelper();
+        permissionsHelper.checkAndRequestPermissions(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        );
     }
 
     private void initToolbar() {
