@@ -200,13 +200,14 @@ public class PrintUtils {
     public Map<String, String> print(URI uri, File file, Context context, String fileFormat) {
         Map<String, String> resultMap = new HashMap<>();
         try {
+            resultMap.put("uri",uri.toString()) ;
             File inputFile = new File(file.getAbsolutePath());
             boolean exists = inputFile.exists();
             Log.i("printer", String.valueOf(exists));
             Log.i("printer", "input File-->" + inputFile);
             String fileName = inputFile.getName();
             String format = inputFile.getName();
-
+            resultMap.put("fileName",fileName.toString()) ;
             if (fileName.contains(".")) {
                 format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 Log.i("printer", "format--->" + format.toLowerCase().trim());
@@ -232,7 +233,7 @@ public class PrintUtils {
                 Log.i("printer", "In print utils method");
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                 IppPacketData printResponse = transport.sendData(uri, request);
-
+                resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();
                 resultMap.putAll(getResponseDetails(ippPacket));
 
