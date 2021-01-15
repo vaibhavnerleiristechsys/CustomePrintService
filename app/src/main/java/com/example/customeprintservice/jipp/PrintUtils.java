@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.customeprintservice.MainActivity;
 import com.hp.jipp.encoding.Attribute;
 import com.hp.jipp.encoding.AttributeGroup;
 import com.hp.jipp.encoding.IppPacket;
@@ -199,6 +200,7 @@ public class PrintUtils {
 
     public Map<String, String> print(URI uri, File file, Context context, String fileFormat) {
         Map<String, String> resultMap = new HashMap<>();
+
         try {
             resultMap.put("uri",uri.toString()) ;
             File inputFile = new File(file.getAbsolutePath());
@@ -212,9 +214,14 @@ public class PrintUtils {
                 format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 Log.i("printer", "format--->" + format.toLowerCase().trim());
             }
-
-            List<String> att = getPrinterSupportedFormats(uri, context);
-            resultMap.put("getPrinterSupportedFormatsatt",att.toString()) ;
+            List<String> att=new ArrayList<String>();
+            try {
+                att = getPrinterSupportedFormats(uri, context);
+                resultMap.put("getPrinterSupportedFormatsatt", att.toString());
+            }catch(Exception e){
+                resultMap.put("Exception",e.getMessage());
+                return resultMap;
+            }
             if(att.isEmpty())
             {
                 resultMap.put("status","getAttributefailed") ;
@@ -251,6 +258,7 @@ public class PrintUtils {
             }
             return resultMap;
         } catch (Exception e) {
+            resultMap.put("Exception", e.getMessage());
             Intent intent =
                     new Intent("com.example.PRINT_RESPONSE")
                             .putExtra("getPrintResponse", e.toString());
@@ -296,7 +304,6 @@ public class PrintUtils {
     public List<String> getPrinterSupportedFormats(URI uri, Context context) throws
             IOException {
         List<String> attributeList = null;
-        try {
             attributeList = new ArrayList<>();
             Attribute<String> requested;
             requested = requestedAttributes.of("all");
@@ -342,17 +349,6 @@ public class PrintUtils {
                             .putExtra("printerSupportedFormats", attributeList.toString());
             context.sendBroadcast(printerSupportedFormatsIntent);
             return attributeList;
-
-        } catch (Exception e) {
-
-            Intent printerSupportedFormatsIntent =
-                    new Intent("com.example.PRINT_RESPONSE")
-                            .putExtra("exception", e.toString());
-            context.sendBroadcast(printerSupportedFormatsIntent);
-            Log.i("printer", "exception message-->" + e.toString());
-            attributeList.add( e.toString());
-        }
-        return attributeList;
     }
 
 

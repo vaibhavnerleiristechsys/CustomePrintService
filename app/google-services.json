@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "232825820869",
-    "firebase_url": "https://printerlogic-eaeed.firebaseio.com",
-    "project_id": "printerlogic-eaeed",
-    "storage_bucket": "printerlogic-eaeed.appspot.com"
+    "project_number": "179384819622",
+    "project_id": "printer-298209",
+    "storage_bucket": "printer-298209.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:232825820869:android:9fe22c84d4a39bde4c42ac",
+        "mobilesdk_app_id": "1:179384819622:android:2039d3fa4dd1f7de7cf967",
         "android_client_info": {
           "package_name": "com.example.customeprintservice"
         }
       },
       "oauth_client": [
         {
-          "client_id": "232825820869-4g2hcjkla6ct0c5cv6jnm4rd9pn4c4f0.apps.googleusercontent.com",
+          "client_id": "179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAY-h5ZBbq3zW6XsqCX9r5T8IqmqtaMJog"
+          "current_key": "AIzaSyAzoCMaN8UwfYYZzo8jcgGOCslODMNjJvw"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "232825820869-4g2hcjkla6ct0c5cv6jnm4rd9pn4c4f0.apps.googleusercontent.com",
+              "client_id": "179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -223,6 +223,8 @@ class PrintersFragment : Fragment() {
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
                     }
+                }else{
+                    ProgressDialog.cancelLoading()
                 }
             }
 

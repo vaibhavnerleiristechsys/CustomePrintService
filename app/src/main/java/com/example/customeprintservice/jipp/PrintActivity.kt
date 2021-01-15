@@ -617,8 +617,6 @@ class PrintActivity : AppCompatActivity() {
 
 
        } else {
-           Toast.makeText(context,"file type:jpg,png" , Toast.LENGTH_LONG)
-               .show()
            file = File(selectedFileString)
            Log.i("printer", "in else")
            val finalUri = URI.create(printerString)
@@ -626,14 +624,12 @@ class PrintActivity : AppCompatActivity() {
            Thread {
 
                val map =  printUtils.print(finalUri, file, context, "")
-                stringMap = printUtils.mapToString(map);
-               Log.i("printer map", stringMap)
-             //  dialogPrinterDiagnostics(stringMap,context)
                runOnUiThread {
-                   Toast.makeText(context, stringMap.toString(), Toast.LENGTH_LONG).show()
+
+                  var ExceptionString= map.get("Exception")
+                   Toast.makeText(context, ExceptionString.toString(), Toast.LENGTH_LONG).show()
                }
 
-               map.toString()
            }.start()
 
 
@@ -650,26 +646,5 @@ class PrintActivity : AppCompatActivity() {
        }
        ProgressDialog.cancelLoading()
    }
-
-
-
-
-    private fun dialogPrinterDiagnostics(map:String,context: Context) {
-        val dialog = Dialog(context)
-        dialog.setContentView(R.layout.dialog_printer_diagnostics)
-        dialog.setCancelable(true)
-        dialog.setCanceledOnTouchOutside(true)
-        dialog.show()
-        dialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
-
-        val edtAddManualPrinter = dialog.findViewById<TextView>(R.id.textViewForDiagnostics)
-
-        edtAddManualPrinter.text=map
-
-
-
-
-    }
-
 
 }

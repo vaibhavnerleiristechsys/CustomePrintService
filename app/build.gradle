@@ -119,8 +119,9 @@ dependencies {
 
     //firebase Crashlytics dependencies
     implementation platform('com.google.firebase:firebase-bom:26.1.0')
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+   // implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-crashlytics'
 
     //decode Jwt Token
     implementation 'com.auth0.android:jwtdecode:1.1.1'

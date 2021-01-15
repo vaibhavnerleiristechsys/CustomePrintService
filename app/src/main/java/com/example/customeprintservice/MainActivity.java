@@ -340,7 +340,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    public static void showToastMethod(Context context) {
+        Toast.makeText(context, "mymessage ", Toast.LENGTH_SHORT).show();
+    }
 
 
 

@@ -433,7 +433,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                 recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
 
                     ProgressDialog.Companion.cancelLoading();
-            }
+            }else{
+                    ProgressDialog.Companion.cancelLoading();
+                }
         }
 
             @Override
