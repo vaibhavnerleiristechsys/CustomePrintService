@@ -58,6 +58,12 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
                 btnSignInWithOkta.gravity = Gravity.CENTER
+                edtUserName.visibility= View.GONE
+                edtPassword.visibility= View.GONE
+                btnSignIn.visibility= View.GONE
+                txtOr.visibility= View.GONE
+                imgShowPassword.visibility= View.GONE
+
             } else if (bundle.getString("buttonName") == "Azure AD") {
                 btnSignInWithOkta.text = bundle.getString("buttonName")
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_azure)
@@ -65,6 +71,11 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
                 btnSignInWithOkta.gravity = Gravity.CENTER
+                edtUserName.visibility= View.GONE
+                edtPassword.visibility= View.GONE
+                btnSignIn.visibility= View.GONE
+                txtOr.visibility= View.GONE
+                imgShowPassword.visibility= View.GONE
             }else if(bundle.getString("buttonName")=="Google"){
                 btnSignInWithOkta.text = bundle.getString("buttonName")
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_google)
@@ -72,9 +83,18 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
                 btnSignInWithOkta.gravity = Gravity.CENTER
+                edtUserName.visibility= View.GONE
+                edtPassword.visibility= View.GONE
+                btnSignIn.visibility= View.GONE
+                txtOr.visibility= View.GONE
+                imgShowPassword.visibility= View.GONE
             }else  if (bundle.getString("buttonName") == "LDAP") {
                 btnSignInWithOkta.visibility= View.GONE
                 txtOr.visibility= View.GONE
+                edtUserName.visibility= View.VISIBLE
+                edtPassword.visibility= View.VISIBLE
+                btnSignIn.visibility= View.VISIBLE
+                imgShowPassword.visibility= View.VISIBLE
             }
         } catch (e: Exception) {
             Log.i("printer", "exception=>$e")
@@ -100,6 +120,12 @@ class SignInActivity : AppCompatActivity() {
            Log.d("username",edtUserName.text.toString())
                    Log.d("password",edtPassword.text.toString())
             getPrinterListForCheckLdapLogin(this@SignInActivity,username,password)
+
+        }
+
+        backarrow.setOnClickListener {
+            val intent = Intent(this@SignInActivity , SignInCompany::class.java)
+            startActivity(intent)
 
         }
 

@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +38,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public static Set<SelectedFile> selectedServerFile = new HashSet<SelectedFile>();
     private final List<SelectedFile> mValues;
     Menu menu;
+    public Context context;
     private int selectedPosition = -1;
     List<ViewHolder> holders= new ArrayList<ViewHolder>();
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
@@ -45,6 +47,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        context = parent.getContext();
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.fragment_server_print_relase, parent, false);
 
@@ -61,20 +64,25 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
         holders.add(holder);
         this.selectedPosition = position;
-        holder.checkBox.setOnClickListener(new View.OnClickListener() {
+        holder.serverDocument.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
+
+                Intent intent = new Intent("menuFunctionlityDisplay");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                for(int i=0;i<holders.size();i++) {
                     ViewHolder holder = holders.get(i);
                     if (i == position) {
                         holder.checkBox.setChecked(true);
+                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
                         BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
                     } else {
                         holder.checkBox.setChecked(false);
+                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }
             }
@@ -91,10 +99,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public final LinearLayout serverDocument;
+        public final ConstraintLayout serverDocument;
         public final CheckBox checkBox;
         public SelectedFile mItem;
-        public ImageView documenticon;
+       // public ImageView documenticon;
         List a =new ArrayList<View>();
         public ViewHolder(View view) {
             super(view);
@@ -103,11 +111,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mContentView = view.findViewById(R.id.content);
             serverDocument = view.findViewById(R.id.serverDocument);
             checkBox = view.findViewById(R.id.checkbox);
-            checkBox.setVisibility(View.GONE);
-            documenticon =view.findViewById(R.id.documenticon);
+          //  checkBox.setVisibility(View.GONE);
+         //   documenticon =view.findViewById(R.id.documenticon);
 
 
-            documenticon.setOnClickListener(new View.OnClickListener() {
+        /*    documenticon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
@@ -115,14 +123,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                     setDocument();
                 }
 
-            });
+            });*/
 
             serverDocument.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     Log.d( "document click", ":successfull");
-                    setDocument();
+                   // setDocument();
                 }
 
             });
@@ -134,7 +142,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
-
+/*
         public void setDocument(){
             for(int i=0;i<holders.size();i++){
                 ViewHolder holder1 = holders.get(i);
@@ -142,6 +150,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 holder1.documenticon.setVisibility(View.GONE);
             }
         }
+
+ */
     }
 
 

@@ -60,8 +60,8 @@ class PrintersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         btnAddManuallyPrinter.setOnClickListener {
-//            dialogAddManualPrinter()
-            dialogSelectPrinter()
+            dialogAddManualPrinter()
+          //  dialogSelectPrinter()
         }
         updateUi()
         getPrinterList(requireContext(),decodeJWT())

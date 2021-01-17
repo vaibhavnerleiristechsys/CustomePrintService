@@ -5,33 +5,33 @@ import com.google.gson.annotations.SerializedName
 data class IdpResponse(
 
 	@field:SerializedName("idp_require_login")
-	val idpRequireLogin: Boolean? = null,
+	val idpRequireLogin: Boolean,
 
 	@field:SerializedName("auth_type")
-	val authType: String? = null,
+	val authType: String,
 
 	@field:SerializedName("token_uri")
-	val tokenUri: String? = null,
+	val tokenUri: String,
 
 	@field:SerializedName("desktopLoginUrl")
-	val desktopLoginUrl: String? = null,
+	val desktopLoginUrl: String,
 
 	@field:SerializedName("auth_uri")
-	val authUri: String? = null,
+	val authUri: String,
 
 	@field:SerializedName("idp_id")
-	val idpId: String? = null,
+	val idpId: String,
 
 	@field:SerializedName("name")
-	val name: String? = null,
+	val name: String,
 
 	@field:SerializedName("client_id")
-	val client_id: String? = null,
+	val client_id: String,
 
 
 	@field:SerializedName("idp_type")
-	val idpType: String? = null,
+	val idpType: String,
 
 	@field:SerializedName("idp_use_local_server")
-	val idpUseLocalServer: Boolean? = null
+	val idpUseLocalServer: Boolean
 )

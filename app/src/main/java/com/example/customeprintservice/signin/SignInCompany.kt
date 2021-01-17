@@ -58,22 +58,34 @@ class SignInCompany : AppCompatActivity() {
 
 
     private fun checkValidation() {
-        when {
-            edtYourCompany.text.toString().isEmpty() -> edtYourCompany.error = "Enter URL"
-            else -> {
-                if(edtYourCompany.text.toString().equals("https://devncookta.printercloud.com/api/idp") ||
+            if(edtYourCompany.text.toString().isEmpty()){
+                toast("please enter url")
+                ProgressDialog.cancelLoading()
+            }
+            else{
+
+               /* if(edtYourCompany.text.toString().equals("https://devncookta.printercloud.com/api/idp") ||
                    edtYourCompany.text.toString().equals("https://devncoazure.printercloud.com/api/idp") ||
                    edtYourCompany.text.toString().equals("https://devncoping.printercloud.com/api/idp") ||
                    edtYourCompany.text.toString().equals("https://googleid.printercloud.com/api/idp")   ||
-                    edtYourCompany.text.toString().equals("https://devncoldap.printercloud.com/api/idp")) {
-                    getIdpInfo()
-                }else{
+                    edtYourCompany.text.toString().equals("https://devncoldap.printercloud.com/api/idp")) {*/
+                   var url= edtYourCompany.text.toString()
+                    if(!url.contains("https://")){
+                        url= "https://"+url
+                    }
+                    if(!url.contains("/api/idp")){
+                        url= url +"/api/idp"
+                    }
+
+
+                    getIdpInfo(url)
+              /*  }else{
                     toast("please check url")
                     ProgressDialog.cancelLoading()
-                }
+                }*/
 
             }
-        }
+
     }
 
     private fun setAlpha() {
@@ -92,8 +104,8 @@ class SignInCompany : AppCompatActivity() {
         }
     }
 
-    private fun getIdpInfo() {
-        val BASE_URL: String = (edtYourCompany.text.toString() + "/")
+    private fun getIdpInfo(url:String) {
+        val BASE_URL: String = (url + "/")
         val apiService = RetrofitClient(this@SignInCompany)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
@@ -114,7 +126,10 @@ class SignInCompany : AppCompatActivity() {
                     }
 
                     val list: List<IdpResponse>? = response.body()?.toList()
-
+                    var size=0
+                    if (list != null) {
+                        size =list.size
+                    }
                     list?.forEach { idp ->
                         run {
                             bundle.putString("desktopLoginUrl", idp.desktopLoginUrl)
@@ -131,12 +146,27 @@ class SignInCompany : AppCompatActivity() {
                             )
                         }
                     }
-                    toast("Idp response getting Successful")
-                    val intent = Intent(this@SignInCompany, SignInActivity::class.java)
-                    intent.putExtras(bundle)
-                    startActivity(intent)
+
+
+                    if(size==0){
+                        if(!url.contains("ldap")) {
+                            toast("please check url")
+                        }
+                        if(url.contains("ldap")){
+                            val intent = Intent(this@SignInCompany, SignInActivity::class.java)
+                            intent.putExtras(bundle)
+                            startActivity(intent)
+                        }
+                    }else {
+                        toast("Idp response getting Successful")
+                        val intent = Intent(this@SignInCompany, SignInActivity::class.java)
+                        intent.putExtras(bundle)
+                        startActivity(intent)
+                    }
                 } else {
                     toast("Response is Not Successful")
+                    ProgressDialog.cancelLoading()
+
                 }
             }
 

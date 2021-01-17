@@ -53,5 +53,11 @@
         android:label="@string/print"
         tools:layout="@layout/fragment_printers" />
 
+    <fragment
+        android:id="@+id/bottom_notifications"
+        android:name="com.example.customeprintservice.print.ui.gallery.GalleryFragment"
+        android:label="@string/print"
+        tools:layout="@layout/fragment_gallery" />
+
 
 </navigation>

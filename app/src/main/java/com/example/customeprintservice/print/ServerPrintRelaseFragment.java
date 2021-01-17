@@ -103,7 +103,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+
 
 
         if (getArguments() != null) {
@@ -120,6 +120,8 @@ public class ServerPrintRelaseFragment extends Fragment {
     //    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
      //   printReleaseFragment.getJobStatusesForServerList(requireContext());
 
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver1,
+                new IntentFilter("menuFunctionlityDisplay"));
 
     }
 
@@ -449,4 +451,12 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
     }
+
+    public BroadcastReceiver mMessageReceiver1 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setHasOptionsMenu(true);
+        }
+    };
+
 }
