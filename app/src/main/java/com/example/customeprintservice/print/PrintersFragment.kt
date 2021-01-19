@@ -69,6 +69,11 @@ class PrintersFragment : Fragment() {
         val intent = Intent("qrcodefloatingbutton")
         intent.putExtra("qrCodeScanBtn", "InActive")
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
+
+        swipeContainer.setOnRefreshListener {
+            getPrinterList(requireContext(),decodeJWT())
+
+        }
     }
 
     @SuppressLint("WrongConstant")
@@ -219,17 +224,20 @@ class PrintersFragment : Fragment() {
                             printerListForCheckIppPrinters.add(printerModel);
 
                         }
-
+                        updateUi()
+                        swipeContainer.isRefreshing = false
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
                     }
                 }else{
                     ProgressDialog.cancelLoading()
+                    swipeContainer.isRefreshing = false
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 ProgressDialog.cancelLoading()
+                swipeContainer.isRefreshing = false
                 Log.i("printer", "Error html response==>${t.message.toString()}")
             }
         })

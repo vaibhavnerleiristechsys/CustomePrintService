@@ -24,13 +24,13 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.PrintService
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
-import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -59,7 +59,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_print_release.*
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.toast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -87,7 +86,7 @@ class PrintReleaseFragment : Fragment() {
     private val releaseJobRequest = ReleaseJobRequest()
     private val releaseJobCheckedList = ArrayList<SelectedFile>()
     private var releaseJobCheckedListForServer = ArrayList<SelectedFile>()
-
+    private val swipeContainer: SwipeRefreshLayout? = null
     companion object {
         public val getdocumentList = java.util.ArrayList<SelectedFile>()
     }
@@ -133,6 +132,9 @@ class PrintReleaseFragment : Fragment() {
          * validate token
          */
 //        validateToken()
+
+
+
 
         ProgressDialog.showLoadingDialog(requireContext(), "Getting Hold jobs")
         getJobStatuses(

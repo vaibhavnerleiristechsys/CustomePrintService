@@ -32,6 +32,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
@@ -82,7 +83,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     public static int secure_release;
     public  ArrayList<SelectedFile> localdocumentFromsharedPrefences =new ArrayList<SelectedFile>();
     RecyclerView recyclerView;
-
+    private SwipeRefreshLayout swipeContainer;
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -123,17 +124,19 @@ public class ServerPrintRelaseFragment extends Fragment {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver1,
                 new IntentFilter("menuFunctionlityDisplay"));
 
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_server_print_relase_list, container, false);
-
+        recyclerView = view.findViewById(R.id.list);
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         // Set the adapter
         if (view instanceof RecyclerView) {
              context = view.getContext();
-             recyclerView = (RecyclerView) view;
+             //recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -158,7 +161,12 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
         }
-
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getjobListStatus();
+            }
+        });
 
 
         return view;
@@ -421,8 +429,10 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
                     PrintReleaseFragment.Companion.getGetdocumentList().add(selectedFile);
                 }
-                localdocumentFromsharedPrefences.clear();
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                if(localdocumentFromsharedPrefences!=null) {
+                    localdocumentFromsharedPrefences.clear();
+                }
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
                 Gson gson = new Gson();
                 String json = prefs.getString("localdocumentlist", null);
                 Type type = new TypeToken<ArrayList<SelectedFile>>() {
@@ -435,14 +445,17 @@ public class ServerPrintRelaseFragment extends Fragment {
                 recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
 
                     ProgressDialog.Companion.cancelLoading();
+                    swipeContainer.setRefreshing(false);
             }else{
                     ProgressDialog.Companion.cancelLoading();
+                    swipeContainer.setRefreshing(false);
                 }
         }
 
             @Override
             public void onFailure(Call<GetJobStatusesResponse> call, Throwable t) {
                 ProgressDialog.Companion.cancelLoading();
+                swipeContainer.setRefreshing(false);
                 call.cancel();
             }
         });
