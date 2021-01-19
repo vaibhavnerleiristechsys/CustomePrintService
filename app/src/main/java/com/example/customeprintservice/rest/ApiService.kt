@@ -107,6 +107,15 @@ interface ApiService {
         @Header("X-IdP-Name") idpName: String
     ): Call<GetJobStatusesResponse>
     @GET(".")
+    fun getPrintJobStatusesForQrCode(
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Query("printer_id") printer_id: String
+    ): Call<GetJobStatusesResponse>
+
+    @GET(".")
     fun getPrintJobStatusesForLdap(
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,

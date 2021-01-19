@@ -16,6 +16,8 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
+import com.example.customeprintservice.print.MyItemRecyclerViewAdapter
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
@@ -28,7 +30,11 @@ class FragmentPrinterListAdapter(
     val list: ArrayList<PrinterModel>
 
 
+
 ) : RecyclerView.Adapter<FragmentPrinterListAdapter.ViewHolder>() {
+    val holders = ArrayList<ViewHolder>()
+    private var selectedPosition = -1
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -41,8 +47,10 @@ class FragmentPrinterListAdapter(
 
     override fun onBindViewHolder(holder: FragmentPrinterListAdapter.ViewHolder, position: Int) {
         holder.getPrinterName().text = list[position].serviceName.toString()
+        holders.add(holder)
+        this.selectedPosition = position
         holder.getCardview().setOnClickListener {
-            it.setBackgroundColor(Color.GRAY)
+           // it.setBackgroundColor(Color.GRAY)
 
             if(list[position].nodeId != null){
             Log.d("selected printerdetails", list[position].serviceName.toString())
@@ -62,6 +70,17 @@ class FragmentPrinterListAdapter(
             val intent = Intent("message_subject_intent")
             intent.putExtra("name", "message")
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+
+            for (i in holders.indices) {
+
+               val holder=holders[i]
+                if (i == position) {
+                holder.getCardview().setCardBackgroundColor(Color.GRAY)
+
+                } else {
+                    holder.getCardview().setCardBackgroundColor(Color.WHITE)
+                }
+            }
 
         }
 //        holder.bind(list?.get(position))

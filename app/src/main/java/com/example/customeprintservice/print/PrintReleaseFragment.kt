@@ -308,7 +308,7 @@ class PrintReleaseFragment : Fragment() {
         })
     }
 
-    fun releaseJob(context: Context) {
+    fun releaseJob(context: Context){
         @SuppressLint("WrongConstant")val sh: SharedPreferences =
             context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
         val IsLdap = sh.getString("IsLdap", "")
@@ -385,6 +385,7 @@ class PrintReleaseFragment : Fragment() {
                         SignInCompanyPrefs.getIdpType(context).toString(),
                         SignInCompanyPrefs.getIdpName(context).toString()
                     )
+
                 }
             }
 

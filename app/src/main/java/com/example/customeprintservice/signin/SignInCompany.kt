@@ -2,6 +2,9 @@ package com.example.customeprintservice.signin
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.Selection
+import android.text.TextWatcher
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
@@ -35,6 +38,25 @@ class SignInCompany : AppCompatActivity() {
             startActivity(intent)
         }
         setContentView(R.layout.activity_sign_in_company)
+        edtYourCompany.setText("https://");
+        Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
+
+        edtYourCompany.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if(!s.toString().startsWith("https://")){
+                    edtYourCompany.setText("https://");
+                    Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
+
+                }
+
+
+            }
+            override  fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+        })
+
 
         setAlpha()
 
@@ -61,6 +83,7 @@ class SignInCompany : AppCompatActivity() {
             if(edtYourCompany.text.toString().isEmpty()){
                 toast("please enter url")
                 ProgressDialog.cancelLoading()
+
             }
             else{
 
