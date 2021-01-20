@@ -6,6 +6,7 @@ import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobR
 import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobResponse
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
+import com.example.customeprintservice.printjobstatus.model.printerlist.Printer
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
 import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobRequest
 import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobResponse
@@ -165,5 +166,13 @@ interface ApiService {
         @Header("X-IdP-Name") idpName: String,
         @Body jobStatusCancel: CancelJobRequest
     ): Call<CancelJobResponse>
+
+    @GET(".")
+    fun getPrintersList(
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String
+    ): Call<List<Printer>>
 
 }
