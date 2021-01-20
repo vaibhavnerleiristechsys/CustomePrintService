@@ -191,7 +191,7 @@ class QRCodeScanActivity : AppCompatActivity() {
                             selectedFile.fileSelectedDate = it?.submittedAtRelative
                             selectedFile.filePath = it?.documentTitle.toString()
                             selectedFile.jobNum = it?.jobNumber
-                            selectedFile.jobType = 1
+                            selectedFile.jobType = it?.jobType
                             selectedFile.queueId = it?.printerDeviceQueueId
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId

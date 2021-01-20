@@ -231,13 +231,18 @@ class PrintersFragment : Fragment() {
                     }
                 }else{
                     ProgressDialog.cancelLoading()
-                    swipeContainer.isRefreshing = false
+                    if(swipeContainer!=null) {
+                        swipeContainer.isRefreshing = false
+                    }
                 }
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                swipeContainer.isRefreshing = false
+                if(swipeContainer!=null) {
+                    swipeContainer.isRefreshing = false
+                }
+
                 Log.i("printer", "Error html response==>${t.message.toString()}")
             }
         })

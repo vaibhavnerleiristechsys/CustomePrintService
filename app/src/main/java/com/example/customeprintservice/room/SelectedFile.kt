@@ -30,7 +30,7 @@ data class SelectedFile(
     var jobNum: Int? = null,
 
     @ColumnInfo(name = "job_type")
-    var jobType: Int? = null,
+    var jobType: String? = null,
 
     @ColumnInfo(name = "user_name")
     var userName: String? = null

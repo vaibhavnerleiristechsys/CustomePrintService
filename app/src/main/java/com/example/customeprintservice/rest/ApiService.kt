@@ -105,7 +105,8 @@ interface ApiService {
         @Header("Authorization") authorization: String,
         @Header("X-User-Name") userName: String,
         @Header("X-IdP-Type") idpType: String,
-        @Header("X-IdP-Name") idpName: String
+        @Header("X-IdP-Name") idpName: String,
+        @Query("user_name_like") user_name_like: String
     ): Call<GetJobStatusesResponse>
     @GET(".")
     fun getPrintJobStatusesForQrCode(

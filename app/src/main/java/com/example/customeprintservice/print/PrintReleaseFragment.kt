@@ -3,6 +3,7 @@ package com.example.customeprintservice.print
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,13 +12,8 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.view.*
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -31,6 +27,7 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
+import com.example.customeprintservice.jipp.QRCodeScanActivity
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -51,6 +48,7 @@ import com.example.customeprintservice.utils.Permissions
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
@@ -252,7 +250,7 @@ class PrintReleaseFragment : Fragment() {
         releaseJobCheckedListForServer.forEach {
             val deleteJobsItem = DeleteJobsItem()
             deleteJobsItem.jobNum = it.jobNum
-            deleteJobsItem.jobType = it.jobType
+            deleteJobsItem.jobType = "1"
             deleteJobsItem.queueId = it.queueId
             deleteJobsItem.userName = it.userName
             deleteJobsItem.workstationId = it.workStationId
@@ -340,7 +338,7 @@ class PrintReleaseFragment : Fragment() {
         releaseJobCheckedListForServer.forEach {
             val releaseJobsItem = ReleaseJobsItem()
             releaseJobsItem.jobNum = it.jobNum
-            releaseJobsItem.jobType = it.jobType
+            releaseJobsItem.jobType = "1"
             releaseJobsItem.queueId = it.queueId
             releaseJobsItem.userName = it.userName
             releaseJobsItem.workstationId = it.workStationId
@@ -388,6 +386,9 @@ class PrintReleaseFragment : Fragment() {
                         SignInCompanyPrefs.getIdpName(context).toString()
                     )
 
+                        dialogSuccessfullyPrint(context);
+
+
                 }
             }
 
@@ -433,7 +434,7 @@ class PrintReleaseFragment : Fragment() {
                "Bearer " + LoginPrefs.getOCTAToken(context),
                userName,
                idpType,
-               idpName)
+               idpName,userName)
        }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {
@@ -445,22 +446,18 @@ class PrintReleaseFragment : Fragment() {
                 val getJobStatusesResponse = response.body()?.printQueueJobStatus
                 if (getJobStatusesResponse?.size == 0) {
 
-                    Thread {
-                        app.dbInstance().selectedFileDao().deleteItemsFromApi()
-                    }.start()
-                    Thread.sleep(1000)
-//                    Toast.makeText(requireContext(), "Empty list..No Job Hold", Toast.LENGTH_SHORT)
-//                        .show()
-                  //  ServerPrintRelaseFragment.serverDocumentlist.clear()
+
                     getdocumentList.clear()
                     val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
                     val gson = Gson()
                     val jsonText: String? = prefs.getString("localdocumentlist", null)
                     val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
-                    localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+                   if(jsonText !=null) {
+                       localdocumentFromsharedPrefences = gson.fromJson(jsonText, type)
 
-                   // ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
-                    getdocumentList.addAll(localdocumentFromsharedPrefences)
+                       // ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                       getdocumentList.addAll(localdocumentFromsharedPrefences)
+                   }
                     ProgressDialog.cancelLoading()
                 } else {
                     ProgressDialog.cancelLoading()
@@ -477,7 +474,7 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.fileSelectedDate = it?.submittedAtRelative
                             selectedFile.filePath = it?.documentTitle.toString()
                             selectedFile.jobNum = it?.jobNumber
-                            selectedFile.jobType = 1
+                            selectedFile.jobType = it?.jobType
                             selectedFile.queueId = it?.printerDeviceQueueId
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
@@ -761,7 +758,8 @@ class PrintReleaseFragment : Fragment() {
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
-                SignInCompanyPrefs.getIdpName(context).toString())
+                SignInCompanyPrefs.getIdpName(context).toString(),
+                decodeJWT(context))
         }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {
@@ -809,7 +807,7 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.fileSelectedDate = it?.submittedAtRelative
                             selectedFile.filePath = it?.documentTitle.toString()
                             selectedFile.jobNum = it?.jobNumber
-                            selectedFile.jobType = 1
+                            selectedFile.jobType = it?.jobType
                             selectedFile.queueId = it?.printerDeviceQueueId
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
@@ -859,6 +857,38 @@ class PrintReleaseFragment : Fragment() {
 
 
 
+    }
+
+    @SuppressLint("WrongConstant")
+    fun dialogSuccessfullyPrint(context:Context) {
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.dialog_successful_print)
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(true)
+        val window = dialog.window
+        window!!.setLayout(
+            AbsListView.LayoutParams.WRAP_CONTENT,
+            AbsListView.LayoutParams.WRAP_CONTENT
+        )
+//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        val wlp = window.attributes
+        wlp.gravity = Gravity.CENTER
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        window.setDimAmount(0.5f)
+        window.attributes = wlp
+
+        val button =
+            dialog.findViewById<Button>(R.id.ok)
+        dialog.show()
+
+
+        button.setOnClickListener {
+            dialog.cancel()
+           val serverPrintRelaseFragment =ServerPrintRelaseFragment()
+            serverPrintRelaseFragment.getjobListStatus();
+
+        }
     }
 
 

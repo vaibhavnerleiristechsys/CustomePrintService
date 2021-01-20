@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class ReleaseJobsItem(
 
 	@field:SerializedName("job_type")
-	var jobType: Int? = null,
+	var jobType: String? = null,
 
 	@field:SerializedName("job_num")
 	var jobNum: Int? = null,
