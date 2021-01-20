@@ -151,6 +151,9 @@ dependencies {
 
     implementation 'org.apache.commons:commons-lang3:3.6'
 
+    // Android treeview
+    implementation 'com.github.bmelnychuk:atv:1.2.+'
+
     // Dependencies for the REST API example
     implementation 'com.google.api-client:google-api-client:1.30.5'
     implementation 'com.google.api-client:google-api-client-android:1.30.5'

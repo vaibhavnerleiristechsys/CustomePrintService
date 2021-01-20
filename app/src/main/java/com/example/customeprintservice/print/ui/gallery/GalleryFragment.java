@@ -15,11 +15,16 @@ import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
+
 import com.google.gson.Gson;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -92,10 +97,24 @@ public class GalleryFragment extends Fragment {
             public void onResponse(Call<List<Printer>> call, Response<List<Printer>> response) {
                 if(response.isSuccessful())
                 {
+                    Map<Printer,TreeNode> mapPrinter2TreeNode = new HashMap<>();
+
                     List<Printer> listOfPrinters = response.body();
                     for(Printer printer:listOfPrinters) {
                         TreeNode child = new TreeNode(printer.getNode_title());
-                        root.addChild(child);
+                        mapPrinter2TreeNode.put(printer,child);
+                        if(printer.getParent_id()==0) {
+                            root.addChild(child);
+                        }
+                    }
+
+                    for (Map.Entry<Printer,TreeNode> entry : mapPrinter2TreeNode.entrySet()) {
+                        Printer printer = entry.getKey();
+                        TreeNode parent = entry.getValue();
+                        List<TreeNode> children = findChildren(printer.getId(), listOfPrinters, mapPrinter2TreeNode);
+                        for(TreeNode child: children) {
+                            parent.addChild(child);
+                        }
                     }
 
                     AndroidTreeView tView = new AndroidTreeView(getActivity(), root);
@@ -118,6 +137,19 @@ public class GalleryFragment extends Fragment {
         });
 
 
+    }
 
+    private List<TreeNode> findChildren(Integer printerId, List<Printer> listOfPrinters,Map<Printer,TreeNode> mapPrinter2TreeNode)
+    {
+        List<TreeNode> children = new ArrayList<>();
+        for(Printer printer: listOfPrinters)
+        {
+            if(printer.getParent_id()== printerId)
+            {
+                children.add(mapPrinter2TreeNode.get(printer));
+            }
+        }
+
+        return children;
     }
 }
