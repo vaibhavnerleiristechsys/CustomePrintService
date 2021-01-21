@@ -184,12 +184,18 @@ internal class PrinterDiscoverySession(
                     .build()
             }
             printers.add(printerInfo)
-            addPrinters(printers)
+            // filter out the printers
+
             val printerHashmap = PrinterHashmap()
             val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
             hashMap[printerId[0]] = p
             printerHashmap.hashMap = hashMap
         })
+
+        //for loop
+
+        // for loop ends
+        addPrinters(printers);
     }
 
     override fun onStopPrinterDiscovery() {}

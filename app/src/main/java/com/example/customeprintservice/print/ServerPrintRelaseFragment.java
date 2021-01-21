@@ -186,10 +186,20 @@ public class ServerPrintRelaseFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.download:
-                PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
-                printReleaseFragment.cancelJob(requireContext());
-                Intent myIntent = new Intent(getActivity(), MainActivity.class);
-                getActivity().startActivity(myIntent);
+                SelectedFile selectedFile1=new SelectedFile();
+                if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+                    selectedFile1 = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                }
+                if(selectedFile1.isFromApi()==true) {
+                    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
+                    printReleaseFragment.cancelJob(requireContext());
+                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                    getActivity().startActivity(myIntent);
+                }else if(selectedFile1.isFromApi()==false){
+                    removeDocumentFromSharedPreferences();
+                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                    getActivity().startActivity(myIntent);
+                }
                 return (true);
             case R.id.print:
                 SelectedFile selectedFile=new SelectedFile();
@@ -415,7 +425,7 @@ public class ServerPrintRelaseFragment extends Fragment {
        // ProgressDialog.Companion.showLoadingDialog(requireContext(), "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
-       String siteId= LoginPrefs.Companion.getSiteId(requireContext());
+       String siteId= LoginPrefs.Companion.getSiteId(context);
         String BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/";
         ApiService apiService = new RetrofitClient(requireContext())
                 .getRetrofitInstance(BASE_URL)

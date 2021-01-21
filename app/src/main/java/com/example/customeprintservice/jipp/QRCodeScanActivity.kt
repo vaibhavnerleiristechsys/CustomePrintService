@@ -194,12 +194,12 @@ class QRCodeScanActivity : AppCompatActivity() {
                             selectedFileList.add(selectedFile)
                             getdocumentListFromQrCode.add(selectedFile)
 
-                            runOnUiThread(Runnable {
-                                dialogSelectPrinter(context);
-                            })
+
 
                         }
-
+                        runOnUiThread(Runnable {
+                            dialogSelectPrinter(context);
+                        })
 
                     }.subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
