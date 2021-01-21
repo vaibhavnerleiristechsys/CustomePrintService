@@ -1,5 +1,6 @@
 package com.example.customeprintservice.print.ui.gallery;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +36,7 @@ public class GalleryFragment extends Fragment {
 
     private GalleryViewModel galleryViewModel;
     private ViewGroup mContainer = null;
+    Context context;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -42,7 +44,7 @@ public class GalleryFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_gallery, null, false);
         ViewGroup containerView = (ViewGroup) rootView.findViewById(R.id.container);
-
+        context = rootView.getContext();
         //View root = inflater.inflate(R.layout.fragment_gallery, null, false);
 
         /*galleryViewModel =
@@ -117,7 +119,7 @@ public class GalleryFragment extends Fragment {
                         }
                     }
 
-                    AndroidTreeView tView = new AndroidTreeView(getActivity(), root);
+                    AndroidTreeView tView = new AndroidTreeView(context, root);
                     containerView.addView(tView.getView());
 
                 }

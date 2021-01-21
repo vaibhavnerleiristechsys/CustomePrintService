@@ -211,7 +211,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     val printersFragment1 = PrintersFragment()
                     printersFragment1.getPrinterList(context,decodeJWT(context))
                 } else {
-                    toast("Response is Not Successful")
+                   // toast("Response is Not Successful")
                 }
             }
 

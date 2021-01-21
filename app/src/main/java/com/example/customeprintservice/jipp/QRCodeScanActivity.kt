@@ -3,9 +3,7 @@ package com.example.customeprintservice.jipp
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.budiyev.android.codescanner.*
@@ -53,7 +52,7 @@ class QRCodeScanActivity : AppCompatActivity() {
     companion object {
         public val getdocumentListFromQrCode = java.util.ArrayList<SelectedFile>()
     }
-
+    lateinit var floatButton:FloatingActionButton;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,7 +97,12 @@ class QRCodeScanActivity : AppCompatActivity() {
             scannerView.setOnClickListener {
                 codeScanner.startPreview()
             }
-
+        //    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
+        //   printReleaseFragment.getJobStatusesForServerList(requireContext());
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+            mMessageReceiver1,
+            IntentFilter("menuFunctionlityDisplay")
+        )
 
     }
         override fun onResume() {
@@ -266,8 +270,8 @@ class QRCodeScanActivity : AppCompatActivity() {
          printerRecyclerView =
             dialog.findViewById<RecyclerView>(R.id.dialogSelectDocumentRecyclerView)
         val imgCancel = dialog.findViewById<ImageView>(R.id.imgDialogSelectPrinterCancel)
-        val floatButton =
-            dialog.findViewById<FloatingActionButton>(R.id.dialogSelectPrinterFloatingButton)
+
+         floatButton  =dialog.findViewById<FloatingActionButton>(R.id.dialogSelectPrinterFloatingButton)
 
         printerRecyclerView?.layoutManager =
             LinearLayoutManager(
@@ -292,6 +296,20 @@ class QRCodeScanActivity : AppCompatActivity() {
             printReleaseFragment.releaseJob(context)
             getJobListByPrinterId(this,printerId)
 
+        }
+    }
+
+
+    var mMessageReceiver1: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (floatButton != null) {
+                floatButton.setBackgroundTintList(
+                    ContextCompat.getColorStateList(
+                        this@QRCodeScanActivity,
+                        R.color.bloodOrange
+                    )
+                )
+            }
         }
     }
 }

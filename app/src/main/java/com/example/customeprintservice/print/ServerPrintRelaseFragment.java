@@ -239,9 +239,9 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
     private void selectePrinterDialog() {
-        dialog = new Dialog(requireContext());
+        dialog = new Dialog(context);
       //  dialog.setContentView(R.layout.dialog_select_printer);
-        v = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_select_printer, null);
+        v = LayoutInflater.from(context).inflate(R.layout.dialog_select_printer, null);
         dialog.setContentView(v);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(true);
@@ -257,11 +257,11 @@ public class ServerPrintRelaseFragment extends Fragment {
         RecyclerView printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
         ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
         floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
-        floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.paleGray));
+        floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.paleGray));
 
-        printerRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         PrinterList printerList = new PrinterList();
-        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(requireContext(), printerList.getPrinterList()));
+        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context, printerList.getPrinterList()));
 
 
         imgCancel.setOnClickListener(v ->
@@ -279,7 +279,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                if(secure_release == 0 || secure_release ==1 || secure_release==2){
                    Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG)
                            .show();
-                   printReleaseFragment.releaseJob(requireContext());
+                   printReleaseFragment.releaseJob(context);
                    dialog.cancel();
                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
                    getActivity().startActivity(myIntent);
@@ -302,16 +302,16 @@ public class ServerPrintRelaseFragment extends Fragment {
                if(secure_release == 0 || secure_release ==1 || secure_release==2){
                      String FilePath =selectedFile.getFilePath();
                     PrintActivity printActivity =new PrintActivity();
-                    printActivity.locaPrint(FilePath,localPrinturl,requireContext());
+                    printActivity.locaPrint(FilePath,localPrinturl,context);
                    removeDocumentFromSharedPreferences();
-                   Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG)
+                   Toast.makeText(context, "print release", Toast.LENGTH_LONG)
                            .show();
                        dialog.cancel();
                      Intent myIntent = new Intent(getActivity(), MainActivity.class);
                       getActivity().startActivity(myIntent);
 
                }else if(secure_release == 3 || secure_release ==4){
-                   Toast.makeText(requireContext(), "print hold", Toast.LENGTH_LONG)
+                   Toast.makeText(context, "print hold", Toast.LENGTH_LONG)
                            .show();
                    dialog.cancel();
                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
@@ -331,9 +331,9 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
     private void dialogPromptPrinter(){
-        Dialog dialog1 = new Dialog(requireContext());
+        Dialog dialog1 = new Dialog(context);
         //  dialog.setContentView(R.layout.dialog_select_printer);
-        v = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_printer_prompt, null);
+        v = LayoutInflater.from(context).inflate(R.layout.dialog_printer_prompt, null);
         dialog1.setContentView(v);
         dialog1.setCancelable(false);
 
@@ -370,7 +370,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }
                 if(selectedFile.isFromApi()==true) {
                     PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
-                    printReleaseFragment.releaseJob(requireContext());
+                    printReleaseFragment.releaseJob(context);
                     dialog.cancel();
                     dialog1.cancel();
                     Intent myIntent = new Intent(getActivity(), MainActivity.class);
@@ -378,7 +378,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }else{
                       String FilePath =selectedFile.getFilePath();
                      PrintActivity printActivity =new PrintActivity();
-                     printActivity.locaPrint(FilePath,localPrinturl,requireContext());
+                     printActivity.locaPrint(FilePath,localPrinturl,context);
                     removeDocumentFromSharedPreferences();
                     dialog.cancel();
                     dialog1.cancel();
@@ -427,17 +427,17 @@ public class ServerPrintRelaseFragment extends Fragment {
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
        String siteId= LoginPrefs.Companion.getSiteId(context);
         String BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/";
-        ApiService apiService = new RetrofitClient(requireContext())
+        ApiService apiService = new RetrofitClient(context)
                 .getRetrofitInstance(BASE_URL)
                 .create(ApiService.class);
 
 
         Call call = apiService.getPrintJobStatuses(
-                "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
-                printReleaseFragment.decodeJWT(requireContext()),
-                SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
-                SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString(),
-                printReleaseFragment.decodeJWT(requireContext())
+                "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
+                printReleaseFragment.decodeJWT(context),
+                SignInCompanyPrefs.Companion.getIdpType(context).toString(),
+                SignInCompanyPrefs.Companion.getIdpName(context).toString(),
+                printReleaseFragment.decodeJWT(context)
         );
         call.enqueue(new Callback<GetJobStatusesResponse>() {
             public void onResponse(Call<GetJobStatusesResponse> call, Response<GetJobStatusesResponse> response) {
@@ -461,7 +461,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                 if(localdocumentFromsharedPrefences!=null) {
                     localdocumentFromsharedPrefences.clear();
                 }
-                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
                 Gson gson = new Gson();
                 String json = prefs.getString("localdocumentlist", null);
                 Type type = new TypeToken<ArrayList<SelectedFile>>() {
