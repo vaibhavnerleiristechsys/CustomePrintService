@@ -344,6 +344,16 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(context, "mymessage ", Toast.LENGTH_SHORT).show();
     }
 
+    public static String findSiteId(String completeUrl){
+        String siteId = "";
+        int periodLocation =  completeUrl.indexOf(".");
+        if(periodLocation!=-1)
+        {
+            siteId =  completeUrl.substring(0,periodLocation);
+
+        }
+        return siteId;
+    }
 
 
 

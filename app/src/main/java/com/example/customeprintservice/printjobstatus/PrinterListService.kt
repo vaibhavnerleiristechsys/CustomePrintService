@@ -3,6 +3,7 @@ package com.example.customeprintservice.printjobstatus
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
@@ -27,7 +28,8 @@ class PrinterListService {
         token: String,
         isMobile: Boolean
     ) {
-        val BASE_URL = "https://devncookta.printercloud.com/auth/asserted-login-portal/"
+        val companyUrl =LoginPrefs.getCompanyUrl(context)
+        val BASE_URL = "https://"+companyUrl+"/auth/asserted-login-portal/"
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstanceXML(BASE_URL)
@@ -79,8 +81,9 @@ class PrinterListService {
         type: String,
         releaseStationConfId: String
     ) {
+        val companyUrl =LoginPrefs.getCompanyUrl(context)
         val BASE_URL =
-            "https://devncookta.printercloud.com/admin/query/ipaddressrange_printer_search.php/"
+            "https://"+companyUrl+"/admin/query/ipaddressrange_printer_search.php/"
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
@@ -128,8 +131,9 @@ class PrinterListService {
         idpName: String,
         nodeId: String
     ) {
+        val siteId= LoginPrefs.getSiteId(context)
         val BASE_URL =
-            "https://gw.app.printercloud.com/devncookta/tree/api/node/"+nodeId+"/printer/"
+            "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/"+nodeId+"/printer/"
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)

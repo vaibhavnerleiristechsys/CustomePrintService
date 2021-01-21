@@ -22,6 +22,7 @@ import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.Inet
@@ -109,13 +110,13 @@ class PrintersFragment : Fragment() {
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
         var BASE_URL =""
-        if(IsLdap.equals("LDAP"))
-        {
-            BASE_URL = "https://devncoldap.printercloud.com/client/gateway.php/"
-        }
-        else{
-            BASE_URL = "https://devncookta.printercloud.com/client/gateway.php/"
-        }
+        val companyUrl = LoginPrefs.getCompanyUrl(context)
+       val siteId= LoginPrefs.getSiteId(context)
+        val xIdpType =SignInCompanyPrefs.getIdpType(context)
+        val xIdpName =SignInCompanyPrefs.getIdpName(context)
+
+            BASE_URL = "https://"+companyUrl+"/client/gateway.php/"
+
 
 
         val apiService = RetrofitClient(context)
@@ -124,7 +125,7 @@ class PrintersFragment : Fragment() {
 
         val call = if(IsLdap.equals("LDAP")){
             apiService.getPrinterListForLdap(
-                "devncoldap",
+                siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
                 "1",
@@ -154,11 +155,11 @@ class PrintersFragment : Fragment() {
 
 
             apiService.getPrinterList(
-                "devncookta",
+                siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
                 username,
-                "saml2",
-                "Okta",
+                xIdpType.toString(),
+                xIdpName.toString(),
                 "1",
                 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                         "<system driverless=\"1\">\n" +
@@ -168,7 +169,7 @@ class PrintersFragment : Fragment() {
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
-                        "    {\"idpName\": \"Okta\",\n" +
+                        "    {\"idpName\": \""+xIdpName+"\",\n" +
                         "      \"username\":\""+username+"\",\n" +
                         "      \"isLoggedIn\": \"true\",\n" +
                         "      \"type\": \"auth-type\",\n" +

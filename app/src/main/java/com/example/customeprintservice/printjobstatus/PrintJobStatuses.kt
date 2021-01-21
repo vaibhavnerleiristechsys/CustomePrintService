@@ -20,7 +20,8 @@ class PrintJobStatuses {
         idpType: String,
         idpName: String
     ) {
-        val BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
+        val siteId= LoginPrefs.getSiteId(context)
+        val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)

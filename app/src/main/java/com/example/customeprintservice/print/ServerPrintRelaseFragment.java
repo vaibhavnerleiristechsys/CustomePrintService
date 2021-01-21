@@ -412,10 +412,11 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
     public void getjobListStatus(){
-        ProgressDialog.Companion.showLoadingDialog(requireContext(), "Loading");
+       // ProgressDialog.Companion.showLoadingDialog(requireContext(), "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
-        String BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/";
+       String siteId= LoginPrefs.Companion.getSiteId(requireContext());
+        String BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/";
         ApiService apiService = new RetrofitClient(requireContext())
                 .getRetrofitInstance(BASE_URL)
                 .create(ApiService.class);

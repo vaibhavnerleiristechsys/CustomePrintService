@@ -231,15 +231,9 @@ class PrintReleaseFragment : Fragment() {
 
         ProgressDialog.showLoadingDialog(context, "Delete Job")
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as ArrayList<SelectedFile>
+        val siteId= LoginPrefs.getSiteId(context)
+        var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/cancel/"
 
-        var BASE_URL =""
-        if(IsLdap.equals("LDAP"))
-        {
-            BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/cancel/"
-        }
-        else{
-            BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/cancel/"
-        }
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
@@ -261,7 +255,7 @@ class PrintReleaseFragment : Fragment() {
 
         val call = if(IsLdap.equals("LDAP")){
             apiService.jobStatusCancelForLdap(
-                "devncoldap",
+                siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
                 jobStatusCancel
@@ -319,14 +313,9 @@ class PrintReleaseFragment : Fragment() {
 
         ProgressDialog.showLoadingDialog(context, "Released Job")
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as ArrayList<SelectedFile>
-        var BASE_URL =""
-        if(IsLdap.equals("LDAP"))
-        {
-            BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/release/"
-        }
-        else{
-            BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/release/"
-        }
+        val siteId= LoginPrefs.getSiteId(context)
+        var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/release/"
+
 
 
         val apiService = RetrofitClient(context)
@@ -349,7 +338,7 @@ class PrintReleaseFragment : Fragment() {
         val call = if(IsLdap.equals("LDAP")){
             apiService.releaseJobForLdap(
                 releaseJobRequest,
-                "devncoldap",
+                siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString()
             )
@@ -411,21 +400,17 @@ class PrintReleaseFragment : Fragment() {
         val LdapPassword= sh.getString("LdapPassword", "")
 
         Log.d("IsLdap:", IsLdap!!)
-      var BASE_URL =""
-        if(IsLdap.equals("LDAP"))
-        {
-             BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/"
-        }
-        else{
-             BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
-        }
+
+        val siteId= LoginPrefs.getSiteId(context)
+        var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
+
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
          apiService.getPrintJobStatusesForLdap(
-             "devncoldap",
+             siteId.toString(),
              LdapUsername.toString(),
              LdapPassword.toString()
          )
@@ -734,22 +719,18 @@ class PrintReleaseFragment : Fragment() {
         val LdapPassword= sh.getString("LdapPassword", "")
 
         Log.d("IsLdap:", IsLdap!!)
-        var BASE_URL =""
 
-        if(IsLdap.equals("LDAP"))
-        {
-            BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/"
-        }
-        else{
-            BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
-        }
+        val siteId= LoginPrefs.getSiteId(context)
+
+        var  BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
+
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
             apiService.getPrintJobStatusesForLdap(
-                "devncoldap",
+                siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString()
             )

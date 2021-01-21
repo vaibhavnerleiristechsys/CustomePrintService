@@ -6,4 +6,7 @@ object Constants {
     const val IDP_URL = "idpUrl"
     const val IDP_TYPE="idpType"
     const val IDP_NAME="idpName"
+    const val site_Id="siteId"
+    const val company_url="companyUrl"
+
 }

@@ -12,8 +12,8 @@ import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getSiteId
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
-import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.CheckInternetConnection
@@ -87,12 +87,13 @@ class SignInCompany : AppCompatActivity() {
             }
             else{
 
-               /* if(edtYourCompany.text.toString().equals("https://devncookta.printercloud.com/api/idp") ||
-                   edtYourCompany.text.toString().equals("https://devncoazure.printercloud.com/api/idp") ||
-                   edtYourCompany.text.toString().equals("https://devncoping.printercloud.com/api/idp") ||
-                   edtYourCompany.text.toString().equals("https://googleid.printercloud.com/api/idp")   ||
-                    edtYourCompany.text.toString().equals("https://devncoldap.printercloud.com/api/idp")) {*/
                    var url= edtYourCompany.text.toString()
+
+                val stringurl=url.substring(8,url.length)
+                LoginPrefs.saveCompanyUrl(this@SignInCompany, stringurl.toString())
+                val siteId: String = MainActivity.findSiteId(stringurl)
+                LoginPrefs.saveSiteId(this@SignInCompany, siteId.toString())
+                val siteId1 = getSiteId(this@SignInCompany)
                     if(!url.contains("https://")){
                         url= "https://"+url
                     }
@@ -205,6 +206,8 @@ class SignInCompany : AppCompatActivity() {
         super.onBackPressed()
         finish()
     }
+
+
 }
 
 //https://docs.microsoft.com/en-us/azure/active-directory/develop/tutorial-v2-android

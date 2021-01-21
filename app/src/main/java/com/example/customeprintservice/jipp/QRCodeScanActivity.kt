@@ -135,15 +135,10 @@ class QRCodeScanActivity : AppCompatActivity() {
         val LdapPassword= sh.getString("LdapPassword", "")
 
         Log.d("IsLdap:", IsLdap!!)
-        var BASE_URL =""
+        val siteId= LoginPrefs.getSiteId(context)
 
-        if(IsLdap.equals("LDAP"))
-        {
-            BASE_URL = "https://gw.app.printercloud.com/devncoldap/pq/api/job-statuses/"
-        }
-        else{
-            BASE_URL = "https://gw.app.printercloud.com/devncookta/pq/api/job-statuses/"
-        }
+        var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
+
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
@@ -159,7 +154,8 @@ class QRCodeScanActivity : AppCompatActivity() {
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
-                SignInCompanyPrefs.getIdpName(context).toString(),printerId)
+                SignInCompanyPrefs.getIdpName(context).toString(),printerId,
+                decodeJWT(context))
         }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {

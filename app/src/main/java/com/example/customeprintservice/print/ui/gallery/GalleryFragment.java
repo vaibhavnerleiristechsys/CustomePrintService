@@ -77,8 +77,8 @@ public class GalleryFragment extends Fragment {
         TreeNode root = TreeNode.root();
         TreeNode child = new TreeNode("MyParentNode");
         root.addChild(child);
-
-        String url = "https://gw.app.printercloud.com/devncookta/tree/api/node/";
+        String siteId=LoginPrefs.Companion.getSiteId(requireContext());
+        String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
         ApiService apiService = new RetrofitClient(requireContext())
                 .getRetrofitInstance(url)
                 .create(ApiService.class);
