@@ -159,7 +159,7 @@ internal class PrinterDiscoverySession(
         } catch (e: InterruptedException) {
             e.printStackTrace()
         }
-        val printers: MutableList<PrinterInfo?> = ArrayList()
+        val printers: ArrayList<PrinterInfo?> = ArrayList()
         val printerId = ArrayList<PrinterId>()
         val printerList = PrinterList()
         printerList.printerList.forEach(Consumer { p: PrinterModel ->
@@ -190,6 +190,7 @@ internal class PrinterDiscoverySession(
             val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
             hashMap[printerId[0]] = p
             printerHashmap.hashMap = hashMap
+
         })
 
         //for loop

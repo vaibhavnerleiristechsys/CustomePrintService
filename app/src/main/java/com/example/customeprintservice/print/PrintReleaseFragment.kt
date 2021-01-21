@@ -866,8 +866,7 @@ class PrintReleaseFragment : Fragment() {
 
         button.setOnClickListener {
             dialog.cancel()
-           val serverPrintRelaseFragment =ServerPrintRelaseFragment()
-            serverPrintRelaseFragment.getjobListStatus();
+
 
         }
     }

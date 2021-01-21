@@ -203,7 +203,7 @@ class PrintersFragment : Fragment() {
                         printerListForCheckIppPrinters.clear()
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
                         val element = document.select("command")
-                        val inetAddress = InetAddress.getByName("192.168.1.1")
+                      //  val inetAddress = InetAddress.getByName("192.168.1.1")
 
                         PrinterList().printerList.removeIf {
                             it.fromServer == true
@@ -216,7 +216,8 @@ class PrintersFragment : Fragment() {
                         element.forEach {
                             val printerModel: PrinterModel = PrinterModel()
                             printerModel.serviceName = it.text()
-                            printerModel.printerHost = inetAddress
+                            printerModel.printerHost = InetAddress.getByName("192.168.1."+it.attr("node_id").toString())
+                           // printerModel.printerHost =inetAddress
                             printerModel.printerPort = 631
                             printerModel.fromServer = true
                             printerModel.nodeId =it.attr("node_id").toString()

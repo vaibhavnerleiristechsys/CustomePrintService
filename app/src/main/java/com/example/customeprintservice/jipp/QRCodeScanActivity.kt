@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import android.widget.AbsListView
 import android.widget.ImageView
@@ -52,7 +53,7 @@ class QRCodeScanActivity : AppCompatActivity() {
     companion object {
         public val getdocumentListFromQrCode = java.util.ArrayList<SelectedFile>()
     }
-    lateinit var floatButton:FloatingActionButton;
+    lateinit var floatButton:FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
