@@ -150,6 +150,8 @@ internal class PrinterDiscoverySession(
     private var printerInfo: PrinterInfo? = null
     private var appContext: Context? = null
     public var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+    public var commonPrinterListFromDiscoveryAndServer = java.util.ArrayList<PrinterModel>()
+
 
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -175,51 +177,70 @@ internal class PrinterDiscoverySession(
         val json = prefs.getString("printerListWithDetails", null)
         val type = object :
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
-        if(json!=null) {
-            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(json, type)
+        if (json != null) {
+            sharedPreferencesStoredPrinterListWithDetails =
+                gson.fromJson<java.util.ArrayList<PrinterModel>>(json, type)
         }
-        sharedPreferencesStoredPrinterListWithDetails.addAll(PrintersFragment.discoveredPrinterListWithDetails)
-        sharedPreferencesStoredPrinterListWithDetails.distinct()
-
-
-       // PrintersFragment.printerListWithDetails.forEach(Consumer { p: PrinterModel ->
-        sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
-            val printerId = ArrayList<PrinterId>()
-            printerId.add(printService.generatePrinterId(p.printerHost.toString()))
-            val builder = PrinterInfo.Builder(
-                printService.generatePrinterId(p.printerHost.toString()),
-                p.serviceName, PrinterInfo.STATUS_IDLE
-            ).build()
-            val capabilities = printerId.let {
-                PrinterCapabilitiesInfo.Builder(it.get(0))
-                    .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
-                    .addResolution(PrintAttributes.Resolution("1234", "Default", 200, 200), true)
-                    .setColorModes(
-                        PrintAttributes.COLOR_MODE_MONOCHROME,
-                        PrintAttributes.COLOR_MODE_MONOCHROME
+        for (i in sharedPreferencesStoredPrinterListWithDetails.indices) {
+            for (j in PrintersFragment.discoveredPrinterListWithDetails.indices) {
+                if (sharedPreferencesStoredPrinterListWithDetails[i].printerHost.equals(
+                        PrintersFragment.discoveredPrinterListWithDetails[j].printerHost
                     )
-                    .build()
+                ) {
+                    commonPrinterListFromDiscoveryAndServer.add(
+                        sharedPreferencesStoredPrinterListWithDetails[i]
+                    )
+                }
             }
-            printerInfo = capabilities.let {
-                PrinterInfo.Builder(builder)
-                    .setCapabilities(it)
-                    .build()
-            }
-
-            printers.add(printerInfo)
-            // filter out the printers
+        }
 
 
-            /*val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
+        // sharedPreferencesStoredPrinterListWithDetails.addAll(PrintersFragment.discoveredPrinterListWithDetails)
+
+
+        // PrintersFragment.printerListWithDetails.forEach(Consumer { p: PrinterModel ->
+        if (commonPrinterListFromDiscoveryAndServer != null) {
+            commonPrinterListFromDiscoveryAndServer.forEach(Consumer { p: PrinterModel ->
+                val printerId = ArrayList<PrinterId>()
+                printerId.add(printService.generatePrinterId(p.printerHost.toString()))
+                val builder = PrinterInfo.Builder(
+                    printService.generatePrinterId(p.printerHost.toString()),
+                    p.serviceName, PrinterInfo.STATUS_IDLE
+                ).build()
+                val capabilities = printerId.let {
+                    PrinterCapabilitiesInfo.Builder(it.get(0))
+                        .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
+                        .addResolution(
+                            PrintAttributes.Resolution("1234", "Default", 200, 200),
+                            true
+                        )
+                        .setColorModes(
+                            PrintAttributes.COLOR_MODE_MONOCHROME,
+                            PrintAttributes.COLOR_MODE_MONOCHROME
+                        )
+                        .build()
+                }
+                printerInfo = capabilities.let {
+                    PrinterInfo.Builder(builder)
+                        .setCapabilities(it)
+                        .build()
+                }
+
+                printers.add(printerInfo)
+                // filter out the printers
+
+
+                /*val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
             hashMap[printerId[0]] = p*/
-            printerHashmap.hashMap.put(printerId[0],p)
+                printerHashmap.hashMap.put(printerId[0], p)
 
-        })
+            })
 
-        //for loop
+            //for loop
 
-        // for loop ends
-        addPrinters(printers);
+            // for loop ends
+            addPrinters(printers);
+        }
     }
 
     override fun onStopPrinterDiscovery() {}

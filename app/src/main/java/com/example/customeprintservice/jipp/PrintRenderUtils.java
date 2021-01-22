@@ -99,7 +99,7 @@ public class PrintRenderUtils {
 
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
-                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                   // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
                     Log.v("Saved Image - ", exp.toString());
                     exp.printStackTrace();
                 }

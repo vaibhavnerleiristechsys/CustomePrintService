@@ -166,7 +166,7 @@ class PrinterListService {
                     ServerPrintRelaseFragment.localPrinturl=finalLocalurl
                     ServerPrintRelaseFragment.secure_release= response.body()?.data?.attributes?.secure_release!!
                     // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
-                    Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
+                 //   Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
                     if(getprintersdetails==true) {
                         val printerModel: PrinterModel = PrinterModel()
                         printerModel.serviceName =
