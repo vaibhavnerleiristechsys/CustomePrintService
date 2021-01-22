@@ -1,20 +1,25 @@
 package com.example.customeprintservice.printjobstatus
 
 import android.content.Context
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
+import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.print.PrintersFragment
 import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
+import com.google.gson.Gson
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.InetAddress
 
 
 class PrinterListService {
@@ -129,7 +134,8 @@ class PrinterListService {
         userName: String,
         idpType: String,
         idpName: String,
-        nodeId: String
+        nodeId: String,
+        getprintersdetails:Boolean
     ) {
         val siteId= LoginPrefs.getSiteId(context)
         val BASE_URL =
@@ -160,8 +166,27 @@ class PrinterListService {
                     ServerPrintRelaseFragment.localPrinturl=finalLocalurl
                     ServerPrintRelaseFragment.secure_release= response.body()?.data?.attributes?.secure_release!!
                     // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
-
                     Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
+                    if(getprintersdetails==true) {
+                        val printerModel: PrinterModel = PrinterModel()
+                        printerModel.serviceName =
+                            response.body()?.data?.attributes?.title.toString()
+                        printerModel.printerHost =
+                            InetAddress.getByName(response.body()?.data?.attributes?.host_address.toString())
+                        // printerModel.printerHost =inetAddress
+                        printerModel.printerPort = 631
+                        printerModel.fromServer = true
+                        printerModel.nodeId = nodeId
+                        PrintersFragment.serverPrinterListWithDetails.add(printerModel)
+
+                        val prefs1 =
+                            PreferenceManager.getDefaultSharedPreferences(context)
+                        val gson1 = Gson()
+                        val editor = prefs1.edit()
+                        val json1 = gson1.toJson(PrintersFragment.serverPrinterListWithDetails)
+                        editor.putString("printerListWithDetails", json1)
+                        editor.apply()
+                    }
                 }
             }
 

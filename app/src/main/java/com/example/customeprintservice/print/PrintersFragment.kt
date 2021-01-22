@@ -23,6 +23,7 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.Inet
@@ -45,7 +46,8 @@ class PrintersFragment : Fragment() {
 
     val printerList = ArrayList<PrinterModel>()
     companion object {
-        public val printerListForCheckIppPrinters = java.util.ArrayList<PrinterModel>()
+        public val discoveredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        public val serverPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
     }
 
     override fun onCreateView(
@@ -200,7 +202,7 @@ class PrintersFragment : Fragment() {
                 if (response.isSuccessful) {
                     try {
                         val html = response.body()?.string()
-                        printerListForCheckIppPrinters.clear()
+                        //printerListForCheckIppPrinters.clear()
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
                         val element = document.select("command")
                       //  val inetAddress = InetAddress.getByName("192.168.1.1")
@@ -213,6 +215,7 @@ class PrintersFragment : Fragment() {
                         nodeId.forEach {
                             Log.i("printer","it==>${it.attr("node_id")}")
                         }
+                        PrintersFragment.serverPrinterListWithDetails.clear()
                         element.forEach {
                             val printerModel: PrinterModel = PrinterModel()
                             printerModel.serviceName = it.text()
@@ -223,11 +226,23 @@ class PrintersFragment : Fragment() {
                             printerModel.nodeId =it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
                             PrinterList().addPrinterModel(printerModel)
-                            printerListForCheckIppPrinters.add(printerModel);
+                         //   printerListForCheckIppPrinters.add(printerModel);
+
+                            PrinterListService().getPrinterDetails(
+                                context,
+                                LoginPrefs.getOCTAToken(context).toString(),
+                                username,
+                                SignInCompanyPrefs.getIdpType(context).toString(),
+                                SignInCompanyPrefs.getIdpName(context).toString(),
+                                it.attr("node_id").toString(),
+                                true
+                            )
 
                         }
                         updateUi()
                         swipeContainer.isRefreshing = false
+
+
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
                     }

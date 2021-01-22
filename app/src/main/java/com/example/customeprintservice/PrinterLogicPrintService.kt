@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.preference.PreferenceManager
 import android.print.PrintAttributes
 import android.print.PrinterCapabilitiesInfo
 import android.print.PrinterId
@@ -20,6 +21,9 @@ import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
+import com.example.customeprintservice.print.PrintersFragment
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.io.*
 import java.util.*
 import java.util.function.Consumer
@@ -145,7 +149,7 @@ internal class PrinterDiscoverySession(
     var printService: PrinterLogicPrintService
     private var printerInfo: PrinterInfo? = null
     private var appContext: Context? = null
-
+    public var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
 
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -153,6 +157,7 @@ internal class PrinterDiscoverySession(
         Log.d("customprintservices", "onStartPrinterDiscovery")
 
         val printUtils = PrintUtils()
+        PrintersFragment.discoveredPrinterListWithDetails.clear()
         printUtils.setContextAndInitializeJMDNS(appContext)
         try {
             Thread.sleep(3000)
@@ -160,9 +165,26 @@ internal class PrinterDiscoverySession(
             e.printStackTrace()
         }
         val printers: ArrayList<PrinterInfo?> = ArrayList()
-        val printerId = ArrayList<PrinterId>()
+        val printerHashmap = PrinterHashmap()
         val printerList = PrinterList()
-        printerList.printerList.forEach(Consumer { p: PrinterModel ->
+
+
+        val prefs =
+            PreferenceManager.getDefaultSharedPreferences(appContext)
+        val gson = Gson()
+        val json = prefs.getString("printerListWithDetails", null)
+        val type = object :
+            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+        if(json!=null) {
+            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(json, type)
+        }
+        sharedPreferencesStoredPrinterListWithDetails.addAll(PrintersFragment.discoveredPrinterListWithDetails)
+        sharedPreferencesStoredPrinterListWithDetails.distinct()
+
+
+       // PrintersFragment.printerListWithDetails.forEach(Consumer { p: PrinterModel ->
+        sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
+            val printerId = ArrayList<PrinterId>()
             printerId.add(printService.generatePrinterId(p.printerHost.toString()))
             val builder = PrinterInfo.Builder(
                 printService.generatePrinterId(p.printerHost.toString()),
@@ -183,13 +205,14 @@ internal class PrinterDiscoverySession(
                     .setCapabilities(it)
                     .build()
             }
+
             printers.add(printerInfo)
             // filter out the printers
 
-            val printerHashmap = PrinterHashmap()
-            val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
-            hashMap[printerId[0]] = p
-            printerHashmap.hashMap = hashMap
+
+            /*val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
+            hashMap[printerId[0]] = p*/
+            printerHashmap.hashMap.put(printerId[0],p)
 
         })
 

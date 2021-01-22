@@ -35,6 +35,7 @@ class FragmentPrinterListAdapter(
     val holders = ArrayList<ViewHolder>()
     private var selectedPosition = -1
 
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -64,7 +65,8 @@ class FragmentPrinterListAdapter(
                 decodeJWT(),
                 SignInCompanyPrefs.getIdpType(context).toString(),
                 SignInCompanyPrefs.getIdpName(context).toString(),
-                list[position].nodeId.toString()
+                list[position].nodeId.toString(),
+                false
             )
         }
             val intent = Intent("message_subject_intent")

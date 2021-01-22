@@ -10,7 +10,6 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import com.example.customeprintservice.print.PrintersFragment;
-import com.google.gson.Gson;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -52,7 +51,7 @@ public class NSDUtils implements Runnable {
     }
 
     public void initializeDiscoveryListener() {
-        Log.d("get Printer list",PrintersFragment.Companion.getPrinterListForCheckIppPrinters().toString());
+
        /* for(int i=0;i<PrintersFragment.Companion.getPrinterListForCheckIppPrinters().size();i++){
             PrinterModel printerModel =PrintersFragment.Companion.getPrinterListForCheckIppPrinters().get(i);
             Log.i("printer nodeid", printerModel.getNodeId());
@@ -206,7 +205,11 @@ public class NSDUtils implements Runnable {
                 });
 
                 if (!flagIsExist) {
-                    printerList.addPrinterModel(printerModel);
+                   // printerList.addPrinterModel(printerModel);
+
+                    PrintersFragment.Companion.getDiscoveredPrinterListWithDetails().add(printerModel);
+
+
                 }
                 Log.d(TAG, "PrinterHost: " + printerHost.toString() + "PrinterPort: " + printerPort + " ServiceName: " + serviceName);
 

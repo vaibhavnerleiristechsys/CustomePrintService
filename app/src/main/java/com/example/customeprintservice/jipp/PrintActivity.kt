@@ -165,7 +165,8 @@ class PrintActivity : AppCompatActivity() {
                 decodeJWT(),
                 SignInCompanyPrefs.getIdpType(this@PrintActivity).toString(),
                 SignInCompanyPrefs.getIdpName(this@PrintActivity).toString(),
-                ""
+                "",
+                true
             )
         }
 
