@@ -111,13 +111,7 @@ public class ServerPrintRelaseFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
         ProgressDialog.Companion.showLoadingDialog(requireContext(), "please wait");
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-               getjobListStatus();
-            }
-        }, 5000);
+
     //    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
      //   printReleaseFragment.getJobStatusesForServerList(requireContext());
 
@@ -137,6 +131,15 @@ public class ServerPrintRelaseFragment extends Fragment {
       //  if (view instanceof RecyclerView) {
              context = view.getContext();
              //recyclerView = (RecyclerView) view;
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                getjobListStatus();
+            }
+        }, 5000);
+
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -422,7 +425,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
     public void getjobListStatus(){
-       // ProgressDialog.Companion.showLoadingDialog(requireContext(), "Loading");
+        ProgressDialog.Companion.showLoadingDialog(context, "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
        String siteId= LoginPrefs.Companion.getSiteId(context);

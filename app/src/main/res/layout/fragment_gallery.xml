@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+<!--
     <TextView
         android:padding="8dp"
         android:textSize="16sp"
@@ -11,12 +11,13 @@
         android:background="@android:color/holo_blue_dark"
         android:id="@+id/status_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" />-->
 
     <RelativeLayout
-        android:layout_below="@id/status_bar"
+
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="60dp"
         android:id="@+id/container"></RelativeLayout>
 
 

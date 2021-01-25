@@ -73,6 +73,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
+                Intent intent1 = new Intent("qrcodefloatingbutton");
+                intent1.putExtra("qrCodeScanBtn", "InActive");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
+
+
                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                for(int i=0;i<holders.size();i++) {
                     ViewHolder holder = holders.get(i);

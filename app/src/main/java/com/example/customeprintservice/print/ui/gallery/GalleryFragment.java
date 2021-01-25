@@ -1,14 +1,18 @@
 package com.example.customeprintservice.print.ui.gallery;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.customeprintservice.IconTreeItemHolder;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.prefs.SignInCompanyPrefs;
@@ -59,15 +63,20 @@ public class GalleryFragment extends Fragment {
         });*/
         mContainer = container;
         serverCall(containerView);
+
+        Intent intent = new Intent("qrcodefloatingbutton");
+        intent.putExtra("qrCodeScanBtn", "InActive");
+        LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent);
+
         return rootView;
     }
 
     private void buildTree( ViewGroup containerView )
     {
         TreeNode root = TreeNode.root();
-        TreeNode parent = new TreeNode("MyParentNode");
-        TreeNode child0 = new TreeNode("ChildNode0");
-        TreeNode child1 = new TreeNode("ChildNode1");
+        TreeNode parent = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, "MyParentNode"));
+        TreeNode child0 = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_print,"ChildNode0"));
+        TreeNode child1 = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_print,"ChildNode1"));
         parent.addChildren(child0, child1);
         root.addChild(parent);
         AndroidTreeView tView = new AndroidTreeView(getActivity(), root);
@@ -77,8 +86,8 @@ public class GalleryFragment extends Fragment {
     private void serverCall(ViewGroup containerView)
     {
         TreeNode root = TreeNode.root();
-        TreeNode child = new TreeNode("MyParentNode");
-        root.addChild(child);
+      //  TreeNode child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder,"MyParentNode"));
+       // root.addChild(child);
         String siteId=LoginPrefs.Companion.getSiteId(requireContext());
         String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
         ApiService apiService = new RetrofitClient(requireContext())
@@ -103,7 +112,7 @@ public class GalleryFragment extends Fragment {
 
                     List<Printer> listOfPrinters = response.body();
                     for(Printer printer:listOfPrinters) {
-                        TreeNode child = new TreeNode(printer.getNode_title());
+                        TreeNode child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder,printer.getNode_title()));
                         mapPrinter2TreeNode.put(printer,child);
                         if(printer.getParent_id()==0) {
                             root.addChild(child);
@@ -115,11 +124,19 @@ public class GalleryFragment extends Fragment {
                         TreeNode parent = entry.getValue();
                         List<TreeNode> children = findChildren(printer.getId(), listOfPrinters, mapPrinter2TreeNode);
                         for(TreeNode child: children) {
+                          //  child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_print,child.));
                             parent.addChild(child);
                         }
                     }
 
                     AndroidTreeView tView = new AndroidTreeView(context, root);
+
+                    tView.setDefaultAnimation(true);
+                    tView.setDefaultContainerStyle(R.style.TreeNodeStyleCustom);
+                    tView.setDefaultViewHolder(IconTreeItemHolder.class);
+                    tView.setDefaultNodeClickListener(nodeClickListener);
+                    tView.setDefaultNodeLongClickListener(nodeLongClickListener);
+
                     containerView.addView(tView.getView());
 
                 }
@@ -149,9 +166,28 @@ public class GalleryFragment extends Fragment {
             if(printer.getParent_id()== printerId)
             {
                 children.add(mapPrinter2TreeNode.get(printer));
+
             }
         }
 
         return children;
     }
+
+    private TreeNode.TreeNodeClickListener nodeClickListener = new TreeNode.TreeNodeClickListener() {
+        @Override
+        public void onClick(TreeNode node, Object value) {
+            IconTreeItemHolder.IconTreeItem item = (IconTreeItemHolder.IconTreeItem) value;
+           // status_bar.setText("Last clicked: " + item.text);
+        }
+    };
+
+    private TreeNode.TreeNodeLongClickListener nodeLongClickListener = new TreeNode.TreeNodeLongClickListener() {
+        @Override
+        public boolean onLongClick(TreeNode node, Object value) {
+            IconTreeItemHolder.IconTreeItem item = (IconTreeItemHolder.IconTreeItem) value;
+            Toast.makeText(getActivity(), "Long click: " + item.text, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    };
+
 }

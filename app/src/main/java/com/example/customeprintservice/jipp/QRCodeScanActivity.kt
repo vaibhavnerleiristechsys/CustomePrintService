@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -53,7 +54,8 @@ class QRCodeScanActivity : AppCompatActivity() {
     companion object {
         public val getdocumentListFromQrCode = java.util.ArrayList<SelectedFile>()
     }
-    lateinit var floatButton:FloatingActionButton
+
+    private var floatButton: FloatingActionButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -291,7 +293,7 @@ class QRCodeScanActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        floatButton.setOnClickListener {
+        floatButton?.setOnClickListener {
             Toast.makeText(applicationContext, "Click on float btn", Toast.LENGTH_SHORT).show()
             val printReleaseFragment = PrintReleaseFragment()
             printReleaseFragment.releaseJob(context)
@@ -304,7 +306,7 @@ class QRCodeScanActivity : AppCompatActivity() {
     var mMessageReceiver1: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (floatButton != null) {
-                floatButton.setBackgroundTintList(
+                floatButton?.setBackgroundTintList(
                     ContextCompat.getColorStateList(
                         this@QRCodeScanActivity,
                         R.color.bloodOrange

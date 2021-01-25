@@ -153,6 +153,7 @@ dependencies {
 
     // Android treeview
     implementation 'com.github.bmelnychuk:atv:1.2.+'
+    compile 'com.github.johnkil.print:print:1.2.2'
 
     // Dependencies for the REST API example
     implementation 'com.google.api-client:google-api-client:1.30.5'
