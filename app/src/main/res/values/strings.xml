@@ -19,7 +19,6 @@
     <string name="permission_required">Permission Required</string>
     <string name="bluetooth">Bluetooth</string>
     <string name="ProceedPrint">Proceed Print</string>
-    <string name="yourcompany_vasion_com">yourcompany.vasion.com</string>
     <string name="enter_username">Enter Username..</string>
     <string name="enter_password">Enter Password</string>
     <string name="sign_in">Sign In</string>
@@ -31,7 +30,7 @@
     <string name="print_releaseForServer">Print Release</string>
     <string name="printerForServer">Printer</string>
     <string name="printer">Printer(W)</string>
-    <string name="servicePortal">Service Portal</string>
+    <string name="servicePortal">Add Printer</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -79,6 +78,7 @@
     <string name="ic_folder">&#xe09d;</string>
     <string name="ic_keyboard_arrow_down">&#xe0c5;</string>
     <string name="ic_print">&#xe126;</string>
+    <string name="yourcompany_vasion_com"><font size="19">yourcompany.vasion.com</font></string>
 
 
 </resources>

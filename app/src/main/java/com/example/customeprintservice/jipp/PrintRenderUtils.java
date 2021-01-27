@@ -1,10 +1,13 @@
 package com.example.customeprintservice.jipp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.pdf.PdfRenderer;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.Toast;
@@ -66,7 +69,13 @@ public class PrintRenderUtils {
 
                         if (!renderFile.exists()) {
                             String expMessage = "Exception occurred while rendering: file not created ";
-                            Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                            new Handler(Looper.getMainLooper()).post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                        }});
+
                             break;
                         } else {
 
@@ -74,7 +83,13 @@ public class PrintRenderUtils {
 
                             if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
                                 String expMessage = "The get attributes call failed ";
-                                Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                new Handler(Looper.getMainLooper()).post(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                            }});
+
                                 Log.i("printer", expMessage);
                                 break;
                             }
@@ -84,7 +99,13 @@ public class PrintRenderUtils {
                                 totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
                                 if (totalTimeThreadSleep > timeThreshold) {
                                     String expMessage = "The printer is unresponsive. Aborting ";
-                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                    new Handler(Looper.getMainLooper()).post(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                                }});
+
                                     Log.i("printer", expMessage);
                                     break;
                                 }
@@ -100,6 +121,14 @@ public class PrintRenderUtils {
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                    // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                }});
+
+
                     Log.v("Saved Image - ", exp.toString());
                     exp.printStackTrace();
                 }

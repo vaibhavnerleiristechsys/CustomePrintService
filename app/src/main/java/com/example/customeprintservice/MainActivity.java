@@ -101,10 +101,49 @@ public class MainActivity extends AppCompatActivity {
         if(action !=null){
         switch (action) {
             case Intent.ACTION_SEND_MULTIPLE:
-
+                ArrayList<Uri> imageUris=new ArrayList<Uri> ();
                 for (int i = 0; i < intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM).size(); i++) {
 
-                    ArrayList<Uri> imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                    imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                }
+                    for(int j=0;j<imageUris.size();j++){
+                        Uri imageUri =imageUris.get(j);
+
+                        if (imageUri != null) {
+                            String realPath = FileUtils.getPath(this, imageUri);
+                            SelectedFile selectedFile = new SelectedFile();
+                            File file = new File(realPath);
+                            selectedFile.setFileName(file.getName());
+                            selectedFile.setFilePath(realPath);
+                            selectedFile.setFromApi(false);
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            Date date = new Date();
+                            String strDate = dateFormat.format(date);
+                            selectedFile.setFileSelectedDate(strDate);
+                            list.add(selectedFile);
+                        }
+                    }
+
+                SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(this);
+                Gson gson1 = new Gson();
+                String json2 = prefs1.getString("localdocumentlist", null);
+                Type type1 = new TypeToken<ArrayList<SelectedFile>>() {}.getType();
+                localDocumentSharedPreflist=  gson1.fromJson(json2, type1);
+                if(localDocumentSharedPreflist !=null) {
+                    list.addAll(localDocumentSharedPreflist);
+                }
+                SharedPreferences.Editor editor1 = prefs1.edit();
+
+                String convertedJson = gson1.toJson(list);
+                editor1.putString("localdocumentlist", convertedJson);
+                editor1.apply();
+                // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
+                Toast.makeText(this, "file added", Toast.LENGTH_LONG)
+                        .show();
+
+                if(LoginPrefs.Companion.getOCTAToken(this)==null){
+                    Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                    startActivity(intent1);
                 }
 
 
@@ -138,9 +177,6 @@ public class MainActivity extends AppCompatActivity {
                     editor.apply();
                     // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
                     Toast.makeText(this, "file added", Toast.LENGTH_LONG)
-                            .show();
-                } else {
-                    Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
                             .show();
                 }
                 if(LoginPrefs.Companion.getOCTAToken(this)==null){

@@ -22,6 +22,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.budiyev.android.codescanner.*
+import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
@@ -41,6 +42,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_q_r_code_scan.*
+import kotlinx.android.synthetic.main.activity_sign_in.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -77,7 +80,6 @@ class QRCodeScanActivity : AppCompatActivity() {
             codeScanner.isAutoFocusEnabled = true // Whether to enable auto focus or not
             codeScanner.isFlashEnabled = false // Whether to enable flash or not
 
-
             codeScanner.decodeCallback = DecodeCallback {
                 runOnUiThread {
                     Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
@@ -106,6 +108,14 @@ class QRCodeScanActivity : AppCompatActivity() {
             mMessageReceiver1,
             IntentFilter("menuFunctionlityDisplay")
         )
+
+
+        backbutton.setOnClickListener {
+
+             val intent = Intent(this@QRCodeScanActivity, MainActivity::class.java)
+             startActivity(intent)
+
+        }
 
     }
         override fun onResume() {

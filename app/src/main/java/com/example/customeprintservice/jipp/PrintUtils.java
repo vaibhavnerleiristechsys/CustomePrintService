@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.customeprintservice.MainActivity;
+import com.example.customeprintservice.print.ServerPrintRelaseFragment;
 import com.hp.jipp.encoding.Attribute;
 import com.hp.jipp.encoding.AttributeGroup;
 import com.hp.jipp.encoding.IppPacket;
@@ -243,6 +244,8 @@ public class PrintUtils {
                 resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();
                 resultMap.putAll(getResponseDetails(ippPacket));
+                ServerPrintRelaseFragment serverPrintRelaseFragment=new ServerPrintRelaseFragment();
+                serverPrintRelaseFragment.removeDocumentFromSharedPreferences(context);
 
                 Intent printResponseIntent =
                         new Intent("com.example.PRINT_RESPONSE")

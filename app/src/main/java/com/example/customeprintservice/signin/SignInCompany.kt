@@ -38,13 +38,13 @@ class SignInCompany : AppCompatActivity() {
             startActivity(intent)
         }
         setContentView(R.layout.activity_sign_in_company)
-        edtYourCompany.setText("https://");
+      //  edtYourCompany.setText("https://");
         Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
 
         edtYourCompany.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if(!s.toString().startsWith("https://")){
-                    edtYourCompany.setText("https://");
+                 //   edtYourCompany.setText("https://");
                     Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
 
                 }
@@ -89,17 +89,18 @@ class SignInCompany : AppCompatActivity() {
 
                    var url= edtYourCompany.text.toString()
 
-                val stringurl=url.substring(8,url.length)
-                LoginPrefs.saveCompanyUrl(this@SignInCompany, stringurl.toString())
-                val siteId: String = MainActivity.findSiteId(stringurl)
-                LoginPrefs.saveSiteId(this@SignInCompany, siteId.toString())
-                val siteId1 = getSiteId(this@SignInCompany)
+                    val stringurl=url.substring(0,url.length)
+                    LoginPrefs.saveCompanyUrl(this@SignInCompany, stringurl.toString())
+                    val siteId: String = MainActivity.findSiteId(stringurl)
+                    LoginPrefs.saveSiteId(this@SignInCompany, siteId.toString())
+
                     if(!url.contains("https://")){
                         url= "https://"+url
                     }
                     if(!url.contains("/api/idp")){
                         url= url +"/api/idp"
                     }
+
 
 
                     getIdpInfo(url)

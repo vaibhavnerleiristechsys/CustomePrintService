@@ -162,7 +162,6 @@ public class ServerPrintRelaseFragment extends Fragment {
 
             //    recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
 
-
       //  }
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -199,7 +198,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     Intent myIntent = new Intent(getActivity(), MainActivity.class);
                     getActivity().startActivity(myIntent);
                 }else if(selectedFile1.isFromApi()==false){
-                    removeDocumentFromSharedPreferences();
+                    removeDocumentFromSharedPreferences(requireContext());
                     Intent myIntent = new Intent(getActivity(), MainActivity.class);
                     getActivity().startActivity(myIntent);
                 }
@@ -306,7 +305,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                      String FilePath =selectedFile.getFilePath();
                     PrintActivity printActivity =new PrintActivity();
                     printActivity.locaPrint(FilePath,localPrinturl,context);
-                   removeDocumentFromSharedPreferences();
+                   //removeDocumentFromSharedPreferences();
                    Toast.makeText(context, "print release", Toast.LENGTH_LONG)
                            .show();
                        dialog.cancel();
@@ -382,7 +381,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                       String FilePath =selectedFile.getFilePath();
                      PrintActivity printActivity =new PrintActivity();
                      printActivity.locaPrint(FilePath,localPrinturl,context);
-                    removeDocumentFromSharedPreferences();
+                   // removeDocumentFromSharedPreferences();
                     dialog.cancel();
                     dialog1.cancel();
                     Intent myIntent = new Intent(getActivity(), MainActivity.class);
@@ -395,8 +394,8 @@ public class ServerPrintRelaseFragment extends Fragment {
 
     }
 
-   public void removeDocumentFromSharedPreferences(){
-       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(requireContext());
+   public void removeDocumentFromSharedPreferences(Context context){
+       SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
        Gson gson = new Gson();
        String json = prefs.getString("localdocumentlist", null);
        Type type = new TypeToken<ArrayList<SelectedFile>>() {}.getType();
@@ -414,7 +413,7 @@ public class ServerPrintRelaseFragment extends Fragment {
            }
        }
 
-       SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(requireContext());
+       SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
        Gson gson1 = new Gson();
        SharedPreferences.Editor editor = prefs1.edit();
        String json1 = gson1.toJson(localdocumentFromsharedPrefences);
