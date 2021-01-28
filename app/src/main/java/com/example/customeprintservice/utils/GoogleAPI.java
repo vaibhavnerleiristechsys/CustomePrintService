@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,8 +20,12 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.signin.SignInActivity;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,6 +43,7 @@ import java.util.Map;
 
 public class GoogleAPI {
     static String clientId;
+    static String client_secret;
 
 
     public static void getGoogleData(Context context) {
@@ -55,11 +61,11 @@ public class GoogleAPI {
                        JSONObject jsonObject = null;
                        try {
                            jsonObject = GoogleApiData.getJSONObject(0);
-                            clientId =  jsonObject.getString("client_id");
-                           SharedPreferences sharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
-                           SharedPreferences.Editor myEdit= sharedPreferences.edit();
-                           myEdit.putString("clientIdForGoogleLogin",clientId);
-                           myEdit.commit();
+                            clientId =  jsonObject.getString("server_id");
+                           client_secret=jsonObject.getString("server_secret");
+                           LoginPrefs.Companion.saveClientId(context,clientId);
+                           LoginPrefs.Companion.saveClientSecret(context,client_secret);
+
 
                            Log.d("client_id:",clientId);
 
@@ -127,6 +133,58 @@ public class GoogleAPI {
         }
        Log.d("SHA512",sb.toString());
     }*/
+
+
+    public void getData(String code, String requestUri,Context context){
+        String url = LoginPrefs.Companion.getgoogleTokenUrl(context);
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String serverSecret = LoginPrefs.Companion.getClientSecret(context);
+        StringRequest jsonObjRequest = new StringRequest(
+                Request.Method.POST,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("google api response",response.toString());
+                        Gson g = new Gson();
+                        JsonObject jsonObject = g.fromJson(response, JsonObject.class);
+                        JsonElement idToken=jsonObject.get("id_token");
+                        Log.d("idToken",idToken.toString());
+                        LoginPrefs.Companion.saveOctaToken(context, idToken.toString());
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d("volley", "Error: " + error.getMessage());
+                        error.printStackTrace();
+
+                    }
+                }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("code", code);
+                params.put("client_id", clientId);
+                params.put("client_secret",serverSecret);
+                params.put("redirect_uri",requestUri);
+                params.put("grant_type","authorization_code");
+                return params;
+            }
+
+        };
+        queue.add(jsonObjRequest);
+
+    }
 
 
 }

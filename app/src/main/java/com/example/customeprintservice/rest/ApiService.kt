@@ -177,4 +177,15 @@ interface ApiService {
         @Header("X-IdP-Name") idpName: String
     ): Call<List<Printer>>
 
+    @FormUrlEncoded
+    @POST("https://oauth2.googleapis.com/token")
+    fun getIdTokenFromGoogle(
+        @Field("grant_type") grant_type: String,
+        @Field("code") code: String,
+        @Field("redirect_uri") redirect_uri: String,
+        @Field("client_id") client_id: String,
+        @Field("client_secret") client_secret: String
+
+    ): Call<TokenResponse>
+
 }

@@ -160,10 +160,13 @@ class SignInCompany : AppCompatActivity() {
                             bundle.putString("desktopLoginUrl", idp.desktopLoginUrl)
                             bundle.putString("buttonName", idp.name)
                             bundle.putString("clientId",idp.client_id)
+                            bundle.putString("token_uri",idp.tokenUri)
+
                             SignInCompanyPrefs.saveIdpUrl(
                                 this@SignInCompany,
                                 idp.tokenUri.toString()
                             )
+                            LoginPrefs.savegoogleTokenUrl(this@SignInCompany,idp.tokenUri.toString())
                             SignInCompanyPrefs.saveIdpName(this@SignInCompany, idp.name.toString())
                             SignInCompanyPrefs.saveIdpType(
                                 this@SignInCompany,

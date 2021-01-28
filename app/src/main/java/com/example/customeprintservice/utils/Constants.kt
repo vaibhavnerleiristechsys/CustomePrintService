@@ -8,5 +8,8 @@ object Constants {
     const val IDP_NAME="idpName"
     const val site_Id="siteId"
     const val company_url="companyUrl"
+    const val googleToken_url="googleTokenUrl"
+    const val client_id="ClientId"
+    const val ClientSecret="ClientSecret"
 
 }

@@ -382,6 +382,9 @@ class PrintersFragment : Fragment() {
                 LoginPrefs.getOCTAToken(requireContext())?.let { JwtDecode.decoded(it) }!!
             )
             userName = decoded.user.toString()
+            if(decoded.email!=null) {
+                userName = decoded.email.toString()
+            }
         } catch (ex: Exception) {
             //context.toast("Failed to Decode Jwt Token")
         }

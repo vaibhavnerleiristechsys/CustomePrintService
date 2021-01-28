@@ -592,7 +592,10 @@ class PrintReleaseFragment : Fragment() {
             val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
                 LoginPrefs.getOCTAToken(requireContext())?.let { JwtDecode.decoded(it) }!!
             )
-            userName = decoded.user.toString()
+           userName = decoded.user.toString()
+            if(decoded.email!=null) {
+                userName = decoded.email.toString()
+            }
         } catch (ex: Exception) {
             //context.toast("Failed to Decode Jwt Token")
         }
@@ -608,8 +611,11 @@ class PrintReleaseFragment : Fragment() {
                 LoginPrefs.getOCTAToken(context)?.let { JwtDecode.decoded(it) }!!
             )
             userName = decoded.user.toString()
+            if(decoded.email!=null) {
+                userName = decoded.email.toString()
+            }
         } catch (ex: Exception) {
-           // context.toast("Failed to Decode Jwt Token")
+            Log.d("exception",ex.toString())
         }
         return userName.toString()
     }
