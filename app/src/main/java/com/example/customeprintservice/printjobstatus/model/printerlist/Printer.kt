@@ -11,6 +11,11 @@ data class Printer (
     val parent_id: Int? = null,
 
     @field:JsonProperty("node_title")
-    val node_title: String? = null
+    val node_title: String? = null,
+
+    @field:JsonProperty("object_id")
+     val object_id: Int? = null
+
+
 
 )

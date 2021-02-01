@@ -126,7 +126,6 @@ class SignInActivity : AppCompatActivity() {
         backarrow.setOnClickListener {
             val intent = Intent(this@SignInActivity , SignInCompany::class.java)
             startActivity(intent)
-
         }
 
         val desktopUrl: String? = bundle.getString("desktopLoginUrl")

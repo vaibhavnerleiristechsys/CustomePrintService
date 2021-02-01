@@ -3,9 +3,15 @@ package com.example.customeprintservice;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.customeprintservice.print.PrintersFragment;
+import com.example.customeprintservice.print.ui.gallery.GalleryFragment;
+import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.github.johnkil.print.PrintView;
 
 import com.unnamed.b.atv.model.TreeNode;
@@ -40,15 +46,32 @@ public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItem
         }
 
 
-/*
+
         view.findViewById(R.id.btn_addFolder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TreeNode newFolder = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, "New Folder"));
-                getTreeView().addNode(node, newFolder);
+               // TreeNode newFolder = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, "New Folder"));
+               // getTreeView().addNode(node, newFolder);
+
+                IconTreeItemHolder.IconTreeItem item = (IconTreeItemHolder.IconTreeItem) value;
+
+
+                        for(int i=0;i<GalleryFragment.listOfPrinters.size();i++){
+                            Printer printer=GalleryFragment.listOfPrinters.get(i);
+                            if(printer.getNode_title().equals(item.text.toString())){
+                                if(printer.getObject_id()!=null) {
+                                    Log.d("printer id", printer.getObject_id().toString());
+                                    new PrintersFragment().getPrinterListByPrinterId(context,printer.getObject_id().toString());
+                                }
+                            }
+                        }
+
+
+              //  new PrintersFragment().getPrinterListByPrinterId(context,"1");
+
             }
         });
-*/
+
         view.findViewById(R.id.btn_delete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

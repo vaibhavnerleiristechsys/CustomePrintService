@@ -55,6 +55,9 @@ data class Attributes(
 	@field:JsonProperty("host_address")
 	val host_address: String? = null,
 
+	@field:JsonProperty("host-address")
+	val hostaddress: String? = null,
+
 	@field:JsonProperty("direct_email_address")
 	val directEmailAddress: String? = null,
 
@@ -80,7 +83,7 @@ data class Attributes(
 	val revision: Int? = null,
 
 	@field:JsonProperty("is_pull_printer")
-	val isPullPrinter: Int? = null,
+	val is_pull_printer: Int? = null,
 
 	@field:JsonProperty("fast_release_device")
 	val fastReleaseDevice: Int? = null,

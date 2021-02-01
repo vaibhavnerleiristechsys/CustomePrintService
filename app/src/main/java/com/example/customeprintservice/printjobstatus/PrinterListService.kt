@@ -178,6 +178,11 @@ class PrinterListService {
                         printerModel.fromServer = true
                         printerModel.nodeId = nodeId
                         PrintersFragment.serverPrinterListWithDetails.add(printerModel)
+                        if(response.body()?.data?.attributes?.is_pull_printer==1){
+                            PrintersFragment.serverPullPrinterListWithDetails.add(printerModel)
+                        }
+
+
 
                         val prefs1 =
                             PreferenceManager.getDefaultSharedPreferences(context)

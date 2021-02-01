@@ -12,4 +12,5 @@ data class Data(
 
 	@field:JsonProperty("type")
 	val type: String? = null
+
 )

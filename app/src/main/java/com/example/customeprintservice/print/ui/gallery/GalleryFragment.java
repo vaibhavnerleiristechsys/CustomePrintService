@@ -41,6 +41,7 @@ public class GalleryFragment extends Fragment {
     private GalleryViewModel galleryViewModel;
     private ViewGroup mContainer = null;
     Context context;
+    public static List<Printer> listOfPrinters=new ArrayList<Printer>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class GalleryFragment extends Fragment {
     private void serverCall(ViewGroup containerView)
     {
         TreeNode root = TreeNode.root();
+        listOfPrinters.clear();
       //  TreeNode child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder,"MyParentNode"));
        // root.addChild(child);
         String siteId=LoginPrefs.Companion.getSiteId(requireContext());
@@ -110,7 +112,7 @@ public class GalleryFragment extends Fragment {
                 {
                     Map<Printer,TreeNode> mapPrinter2TreeNode = new HashMap<>();
 
-                    List<Printer> listOfPrinters = response.body();
+                    listOfPrinters = response.body();
                     for(Printer printer:listOfPrinters) {
                         TreeNode child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder,printer.getNode_title()));
                         mapPrinter2TreeNode.put(printer,child);

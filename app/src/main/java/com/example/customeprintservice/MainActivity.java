@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                 decodeGoogleUrl = decodeGoogleUrl.replaceAll("\\{", "").toString();
                 decodeGoogleUrl = decodeGoogleUrl.replaceAll("\\}", "").toString();
 
-                Map<String, String> myMap = new HashMap<String, String>();
+
                 String[] pairs = decodeGoogleUrl.split(",");
                 String code = "";
                 String requestUri = "";

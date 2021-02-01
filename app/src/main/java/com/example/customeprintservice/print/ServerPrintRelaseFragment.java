@@ -40,6 +40,7 @@ import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterList;
+import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse;
@@ -209,7 +210,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                 }
                   if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")){
-                      selectePrinterDialog();
+                      selectePrinterDialog(PrintersFragment.Companion.getServerPullPrinterListWithDetails());
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
                       PrintReleaseFragment printReleaseFragment1=new PrintReleaseFragment();
                       printReleaseFragment1.releaseJob(requireContext());
@@ -218,7 +219,9 @@ public class ServerPrintRelaseFragment extends Fragment {
 
                   }
                   else if(selectedFile.isFromApi()==false){
-                      selectePrinterDialog();
+                      PrinterList printerList = new PrinterList();
+                     // selectePrinterDialog(PrintersFragment.Companion.getServerPullPrinterListWithDetails());
+                      selectePrinterDialog(printerList.getPrinterList());
                   }
 
 
@@ -233,14 +236,14 @@ public class ServerPrintRelaseFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             String name= intent.getStringExtra("name");
             if(floatingActionButton!=null) {
-                floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.bloodOrange));
+                floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.bloodOrange));
             }
         }
     };
 
 
 
-    private void selectePrinterDialog() {
+    private void selectePrinterDialog(ArrayList<PrinterModel> list) {
         dialog = new Dialog(context);
       //  dialog.setContentView(R.layout.dialog_select_printer);
         v = LayoutInflater.from(context).inflate(R.layout.dialog_select_printer, null);
@@ -263,7 +266,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         PrinterList printerList = new PrinterList();
-        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context, printerList.getPrinterList()));
+        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,list));
 
 
         imgCancel.setOnClickListener(v ->

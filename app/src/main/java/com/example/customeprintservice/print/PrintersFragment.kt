@@ -22,6 +22,7 @@ import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getSiteId
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
@@ -48,6 +49,7 @@ class PrintersFragment : Fragment() {
     companion object {
         public val discoveredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        public val serverPullPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
     }
 
     override fun onCreateView(
@@ -216,6 +218,8 @@ class PrintersFragment : Fragment() {
                             Log.i("printer","it==>${it.attr("node_id")}")
                         }
                         PrintersFragment.serverPrinterListWithDetails.clear()
+                        PrintersFragment.serverPullPrinterListWithDetails.clear()
+
                         element.forEach {
                             val printerModel: PrinterModel = PrinterModel()
                             printerModel.serviceName = it.text()
@@ -343,6 +347,8 @@ class PrintersFragment : Fragment() {
                         printer.printerHost = inetAddress
                         printer.serviceName = "" + inetAddress
                         printer.printerPort = 631
+                        printer.fromServer=false
+                        printer.manual=true
                         Log.i("printer", "innet Address->" + inetAddress)
                     }
 
@@ -389,6 +395,105 @@ class PrintersFragment : Fragment() {
             //context.toast("Failed to Decode Jwt Token")
         }
         return userName.toString()
+    }
+
+
+    fun decodeJWT(context: Context): String {
+        var userName: String? = null
+        try {
+            val mapper = jacksonObjectMapper()
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(context)?.let { JwtDecode.decoded(it) }!!
+            )
+            userName = decoded.user.toString()
+            if(decoded.email!=null) {
+                userName = decoded.email.toString()
+            }
+        } catch (ex: Exception) {
+            Log.d("exception",ex.toString())
+        }
+        return userName.toString()
+    }
+
+    fun getPrinterListByPrinterId(
+        context: Context,printerId:String
+    ) {
+        val siteId = getSiteId(context)
+        val BASE_URL =
+            "https://gw.app.printercloud.com/"+siteId+"/prs/v1/printers/"+printerId+"/"
+
+        val apiService = RetrofitClient(context)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val call = apiService.getPrinterDetailsByPrinterId(
+            LoginPrefs.getOCTAToken(context).toString(),
+            decodeJWT(context),
+            SignInCompanyPrefs.getIdpType(context).toString(),
+            SignInCompanyPrefs.getIdpName(context).toString()
+        )
+
+        call?.enqueue(object : Callback<Any> {
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onResponse(
+                call: Call<Any>,
+                response: Response<Any>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.isSuccessful) {
+
+                   Log.d("response of printerId:",response.body().toString())
+                    var s =response.body().toString()
+                    s=s.replace("\"","")
+                    val hashMap:HashMap<String,String> = HashMap<String,String>()
+                    val pairs = s.split(",".toRegex()).toTypedArray()
+                    for (i in pairs.indices) {
+                        val pair = pairs[i]
+                        val keyValue =
+                            pair.split("=".toRegex()).toTypedArray()
+                        hashMap.put(keyValue[0].trim(), keyValue[1])
+                    }
+                   // Log.d("response of printerId:",response.body()?.data?.attributes?.host-address.toString())
+                    val title =  hashMap.get("title")
+                    val hostAddress = hashMap.get("host-address")
+                    Log.d("title",title.toString())
+                    Log.d("hostAddress",hostAddress.toString())
+
+                    val printer: PrinterModel = PrinterModel()
+
+                    printer.printerHost = InetAddress.getByName(hostAddress)
+                    printer.serviceName = title
+                    printer.printerPort = 631
+                    printer.manual=true
+                    printer.fromServer=false
+
+                    var flagIsExist: Boolean = false
+
+                    PrinterList().printerList.forEach {
+                        if (it.printerHost.equals(printer.printerHost)) {
+                            flagIsExist = true
+                        }
+                    }
+
+                    if (!flagIsExist) {
+                        PrinterList().addPrinterModel(printer)
+                        Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT).show()
+                    }
+
+                    //**********
+
+                }
+
+            }
+
+            override fun onFailure(call: Call<Any>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+
+            }
+        })
     }
 
 }

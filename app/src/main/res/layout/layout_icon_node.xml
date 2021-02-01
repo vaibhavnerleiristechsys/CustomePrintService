@@ -64,7 +64,7 @@
             app:iconSize="20dp"
             app:iconColor="#919292"
             app:iconFont="fonts/material-icon-font.ttf"
-            app:iconText="@string/ic_add" />
+            app:iconText="@string/ic_add_circle" />
 
 
         <com.github.johnkil.print.PrintView

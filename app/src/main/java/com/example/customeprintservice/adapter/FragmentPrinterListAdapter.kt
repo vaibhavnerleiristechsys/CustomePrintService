@@ -7,17 +7,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.print.MyItemRecyclerViewAdapter
+import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
@@ -48,26 +51,38 @@ class FragmentPrinterListAdapter(
 
     override fun onBindViewHolder(holder: FragmentPrinterListAdapter.ViewHolder, position: Int) {
         holder.getPrinterName().text = list[position].serviceName.toString()
+        holder.getRemovePrinter().visibility=View.GONE
+        if(list[position].manual==true){
+            holder.getRemovePrinter().visibility=View.VISIBLE
+        }
         holders.add(holder)
         this.selectedPosition = position
         holder.getCardview().setOnClickListener {
            // it.setBackgroundColor(Color.GRAY)
 
-            if(list[position].nodeId != null){
+            if(list[position].printerHost != null){
             Log.d("selected printerdetails", list[position].serviceName.toString())
-            Log.d("selected printerdetails", list[position].nodeId.toString())
             Log.d("selected printerdetails", list[position].printerHost.toString())
 
-            ProgressDialog.showLoadingDialog(context, "Getting Printer Details")
-            PrinterListService().getPrinterDetails(
-                context,
-                LoginPrefs.getOCTAToken(context).toString(),
-                decodeJWT(),
-                SignInCompanyPrefs.getIdpType(context).toString(),
-                SignInCompanyPrefs.getIdpName(context).toString(),
-                list[position].nodeId.toString(),
-                false
-            )
+
+
+                if(list[position].manual==true){
+                    var finalLocalurl = "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"
+                    ServerPrintRelaseFragment.localPrinturl=finalLocalurl
+                }else {
+                    ProgressDialog.showLoadingDialog(context, "Getting Printer Details")
+                    if(list[position].nodeId != null) {
+                        PrinterListService().getPrinterDetails(
+                            context,
+                            LoginPrefs.getOCTAToken(context).toString(),
+                            decodeJWT(),
+                            SignInCompanyPrefs.getIdpType(context).toString(),
+                            SignInCompanyPrefs.getIdpName(context).toString(),
+                            list[position].nodeId.toString(),
+                            false
+                        )
+                    }
+                }
         }
             val intent = Intent("message_subject_intent")
             intent.putExtra("name", "message")
@@ -82,6 +97,30 @@ class FragmentPrinterListAdapter(
                 } else {
                     holder.getCardview().setCardBackgroundColor(Color.WHITE)
                 }
+            }
+
+        }
+
+
+        holder.getRemovePrinter().setOnClickListener {
+            if(list[position].serviceName != null) {
+                Log.d("selected printerdetails", list[position].serviceName.toString())
+                Log.d("selected printerdetails", list[position].printerHost.toString())
+                var printer: PrinterModel = PrinterModel()
+                PrinterList().printerList.forEach{
+
+                    try {
+                        if (it.printerHost.equals(list[position].printerHost)) {
+                            //PrinterList().printerList.remove(printerModel)
+                            printer= it
+                        }
+                    }catch(e: Exception){
+                        Log.d("excpetion",e.message.toString())
+                    }
+                }
+                PrinterList().printerList.remove(printer)
+                notifyDataSetChanged()
+
             }
 
         }
@@ -117,6 +156,9 @@ class FragmentPrinterListAdapter(
 
         fun getCardview(): CardView {
             return itemView.findViewById(R.id.cardviewFragmentPrinterList)
+        }
+        fun getRemovePrinter(): ImageView {
+            return itemView.findViewById(R.id.removePrinter)
         }
 
 
