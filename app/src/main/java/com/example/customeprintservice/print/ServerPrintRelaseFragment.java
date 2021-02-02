@@ -133,13 +133,21 @@ public class ServerPrintRelaseFragment extends Fragment {
              context = view.getContext();
              //recyclerView = (RecyclerView) view;
 
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getjobListStatus();
-            }
-        }, 5000);
+
+     if(LoginPrefs.Companion.getOCTAToken(context)==null) {
+         final Handler handler = new Handler();
+         handler.postDelayed(new Runnable() {
+             @Override
+             public void run() {
+                 getjobListStatus();
+             }
+         }, 5000);
+     }else{
+         getjobListStatus();
+     }
+
+
+
 
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -214,8 +222,8 @@ public class ServerPrintRelaseFragment extends Fragment {
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
                       PrintReleaseFragment printReleaseFragment1=new PrintReleaseFragment();
                       printReleaseFragment1.releaseJob(requireContext());
-                      Intent myIntent1 = new Intent(getActivity(), MainActivity.class);
-                      getActivity().startActivity(myIntent1);
+                     // Intent myIntent1 = new Intent(getActivity(), MainActivity.class);
+                    //  getActivity().startActivity(myIntent1);
 
                   }
                   else if(selectedFile.isFromApi()==false){

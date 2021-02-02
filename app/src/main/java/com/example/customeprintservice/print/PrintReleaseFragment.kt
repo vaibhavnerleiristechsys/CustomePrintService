@@ -7,6 +7,8 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -850,6 +852,7 @@ class PrintReleaseFragment : Fragment() {
     fun dialogSuccessfullyPrint(context:Context) {
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_successful_print)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(true)
         val window = dialog.window
@@ -864,7 +867,6 @@ class PrintReleaseFragment : Fragment() {
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         window.setDimAmount(0.5f)
         window.attributes = wlp
-
         val button =
             dialog.findViewById<Button>(R.id.ok)
         dialog.show()
@@ -872,7 +874,8 @@ class PrintReleaseFragment : Fragment() {
 
         button.setOnClickListener {
             dialog.cancel()
-
+            val intent = Intent(context,MainActivity::class.java)
+            context.startActivity(intent)
 
         }
     }

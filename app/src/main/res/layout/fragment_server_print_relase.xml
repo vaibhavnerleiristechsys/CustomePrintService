@@ -28,6 +28,7 @@
       android:layout_marginStart="16dp"
       android:layout_marginTop="16dp"
       android:layout_marginEnd="16dp"
+      android:maxLength="25"
       android:layout_marginBottom="16dp"
       android:textAppearance="?attr/textAppearanceListItem"
       android:textSize="17sp"

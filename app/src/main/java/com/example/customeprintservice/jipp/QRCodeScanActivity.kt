@@ -304,10 +304,10 @@ class QRCodeScanActivity : AppCompatActivity() {
         }
 
         floatButton?.setOnClickListener {
-            Toast.makeText(applicationContext, "Click on float btn", Toast.LENGTH_SHORT).show()
+          //  Toast.makeText(applicationContext, "Click on float btn", Toast.LENGTH_SHORT).show()
             val printReleaseFragment = PrintReleaseFragment()
             printReleaseFragment.releaseJob(context)
-            getJobListByPrinterId(this,printerId)
+            //getJobListByPrinterId(this,printerId)
 
         }
     }

@@ -78,13 +78,28 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
 
 
-                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+
                for(int i=0;i<holders.size();i++) {
                     ViewHolder holder = holders.get(i);
                     if (i == position) {
                         holder.checkBox.setChecked(true);
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
-                        BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                        if(!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                            if(selectedFile.getFileName().equals(mValues.get(position).getFileName())){
+                                holder.checkBox.setChecked(false);
+                                holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                            }else{
+                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                            }
+
+                        }else{
+                            BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                            BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                        }
+
                     } else {
                         holder.checkBox.setChecked(false);
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
