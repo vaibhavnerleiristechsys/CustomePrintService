@@ -20,17 +20,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
+        <activity android:name=".print.PrintPreview"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
-           <!-- <intent-filter>
+
+            <!--
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>  -->
+            </intent-filter>
+            -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -54,21 +57,14 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
-
-
-             <activity
+        <activity
             android:name=".print.BottomNavigationActivityForServerPrint"
             android:label="@string/title_activity_bottom_navigation_for_server_print" />
-        <activity android:name=".signin.GoogleLoginActivity">
-
-             </activity>
-
+        <activity android:name=".signin.GoogleLoginActivity"></activity>
         <activity android:name=".CustomePrintActivity" />
         <activity
             android:name=".print.BottomNavigationActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".signin.SignInActivity"
             android:noHistory="true"
@@ -84,7 +80,7 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
-        <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -116,11 +112,9 @@
 
         <receiver android:name=".jipp.MyReceiver">
             <intent-filter>
-                <action android:name="com.example.PRINT_RESPONSE">
-                </action>
+                <action android:name="com.example.PRINT_RESPONSE"></action>
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

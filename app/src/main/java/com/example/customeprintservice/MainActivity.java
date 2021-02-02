@@ -24,6 +24,7 @@ import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
 import com.example.customeprintservice.print.MyItemRecyclerViewAdapter;
+import com.example.customeprintservice.print.PrintPreview;
 import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.print.ServerPrintRelaseFragment;
@@ -194,6 +195,15 @@ public class MainActivity extends AppCompatActivity {
                         Date date = new Date();
                         String strDate = dateFormat.format(date);
                         selectedFile.setFileSelectedDate(strDate);
+
+                        Intent intent1 = new Intent(getApplicationContext(), PrintPreview.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("filePath", realPath);
+                        intent1.putExtras(bundle);
+                        startActivity(intent1);
+
+                        /*
+
                         list.add(selectedFile);
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -213,6 +223,8 @@ public class MainActivity extends AppCompatActivity {
                         // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
                         Toast.makeText(this, "file added", Toast.LENGTH_LONG)
                                 .show();
+
+                         */
                     }
                     if (LoginPrefs.Companion.getOCTAToken(this) == null) {
                         Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
