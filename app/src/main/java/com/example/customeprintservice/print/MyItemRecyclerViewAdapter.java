@@ -90,6 +90,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 holder.checkBox.setChecked(false);
                                 holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
                             }else{
                                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                                 BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));

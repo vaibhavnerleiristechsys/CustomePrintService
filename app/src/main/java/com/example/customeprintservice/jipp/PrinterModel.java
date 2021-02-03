@@ -16,6 +16,8 @@ public class PrinterModel {
 
     private String nodeId;
 
+    private String isPullPrinter;
+
 
     public String getNodeId() {
         return nodeId;
@@ -63,6 +65,14 @@ public class PrinterModel {
 
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String getIsPullPrinter() {
+        return isPullPrinter;
+    }
+
+    public void setIsPullPrinter(String isPullPrinter) {
+        this.isPullPrinter = isPullPrinter;
     }
 }
 

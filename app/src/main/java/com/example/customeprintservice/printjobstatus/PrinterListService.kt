@@ -181,6 +181,9 @@ class PrinterListService {
                         if(response.body()?.data?.attributes?.is_pull_printer==1){
                             PrintersFragment.serverPullPrinterListWithDetails.add(printerModel)
                         }
+                        if(response.body()?.data?.attributes?.is_pull_printer==0){
+                            PrintersFragment.serverSecurePrinterListWithDetails.add(printerModel)
+                        }
 
 
 

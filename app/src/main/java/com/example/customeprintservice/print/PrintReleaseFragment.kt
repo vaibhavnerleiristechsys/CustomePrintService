@@ -246,7 +246,11 @@ class PrintReleaseFragment : Fragment() {
         releaseJobCheckedListForServer.forEach {
             val deleteJobsItem = DeleteJobsItem()
             deleteJobsItem.jobNum = it.jobNum
-            deleteJobsItem.jobType = "1"
+            if(it.jobType.toString().equals("secure_release")) {
+                deleteJobsItem.jobType = "1"
+            }else{
+                deleteJobsItem.jobType = "2"
+            }
             deleteJobsItem.queueId = it.queueId
             deleteJobsItem.userName = it.userName
             deleteJobsItem.workstationId = it.workStationId
@@ -329,7 +333,12 @@ class PrintReleaseFragment : Fragment() {
         releaseJobCheckedListForServer.forEach {
             val releaseJobsItem = ReleaseJobsItem()
             releaseJobsItem.jobNum = it.jobNum
-            releaseJobsItem.jobType = "1"
+            Log.d("jobtype",it.jobType.toString())
+            if(it.jobType.toString().equals("secure_release")) {
+                releaseJobsItem.jobType = "1"
+            }else{
+                releaseJobsItem.jobType = "2"
+            }
             releaseJobsItem.queueId = it.queueId
             releaseJobsItem.userName = it.userName
             releaseJobsItem.workstationId = it.workStationId

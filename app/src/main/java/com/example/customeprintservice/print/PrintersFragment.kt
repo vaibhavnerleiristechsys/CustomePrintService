@@ -50,6 +50,9 @@ class PrintersFragment : Fragment() {
         public val discoveredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverPullPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        public val serverSecurePrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        public val addPrinterList = java.util.ArrayList<PrinterModel>()
+
     }
 
     override fun onCreateView(
@@ -219,6 +222,7 @@ class PrintersFragment : Fragment() {
                         }
                         PrintersFragment.serverPrinterListWithDetails.clear()
                         PrintersFragment.serverPullPrinterListWithDetails.clear()
+                        PrintersFragment.serverSecurePrinterListWithDetails.clear()
 
                         element.forEach {
                             val printerModel: PrinterModel = PrinterModel()
@@ -349,6 +353,7 @@ class PrintersFragment : Fragment() {
                         printer.printerPort = 631
                         printer.fromServer=false
                         printer.manual=true
+                        printer.isPullPrinter="0.0"
                         Log.i("printer", "innet Address->" + inetAddress)
                     }
 
@@ -457,8 +462,10 @@ class PrintersFragment : Fragment() {
                    // Log.d("response of printerId:",response.body()?.data?.attributes?.host-address.toString())
                     val title =  hashMap.get("title")
                     val hostAddress = hashMap.get("host-address")
+                    val isPullPrinter = hashMap.get("is-pull-printer")
                     Log.d("title",title.toString())
                     Log.d("hostAddress",hostAddress.toString())
+                    Log.d("isPullPrinter",isPullPrinter.toString())
 
                     val printer: PrinterModel = PrinterModel()
 
@@ -467,6 +474,7 @@ class PrintersFragment : Fragment() {
                     printer.printerPort = 631
                     printer.manual=true
                     printer.fromServer=false
+                    printer.isPullPrinter=isPullPrinter.toString()
 
                     var flagIsExist: Boolean = false
 

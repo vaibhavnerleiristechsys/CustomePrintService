@@ -119,6 +119,9 @@ public class ServerPrintRelaseFragment extends Fragment {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver1,
                 new IntentFilter("menuFunctionlityDisplay"));
 
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver2,
+                new IntentFilter("menuFunctionlityDisplayhidden"));
+
 
     }
 
@@ -229,7 +232,28 @@ public class ServerPrintRelaseFragment extends Fragment {
                   else if(selectedFile.isFromApi()==false){
                       PrinterList printerList = new PrinterList();
                      // selectePrinterDialog(PrintersFragment.Companion.getServerPullPrinterListWithDetails());
-                      selectePrinterDialog(printerList.getPrinterList());
+                      PrinterModel printerModel=new PrinterModel();
+                      for(int i=0;i<printerList.getPrinterList().size();i++){
+                          Boolean isAvailable=false;
+                           printerModel=printerList.getPrinterList().get(i);
+                           if(printerModel.getIsPullPrinter() !=null) {
+                               if (printerModel.getManual() == true && printerModel.getIsPullPrinter().equals("0.0")) {
+
+                                   for (int j = 0; j < PrintersFragment.Companion.getServerSecurePrinterListWithDetails().size(); j++) {
+                                       PrinterModel printer = PrintersFragment.Companion.getServerSecurePrinterListWithDetails().get(j);
+                                       if (printer.getPrinterHost().equals(printerModel.getPrinterHost())) {
+                                           isAvailable = true;
+                                       }
+                                   }
+                                   if (isAvailable == false && printerModel != null) {
+                                       PrintersFragment.Companion.getServerSecurePrinterListWithDetails().add(printerModel);
+                                   }
+                               }
+                           }
+                      }
+
+                     // selectePrinterDialog(printerList.getPrinterList());
+                      selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterListWithDetails());
                   }
 
 
@@ -294,8 +318,6 @@ public class ServerPrintRelaseFragment extends Fragment {
                            .show();
                    printReleaseFragment.releaseJob(context);
                    dialog.cancel();
-                   Intent myIntent = new Intent(getActivity(), MainActivity.class);
-                   getActivity().startActivity(myIntent);
 
                }else if(secure_release == 3 || secure_release ==4){
                    Toast.makeText(requireContext(), "print hold", Toast.LENGTH_LONG)
@@ -307,7 +329,11 @@ public class ServerPrintRelaseFragment extends Fragment {
                }
                else if(secure_release == 5 || secure_release ==6){
 
-                   dialogPromptPrinter();
+                   //dialogPromptPrinter();
+                   Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG)
+                           .show();
+                   printReleaseFragment.releaseJob(context);
+                   dialog.cancel();
                }
 
             }else{
@@ -332,7 +358,17 @@ public class ServerPrintRelaseFragment extends Fragment {
                }
                else if(secure_release == 5 || secure_release ==6){
 
-                   dialogPromptPrinter();
+                //   dialogPromptPrinter();
+
+                   String FilePath =selectedFile.getFilePath();
+                   PrintActivity printActivity =new PrintActivity();
+                   printActivity.locaPrint(FilePath,localPrinturl,context);
+                   //removeDocumentFromSharedPreferences();
+                   Toast.makeText(context, "print release", Toast.LENGTH_LONG)
+                           .show();
+                   dialog.cancel();
+                   Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                   getActivity().startActivity(myIntent);
                }
 
             }
@@ -511,6 +547,13 @@ public class ServerPrintRelaseFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             setHasOptionsMenu(true);
+        }
+    };
+
+    public BroadcastReceiver mMessageReceiver2 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            setHasOptionsMenu(false);
         }
     };
 
