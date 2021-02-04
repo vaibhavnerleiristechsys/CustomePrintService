@@ -183,6 +183,13 @@ class PrinterListService {
                         }
                         if(response.body()?.data?.attributes?.is_pull_printer==0){
                             PrintersFragment.serverSecurePrinterListWithDetails.add(printerModel)
+                            val prefs1 =
+                                PreferenceManager.getDefaultSharedPreferences(context)
+                            val gson1 = Gson()
+                            val editor = prefs1.edit()
+                            val json1 = gson1.toJson(PrintersFragment.serverSecurePrinterListWithDetails)
+                            editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                            editor.apply()
                         }
 
 

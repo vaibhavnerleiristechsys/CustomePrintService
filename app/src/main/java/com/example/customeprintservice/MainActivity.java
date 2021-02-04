@@ -123,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
         BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
+        PrintersFragment printersFragment1 = new PrintersFragment();
+        printersFragment1.getPrinterList(this, bottomNavigationActivity1.decodeJWT(this));
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver1,
                 new IntentFilter("om.example.PRINT_RESPONSE"));
@@ -196,11 +198,14 @@ public class MainActivity extends AppCompatActivity {
                         String strDate = dateFormat.format(date);
                         selectedFile.setFileSelectedDate(strDate);
 
-                        Intent intent1 = new Intent(getApplicationContext(), PrintPreview.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("filePath", realPath);
-                        intent1.putExtras(bundle);
-                        startActivity(intent1);
+
+                                Intent intent1 = new Intent(getApplicationContext(), PrintPreview.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("filePath", realPath);
+                                intent1.putExtras(bundle);
+                                startActivity(intent1);
+
+
 
                         /*
 
@@ -299,8 +304,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        PrintersFragment printersFragment1 = new PrintersFragment();
-        printersFragment1.getPrinterList(this, bottomNavigationActivity1.decodeJWT(this));
+
     }
 
     private void checkPermissions() {

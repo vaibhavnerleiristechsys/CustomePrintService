@@ -51,7 +51,7 @@ class PrintersFragment : Fragment() {
         public val serverPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverPullPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverSecurePrinterListWithDetails = java.util.ArrayList<PrinterModel>()
-        public val addPrinterList = java.util.ArrayList<PrinterModel>()
+
 
     }
 
