@@ -453,19 +453,22 @@ public class ServerPrintRelaseFragment extends Fragment {
            selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
        }
 
-       for(int i=0;i<localdocumentFromsharedPrefences.size();i++){
-           SelectedFile selectedFile1 =  localdocumentFromsharedPrefences.get(i);
-           if(selectedFile1.getFilePath().equals(selectedFile.getFilePath())){
-                   localdocumentFromsharedPrefences.remove(i);
-           }
-       }
 
-       SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
-       Gson gson1 = new Gson();
-       SharedPreferences.Editor editor = prefs1.edit();
-       String json1 = gson1.toJson(localdocumentFromsharedPrefences);
-       editor.putString("localdocumentlist", json1);
-       editor.apply();
+       if(localdocumentFromsharedPrefences !=null) {
+           for (int i = 0; i < localdocumentFromsharedPrefences.size(); i++) {
+               SelectedFile selectedFile1 = localdocumentFromsharedPrefences.get(i);
+               if (selectedFile1.getFilePath().equals(selectedFile.getFilePath())) {
+                   localdocumentFromsharedPrefences.remove(i);
+               }
+           }
+
+           SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+           Gson gson1 = new Gson();
+           SharedPreferences.Editor editor = prefs1.edit();
+           String json1 = gson1.toJson(localdocumentFromsharedPrefences);
+           editor.putString("localdocumentlist", json1);
+           editor.apply();
+       }
 
     }
 

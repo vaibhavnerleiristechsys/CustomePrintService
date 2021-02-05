@@ -9,6 +9,7 @@ import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
 import com.example.customeprintservice.jipp.PrintActivity;
+import com.example.customeprintservice.jipp.PrintRenderUtils;
 import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.jipp.PrinterModel;
@@ -40,6 +41,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -70,6 +72,10 @@ public class PrintPreview extends AppCompatActivity {
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
     public ArrayList<PrinterModel>serverSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
     public String selectPrinter=null;
+    int startPageIndex=0;
+    int endPageIndex=0;
+    int totalPageCount=0;
+    int noOfCopies=1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +90,10 @@ public class PrintPreview extends AppCompatActivity {
         list.clear();
 
 
-
+        EditText pagesCount=(EditText) findViewById(R.id.pagesCount);
+        RadioButton radioBtnForPage =(RadioButton) findViewById(R.id.rb_page);
+        Button addCopy = (Button) findViewById(R.id.plus);
+        Button minusCopy = (Button) findViewById(R.id.minus);
 
 
         if (LoginPrefs.Companion.getOCTAToken(this) == null) {
@@ -106,6 +115,8 @@ public class PrintPreview extends AppCompatActivity {
         if(file.getName().contains(".pdf")) {
             try {
                 renderPageUsingDefaultPdfRendererFile(file);
+                pagesCount.setVisibility(View.VISIBLE);
+                radioBtnForPage.setVisibility(View.VISIBLE);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -113,6 +124,8 @@ public class PrintPreview extends AppCompatActivity {
         else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
 
         }else{
+            pagesCount.setVisibility(View.INVISIBLE);
+            radioBtnForPage.setVisibility(View.INVISIBLE);
             jpgOrPngImagePreview(file);
         }
         Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
@@ -138,23 +151,20 @@ public class PrintPreview extends AppCompatActivity {
 
         //String[] items = new String[] { "Chai Latte", "Green Tea", "Black Tea" };
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, items);
-
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);
         dynamicSpinner.setAdapter(adapter);
 
 
         dynamicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.v("item", (String) parent.getItemAtPosition(position).toString());
-                   selectPrinter=parent.getItemAtPosition(position).toString();
+                selectPrinter=parent.getItemAtPosition(position).toString();
                 for(int i=0;i<PrintersFragment.Companion.getServerSecurePrinterListWithDetails().size();i++){
                     PrinterModel printerModel= PrintersFragment.Companion.getServerSecurePrinterListWithDetails().get(i);
-                  if(printerModel.getServiceName().toString().equals(parent.getItemAtPosition(position).toString())){
+                     if(printerModel.getServiceName().toString().equals(parent.getItemAtPosition(position).toString())){
                        selectedPrinterModel=printerModel;
-                  }
+                      }
 
                 }
             }
@@ -166,14 +176,14 @@ public class PrintPreview extends AppCompatActivity {
         });
 
 
-        Button addCopy = (Button) findViewById(R.id.plus);
-        Button minusCopy = (Button) findViewById(R.id.minus);
+
 
 
         addCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 noOfCopy=noOfCopy+1;
+                noOfCopies=noOfCopy;
                 String copyNo ="Copies "+noOfCopy;
                 copies.setText(copyNo);
             }
@@ -184,6 +194,7 @@ public class PrintPreview extends AppCompatActivity {
             public void onClick(View view) {
                 if(noOfCopy>1) {
                     noOfCopy = noOfCopy - 1;
+                    noOfCopies=noOfCopy;
                     String copyNo = "Copies " + noOfCopy;
                     copies.setText(copyNo);
                 }
@@ -193,15 +204,13 @@ public class PrintPreview extends AppCompatActivity {
         Spinner staticSpinner = (Spinner) findViewById(R.id.static_spinner);
         String[] printItems = new String[] { "Color", "Monochrome"};
 
-        ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, printItems);
+        ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printItems);
         staticSpinner.setAdapter(staticAdapter);
 
 
         staticSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
                 Log.v("item", (String) parent.getItemAtPosition(position));
             }
 
@@ -219,21 +228,45 @@ public class PrintPreview extends AppCompatActivity {
         TextView cancel =(TextView) findViewById(R.id.cancel);
 
 
+
         print.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 radioButton = (RadioButton) findViewById(selectedId);
                 Log.d("radio button value",radioButton.getText().toString());
+                Boolean PageIndexCorrect=true;
+                if(radioButton.getText().toString().equals("page")) {
+                    String pagecount =pagesCount.getText().toString();
+                    Log.d("pageCount", pagecount);
+                    String[] pageIndex = pagecount.split("-", 0);
+                    startPageIndex= Integer.parseInt(pageIndex[0]);
+                    endPageIndex= Integer.parseInt(pageIndex[1]);
+                     if(startPageIndex>endPageIndex){
+                         Toast.makeText(context, "please check pages number", Toast.LENGTH_LONG).show();
+                         PageIndexCorrect=false;
+                     }
+                     if(endPageIndex>totalPageCount){
+                        Toast.makeText(context, "please check pages number", Toast.LENGTH_LONG).show();
+                        PageIndexCorrect=false;
+                     }
+                     if(startPageIndex<=0){
+                         Toast.makeText(context, "please check pages number", Toast.LENGTH_LONG).show();
+                         PageIndexCorrect=false;
+                     }
+
+                }
+
                 if(selectedPrinterModel ==null ){
-                    Toast.makeText(context, "please select printer", Toast.LENGTH_LONG)
-                            .show();
+                    Toast.makeText(context, "please select printer", Toast.LENGTH_LONG).show();
                 }
                 if(selectPrinter.toString().equals("select printer")){
-                    Toast.makeText(context, "please select printer", Toast.LENGTH_LONG)
-                            .show();
+                    Toast.makeText(context, "please select printer", Toast.LENGTH_LONG).show();
                 }
-                if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null && noOfCopy<2 && !selectPrinter.toString().equals("select printer")) {
+                if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null  && !selectPrinter.toString().equals("select printer")) {
+                    dialogPromptPrinter();
+                }
+                else if(radioButton.getText().toString().equals("page") && selectedPrinterModel !=null && filePath !=null  && !selectPrinter.toString().equals("select printer") && PageIndexCorrect==true) {
                     dialogPromptPrinter();
                 }
             }
@@ -257,6 +290,7 @@ public class PrintPreview extends AppCompatActivity {
         ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
         PdfRenderer renderer = new PdfRenderer(fileDescriptor);
         final int pageCount = renderer.getPageCount();
+        totalPageCount=pageCount;
         PrintUtils printUtils = new PrintUtils();
         Bitmap pageImage = null;
         int pagePrintCounter = 0;
@@ -288,9 +322,7 @@ public class PrintPreview extends AppCompatActivity {
 
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         mAdapter = new PrintPreviewAdapter(files);
-       // LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-      //  recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
@@ -301,9 +333,7 @@ public class PrintPreview extends AppCompatActivity {
             files.add(file);
             RecyclerView recyclerView = findViewById(R.id.recyclerView);
             mAdapter = new PrintPreviewAdapter(files);
-            // LinearLayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
-            //  recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setAdapter(mAdapter);
@@ -312,11 +342,9 @@ public class PrintPreview extends AppCompatActivity {
 
     private void dialogPromptPrinter(){
         Dialog dialog1 = new Dialog(context);
-        //  dialog.setContentView(R.layout.dialog_select_printer);
         View v  = LayoutInflater.from(context).inflate(R.layout.dialog_printer_prompt, null);
         dialog1.setContentView(v);
         dialog1.setCancelable(false);
-
         Button hold = dialog1.findViewById(R.id.hold);
         Button release= dialog1.findViewById(R.id.release);
         dialog1.setCanceledOnTouchOutside(true);
@@ -360,11 +388,7 @@ public class PrintPreview extends AppCompatActivity {
                 String convertedJson = gson1.toJson(list);
                 editor1.putString("localdocumentlist", convertedJson);
                 editor1.apply();
-                // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
-                Toast.makeText(context, "file added", Toast.LENGTH_LONG)
-                        .show();
-
-
+                Toast.makeText(context, "file added", Toast.LENGTH_LONG).show();
                 dialog1.cancel();
                 Intent myIntent = new Intent(context, MainActivity.class);
                 startActivity(myIntent);
@@ -374,16 +398,40 @@ public class PrintPreview extends AppCompatActivity {
         release.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null && noOfCopy<2) {
-                    // String FilePath = selectedFile.getFilePath();
-                    String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
-                    PrintActivity printActivity = new PrintActivity();
-                    printActivity.locaPrint(filePath, finalLocalurl,context);
-                    Toast.makeText(context, "print release", Toast.LENGTH_LONG)
-                            .show();
-                    Intent myIntent = new Intent(context, MainActivity.class);
-                    startActivity(myIntent);
-                    dialog1.cancel();
+                File file = new File(filePath);
+
+
+                if(file.getName().contains(".pdf")) {
+                    if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null) {
+                        String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
+                        PrintRenderUtils printRenderUtils = new PrintRenderUtils();
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies);
+                        Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                        Intent myIntent = new Intent(context, MainActivity.class);
+                        startActivity(myIntent);
+                        dialog1.cancel();
+                    }
+                    if (radioButton.getText().toString().equals("page") && selectedPrinterModel != null && filePath != null) {
+                        String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
+                        PrintRenderUtils printRenderUtils = new PrintRenderUtils();
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies);
+                        Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                        Intent myIntent = new Intent(context, MainActivity.class);
+                        startActivity(myIntent);
+                        dialog1.cancel();
+                    }
+                }else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
+
+                }else{
+                    if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null) {
+                        String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
+                        PrintRenderUtils printRenderUtils = new PrintRenderUtils();
+                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies);
+                        Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                        Intent myIntent = new Intent(context, MainActivity.class);
+                        startActivity(myIntent);
+                        dialog1.cancel();
+                    }
                 }
 
 
