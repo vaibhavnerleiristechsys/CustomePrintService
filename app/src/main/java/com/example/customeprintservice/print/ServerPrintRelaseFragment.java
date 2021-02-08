@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -206,13 +207,15 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }
                 if(selectedFile1.isFromApi()==true) {
                     PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
-                    printReleaseFragment.cancelJob(requireContext());
-                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
-                    getActivity().startActivity(myIntent);
+                    deleteConfirmationDialog(selectedFile1);
+                   // printReleaseFragment.cancelJob(requireContext());
+                   // Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                //    getActivity().startActivity(myIntent);
                 }else if(selectedFile1.isFromApi()==false){
-                    removeDocumentFromSharedPreferences(requireContext());
-                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
-                    getActivity().startActivity(myIntent);
+                 //   removeDocumentFromSharedPreferences(requireContext());
+                  //  Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                  //  getActivity().startActivity(myIntent);
+                    deleteConfirmationDialog(selectedFile1);
                 }
                 return (true);
             case R.id.print:
@@ -559,5 +562,53 @@ public class ServerPrintRelaseFragment extends Fragment {
             setHasOptionsMenu(false);
         }
     };
+
+
+
+    private void deleteConfirmationDialog(SelectedFile selectedFile){
+        Dialog dialog1 = new Dialog(context);
+        dialog1.setContentView(R.layout.dialog_confirmation_delete_job);
+        dialog1.setCancelable(false);
+        Button ok = dialog1.findViewById(R.id.ok);
+        Button cancel = dialog1.findViewById(R.id.cancel);
+        dialog1.setCanceledOnTouchOutside(true);
+        Window window = dialog1.getWindow();
+        assert window != null;
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setLayout(AbsListView.LayoutParams.WRAP_CONTENT, AbsListView.LayoutParams.WRAP_CONTENT);
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.CENTER;
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setDimAmount(0.5f);
+        window.setAttributes(wlp);
+        dialog1.show();
+
+        ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(selectedFile.isFromApi()==true) {
+                    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
+                    printReleaseFragment.cancelJob(requireContext());
+                }else if(selectedFile.isFromApi()==false){
+                    removeDocumentFromSharedPreferences(requireContext());
+
+                }
+                dialog1.cancel();
+                Intent myIntent = new Intent(getActivity(), MainActivity.class);
+                getActivity().startActivity(myIntent);
+
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog1.cancel();
+            }
+        });
+
+
+    }
+
 
 }

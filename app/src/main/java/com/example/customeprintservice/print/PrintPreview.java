@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
+import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrintRenderUtils;
 import com.example.customeprintservice.jipp.PrintUtils;
@@ -27,6 +28,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.pdf.PdfRenderer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
@@ -76,10 +78,28 @@ public class PrintPreview extends AppCompatActivity {
     int endPageIndex=0;
     int totalPageCount=0;
     int noOfCopies=1;
+    String realPath="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+/*
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        if (action != null) {
+            switch (action) {
+                case Intent.ACTION_SEND:
+                    Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    if (imageUri != null) {
+                         realPath = FileUtils.getPath(this, imageUri);
+                    }
+                    if (LoginPrefs.Companion.getOCTAToken(this) == null) {
+                        Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                        startActivity(intent1);
+                    }
+            }
+        }
+*/
 
         setContentView(R.layout.activity_print_preview);
         Bundle bundle = getIntent().getExtras();
@@ -102,6 +122,7 @@ public class PrintPreview extends AppCompatActivity {
         }
 
         filePath = bundle.getString("filePath", "");
+      //  filePath=realPath;
         File file = new File(filePath);
         SelectedFile selectedFile = new SelectedFile();
         selectedFile.setFileName(file.getName());
@@ -160,8 +181,8 @@ public class PrintPreview extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Log.v("item", (String) parent.getItemAtPosition(position).toString());
                 selectPrinter=parent.getItemAtPosition(position).toString();
-                for(int i=0;i<PrintersFragment.Companion.getServerSecurePrinterListWithDetails().size();i++){
-                    PrinterModel printerModel= PrintersFragment.Companion.getServerSecurePrinterListWithDetails().get(i);
+                for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
+                    PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                      if(printerModel.getServiceName().toString().equals(parent.getItemAtPosition(position).toString())){
                        selectedPrinterModel=printerModel;
                       }
@@ -275,9 +296,9 @@ public class PrintPreview extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent myIntent = new Intent(context, MainActivity.class);
-                startActivity(myIntent);
+               onBackPressed();
+             //   Intent myIntent = new Intent(context, MainActivity.class);
+             //   startActivity(myIntent);
             }
         });
     }
@@ -361,7 +382,7 @@ public class PrintPreview extends AppCompatActivity {
         hold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                list.clear();
                 SelectedFile selectedFile = new SelectedFile();
                 File file = new File(filePath);
                 selectedFile.setFileName(file.getName());
@@ -407,18 +428,22 @@ public class PrintPreview extends AppCompatActivity {
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
-                        Intent myIntent = new Intent(context, MainActivity.class);
-                        startActivity(myIntent);
+                       // Intent myIntent = new Intent(context, MainActivity.class);
+                       // startActivity(myIntent);
                         dialog1.cancel();
+                        moveTaskToBack(true);
+
                     }
                     if (radioButton.getText().toString().equals("page") && selectedPrinterModel != null && filePath != null) {
                         String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
-                        Intent myIntent = new Intent(context, MainActivity.class);
-                        startActivity(myIntent);
+                      //  Intent myIntent = new Intent(context, MainActivity.class);
+                      //  startActivity(myIntent);
                         dialog1.cancel();
+                        moveTaskToBack(true);
+
                     }
                 }else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
 
@@ -428,9 +453,11 @@ public class PrintPreview extends AppCompatActivity {
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
-                        Intent myIntent = new Intent(context, MainActivity.class);
-                        startActivity(myIntent);
+                      //  Intent myIntent = new Intent(context, MainActivity.class);
+                      //  startActivity(myIntent);
                         dialog1.cancel();
+                        moveTaskToBack(true);
+
                     }
                 }
 
@@ -438,6 +465,13 @@ public class PrintPreview extends AppCompatActivity {
             }
 
         });
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+
 
     }
 }

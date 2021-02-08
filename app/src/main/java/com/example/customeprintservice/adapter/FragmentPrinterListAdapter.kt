@@ -1,12 +1,16 @@
 package com.example.customeprintservice.adapter
 
+import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.os.Handler
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.AbsListView
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -18,8 +22,6 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
-import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
-import com.example.customeprintservice.print.MyItemRecyclerViewAdapter
 import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.utils.JwtDecode
@@ -103,7 +105,7 @@ class FragmentPrinterListAdapter(
 
 
         holder.getRemovePrinter().setOnClickListener {
-            if(list[position].serviceName != null) {
+           /* if(list[position].serviceName != null) {
                 Log.d("selected printerdetails", list[position].serviceName.toString())
                 Log.d("selected printerdetails", list[position].printerHost.toString())
                 var printer: PrinterModel = PrinterModel()
@@ -121,7 +123,12 @@ class FragmentPrinterListAdapter(
                 PrinterList().printerList.remove(printer)
                 notifyDataSetChanged()
 
-            }
+            }*/
+
+              dialogDeletePrinter(context,list[position])
+         //   val handler = Handler()
+          //  handler.postDelayed({ notifyDataSetChanged() }, 2000)
+
 
         }
 //        holder.bind(list?.get(position))
@@ -178,6 +185,65 @@ class FragmentPrinterListAdapter(
 
         }
         return userName.toString()
+    }
+
+
+    @SuppressLint("WrongConstant")
+    fun dialogDeletePrinter(context:Context,printerModel: PrinterModel){
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.dialog_confirmation_delete_printer)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(true)
+        val window = dialog.window
+        window!!.setLayout(
+            AbsListView.LayoutParams.WRAP_CONTENT,
+            AbsListView.LayoutParams.WRAP_CONTENT
+        )
+//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        //        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        val wlp = window.attributes
+        wlp.gravity = Gravity.CENTER
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
+        window.setDimAmount(0.5f)
+        window.attributes = wlp
+        val button =
+            dialog.findViewById<Button>(R.id.ok)
+        val cancel =
+            dialog.findViewById<Button>(R.id.cancel)
+        dialog.show()
+
+        button.setOnClickListener {
+            if(printerModel.serviceName != null) {
+                Log.d("selected printerdetails", printerModel.serviceName.toString())
+                Log.d("selected printerdetails", printerModel.printerHost.toString())
+                var printer: PrinterModel = PrinterModel()
+                PrinterList().printerList.forEach{
+
+                    try {
+                        if (it.printerHost.equals(printerModel.printerHost)) {
+                            //PrinterList().printerList.remove(printerModel)
+                            printer= it
+                        }
+                    }catch(e: Exception){
+                        Log.d("excpetion",e.message.toString())
+                    }
+                }
+                PrinterList().printerList.remove(printer)
+
+
+            }
+
+            dialog.cancel()
+            notifyDataSetChanged()
+
+
+        }
+
+        cancel.setOnClickListener {
+            dialog.cancel()
+        }
+
     }
 }
 
