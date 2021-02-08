@@ -7,49 +7,59 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-  <CheckBox
-      android:id="@+id/checkbox"
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/checkboxanddocumet"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
       android:layout_marginTop="16dp"
       android:layout_marginBottom="16dp"
-      android:button="@drawable/custom_checkbox"
-      android:clickable="false"
+      android:orientation="horizontal"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+      app:layout_constraintTop_toTopOf="parent">
+
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@drawable/custom_checkbox"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/documenticon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/documenticon" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
 
   <TextView
       android:id="@+id/item_number"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_margin="@dimen/text_margin"
-      android:layout_marginStart="16dp"
+      android:layout_marginStart="30dp"
       android:layout_marginTop="16dp"
-      android:layout_marginEnd="16dp"
-      android:maxLength="25"
       android:layout_marginBottom="16dp"
+      android:maxLength="25"
       android:textAppearance="?attr/textAppearanceListItem"
       android:textSize="17sp"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toStartOf="@+id/content"
-      app:layout_constraintHorizontal_bias="0.03"
-      app:layout_constraintStart_toEndOf="@+id/checkbox"
+      app:layout_constraintStart_toEndOf="@+id/checkboxanddocumet"
       app:layout_constraintTop_toTopOf="parent" />
-<!--
-  <ImageView
-      android:id="@+id/documenticon"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="16dp"
-      android:layout_marginBottom="16dp"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:srcCompat="@drawable/documenticon" />
--->
+
+
   <TextView
       android:id="@+id/content"
       android:layout_width="wrap_content"

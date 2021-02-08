@@ -107,6 +107,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }
+                holder.Documenticonchanged();
             }
 
         });
@@ -124,7 +125,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final ConstraintLayout serverDocument;
         public final CheckBox checkBox;
         public SelectedFile mItem;
-       // public ImageView documenticon;
+        public ImageView documenticon;
         List a =new ArrayList<View>();
         public ViewHolder(View view) {
             super(view);
@@ -133,26 +134,26 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mContentView = view.findViewById(R.id.content);
             serverDocument = view.findViewById(R.id.serverDocument);
             checkBox = view.findViewById(R.id.checkbox);
-          //  checkBox.setVisibility(View.GONE);
-         //   documenticon =view.findViewById(R.id.documenticon);
+            checkBox.setVisibility(View.GONE);
+            documenticon =view.findViewById(R.id.documenticon);
 
 
-        /*    documenticon.setOnClickListener(new View.OnClickListener() {
+           documenticon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     Log.d( "document click", ":successfull");
-                    setDocument();
+                    Documenticonchanged();
                 }
 
-            });*/
+            });
 
             serverDocument.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
                     Log.d( "document click", ":successfull");
-                   // setDocument();
+                    Documenticonchanged();
                 }
 
             });
@@ -164,8 +165,8 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
-/*
-        public void setDocument(){
+
+        public void Documenticonchanged(){
             for(int i=0;i<holders.size();i++){
                 ViewHolder holder1 = holders.get(i);
                 holder1.checkBox.setVisibility(View.VISIBLE);
@@ -173,7 +174,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
         }
 
- */
+
     }
 
 
