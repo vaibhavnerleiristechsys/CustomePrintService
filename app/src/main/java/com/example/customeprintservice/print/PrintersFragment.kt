@@ -479,7 +479,7 @@ class PrintersFragment : Fragment() {
                     var flagIsExist: Boolean = false
 
                     PrinterList().printerList.forEach {
-                        if (it.printerHost.equals(printer.printerHost)) {
+                        if (it.serviceName.equals(printer.serviceName)) {
                             flagIsExist = true
                         }
                     }

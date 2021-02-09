@@ -14,8 +14,9 @@ data class Printer (
     val node_title: String? = null,
 
     @field:JsonProperty("object_id")
-     val object_id: Int? = null
+     val object_id: Int? = null,
 
-
+    @field:JsonProperty("object_sort_order")
+    val object_sort_order: Int? = null
 
 )

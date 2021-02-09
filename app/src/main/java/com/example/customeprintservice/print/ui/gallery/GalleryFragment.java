@@ -167,7 +167,9 @@ public class GalleryFragment extends Fragment {
         {
             if(printer.getParent_id()== printerId)
             {
-                children.add(mapPrinter2TreeNode.get(printer));
+                if(printer.getObject_sort_order() !=900) {
+                    children.add(mapPrinter2TreeNode.get(printer));
+                }
 
             }
         }
