@@ -67,10 +67,10 @@ class PrintersFragment : Fragment() {
     @SuppressLint("WrongConstant")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        btnAddManuallyPrinter.setOnClickListener {
+        /*btnAddManuallyPrinter.setOnClickListener {
             dialogAddManualPrinter()
           //  dialogSelectPrinter()
-        }
+        }*/
         updateUi()
         getPrinterList(requireContext(),decodeJWT())
         Log.i("printer", "Login okta token" + LoginPrefs.getOCTAToken(requireContext()))
