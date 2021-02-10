@@ -308,7 +308,7 @@ class PrintReleaseFragment : Fragment() {
         })
     }
 
-    fun releaseJob(context: Context){
+    fun releaseJob(context: Context,release_t:String){
         @SuppressLint("WrongConstant")val sh: SharedPreferences =
             context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
         val IsLdap = sh.getString("IsLdap", "")
@@ -347,19 +347,42 @@ class PrintReleaseFragment : Fragment() {
         releaseJobRequest.releaseJobs = releaseJobs
 
         val call = if(IsLdap.equals("LDAP")){
-            apiService.releaseJobForLdap(
+            if(!release_t.equals("null")){
+            apiService.releaseJobForPullPrinterLdap(
                 releaseJobRequest,
                 siteId.toString(),
                 LdapUsername.toString(),
-                LdapPassword.toString()
+                LdapPassword.toString(),
+                "json:api",
+                release_t
             )
+            }else{
+                apiService.releaseJobForLdap(
+                    releaseJobRequest,
+                    siteId.toString(),
+                    LdapUsername.toString(),
+                    LdapPassword.toString()
+                )
+            }
+
         }else{
-            apiService.releaseJob(
-                releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
-                decodeJWT(context),
-                SignInCompanyPrefs.getIdpType(context).toString(),
-                SignInCompanyPrefs.getIdpName(context).toString()
-            )
+            if(!release_t.equals("null")) {
+                apiService.releaseJobForPullPrinter(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString(),
+                    "json:api",
+                    release_t
+                )
+            }else{
+                apiService.releaseJob(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString()
+                )
+            }
         }
 
 

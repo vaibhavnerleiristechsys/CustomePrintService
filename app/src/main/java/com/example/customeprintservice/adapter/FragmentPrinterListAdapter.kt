@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Handler
 import android.util.Log
 import android.view.*
 import android.widget.AbsListView
@@ -22,6 +21,7 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.print.PrintersFragment
 import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.utils.JwtDecode
@@ -66,6 +66,7 @@ class FragmentPrinterListAdapter(
             Log.d("selected printerdetails", list[position].serviceName.toString())
             Log.d("selected printerdetails", list[position].printerHost.toString())
 
+                PrintersFragment().getPrinterListByPrinterId(context,list[position].id.toString(),"getprinterToken")
 
 
                 if(list[position].manual==true){

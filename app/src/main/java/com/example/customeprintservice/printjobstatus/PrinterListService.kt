@@ -177,6 +177,7 @@ class PrinterListService {
                         printerModel.printerPort = 631
                         printerModel.fromServer = true
                         printerModel.nodeId = nodeId
+                        printerModel.id=response.body()?.data?.attributes?.id.toString()
                         PrintersFragment.serverPrinterListWithDetails.add(printerModel)
                         if(response.body()?.data?.attributes?.is_pull_printer==1){
                             PrintersFragment.serverPullPrinterListWithDetails.add(printerModel)

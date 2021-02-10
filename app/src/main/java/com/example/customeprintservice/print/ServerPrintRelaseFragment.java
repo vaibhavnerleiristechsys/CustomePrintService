@@ -82,6 +82,8 @@ public class ServerPrintRelaseFragment extends Fragment {
     FloatingActionButton floatingActionButton;
     public static String checkMenu="search";
     public static String localPrinturl;
+    public static String selectedPrinterId;
+    public static String selectedPrinterToken;
     public static int secure_release;
     public  ArrayList<SelectedFile> localdocumentFromsharedPrefences =new ArrayList<SelectedFile>();
     RecyclerView recyclerView;
@@ -224,13 +226,33 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                 }
                   if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")){
+                      PrinterList printerList = new PrinterList();
+                      PrinterModel printerModel=new PrinterModel();
+                      for(int i=0;i<printerList.getPrinterList().size();i++){
+                          Boolean isAvailable=false;
+                          printerModel=printerList.getPrinterList().get(i);
+                          if(printerModel.getIsPullPrinter() !=null) {
+                              if (printerModel.getManual() == true && printerModel.getIsPullPrinter().equals("1.0")) {
+
+                                  for (int j = 0; j < PrintersFragment.Companion.getServerPullPrinterListWithDetails().size(); j++) {
+                                      PrinterModel printer = PrintersFragment.Companion.getServerPullPrinterListWithDetails().get(j);
+                                      if (printer.getPrinterHost().equals(printerModel.getPrinterHost())) {
+                                          isAvailable = true;
+                                      }
+                                  }
+                                  if (isAvailable == false && printerModel != null) {
+                                      PrintersFragment.Companion.getServerPullPrinterListWithDetails().add(printerModel);
+                                  }
+                              }
+                          }
+                      }
                       selectePrinterDialog(PrintersFragment.Companion.getServerPullPrinterListWithDetails());
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
-                      PrintReleaseFragment printReleaseFragment1=new PrintReleaseFragment();
-                      printReleaseFragment1.releaseJob(requireContext());
+                     // PrintReleaseFragment printReleaseFragment1=new PrintReleaseFragment();
+                      //printReleaseFragment1.releaseJob(requireContext(),"null");
                      // Intent myIntent1 = new Intent(getActivity(), MainActivity.class);
                     //  getActivity().startActivity(myIntent1);
-
+                      selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterForHeldJob());
                   }
                   else if(selectedFile.isFromApi()==false){
                       PrinterList printerList = new PrinterList();
@@ -316,10 +338,25 @@ public class ServerPrintRelaseFragment extends Fragment {
                  selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
             }
            if(selectedFile.isFromApi()==true){
+               if(selectedFile.getJobType().equals("pull_print")){
+                   String release_t="";
+                   if(selectedPrinterId!=null && selectedPrinterToken!=null) {
+                        release_t = selectedPrinterId + "," + selectedPrinterToken;
+                   }
+                   Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
+                   printReleaseFragment.releaseJob(context,release_t);
+                   dialog.cancel();
+               }else{
+                   Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
+                   printReleaseFragment.releaseJob(context,"null");
+                   dialog.cancel();
+               }
+
+/*
                if(secure_release == 0 || secure_release ==1 || secure_release==2){
                    Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG)
                            .show();
-                   printReleaseFragment.releaseJob(context);
+                //   printReleaseFragment.releaseJob(context);
                    dialog.cancel();
 
                }else if(secure_release == 3 || secure_release ==4){
@@ -335,9 +372,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                    //dialogPromptPrinter();
                    Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG)
                            .show();
-                   printReleaseFragment.releaseJob(context);
+                //   printReleaseFragment.releaseJob(context);
                    dialog.cancel();
-               }
+               }*/
 
             }else{
 
@@ -422,7 +459,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }
                 if(selectedFile.isFromApi()==true) {
                     PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
-                    printReleaseFragment.releaseJob(context);
+                   // printReleaseFragment.releaseJob(context);
                     dialog.cancel();
                     dialog1.cancel();
                     Intent myIntent = new Intent(getActivity(), MainActivity.class);

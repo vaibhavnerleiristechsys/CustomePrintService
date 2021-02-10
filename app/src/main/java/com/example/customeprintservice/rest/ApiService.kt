@@ -141,6 +141,17 @@ interface ApiService {
         @Header("X-PrinterLogic-Password") password: String
     ): Call<ReleaseJobResponse>
 
+    @POST(".")
+    fun releaseJobForPullPrinterLdap(
+        @Body releaseJobRequest: ReleaseJobRequest,
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String,
+        @Query("format") format: String,
+        @Query("t") t: String
+
+    ): Call<ReleaseJobResponse>
+
     @FormUrlEncoded
     @POST(".")
     fun getPrinterListForLdap(
@@ -158,6 +169,18 @@ interface ApiService {
         @Body jobStatusCancel: CancelJobRequest
     ): Call<CancelJobResponse>
 
+
+    @POST(".")
+    fun releaseJobForPullPrinter(
+        @Body releaseJobRequest: ReleaseJobRequest,
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Query("format") format: String,
+        @Query("t") t: String
+
+    ): Call<ReleaseJobResponse>
 
     @POST(".")
     fun releaseJob(

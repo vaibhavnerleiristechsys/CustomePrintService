@@ -306,7 +306,7 @@ class QRCodeScanActivity : AppCompatActivity() {
         floatButton?.setOnClickListener {
           //  Toast.makeText(applicationContext, "Click on float btn", Toast.LENGTH_SHORT).show()
             val printReleaseFragment = PrintReleaseFragment()
-            printReleaseFragment.releaseJob(context)
+            printReleaseFragment.releaseJob(context,"null")
             //getJobListByPrinterId(this,printerId)
 
         }

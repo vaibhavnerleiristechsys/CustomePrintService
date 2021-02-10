@@ -61,7 +61,7 @@ public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItem
                             if(printer.getNode_title().equals(item.text.toString())){
                                 if(printer.getObject_id()!=null) {
                                     Log.d("printer id", printer.getObject_id().toString());
-                                    new PrintersFragment().getPrinterListByPrinterId(context,printer.getObject_id().toString());
+                                    new PrintersFragment().getPrinterListByPrinterId(context,printer.getObject_id().toString(),"printerDetailForAddPrinterTab");
                                 }
                             }
                         }

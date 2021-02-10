@@ -106,6 +106,14 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                             BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
                         }
 
+                        if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                            if (selectedFile.isFromApi() == true) {
+                                PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
+                                new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getQueueId().toString(), "forSecureRelase");
+                            }
+                        }
+
                     } else {
                         holder.checkBox.setChecked(false);
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));

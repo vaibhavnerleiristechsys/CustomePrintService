@@ -28,6 +28,7 @@ import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.Inet
+import com.example.customeprintservice.utils.IpAddress
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -51,6 +52,7 @@ class PrintersFragment : Fragment() {
         public val serverPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverPullPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverSecurePrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        public val serverSecurePrinterForHeldJob= java.util.ArrayList<PrinterModel>()
 
 
     }
@@ -113,6 +115,9 @@ class PrintersFragment : Fragment() {
 
         @SuppressLint("WrongConstant")val sh: SharedPreferences =
             context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val ipAddress = IpAddress.getIPAddress(true);
+        Log.d("ipAddress of device:",ipAddress);
+
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -140,7 +145,7 @@ class PrintersFragment : Fragment() {
                         "<system driverless=\"1\">\n" +
                         "  <machine>\n" +
                         "    <ips>\n" +
-                        "      <ip mask=\"255.255.255.0\"> my-ip </ip>\n" +
+                        "      <ip mask=\"255.255.255.0\">"+ipAddress+"</ip>\n" +
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
@@ -172,7 +177,7 @@ class PrintersFragment : Fragment() {
                         "<system driverless=\"1\">\n" +
                         "  <machine>\n" +
                         "    <ips>\n" +
-                        "      <ip mask=\"255.255.255.0\"> my-ip </ip>\n" +
+                        "      <ip mask=\"255.255.255.0\">"+ipAddress+"</ip>\n" +
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
@@ -421,7 +426,7 @@ class PrintersFragment : Fragment() {
     }
 
     fun getPrinterListByPrinterId(
-        context: Context,printerId:String
+        context: Context,printerId:String,purpose:String
     ) {
         val siteId = getSiteId(context)
         val BASE_URL =
@@ -463,12 +468,15 @@ class PrintersFragment : Fragment() {
                     val title =  hashMap.get("title")
                     val hostAddress = hashMap.get("host-address")
                     val isPullPrinter = hashMap.get("is-pull-printer")
+                    val printerToken = hashMap.get("printer-token")
+                    val id = hashMap.get("id")
                     Log.d("title",title.toString())
                     Log.d("hostAddress",hostAddress.toString())
                     Log.d("isPullPrinter",isPullPrinter.toString())
-
+                    ServerPrintRelaseFragment.selectedPrinterId=id
+                    ServerPrintRelaseFragment.selectedPrinterToken=printerToken
                     val printer: PrinterModel = PrinterModel()
-
+                    printer.id =id
                     printer.printerHost = InetAddress.getByName(hostAddress)
                     printer.serviceName = title
                     printer.printerPort = 631
@@ -477,18 +485,26 @@ class PrintersFragment : Fragment() {
                     printer.isPullPrinter=isPullPrinter.toString()
 
                     var flagIsExist: Boolean = false
-
-                    PrinterList().printerList.forEach {
-                        if (it.serviceName.equals(printer.serviceName)) {
-                            flagIsExist = true
-                        }
+                  //when select one document then only get printer by using queue id for display in dialog box
+                    if(purpose.equals("forSecureRelase")){
+                        serverSecurePrinterForHeldJob.add(printer)
                     }
 
-                    if (!flagIsExist) {
-                        PrinterList().addPrinterModel(printer)
-                        Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT).show()
+                    if(purpose.equals("printerDetailForAddPrinterTab")) {
+
+                        PrinterList().printerList.forEach {
+                            if (it.serviceName.equals(printer.serviceName)) {
+                                flagIsExist = true
+                            }
+                        }
+
+                        if (!flagIsExist) {
+                            PrinterList().addPrinterModel(printer)
+                            Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
 
                     //**********

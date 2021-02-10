@@ -16,6 +16,8 @@ public class PrinterModel {
 
     private String nodeId;
 
+    private String id;
+
     private String isPullPrinter;
 
 
@@ -73,6 +75,14 @@ public class PrinterModel {
 
     public void setIsPullPrinter(String isPullPrinter) {
         this.isPullPrinter = isPullPrinter;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
 
