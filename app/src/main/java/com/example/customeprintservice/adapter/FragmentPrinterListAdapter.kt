@@ -66,8 +66,9 @@ class FragmentPrinterListAdapter(
             Log.d("selected printerdetails", list[position].serviceName.toString())
             Log.d("selected printerdetails", list[position].printerHost.toString())
 
-                PrintersFragment().getPrinterListByPrinterId(context,list[position].id.toString(),"getprinterToken")
-
+                if(list[position].id!=null) {
+                    PrintersFragment().getPrinterListByPrinterId(context, list[position].id.toString(),"getprinterToken")
+                }
 
                 if(list[position].manual==true){
                     var finalLocalurl = "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"

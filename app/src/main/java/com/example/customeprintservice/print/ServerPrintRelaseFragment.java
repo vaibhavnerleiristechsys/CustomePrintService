@@ -529,7 +529,8 @@ public class ServerPrintRelaseFragment extends Fragment {
                 printReleaseFragment.decodeJWT(context),
                 SignInCompanyPrefs.Companion.getIdpType(context).toString(),
                 SignInCompanyPrefs.Companion.getIdpName(context).toString(),
-                printReleaseFragment.decodeJWT(context)
+                printReleaseFragment.decodeJWT(context),
+                "printerDeviceQueue.printers"
         );
         call.enqueue(new Callback<GetJobStatusesResponse>() {
             public void onResponse(Call<GetJobStatusesResponse> call, Response<GetJobStatusesResponse> response) {
@@ -548,6 +549,8 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile.setQueueId(PrintQueueJobStatusItem.getPrinterDeviceQueueId());
                     selectedFile.setUserName(PrintQueueJobStatusItem.getUserName());
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
+                    selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+
                     PrintReleaseFragment.Companion.getGetdocumentList().add(selectedFile);
                 }
                 if(localdocumentFromsharedPrefences!=null) {

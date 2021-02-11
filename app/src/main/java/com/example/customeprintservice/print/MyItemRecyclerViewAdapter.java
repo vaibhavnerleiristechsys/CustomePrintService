@@ -109,8 +109,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
                             SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                             if (selectedFile.isFromApi() == true) {
-                                PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
-                                new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getQueueId().toString(), "forSecureRelase");
+                                if(selectedFile.getPrinterId()!=null) {
+                                    PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
+                                    new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
+                                }
                             }
                         }
 

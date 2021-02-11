@@ -487,6 +487,8 @@ class PrintersFragment : Fragment() {
                     var flagIsExist: Boolean = false
                   //when select one document then only get printer by using queue id for display in dialog box
                     if(purpose.equals("forSecureRelase")){
+                        printer.manual=false
+                        printer.fromServer=true
                         serverSecurePrinterForHeldJob.add(printer)
                     }
 

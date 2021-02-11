@@ -29,7 +29,6 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
-import com.example.customeprintservice.jipp.QRCodeScanActivity
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -50,7 +49,6 @@ import com.example.customeprintservice.utils.Permissions
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
@@ -453,7 +451,7 @@ class PrintReleaseFragment : Fragment() {
                "Bearer " + LoginPrefs.getOCTAToken(context),
                userName,
                idpType,
-               idpName,userName)
+               idpName,userName,"printerDeviceQueue.printers")
        }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {
@@ -497,6 +495,7 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.queueId = it?.printerDeviceQueueId
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
+                            selectedFile.printerId = it?.printerDeviceQueue?.printers?.get(0)?.id
                             selectedFileList.add(selectedFile)
                            // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
                             getdocumentList.add(selectedFile)
@@ -780,7 +779,7 @@ class PrintReleaseFragment : Fragment() {
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
                 SignInCompanyPrefs.getIdpName(context).toString(),
-                decodeJWT(context))
+                decodeJWT(context),"printerDeviceQueue.printers")
         }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {

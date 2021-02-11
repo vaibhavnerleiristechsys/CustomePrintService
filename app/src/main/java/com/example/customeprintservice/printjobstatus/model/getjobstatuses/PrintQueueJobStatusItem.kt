@@ -59,5 +59,8 @@ data class PrintQueueJobStatusItem(
 	val jobNumber: Int? = null,
 
 	@field:SerializedName("status")
-	val status: Int? = null
+	val status: Int? = null,
+
+	@field:SerializedName("printerDeviceQueue")
+    val printerDeviceQueue: printerDeviceQueue? = null
 )
