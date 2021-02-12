@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -34,6 +35,8 @@ import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_printers.*
 import okhttp3.ResponseBody
 import org.jetbrains.anko.doAsync
@@ -489,6 +492,7 @@ class PrintersFragment : Fragment() {
                     if(purpose.equals("forSecureRelase")){
                         printer.manual=false
                         printer.fromServer=true
+                        serverSecurePrinterForHeldJob.clear()
                         serverSecurePrinterForHeldJob.add(printer)
                     }
 
@@ -522,4 +526,27 @@ class PrintersFragment : Fragment() {
         })
     }
 
+
+
+    fun addPrinterForshareDocument(printer: PrinterModel) {
+        if(printer.isPullPrinter.equals("0.0")) {
+            var serverSecurePrinterListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
+            val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
+            val gson1 = Gson()
+            val json2 = prefs1.getString("prefServerSecurePrinterListWithDetails", null)
+            val type1 = object :
+                TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+            if (json2 != null) {
+                serverSecurePrinterListWithDetailsSharedPreflist =
+                    gson1.fromJson<java.util.ArrayList<PrinterModel>>(json2, type1)
+                serverSecurePrinterListWithDetailsSharedPreflist.add(printer)
+
+                val editor = prefs1.edit()
+                val json1 = gson1.toJson(serverSecurePrinterListWithDetailsSharedPreflist)
+                editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                editor.apply()
+
+            }
+        }
+    }
 }

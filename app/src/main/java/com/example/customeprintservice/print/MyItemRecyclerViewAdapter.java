@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.room.SelectedFile;
+import com.example.customeprintservice.utils.ProgressDialog;
 
 import org.spongycastle.asn1.x509.Holder;
 
@@ -111,6 +112,9 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                             if (selectedFile.isFromApi() == true) {
                                 if(selectedFile.getPrinterId()!=null) {
                                     PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
+                                    if(selectedFile.getJobType().equals("secure_release")){
+                                        ProgressDialog.Companion.showLoadingDialog(context, "please wait");
+                                    }
                                     new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
                                 }
                             }

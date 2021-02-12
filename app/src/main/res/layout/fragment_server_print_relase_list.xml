@@ -11,8 +11,8 @@
     android:name="com.example.customeprintservice.print.ServerPrintRelaseFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     app:layoutManager="LinearLayoutManager"
     tools:context=".print.ServerPrintRelaseFragment"
+    tools:itemCount="5"
     tools:listitem="@layout/fragment_server_print_relase" />
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

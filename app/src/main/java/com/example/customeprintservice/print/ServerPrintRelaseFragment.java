@@ -161,7 +161,8 @@ public class ServerPrintRelaseFragment extends Fragment {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
 
-
+                 recyclerView.setItemViewCacheSize(50);
+            //setMaxsetMaxViewPoolSize(MAX_TYPE_ITEM, Int.MAX_VALUE)
 
               //   recyclerView.setAdapter(new MyItemRecyclerViewAdapter(DummyContent.ITEMS));
 
