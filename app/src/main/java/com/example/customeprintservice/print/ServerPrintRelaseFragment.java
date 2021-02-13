@@ -550,7 +550,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile.setQueueId(PrintQueueJobStatusItem.getPrinterDeviceQueueId());
                     selectedFile.setUserName(PrintQueueJobStatusItem.getUserName());
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
-                    selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+                    if(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size()>0) {
+                        selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+                    }
 
                     PrintReleaseFragment.Companion.getGetdocumentList().add(selectedFile);
                 }

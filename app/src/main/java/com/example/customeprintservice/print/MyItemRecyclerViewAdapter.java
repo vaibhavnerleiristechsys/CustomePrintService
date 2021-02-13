@@ -70,7 +70,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             public void onClick(View view) {
 
                 Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
-
+                Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
 
@@ -93,7 +93,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                                 Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
-
                                 Intent intent3 = new Intent("qrcodefloatingbutton");
                                 intent3.putExtra("qrCodeScanBtn", "Active");
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
@@ -192,9 +191,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
         }
 
-
     }
-
 
 
 }

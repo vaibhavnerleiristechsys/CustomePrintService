@@ -30,7 +30,7 @@ data class IdpResponse(
 
 
 	@field:SerializedName("idp_type")
-	val idpType: String,
+	val idp_type: String,
 
 	@field:SerializedName("idp_use_local_server")
 	val idpUseLocalServer: Boolean

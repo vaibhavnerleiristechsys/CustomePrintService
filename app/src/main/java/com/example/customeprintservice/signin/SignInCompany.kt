@@ -167,7 +167,7 @@ class SignInCompany : AppCompatActivity() {
                                 idp.tokenUri.toString()
                             )
                             LoginPrefs.savegoogleTokenUrl(this@SignInCompany,idp.tokenUri.toString())
-                            SignInCompanyPrefs.saveIdpName(this@SignInCompany, idp.name.toString())
+                            SignInCompanyPrefs.saveIdpName(this@SignInCompany, idp.idp_type.toString())
                             SignInCompanyPrefs.saveIdpType(
                                 this@SignInCompany,
                                 idp.authType.toString()
