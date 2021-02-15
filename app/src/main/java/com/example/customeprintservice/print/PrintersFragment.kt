@@ -431,6 +431,12 @@ class PrintersFragment : Fragment() {
     fun getPrinterListByPrinterId(
         context: Context,printerId:String,purpose:String
     ) {
+
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+
         val siteId = getSiteId(context)
         val BASE_URL =
             "https://gw.app.printercloud.com/"+siteId+"/prs/v1/printers/"+printerId+"/"
@@ -438,13 +444,18 @@ class PrintersFragment : Fragment() {
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
-
-        val call = apiService.getPrinterDetailsByPrinterId(
-            LoginPrefs.getOCTAToken(context).toString(),
-            decodeJWT(context),
-            SignInCompanyPrefs.getIdpType(context).toString(),
-            SignInCompanyPrefs.getIdpName(context).toString()
-        )
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.getPrinterDetailsByPrinterIdForLdap(
+                siteId.toString(),
+                LdapUsername.toString(),
+                LdapPassword.toString())
+        }else{
+            apiService.getPrinterDetailsByPrinterId(
+                LoginPrefs.getOCTAToken(context).toString(),
+                decodeJWT(context),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString())
+        }
 
         call?.enqueue(object : Callback<Any> {
 

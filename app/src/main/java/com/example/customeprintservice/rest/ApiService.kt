@@ -109,6 +109,13 @@ interface ApiService {
     ): Call<Any>?
 
     @GET(".")
+    fun getPrinterDetailsByPrinterIdForLdap(
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String
+    ): Call<Any>?
+
+    @GET(".")
     fun getPrintJobStatuses(
         @Header("Authorization") authorization: String,
         @Header("X-User-Name") userName: String,
@@ -207,6 +214,13 @@ interface ApiService {
         @Header("X-User-Name") userName: String,
         @Header("X-IdP-Type") idpType: String,
         @Header("X-IdP-Name") idpName: String
+    ): Call<List<Printer>>
+
+    @GET(".")
+    fun getPrintersListForLdap(
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String
     ): Call<List<Printer>>
 
     @FormUrlEncoded

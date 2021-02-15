@@ -1,8 +1,11 @@
 package com.example.customeprintservice.print.ui.gallery;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -90,6 +93,13 @@ public class GalleryFragment extends Fragment {
         listOfPrinters.clear();
       //  TreeNode child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder,"MyParentNode"));
        // root.addChild(child);
+        @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+        String IsLdap = prefs.getString("IsLdap", "");
+        String LdapUsername= prefs.getString("LdapUsername", "");
+        String LdapPassword= prefs.getString("LdapPassword", "");
+        Log.d("IsLdap:", IsLdap);
+
+
         String siteId=LoginPrefs.Companion.getSiteId(requireContext());
         String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
         ApiService apiService = new RetrofitClient(requireContext())
@@ -98,13 +108,21 @@ public class GalleryFragment extends Fragment {
 
         PrintReleaseFragment prf = new PrintReleaseFragment();
 
-
-        Call call = apiService.getPrintersList(
-                "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
-                prf.decodeJWT(requireContext()),
-                SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
-                SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString()
-        );
+        Call call;
+        if(IsLdap.equals("LDAP")){
+            call = apiService.getPrintersListForLdap(
+                    siteId.toString(),
+                    LdapUsername.toString(),
+                    LdapPassword.toString()
+            );
+        }else {
+            call = apiService.getPrintersList(
+                    "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
+                    prf.decodeJWT(requireContext()),
+                    SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString()
+            );
+        }
 
         call.enqueue(new Callback<List<Printer>>() {
             public void onResponse(Call<List<Printer>> call, Response<List<Printer>> response) {

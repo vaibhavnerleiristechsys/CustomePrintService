@@ -1,5 +1,6 @@
 package com.example.customeprintservice.print;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -541,6 +543,16 @@ public class ServerPrintRelaseFragment extends Fragment {
 
 
     public void getjobListStatus(){
+
+        @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+        String IsLdap = prefs.getString("IsLdap", "");
+        String LdapUsername= prefs.getString("LdapUsername", "");
+        String LdapPassword= prefs.getString("LdapPassword", "");
+
+        Log.d("IsLdap:", IsLdap);
+
+
+
         ProgressDialog.Companion.showLoadingDialog(context, "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
@@ -549,16 +561,24 @@ public class ServerPrintRelaseFragment extends Fragment {
         ApiService apiService = new RetrofitClient(context)
                 .getRetrofitInstance(BASE_URL)
                 .create(ApiService.class);
+        Call call;
+        if(IsLdap.equals("LDAP")){
+            call = apiService.getPrintJobStatusesForLdap(
+                    siteId.toString(),
+                    LdapUsername.toString(),
+                    LdapPassword.toString()
+            );
+        }else {
 
-
-        Call call = apiService.getPrintJobStatuses(
-                "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
-                printReleaseFragment.decodeJWT(context),
-                SignInCompanyPrefs.Companion.getIdpType(context).toString(),
-                SignInCompanyPrefs.Companion.getIdpName(context).toString(),
-                printReleaseFragment.decodeJWT(context),
-                "printerDeviceQueue.printers"
-        );
+             call = apiService.getPrintJobStatuses(
+                    "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
+                    printReleaseFragment.decodeJWT(context),
+                    SignInCompanyPrefs.Companion.getIdpType(context).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(context).toString(),
+                    printReleaseFragment.decodeJWT(context),
+                    "printerDeviceQueue.printers"
+            );
+        }
         call.enqueue(new Callback<GetJobStatusesResponse>() {
             public void onResponse(Call<GetJobStatusesResponse> call, Response<GetJobStatusesResponse> response) {
                 if(response.isSuccessful()){
