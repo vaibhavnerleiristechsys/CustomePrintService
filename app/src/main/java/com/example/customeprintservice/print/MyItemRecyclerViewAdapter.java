@@ -65,9 +65,23 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
         holders.add(holder);
         this.selectedPosition = position;
-        holder.serverDocument.setOnClickListener(new View.OnClickListener() {
+
+        holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                holder.documenticon.setVisibility(View.VISIBLE);
+                holder.checkBox.setVisibility(View.GONE);
+                holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
+            }
+            });
+
+        holder.documenticon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            Log.d("click on document icon","clock on document icon");
 
                 Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
@@ -80,15 +94,19 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
 
 
-               for(int i=0;i<holders.size();i++) {
+                for(int i=0;i<holders.size();i++) {
                     ViewHolder holder = holders.get(i);
                     if (i == position) {
+                        holder.checkBox.setVisibility(View.VISIBLE);
+                        holder.documenticon.setVisibility(View.GONE);
                         holder.checkBox.setChecked(true);
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
                         if(!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
                             SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                             if(selectedFile.getFileName().equals(mValues.get(position).getFileName())){
                                 holder.checkBox.setChecked(false);
+                                holder.documenticon.setVisibility(View.VISIBLE);
+                                holder.checkBox.setVisibility(View.GONE);
                                 holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                                 Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
@@ -120,11 +138,82 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         }
 
                     } else {
+                        holder.documenticon.setVisibility(View.VISIBLE);
+                        holder.checkBox.setVisibility(View.GONE);
                         holder.checkBox.setChecked(false);
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }
-                holder.Documenticonchanged();
+                // holder.Documenticonchanged();
+            }
+
+        });
+        holder.serverDocument.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
+                Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
+                Intent intent = new Intent("menuFunctionlityDisplay");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+
+                Intent intent1 = new Intent("qrcodefloatingbutton");
+                intent1.putExtra("qrCodeScanBtn", "InActive");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
+
+
+
+               for(int i=0;i<holders.size();i++) {
+                    ViewHolder holder = holders.get(i);
+                    if (i == position) {
+                        holder.checkBox.setVisibility(View.VISIBLE);
+                        holder.documenticon.setVisibility(View.GONE);
+                        holder.checkBox.setChecked(true);
+                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
+                        if(!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                            if(selectedFile.getFileName().equals(mValues.get(position).getFileName())){
+                                holder.checkBox.setChecked(false);
+                                holder.documenticon.setVisibility(View.VISIBLE);
+                                holder.checkBox.setVisibility(View.GONE);
+                                holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
+                                Intent intent3 = new Intent("qrcodefloatingbutton");
+                                intent3.putExtra("qrCodeScanBtn", "Active");
+                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
+                            }else{
+                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                            }
+
+                        }else{
+                            BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                            BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                        }
+
+                        if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                            if (selectedFile.isFromApi() == true) {
+                                if(selectedFile.getPrinterId()!=null) {
+                                    PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
+                                    if(selectedFile.getJobType().equals("secure_release")){
+                                        ProgressDialog.Companion.showLoadingDialog(context, "please wait");
+                                    }
+                                    new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
+                                }
+                            }
+                        }
+
+                    } else {
+                        holder.documenticon.setVisibility(View.VISIBLE);
+                        holder.checkBox.setVisibility(View.GONE);
+                        holder.checkBox.setChecked(false);
+                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    }
+                }
+               // holder.Documenticonchanged();
             }
 
         });
@@ -140,6 +229,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final TextView mIdView;
         public final TextView mContentView;
         public final ConstraintLayout serverDocument;
+        public final ConstraintLayout checkboxanddocument;
         public final CheckBox checkBox;
         public SelectedFile mItem;
         public ImageView documenticon;
@@ -150,17 +240,18 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mIdView = view.findViewById(R.id.item_number);
             mContentView = view.findViewById(R.id.content);
             serverDocument = view.findViewById(R.id.serverDocument);
+            checkboxanddocument= view.findViewById(R.id.checkboxanddocument);
             checkBox = view.findViewById(R.id.checkbox);
             checkBox.setVisibility(View.GONE);
             documenticon =view.findViewById(R.id.documenticon);
-
+/*
 
            documenticon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 
-                    Log.d( "document click", ":successfull");
-                    Documenticonchanged();
+                    Log.d( "document icon click", ":successfull");
+                   // Documenticonchanged();
                 }
 
             });
@@ -170,12 +261,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 public void onClick(View view) {
 
                     Log.d( "document click", ":successfull");
-                    Documenticonchanged();
+                //    Documenticonchanged();
                 }
 
             });
 
-
+*/
         }
 
         @Override

@@ -227,7 +227,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                 }
                   if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")){
-                      PrinterList printerList = new PrinterList();
+                     /* PrinterList printerList = new PrinterList();
                       PrinterModel printerModel=new PrinterModel();
                       for(int i=0;i<printerList.getPrinterList().size();i++){
                           Boolean isAvailable=false;
@@ -248,6 +248,32 @@ public class ServerPrintRelaseFragment extends Fragment {
                           }
                       }
                       selectePrinterDialog(PrintersFragment.Companion.getServerPullPrinterListWithDetails());
+                      */
+                      PrinterList printerList = new PrinterList();
+                      // selectePrinterDialog(PrintersFragment.Companion.getServerPullPrinterListWithDetails());
+                      PrinterModel printerModel=new PrinterModel();
+                      for(int i=0;i<printerList.getPrinterList().size();i++){
+                          Boolean isAvailable=false;
+                          printerModel=printerList.getPrinterList().get(i);
+                          if(printerModel.getIsPullPrinter() !=null) {
+                              if (printerModel.getManual() == true && printerModel.getIsPullPrinter().equals("0.0")) {
+
+                                  for (int j = 0; j < PrintersFragment.Companion.getServerSecurePrinterListWithDetails().size(); j++) {
+                                      PrinterModel printer = PrintersFragment.Companion.getServerSecurePrinterListWithDetails().get(j);
+                                      if (printer.getPrinterHost().equals(printerModel.getPrinterHost())) {
+                                          isAvailable = true;
+                                      }
+                                  }
+                                  if (isAvailable == false && printerModel != null) {
+                                      PrintersFragment.Companion.getServerSecurePrinterListWithDetails().add(printerModel);
+                                  }
+                              }
+                          }
+                      }
+
+                      // selectePrinterDialog(printerList.getPrinterList());
+                      selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterListWithDetails());
+
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
                      // PrintReleaseFragment printReleaseFragment1=new PrintReleaseFragment();
                       //printReleaseFragment1.releaseJob(requireContext(),"null");

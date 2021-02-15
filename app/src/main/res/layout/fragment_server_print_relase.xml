@@ -8,7 +8,7 @@
     android:orientation="horizontal">
 
   <androidx.constraintlayout.widget.ConstraintLayout
-      android:id="@+id/checkboxanddocumet"
+      android:id="@+id/checkboxanddocument"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginStart="16dp"
@@ -25,7 +25,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:button="@drawable/custom_checkbox"
-        android:clickable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,6 +34,7 @@
         android:id="@+id/documenticon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +56,7 @@
       android:textAppearance="?attr/textAppearanceListItem"
       android:textSize="17sp"
       app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintStart_toEndOf="@+id/checkboxanddocumet"
+      app:layout_constraintStart_toEndOf="@+id/checkboxanddocument"
       app:layout_constraintTop_toTopOf="parent" />
 
 

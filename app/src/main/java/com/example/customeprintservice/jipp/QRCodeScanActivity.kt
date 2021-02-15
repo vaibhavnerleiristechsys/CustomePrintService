@@ -8,14 +8,12 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.view.WindowManager
 import android.widget.AbsListView
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -27,8 +25,7 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
-import com.example.customeprintservice.print.MyItemRecyclerViewAdapter
-import com.example.customeprintservice.print.PrintReleaseFragment
+import com.example.customeprintservice.print.*
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.PrintQueueJobStatusItem
 import com.example.customeprintservice.rest.ApiService
@@ -43,7 +40,6 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_q_r_code_scan.*
-import kotlinx.android.synthetic.main.activity_sign_in.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -86,7 +82,7 @@ class QRCodeScanActivity : AppCompatActivity() {
                     var string = it.text
                     var printerId = string.filter { it.isDigit() }
                     getJobListByPrinterId(this,printerId)
-
+                    PrintersFragment().getPrinterListByPrinterId(this, printerId.toString(),"getprinterToken")
 
                 }
             }
@@ -306,7 +302,25 @@ class QRCodeScanActivity : AppCompatActivity() {
         floatButton?.setOnClickListener {
           //  Toast.makeText(applicationContext, "Click on float btn", Toast.LENGTH_SHORT).show()
             val printReleaseFragment = PrintReleaseFragment()
-            printReleaseFragment.releaseJob(context,"null")
+            var selectedFile: SelectedFile? = SelectedFile()
+
+            if (BottomNavigationActivityForServerPrint.selectedServerFile.size > 0) {
+                selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile[0]
+            }
+            if (selectedFile != null) {
+                if (selectedFile.jobType == "pull_print") {
+                    var release_t = ""
+                    if (ServerPrintRelaseFragment.selectedPrinterId != null && ServerPrintRelaseFragment.selectedPrinterToken != null) {
+                        release_t =
+                            ServerPrintRelaseFragment.selectedPrinterId + "," + ServerPrintRelaseFragment.selectedPrinterToken
+                    }
+                    printReleaseFragment.releaseJob(context, release_t)
+                    dialog.cancel()
+                } else {
+
+                    printReleaseFragment.releaseJob(context, "null")
+                }
+            }
             //getJobListByPrinterId(this,printerId)
 
         }
