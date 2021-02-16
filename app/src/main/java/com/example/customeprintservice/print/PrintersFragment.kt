@@ -4,15 +4,19 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
+import android.content.Context.WIFI_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.format.Formatter.formatIpAddress
 import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,6 +50,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class PrintersFragment : Fragment() {
 
@@ -118,7 +125,8 @@ class PrintersFragment : Fragment() {
 
         @SuppressLint("WrongConstant")val sh: SharedPreferences =
             context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
-        val ipAddress = IpAddress.getIPAddress(true);
+       // val ipAddress = IpAddress.getIPAddress(true);
+        val ipAddress =IpAddress.getLocalIpAddress();
         Log.d("ipAddress of device:",ipAddress);
 
         val IsLdap = sh.getString("IsLdap", "")
