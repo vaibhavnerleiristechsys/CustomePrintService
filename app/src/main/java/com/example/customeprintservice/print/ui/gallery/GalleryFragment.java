@@ -115,7 +115,16 @@ public class GalleryFragment extends Fragment {
                     LdapUsername.toString(),
                     LdapPassword.toString()
             );
-        }else {
+        }else if(siteId.contains("google")){
+            call = apiService.getPrintersListForGoogle(
+                    "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
+                    prf.decodeJWT(requireContext()),
+                    SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString(),
+                    "serverId"
+            );
+    }
+        else {
             call = apiService.getPrintersList(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
                     prf.decodeJWT(requireContext()),

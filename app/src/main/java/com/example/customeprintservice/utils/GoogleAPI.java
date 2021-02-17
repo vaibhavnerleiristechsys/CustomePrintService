@@ -150,7 +150,7 @@ public class GoogleAPI {
                         JsonObject jsonObject = g.fromJson(response, JsonObject.class);
                         JsonElement idToken=jsonObject.get("id_token");
                         Log.d("idToken",idToken.toString());
-                        LoginPrefs.Companion.saveOctaToken(context, idToken.toString());
+                        LoginPrefs.Companion.saveOctaToken(context, idToken.getAsString());
 
 
                     }

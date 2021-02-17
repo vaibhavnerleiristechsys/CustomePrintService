@@ -174,14 +174,15 @@ internal class PrinterDiscoverySession(
         val prefs =
             PreferenceManager.getDefaultSharedPreferences(appContext)
         val gson = Gson()
-        val json = prefs.getString("printerListWithDetails", null)
+      //  val json = prefs.getString("printerListWithDetails", null)
+        val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
         val type = object :
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
         if (json != null) {
             sharedPreferencesStoredPrinterListWithDetails =
                 gson.fromJson<java.util.ArrayList<PrinterModel>>(json, type)
         }
-        for (i in sharedPreferencesStoredPrinterListWithDetails.indices) {
+       /* for (i in sharedPreferencesStoredPrinterListWithDetails.indices) {
             for (j in PrintersFragment.discoveredPrinterListWithDetails.indices) {
                 if (sharedPreferencesStoredPrinterListWithDetails[i].printerHost.equals(
                         PrintersFragment.discoveredPrinterListWithDetails[j].printerHost
@@ -194,13 +195,15 @@ internal class PrinterDiscoverySession(
             }
         }
 
+        */
+
 
         // sharedPreferencesStoredPrinterListWithDetails.addAll(PrintersFragment.discoveredPrinterListWithDetails)
 
 
         // PrintersFragment.printerListWithDetails.forEach(Consumer { p: PrinterModel ->
-        if (commonPrinterListFromDiscoveryAndServer != null) {
-            commonPrinterListFromDiscoveryAndServer.forEach(Consumer { p: PrinterModel ->
+        if (sharedPreferencesStoredPrinterListWithDetails != null) {
+            sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
                 val printerId = ArrayList<PrinterId>()
                 printerId.add(printService.generatePrinterId(p.printerHost.toString()))
                 val builder = PrinterInfo.Builder(

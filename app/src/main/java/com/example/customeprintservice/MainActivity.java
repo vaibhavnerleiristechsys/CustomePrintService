@@ -18,6 +18,7 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.customeprintservice.jipp.FileUtils;
+import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.jipp.QRCodeScanActivity;
 import com.example.customeprintservice.model.TokenResponse;
 import com.example.customeprintservice.prefs.LoginPrefs;
@@ -292,6 +293,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(), "Click on Logout", Toast.LENGTH_SHORT).show();
                 LoginPrefs.Companion.deleteToken(getApplicationContext());
+                PrinterList printerList =new PrinterList();
+                printerList.removePrinters();
                 SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
                 SharedPreferences.Editor myEdit = sharedPreferences.edit();
                 myEdit.putString("IsLdap", "Others");

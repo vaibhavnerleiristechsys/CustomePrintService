@@ -73,7 +73,7 @@ interface ApiService {
     @FormUrlEncoded
     @POST(".")
     fun getPrinterList(
-            @Header("X-Site-Id") XSiteId: String,
+        @Header("X-Site-Id") XSiteId: String,
         @Header("Authorization") Authorization: String,
         @Header("X-User-Name") XUserName: String,
         @Header("X-IdP-Type") XIdPType: String,
@@ -82,6 +82,18 @@ interface ApiService {
         @Field("configuration") configuration: String
     ): Call<ResponseBody>
 
+    @FormUrlEncoded
+    @POST(".")
+    fun getPrinterListForGoogle(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") XUserName: String,
+        @Header("X-IdP-Type") XIdPType: String,
+        @Header("X-IdP-Name") XIdPName: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String,
+        @Field("checkin") checkin: String,
+        @Field("configuration") configuration: String
+    ): Call<ResponseBody>
 
 
 
@@ -109,6 +121,15 @@ interface ApiService {
     ): Call<Any>?
 
     @GET(".")
+    fun getPrinterDetailsByPrinterIdForGoogle(
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String
+    ): Call<Any>?
+
+    @GET(".")
     fun getPrinterDetailsByPrinterIdForLdap(
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
@@ -124,6 +145,18 @@ interface ApiService {
         @Query("user_name_like") user_name_like: String,
         @Query("include") include: String
     ): Call<GetJobStatusesResponse>
+
+    @GET(".")
+    fun getPrintJobStatusesForGoogle(
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String,
+        @Query("user_name_like") user_name_like: String,
+        @Query("include") include: String
+    ): Call<GetJobStatusesResponse>
+
     @GET(".")
     fun getPrintJobStatusesForQrCode(
         @Header("Authorization") authorization: String,
@@ -191,12 +224,35 @@ interface ApiService {
     ): Call<ReleaseJobResponse>
 
     @POST(".")
+    fun releaseJobForPullPrinterForGoogle(
+        @Body releaseJobRequest: ReleaseJobRequest,
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Query("format") format: String,
+        @Query("t") t: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String
+
+    ): Call<ReleaseJobResponse>
+
+    @POST(".")
     fun releaseJob(
         @Body releaseJobRequest: ReleaseJobRequest,
         @Header("Authorization") authorization: String,
         @Header("X-User-Name") userName: String,
         @Header("X-IdP-Type") idpType: String,
         @Header("X-IdP-Name") idpName: String
+    ): Call<ReleaseJobResponse>
+
+    @POST(".")
+    fun releaseJobForGoogle(
+        @Body releaseJobRequest: ReleaseJobRequest,
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String
     ): Call<ReleaseJobResponse>
 
     @POST(".")
@@ -208,6 +264,16 @@ interface ApiService {
         @Body jobStatusCancel: CancelJobRequest
     ): Call<CancelJobResponse>
 
+    @POST(".")
+    fun jobStatusCancelForGoogle(
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Body jobStatusCancel: CancelJobRequest,
+        @Header("X-Idp-Client-Type") XIdpClientType: String
+    ): Call<CancelJobResponse>
+
     @GET(".")
     fun getPrintersList(
         @Header("Authorization") authorization: String,
@@ -215,6 +281,16 @@ interface ApiService {
         @Header("X-IdP-Type") idpType: String,
         @Header("X-IdP-Name") idpName: String
     ): Call<List<Printer>>
+
+    @GET(".")
+    fun getPrintersListForGoogle(
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String
+    ): Call<List<Printer>>
+
 
     @GET(".")
     fun getPrintersListForLdap(

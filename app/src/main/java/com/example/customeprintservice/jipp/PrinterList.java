@@ -12,8 +12,8 @@ public class PrinterList {
         return printerList.add(printerModel);
     }
 
-    public void removePrinter() {
-
+    public void removePrinters() {
+        printerList.clear();
     }
 
     public ArrayList<PrinterModel> getPrinterList() {

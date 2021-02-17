@@ -264,7 +264,17 @@ class PrintReleaseFragment : Fragment() {
                 LdapPassword.toString(),
                 jobStatusCancel
             )
-        }else{
+        }else if(siteId.toString().contains("google")){
+            apiService.jobStatusCancelForGoogle(
+                "Bearer " + LoginPrefs.getOCTAToken(context),
+                decodeJWT(context),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString(),
+                jobStatusCancel,
+                "serverId"
+            )
+        }
+        else{
             apiService.jobStatusCancel(
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 decodeJWT(context),
@@ -354,7 +364,8 @@ class PrintReleaseFragment : Fragment() {
                 "json:api",
                 release_t
             )
-            }else{
+            }
+            else{
                 apiService.releaseJobForLdap(
                     releaseJobRequest,
                     siteId.toString(),
@@ -363,7 +374,28 @@ class PrintReleaseFragment : Fragment() {
                 )
             }
 
-        }else{
+        }else if(siteId.toString().contains("google")){
+            if(!release_t.equals("null")) {
+                apiService.releaseJobForPullPrinterForGoogle(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString(),
+                    "json:api",
+                    release_t,
+                    "serverId"
+                )
+            }else{
+                apiService.releaseJobForGoogle(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString(),
+                    "serverId"
+                )
+            }
+        }
+        else{
             if(!release_t.equals("null")) {
                 apiService.releaseJobForPullPrinter(
                     releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
@@ -446,7 +478,15 @@ class PrintReleaseFragment : Fragment() {
              LdapUsername.toString(),
              LdapPassword.toString()
          )
-        }else{
+        }else if(siteId.toString().contains("google")){
+            apiService.getPrintJobStatusesForGoogle(
+                "Bearer " + LoginPrefs.getOCTAToken(context),
+                userName,
+                idpType,
+                idpName,
+                "serverId",userName,"printerDeviceQueue.printers")
+        }
+        else{
             apiService.getPrintJobStatuses(
                "Bearer " + LoginPrefs.getOCTAToken(context),
                userName,
@@ -773,7 +813,16 @@ class PrintReleaseFragment : Fragment() {
                 LdapUsername.toString(),
                 LdapPassword.toString()
             )
-        }else{
+        }else if(siteId.toString().contains("google")){
+            apiService.getPrintJobStatusesForGoogle(
+                "Bearer " + LoginPrefs.getOCTAToken(context),
+                decodeJWT(context),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString(),
+                "serverId",
+                decodeJWT(context),"printerDeviceQueue.printers")
+        }
+        else{
             apiService.getPrintJobStatuses(
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 decodeJWT(context),

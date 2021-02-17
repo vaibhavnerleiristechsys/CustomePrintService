@@ -127,8 +127,9 @@ class PrintersFragment : Fragment() {
             context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
        // val ipAddress = IpAddress.getIPAddress(true);
         val ipAddress =IpAddress.getLocalIpAddress();
-        Log.d("ipAddress of device:",ipAddress);
-
+        if(ipAddress!=null) {
+            Log.d("ipAddress of device:", ipAddress);
+        }
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -173,6 +174,37 @@ class PrintersFragment : Fragment() {
                         "    </user>\n" +
                         "  </memberships>\n" +
                         "</system>"
+            )
+        }else if(siteId.toString().contains("google")){
+            apiService.getPrinterListForGoogle(siteId.toString(),
+            "Bearer ${LoginPrefs.getOCTAToken(context)}",
+            username,
+            xIdpType.toString(),
+            xIdpName.toString(),
+           "serverId",
+            "1",
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<system driverless=\"1\">\n" +
+                    "  <machine>\n" +
+                    "    <ips>\n" +
+                    "      <ip mask=\"255.255.255.0\">"+ipAddress+"</ip>\n" +
+                    "    </ips>\n" +
+                    "  </machine>\n" +
+                    "  <idp>\n" +
+                    "    {\"idpName\": \""+xIdpName+"\",\n" +
+                    "      \"username\":\""+username+"\",\n" +
+                    "      \"isLoggedIn\": \"true\",\n" +
+                    "      \"type\": \"auth-type\",\n" +
+                    "      \"token\":\""+LoginPrefs.getOCTAToken(context)+ "\"}\n" +
+                    "  </idp>\n" +
+                    "  <memberships>\n" +
+                    "    <computer />\n" +
+                    "    <user>\n" +
+                    "      <guid>S-1-1-0</guid>\n" +
+                    "    </user>\n" +
+                    "  </memberships>\n" +
+                    "</system>"
+
             )
         }else{
 
@@ -457,7 +489,16 @@ class PrintersFragment : Fragment() {
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString())
-        }else{
+        }else if(siteId.toString().contains("google")){
+            apiService.getPrinterDetailsByPrinterIdForGoogle(
+                LoginPrefs.getOCTAToken(context).toString(),
+                decodeJWT(context),
+                SignInCompanyPrefs.getIdpType(context).toString(),
+                SignInCompanyPrefs.getIdpName(context).toString(),
+                "serverId"
+                )
+        }
+        else{
             apiService.getPrinterDetailsByPrinterId(
                 LoginPrefs.getOCTAToken(context).toString(),
                 decodeJWT(context),
@@ -484,7 +525,9 @@ class PrintersFragment : Fragment() {
                         val pair = pairs[i]
                         val keyValue =
                             pair.split("=".toRegex()).toTypedArray()
-                        hashMap.put(keyValue[0].trim(), keyValue[1])
+                        if(keyValue.size>1) {
+                            hashMap.put(keyValue[0].trim(), keyValue[1])
+                        }
                     }
                    // Log.d("response of printerId:",response.body()?.data?.attributes?.host-address.toString())
                     val title =  hashMap.get("title")
@@ -525,6 +568,7 @@ class PrintersFragment : Fragment() {
 
                         if (!flagIsExist) {
                             PrinterList().addPrinterModel(printer)
+                            addPrinterForshareDocument(printer,context)
                             Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT)
@@ -547,7 +591,7 @@ class PrintersFragment : Fragment() {
 
 
 
-    fun addPrinterForshareDocument(printer: PrinterModel) {
+    fun addPrinterForshareDocument(printer: PrinterModel,context: Context) {
         if(printer.isPullPrinter.equals("0.0")) {
             var serverSecurePrinterListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
             val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
