@@ -4,19 +4,15 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.Context
-import android.content.Context.WIFI_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
-import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.text.format.Formatter.formatIpAddress
 import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -50,9 +46,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class PrintersFragment : Fragment() {
 
@@ -63,6 +56,7 @@ class PrintersFragment : Fragment() {
         public val serverPullPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverSecurePrinterListWithDetails = java.util.ArrayList<PrinterModel>()
         public val serverSecurePrinterForHeldJob= java.util.ArrayList<PrinterModel>()
+        public val allPrintersForPullHeldJob= java.util.ArrayList<PrinterModel>()
 
 
     }
@@ -526,7 +520,13 @@ class PrintersFragment : Fragment() {
                         val keyValue =
                             pair.split("=".toRegex()).toTypedArray()
                         if(keyValue.size>1) {
-                            hashMap.put(keyValue[0].trim(), keyValue[1])
+                            if(keyValue[0].trim().equals("pull-print")){
+                           if(!hashMap.containsKey("pull-print")) {
+                               hashMap.put(keyValue[0].trim(), keyValue[1])
+                           }
+                            }else{
+                                hashMap.put(keyValue[0].trim(), keyValue[1])
+                            }
                         }
                     }
                    // Log.d("response of printerId:",response.body()?.data?.attributes?.host-address.toString())
@@ -534,6 +534,7 @@ class PrintersFragment : Fragment() {
                     val hostAddress = hashMap.get("host-address")
                     val isPullPrinter = hashMap.get("is-pull-printer")
                     val printerToken = hashMap.get("printer-token")
+                    val pull_print = hashMap.get("pull-print")
                     val id = hashMap.get("id")
                     Log.d("title",title.toString())
                     Log.d("hostAddress",hostAddress.toString())
@@ -542,13 +543,24 @@ class PrintersFragment : Fragment() {
                     ServerPrintRelaseFragment.selectedPrinterToken=printerToken
                     val printer: PrinterModel = PrinterModel()
                     printer.id =id
-                    printer.printerHost = InetAddress.getByName(hostAddress)
+                    val thread = Thread(Runnable {
+                        try {
+                            printer.printerHost = InetAddress.getByName(hostAddress)
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                        }
+                    })
+
+                    thread.start()
+
+
+
                     printer.serviceName = title
                     printer.printerPort = 631
                     printer.manual=true
                     printer.fromServer=false
                     printer.isPullPrinter=isPullPrinter.toString()
-
+                    printer.pull_print=pull_print;
                     var flagIsExist: Boolean = false
                   //when select one document then only get printer by using queue id for display in dialog box
                     if(purpose.equals("forSecureRelase")){
@@ -573,6 +585,13 @@ class PrintersFragment : Fragment() {
                         } else {
                             Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT)
                                 .show()
+                        }
+                    }
+
+                    if(purpose.equals("getPrinterDetailsForPullJob")){
+                        if(printer.isPullPrinter.equals("0.0") && (printer.pull_print.equals("2.0") || printer.pull_print.equals("0.0"))) {
+                            printer.manual = false
+                            allPrintersForPullHeldJob.add(printer);
                         }
                     }
 

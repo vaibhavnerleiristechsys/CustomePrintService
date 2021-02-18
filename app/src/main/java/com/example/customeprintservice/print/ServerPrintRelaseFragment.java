@@ -13,6 +13,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -37,6 +40,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.customeprintservice.IconTreeItemHolder;
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
@@ -48,6 +52,7 @@ import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse;
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.PrintQueueJobStatusItem;
+import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
 import com.example.customeprintservice.room.SelectedFile;
@@ -56,12 +61,16 @@ import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.unnamed.b.atv.model.TreeNode;
+import com.unnamed.b.atv.view.AndroidTreeView;
 
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -90,6 +99,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     public  ArrayList<SelectedFile> localdocumentFromsharedPrefences =new ArrayList<SelectedFile>();
     RecyclerView recyclerView;
     private SwipeRefreshLayout swipeContainer;
+    public  List<Printer> listOfPrinters=new ArrayList<Printer>();
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -148,10 +158,12 @@ public class ServerPrintRelaseFragment extends Fragment {
              @Override
              public void run() {
                  getjobListStatus();
+                 serverCallForGettingAllPrinters(requireContext());
              }
          }, 5000);
      }else{
          getjobListStatus();
+         serverCallForGettingAllPrinters(requireContext());
      }
 
 
@@ -274,7 +286,8 @@ public class ServerPrintRelaseFragment extends Fragment {
                       }
 
                       // selectePrinterDialog(printerList.getPrinterList());
-                      selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterListWithDetails());
+                     // selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterListWithDetails());
+                      selectePrinterDialog(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
 
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
                      // PrintReleaseFragment printReleaseFragment1=new PrintReleaseFragment();
@@ -349,11 +362,33 @@ public class ServerPrintRelaseFragment extends Fragment {
         ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
         floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
         floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.paleGray));
+        EditText searchPrinter=dialog.findViewById(R.id.searchPrinter);
 
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         PrinterList printerList = new PrinterList();
         printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,list));
+        printerRecyclerView.setItemViewCacheSize(50);
 
+        TextWatcher watcher = new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+               Log.d("text:",s.toString());
+                ArrayList<PrinterModel> filterList =new ArrayList<>();
+               for(int i=0;i<list.size();i++){
+                   PrinterModel printerModel=list.get(i);
+                   if(printerModel.getServiceName().toLowerCase().contains(s.toString().toLowerCase())){
+                       filterList.add(printerModel);
+                   }
+               }
+                printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,filterList));
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+        };
+
+        searchPrinter.addTextChangedListener(watcher);
 
         imgCancel.setOnClickListener(v ->
                 dialog.cancel()
@@ -705,6 +740,101 @@ public class ServerPrintRelaseFragment extends Fragment {
             public void onClick(View view) {
                 dialog1.cancel();
             }
+        });
+
+
+    }
+
+
+    private void serverCallForGettingAllPrinters(Context context)
+    {
+        TreeNode root = TreeNode.root();
+        listOfPrinters.clear();
+        PrintersFragment.Companion.getAllPrintersForPullHeldJob().clear();
+        @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+        String IsLdap = prefs.getString("IsLdap", "");
+        String LdapUsername= prefs.getString("LdapUsername", "");
+        String LdapPassword= prefs.getString("LdapPassword", "");
+        Log.d("IsLdap:", IsLdap);
+
+
+        String siteId=LoginPrefs.Companion.getSiteId(requireContext());
+        String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
+        ApiService apiService = new RetrofitClient(requireContext())
+                .getRetrofitInstance(url)
+                .create(ApiService.class);
+
+        PrintReleaseFragment prf = new PrintReleaseFragment();
+
+        Call call;
+        if(IsLdap.equals("LDAP")){
+            call = apiService.getPrintersListForLdap(
+                    siteId.toString(),
+                    LdapUsername.toString(),
+                    LdapPassword.toString()
+            );
+        }else if(siteId.contains("google")){
+            call = apiService.getPrintersListForGoogle(
+                    "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
+                    prf.decodeJWT(requireContext()),
+                    SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString(),
+                    "serverId"
+            );
+        }
+        else {
+            call = apiService.getPrintersList(
+                    "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
+                    prf.decodeJWT(requireContext()),
+                    SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString()
+            );
+        }
+
+        call.enqueue(new Callback<List<Printer>>() {
+            public void onResponse(Call<List<Printer>> call, Response<List<Printer>> response) {
+                if(response.isSuccessful())
+                {
+                    listOfPrinters = response.body();
+                    for(Printer printer:listOfPrinters) {
+
+                        if(printer.getObject_sort_order()==1000) {
+                            PrintersFragment printersFragment=new PrintersFragment();
+                            Thread thread = new Thread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    try  {
+                                        printersFragment.getPrinterListByPrinterId(context,printer.getObject_id().toString() ,"getPrinterDetailsForPullJob");
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
+                            thread.start();
+
+
+                        }
+                    }
+
+
+
+
+
+                }
+                else
+                {
+                    int code = response.code();
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Printer>> call, Throwable t) {
+                int code  = call.hashCode();
+            }
+
         });
 
 

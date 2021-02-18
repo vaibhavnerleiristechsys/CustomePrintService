@@ -60,7 +60,7 @@ class FragmentPrinterListAdapter(
         holders.add(holder)
         this.selectedPosition = position
         holder.getCardview().setOnClickListener {
-           // it.setBackgroundColor(Color.GRAY)
+         //   it.setBackgroundColor(Color.GRAY)
 
             if(list[position].printerHost != null){
             Log.d("selected printerdetails", list[position].serviceName.toString())

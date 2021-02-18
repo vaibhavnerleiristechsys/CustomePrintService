@@ -20,6 +20,7 @@ public class PrinterModel {
 
     private String isPullPrinter;
 
+    private String pull_print;
 
     public String getNodeId() {
         return nodeId;
@@ -83,6 +84,14 @@ public class PrinterModel {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getPull_print() {
+        return pull_print;
+    }
+
+    public void setPull_print(String pull_print) {
+        this.pull_print = pull_print;
     }
 }
 

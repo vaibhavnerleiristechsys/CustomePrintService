@@ -86,7 +86,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             public void onClick(View view) {
             Log.d("click on document icon","clock on document icon");
 
-                Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
+             //   Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -155,7 +155,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
 
-                Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
+              //  Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
