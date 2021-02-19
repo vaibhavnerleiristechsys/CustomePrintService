@@ -106,8 +106,25 @@ interface ApiService {
     ): Call<PrinterDetailsResponse>
 
     @GET(".")
+    fun getPrinterDetailsByNodeIdForGoogle(
+        @Header("Authorization") authorization: String,
+        @Header("X-User-Name") userName: String,
+        @Header("X-IdP-Type") idpType: String,
+        @Header("X-IdP-Name") idpName: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String
+    ): Call<PrinterDetailsResponse>
+
+
+    @GET(".")
     fun getPrinterForLdap(
         @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String
+    ): Call<ResponseBody>
+
+    @GET(".")
+    fun checkLdapLogin(
+        @Header("X-PrinterLogic-Login-Type") XPrinterLogicLoginType: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String
     ): Call<ResponseBody>
@@ -135,6 +152,13 @@ interface ApiService {
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String
     ): Call<Any>?
+
+    @GET(".")
+    fun getPrinterDetailsByNodeIdForLdap(
+        @Header("X-Site-ID") xSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String
+    ): Call<PrinterDetailsResponse>?
 
     @GET(".")
     fun getPrintJobStatuses(

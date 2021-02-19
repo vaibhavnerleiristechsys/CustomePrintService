@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
+import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
@@ -119,7 +120,8 @@ class SignInActivity : AppCompatActivity() {
 
            Log.d("username",edtUserName.text.toString())
                    Log.d("password",edtPassword.text.toString())
-            getPrinterListForCheckLdapLogin(this@SignInActivity,username,password)
+          //  getPrinterListForCheckLdapLogin(this@SignInActivity,username,password)
+            checkLdapLogin(this@SignInActivity,username,password)
 
         }
 
@@ -245,6 +247,60 @@ class SignInActivity : AppCompatActivity() {
                     myEdit.commit()
                     val intent = Intent(this@SignInActivity,MainActivity::class.java)
                      startActivity(intent)
+                }
+                if (response.code()==401){
+                    toast("Login Not Successfully Please Try Again")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Log.i("printer", "Error html response==>${t.message.toString()}")
+                toast("Login Not Successfully Please Try Again")
+            }
+        })
+    }
+
+
+    fun checkLdapLogin(
+        context: Context,username:String,password:String
+    ) {
+
+        val companyUrl = LoginPrefs.getCompanyUrl(context)
+        val BASE_URL = "https://"+companyUrl+"/api/verify-login/"
+        val apiService = RetrofitClient(context)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val call = apiService.checkLdapLogin(
+            "portal",
+            username,
+            password
+        )
+
+        call.enqueue(object : Callback<ResponseBody> {
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.code()==204) {
+                    Log.i("LDAP printers Response",response.toString())
+                    toast("Login Successfully")
+                    val sharedPreferences: SharedPreferences =
+                        getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+                    val myEdit = sharedPreferences.edit()
+                    myEdit.putString("IsLdap","LDAP");
+                    myEdit.putString("LdapUsername",username);
+                    myEdit.putString("LdapPassword",password);
+                    myEdit.commit()
+                    val intent = Intent(this@SignInActivity,MainActivity::class.java)
+                    startActivity(intent)
+                }
+                else{
+                    toast("Login Not Successfully Please Try Again")
                 }
                 if (response.code()==401){
                     toast("Login Not Successfully Please Try Again")

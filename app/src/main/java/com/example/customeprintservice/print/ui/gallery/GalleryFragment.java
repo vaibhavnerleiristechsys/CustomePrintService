@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.customeprintservice.IconTreeItemHolder;
 import com.example.customeprintservice.R;
@@ -24,6 +25,7 @@ import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
 
+import com.example.customeprintservice.utils.ProgressDialog;
 import com.google.gson.Gson;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -45,6 +47,7 @@ public class GalleryFragment extends Fragment {
     private ViewGroup mContainer = null;
     Context context;
     public static List<Printer> listOfPrinters=new ArrayList<Printer>();
+    private SwipeRefreshLayout swipeContainer;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +56,7 @@ public class GalleryFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_gallery, null, false);
         ViewGroup containerView = (ViewGroup) rootView.findViewById(R.id.container);
         context = rootView.getContext();
+        swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
         //View root = inflater.inflate(R.layout.fragment_gallery, null, false);
 
         /*galleryViewModel =
@@ -67,6 +71,14 @@ public class GalleryFragment extends Fragment {
         });*/
         mContainer = container;
         serverCall(containerView);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                containerView.removeAllViews();
+                serverCall(containerView);
+            }
+        });
 
         Intent intent = new Intent("qrcodefloatingbutton");
         intent.putExtra("qrCodeScanBtn", "InActive");
@@ -89,6 +101,7 @@ public class GalleryFragment extends Fragment {
 
     private void serverCall(ViewGroup containerView)
     {
+        ProgressDialog.Companion.showLoadingDialog(context, "please wait");
         TreeNode root = TreeNode.root();
         listOfPrinters.clear();
       //  TreeNode child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder,"MyParentNode"));
@@ -167,11 +180,14 @@ public class GalleryFragment extends Fragment {
                     tView.setDefaultNodeLongClickListener(nodeLongClickListener);
 
                     containerView.addView(tView.getView());
-
+                    ProgressDialog.Companion.cancelLoading();
+                    swipeContainer.setRefreshing(false);
                 }
                 else
                     {
                         int code = response.code();
+                        ProgressDialog.Companion.cancelLoading();
+                        swipeContainer.setRefreshing(false);
 
                 }
             }
@@ -179,6 +195,8 @@ public class GalleryFragment extends Fragment {
             @Override
             public void onFailure(Call<List<Printer>> call, Throwable t) {
                 int code  = call.hashCode();
+                ProgressDialog.Companion.cancelLoading();
+                swipeContainer.setRefreshing(false);
             }
 
 

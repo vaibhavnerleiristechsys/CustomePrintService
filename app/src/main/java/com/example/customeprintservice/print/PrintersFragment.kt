@@ -103,7 +103,7 @@ class PrintersFragment : Fragment() {
             )
         val adapter = FragmentPrinterListAdapter(
             context as Activity,
-            PrinterList().printerList
+            PrinterList().printerList,"printerTab"
         )
         recyclerViewPrinterLst?.adapter = adapter
     }
@@ -348,7 +348,8 @@ class PrintersFragment : Fragment() {
             )
             val adapter = FragmentPrinterListAdapter(
             context as Activity,
-            PrinterList().printerList
+            PrinterList().printerList,
+                "printerTab"
         )
         printerRecyclerView?.adapter = adapter
         dialog.show()

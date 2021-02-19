@@ -36,7 +36,10 @@ data class SelectedFile(
     var userName: String? = null,
 
     @ColumnInfo(name = "printerId")
-    var printerId: Int? = null
+    var printerId: Int? = null,
+
+    @ColumnInfo(name = "jobSize")
+    var jobSize: String? = null
 
 ) : Serializable {
     @PrimaryKey(autoGenerate = true)

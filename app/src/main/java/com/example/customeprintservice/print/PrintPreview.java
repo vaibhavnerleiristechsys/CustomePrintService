@@ -56,6 +56,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -388,6 +389,7 @@ public class PrintPreview extends AppCompatActivity {
                 selectedFile.setFileName(file.getName());
                 selectedFile.setFilePath(filePath);
                 selectedFile.setFromApi(false);
+                selectedFile.setJobSize(getFileSizeKiloBytes(file));
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 Date date = new Date();
                 String strDate = dateFormat.format(date);
@@ -473,5 +475,12 @@ public class PrintPreview extends AppCompatActivity {
         moveTaskToBack(true);
 
 
+    }
+
+    private static String getFileSizeKiloBytes(File file) {
+        DecimalFormat df = new DecimalFormat("#.##");
+        String formatted = df.format(file.length() / 1024);
+
+        return formatted+ "KB";
     }
 }

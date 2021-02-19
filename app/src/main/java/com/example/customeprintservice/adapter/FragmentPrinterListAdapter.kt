@@ -32,7 +32,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 
 class FragmentPrinterListAdapter(
     val context: Context,
-    val list: ArrayList<PrinterModel>
+    val list: ArrayList<PrinterModel>,
+    val location:String
 
 
 
@@ -59,23 +60,31 @@ class FragmentPrinterListAdapter(
         }
         holders.add(holder)
         this.selectedPosition = position
+        if(location.equals("selectPrinter")) {
         holder.getCardview().setOnClickListener {
-         //   it.setBackgroundColor(Color.GRAY)
+            //   it.setBackgroundColor(Color.GRAY)
 
-            if(list[position].printerHost != null){
-            Log.d("selected printerdetails", list[position].serviceName.toString())
-            Log.d("selected printerdetails", list[position].printerHost.toString())
+            if (list[position].printerHost != null) {
+                Log.d("selected printerdetails", list[position].serviceName.toString())
+                Log.d("selected printerdetails", list[position].printerHost.toString())
 
-                if(list[position].id!=null) {
-                    PrintersFragment().getPrinterListByPrinterId(context, list[position].id.toString(),"getprinterToken")
+                if (list[position].id != null) {
+                    PrintersFragment().getPrinterListByPrinterId(
+                        context,
+                        list[position].id.toString(),
+                        "getprinterToken"
+                    )
                 }
 
-                if(list[position].manual==true){
-                    var finalLocalurl = "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"
-                    ServerPrintRelaseFragment.localPrinturl=finalLocalurl
-                }else {
+                if (list[position].manual == true) {
+                    var finalLocalurl =
+                        "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"
+                    ServerPrintRelaseFragment.localPrinturl = finalLocalurl
+                } else {
+
                     ProgressDialog.showLoadingDialog(context, "Getting Printer Details")
-                    if(list[position].nodeId != null) {
+
+                    if (list[position].nodeId != null) {
                         PrinterListService().getPrinterDetails(
                             context,
                             LoginPrefs.getOCTAToken(context).toString(),
@@ -87,22 +96,24 @@ class FragmentPrinterListAdapter(
                         )
                     }
                 }
-        }
+            }
             val intent = Intent("message_subject_intent")
             intent.putExtra("name", "message")
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
             for (i in holders.indices) {
 
-               val holder=holders[i]
+                val holder = holders[i]
                 if (i == position) {
-                holder.getCardview().setCardBackgroundColor(Color.GRAY)
+                    if (location.equals("selectPrinter")) {
+                        holder.getCardview().setCardBackgroundColor(Color.GRAY)
+                    }
 
                 } else {
                     holder.getCardview().setCardBackgroundColor(Color.WHITE)
                 }
             }
-
+        }
         }
 
 

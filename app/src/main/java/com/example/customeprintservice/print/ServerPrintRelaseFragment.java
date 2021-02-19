@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -33,19 +32,16 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.customeprintservice.IconTreeItemHolder;
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.jipp.PrintActivity;
-import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
@@ -57,21 +53,13 @@ import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.utils.ProgressDialog;
-import com.google.android.gms.common.util.ArrayUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.unnamed.b.atv.model.TreeNode;
-import com.unnamed.b.atv.view.AndroidTreeView;
-
-import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,17 +69,13 @@ import retrofit2.Response;
  * A fragment representing a list of Items.
  */
 public class ServerPrintRelaseFragment extends Fragment {
-
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     public static ArrayList serverDocumentlist = new ArrayList<SelectedFile>();
-    // TODO: Customize parameters
     private int mColumnCount = 1;
     Context context;
     Dialog dialog;
     View v = null;
     FloatingActionButton floatingActionButton;
-    public static String checkMenu="search";
     public static String localPrinturl;
     public static String selectedPrinterId;
     public static String selectedPrinterToken;
@@ -107,8 +91,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     public ServerPrintRelaseFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
+
     public static ServerPrintRelaseFragment newInstance(int columnCount) {
         ServerPrintRelaseFragment fragment = new ServerPrintRelaseFragment();
         Bundle args = new Bundle();
@@ -366,7 +349,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         PrinterList printerList = new PrinterList();
-        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,list));
+        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,list,"selectPrinter"));
         printerRecyclerView.setItemViewCacheSize(50);
 
         TextWatcher watcher = new TextWatcher() {
@@ -379,7 +362,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                        filterList.add(printerModel);
                    }
                }
-                printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,filterList));
+                printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,filterList,"selectPrinter"));
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -641,6 +624,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile.setJobType(PrintQueueJobStatusItem.getJobType());
                     selectedFile.setQueueId(PrintQueueJobStatusItem.getPrinterDeviceQueueId());
                     selectedFile.setUserName(PrintQueueJobStatusItem.getUserName());
+                    Integer sizeInKb =PrintQueueJobStatusItem.getJobSize() /1024;
+                    String fileSize=sizeInKb.toString()+"KB";
+                    selectedFile.setJobSize(fileSize);
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
                     if(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size()>0) {
                         selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());

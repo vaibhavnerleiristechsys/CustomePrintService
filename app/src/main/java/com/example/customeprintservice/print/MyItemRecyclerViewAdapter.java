@@ -62,6 +62,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getFileName());
         holder.mContentView.setText(mValues.get(position).getFileSelectedDate());
+        holder.mFileSize.setText(mValues.get(position).getJobSize());
 
         holders.add(holder);
         this.selectedPosition = position;
@@ -231,6 +232,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
+        public final TextView mFileSize;
         public final ConstraintLayout serverDocument;
         public final ConstraintLayout checkboxanddocument;
         public final CheckBox checkBox;
@@ -242,6 +244,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             mView = view;
             mIdView = view.findViewById(R.id.item_number);
             mContentView = view.findViewById(R.id.content);
+            mFileSize= view.findViewById(R.id.filesize);
             serverDocument = view.findViewById(R.id.serverDocument);
             checkboxanddocument= view.findViewById(R.id.checkboxanddocument);
             checkBox = view.findViewById(R.id.checkbox);

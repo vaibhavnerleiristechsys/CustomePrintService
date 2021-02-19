@@ -1,6 +1,8 @@
 package com.example.customeprintservice.printjobstatus
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
@@ -138,18 +140,33 @@ class PrinterListService {
         getprintersdetails:Boolean
     ) {
         val siteId= LoginPrefs.getSiteId(context)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+
         val BASE_URL =
             "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/"+nodeId+"/printer/"
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
-
-        val call = apiService.getPrinterDetailsByNodeId(
-            authorization, userName, idpType, idpName
-        )
-
-        call.enqueue(object : Callback<PrinterDetailsResponse> {
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.getPrinterDetailsByNodeIdForLdap(
+                siteId.toString(),
+                LdapUsername.toString(),
+                LdapPassword.toString())
+        }else if(siteId.toString().contains("google")){
+            apiService.getPrinterDetailsByNodeIdForGoogle(
+                authorization, userName, idpType, idpName,"serverId"
+            )
+        }
+        else {
+            apiService.getPrinterDetailsByNodeId(
+                authorization, userName, idpType, idpName
+            )
+        }
+        call?.enqueue(object : Callback<PrinterDetailsResponse> {
             override fun onResponse(
                 call: Call<PrinterDetailsResponse>,
                 response: Response<PrinterDetailsResponse>
