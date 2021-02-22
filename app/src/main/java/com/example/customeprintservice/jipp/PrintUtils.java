@@ -315,7 +315,7 @@ public class PrintUtils {
                             .putOperationAttributes(requestingUserName.of("print"), requested)
                             .build();
 
-            IppPacketData request = new IppPacketData(attributeRequest);
+           IppPacketData request = new IppPacketData(attributeRequest);
             IppPacketData response = transport.sendData(uri, request);
             attributeList.add(response.toString());
             IppPacket responsePacket = response.getPacket();

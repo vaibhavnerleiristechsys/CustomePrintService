@@ -54,7 +54,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -185,6 +187,8 @@ public class PrintPreview extends AppCompatActivity {
                 for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
                     PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                      if(printerModel.getServiceName().toString().equals(parent.getItemAtPosition(position).toString())){
+
+
                        selectedPrinterModel=printerModel;
                       }
 
@@ -426,7 +430,7 @@ public class PrintPreview extends AppCompatActivity {
 
                 if(file.getName().contains(".pdf")) {
                     if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null) {
-                        String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
+                        String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
@@ -437,7 +441,7 @@ public class PrintPreview extends AppCompatActivity {
 
                     }
                     if (radioButton.getText().toString().equals("page") && selectedPrinterModel != null && filePath != null) {
-                        String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
+                        String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
@@ -445,13 +449,13 @@ public class PrintPreview extends AppCompatActivity {
                       //  startActivity(myIntent);
                         dialog1.cancel();
                         moveTaskToBack(true);
-
                     }
                 }else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
 
                 }else{
                     if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null) {
-                        String finalLocalurl = "http" + "://" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
+
+                        String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
