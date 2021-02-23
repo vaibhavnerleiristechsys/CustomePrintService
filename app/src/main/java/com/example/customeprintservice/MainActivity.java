@@ -364,6 +364,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavView = findViewById(R.id.bottom_nav_view);
         contentView = findViewById(R.id.content_view);
 
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -372,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
                 R.id.bottom_home, R.id.bottom_dashboard, R.id.bottom_notifications)
                 .setDrawerLayout(drawer)
                 .build();
+
         navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
 

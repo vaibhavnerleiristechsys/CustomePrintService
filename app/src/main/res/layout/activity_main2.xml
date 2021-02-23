@@ -24,24 +24,25 @@
         app:itemMaxLines="5"
         app:menu="@menu/activity_main_drawer"
         app:labelVisibilityMode="labeled">
+
         <Button
             android:id="@+id/signout"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="20dp"
-            android:layout_marginLeft="30dp"
-            android:insetBottom="0dp"
-            android:insetTop="0dp"
-            android:layout_height="55dp"
             android:layout_width="55dp"
-            app:cornerRadius="75dp"
-            android:background = "@drawable/roundedbutton"
+            android:layout_height="55dp"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/roundedbutton"
             android:drawableTop="@drawable/signout"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:paddingTop="15dp"
+            app:cornerRadius="75dp"
+
+            />
 
 
-             />
     </com.google.android.material.navigation.NavigationView>
-
 
 
 

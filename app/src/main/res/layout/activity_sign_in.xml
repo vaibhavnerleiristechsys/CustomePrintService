@@ -126,18 +126,16 @@
     <Button
         android:id="@+id/btnSignInWithOkta"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="19pt"
+        android:layout_marginTop="96dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="32dp"
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="40dp"
         android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/view2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtOr" />
+        app:layout_constraintTop_toBottomOf="@+id/imgVasionSignInActivity" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

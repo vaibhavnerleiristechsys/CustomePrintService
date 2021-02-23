@@ -302,9 +302,7 @@ class SignInActivity : AppCompatActivity() {
                 else{
                     toast("Login Not Successfully Please Try Again")
                 }
-                if (response.code()==401){
-                    toast("Login Not Successfully Please Try Again")
-                }
+
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
