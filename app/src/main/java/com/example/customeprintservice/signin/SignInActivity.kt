@@ -53,12 +53,13 @@ class SignInActivity : AppCompatActivity() {
 
 
             if (bundle.getString("buttonName") == "Okta") {
-                btnSignInWithOkta.text = bundle.getString("buttonName")
+               // btnSignInWithOkta.text = bundle.getString("buttonName")
+                btnSignInWithOkta.text ="    Sign In With Okta"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_okta)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_okta)
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
-                btnSignInWithOkta.gravity = Gravity.CENTER
+              //  btnSignInWithOkta.gravity = Gravity.CENTER
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
@@ -66,24 +67,26 @@ class SignInActivity : AppCompatActivity() {
                 imgShowPassword.visibility= View.GONE
 
             } else if (bundle.getString("buttonName") == "Azure AD") {
-                btnSignInWithOkta.text = bundle.getString("buttonName")
+              //  btnSignInWithOkta.text = bundle.getString("buttonName")
+                btnSignInWithOkta.text = "    Sign In With Azure AD"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_azure)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_azure)
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
-                btnSignInWithOkta.gravity = Gravity.CENTER
+                //btnSignInWithOkta.gravity = Gravity.CENTER
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
                 txtOr.visibility= View.GONE
                 imgShowPassword.visibility= View.GONE
             }else if(bundle.getString("buttonName")=="Google"){
-                btnSignInWithOkta.text = bundle.getString("buttonName")
+               // btnSignInWithOkta.text = bundle.getString("buttonName")
+                btnSignInWithOkta.text = "    Sign In With Google"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_google)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_google)
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable, null, null, null)
-                btnSignInWithOkta.gravity = Gravity.CENTER
+              //  btnSignInWithOkta.gravity = Gravity.CENTER
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE

@@ -8,12 +8,11 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
-import android.widget.AbsListView
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -50,6 +49,7 @@ class QRCodeScanActivity : AppCompatActivity() {
     private val CAMERA_REQUEST_CODE=123;
     private var printerId="";
     lateinit var printerRecyclerView :RecyclerView;
+    lateinit var  emptyviewForQrCode :ConstraintLayout;
     companion object {
         public val getdocumentListFromQrCode = java.util.ArrayList<SelectedFile>()
     }
@@ -179,11 +179,14 @@ class QRCodeScanActivity : AppCompatActivity() {
 
                 val getJobStatusesResponse = response.body()?.printQueueJobStatus
                 if (getJobStatusesResponse?.size == 0) {
-                    Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT)
-                        .show()
-
-
+                    getdocumentListFromQrCode.clear()
+                   // Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT).show()
                     ProgressDialog.cancelLoading()
+                    runOnUiThread(Runnable {
+                        dialogSelectPrinter(context);
+                    })
+
+
                 } else {
                     ProgressDialog.cancelLoading()
                     val parseList: List<PrintQueueJobStatusItem?>? =
@@ -278,9 +281,10 @@ class QRCodeScanActivity : AppCompatActivity() {
 
          printerRecyclerView =
             dialog.findViewById<RecyclerView>(R.id.dialogSelectDocumentRecyclerView)
-        val imgCancel = dialog.findViewById<ImageView>(R.id.imgDialogSelectPrinterCancel)
+        val imgCancel = dialog.findViewById<TextView>(R.id.imgDialogSelectPrinterCancel)
 
          floatButton  =dialog.findViewById<FloatingActionButton>(R.id.dialogSelectPrinterFloatingButton)
+        emptyviewForQrCode=dialog.findViewById<ConstraintLayout>(R.id.empty_viewForQrCode)
 
         printerRecyclerView?.layoutManager =
             LinearLayoutManager(
@@ -288,6 +292,16 @@ class QRCodeScanActivity : AppCompatActivity() {
                 LinearLayout.VERTICAL,
                 false
             )
+
+        if(getdocumentListFromQrCode.size>0){
+            emptyviewForQrCode.visibility= View.GONE
+            printerRecyclerView.visibility=View.VISIBLE
+
+        }else{
+            emptyviewForQrCode.visibility= View.VISIBLE
+            printerRecyclerView.visibility=View.GONE
+        }
+
         val adapter = MyItemRecyclerViewAdapter(
             getdocumentListFromQrCode
         )

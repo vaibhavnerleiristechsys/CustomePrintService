@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -80,9 +81,11 @@ public class ServerPrintRelaseFragment extends Fragment {
     public static String selectedPrinterId;
     public static String selectedPrinterToken;
     public static int secure_release;
-    public  ArrayList<SelectedFile> localdocumentFromsharedPrefences =new ArrayList<SelectedFile>();
+    public  ArrayList<SelectedFile> localdocumentFromsharedPrefences =new ArrayList<>();
     RecyclerView recyclerView;
     private SwipeRefreshLayout swipeContainer;
+    private RecyclerView recyclerViewList;
+    private ConstraintLayout noDataMessage;
     public  List<Printer> listOfPrinters=new ArrayList<Printer>();
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -129,6 +132,8 @@ public class ServerPrintRelaseFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_server_print_relase_list, container, false);
         recyclerView = view.findViewById(R.id.list);
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        recyclerViewList =(RecyclerView) view.findViewById(R.id.list);
+        noDataMessage =(ConstraintLayout) view.findViewById(R.id.empty_view);
         // Set the adapter
       //  if (view instanceof RecyclerView) {
              context = view.getContext();
@@ -646,6 +651,14 @@ public class ServerPrintRelaseFragment extends Fragment {
 
                 if(localdocumentFromsharedPrefences!=null) {
                     PrintReleaseFragment.Companion.getGetdocumentList().addAll(localdocumentFromsharedPrefences);
+                }
+
+                if(PrintReleaseFragment.Companion.getGetdocumentList().size()>0){
+                    recyclerViewList.setVisibility(View.VISIBLE);
+                    noDataMessage.setVisibility(View.GONE);
+                }else{
+                    recyclerViewList.setVisibility(View.GONE);
+                    noDataMessage.setVisibility(View.VISIBLE);
                 }
                 recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
 
