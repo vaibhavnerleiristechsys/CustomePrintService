@@ -111,7 +111,7 @@ public class PrintPreview extends AppCompatActivity {
         copies.setText(copyNo);
         context=this;
         list.clear();
-
+        getSupportActionBar().hide();
 
         EditText pagesCount=(EditText) findViewById(R.id.pagesCount);
         RadioButton radioBtnForPage =(RadioButton) findViewById(R.id.rb_page);
