@@ -188,8 +188,16 @@ class PrinterListService {
                         val printerModel: PrinterModel = PrinterModel()
                         printerModel.serviceName =
                             response.body()?.data?.attributes?.title.toString()
-                        printerModel.printerHost =
-                            InetAddress.getByName(response.body()?.data?.attributes?.host_address.toString())
+                        val thread = Thread(Runnable {
+                            try {
+                                printerModel.printerHost =
+                                    InetAddress.getByName(response.body()?.data?.attributes?.host_address.toString())
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+                        })
+
+                        thread.start()
                         // printerModel.printerHost =inetAddress
                         printerModel.printerPort = 631
                         printerModel.fromServer = true

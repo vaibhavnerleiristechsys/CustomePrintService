@@ -13,40 +13,41 @@
         android:background="@color/colorPrimary"
         android:minHeight="?attr/actionBarSize"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints"></androidx.appcompat.widget.Toolbar>
-
 
     <TextView
         android:id="@+id/cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="cancel"
+        android:layout_marginStart="16dp"
+        android:text="Cancel"
         android:textColor="#FFFFFF"
-        android:textSize="14dp"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="@+id/documentPreview"
         app:layout_constraintEnd_toStartOf="@+id/documentPreview"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/documentPreview" />
 
     <TextView
         android:id="@+id/documentPreview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="8dp"
         android:text="Document Preview"
         android:textColor="#FFFFFF"
-        android:textSize="16dp"
-        app:layout_constraintEnd_toStartOf="@+id/print"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/cancel"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/toolbar"
+        app:layout_constraintStart_toStartOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+  <!--  <TextView
         android:id="@+id/print"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,6 +58,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/documentPreview"
         app:layout_constraintTop_toTopOf="parent" />
+
+        -->
 
     <androidx.cardview.widget.CardView
         android:id="@+id/printDetails"
@@ -85,18 +88,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:text="Printer Name"
+                android:textSize="17sp"
+                android:textColor="#000000"
+                android:text="Printer"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Spinner
                 android:id="@+id/dynamic_spinner"
-                android:layout_width="wrap_content"
+                android:layout_width="160dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/printer"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -106,7 +110,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:text="copies"
+                android:textSize="17sp"
+                android:textColor="#000000"
+                tools:text="Copies:"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -120,11 +126,10 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="26dp"
                 android:text="+"
                 android:textSize="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/minus"
                 app:layout_constraintTop_toBottomOf="@+id/dynamic_spinner" />
 
             <Button
@@ -135,7 +140,7 @@
                 android:text="-"
                 android:textAlignment="center"
                 android:textSize="10dp"
-                app:layout_constraintStart_toStartOf="@+id/dynamic_spinner"
+                app:layout_constraintEnd_toStartOf="@+id/plus"
                 app:layout_constraintTop_toBottomOf="@+id/dynamic_spinner" />
 
             <TextView
@@ -144,6 +149,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
+                android:textSize="17sp"
+                android:textColor="#000000"
                 android:text="Color/Monochrome"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -156,9 +163,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.462"
-                app:layout_constraintStart_toEndOf="@+id/colorMonochrome"
                 app:layout_constraintTop_toBottomOf="@+id/plus" />
 
             <TextView
@@ -167,7 +173,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:text="pages"
+                android:textSize="17sp"
+                android:textColor="#000000"
+                android:text="Pages"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/colorMonochrome"
@@ -178,9 +186,11 @@
                 android:id="@+id/rg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="68dp"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pages"
                 app:layout_constraintTop_toBottomOf="@+id/static_spinner">
 
                 <RadioButton
@@ -202,19 +212,24 @@
 
             <EditText
                 android:id="@+id/pagesCount"
-                android:layout_width="90dp"
+                android:layout_width="55dp"
                 android:layout_height="40dp"
-                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="8dp"
                 android:alpha="0.42"
                 android:hint="1-4"
                 android:singleLine="true"
                 android:textColor="#000000"
                 android:textColorHint="#000000"
                 android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/rg"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.066"
-                app:layout_constraintStart_toEndOf="@+id/rg" />
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@+id/rg"
+                app:layout_constraintTop_toTopOf="@+id/rg"
+                app:layout_constraintVertical_bias="1.0"
+                tools:ignore="MissingConstraints" />
+
+
             <!--
                         <RadioButton
                             android:id="@+id/radioButton"
@@ -294,12 +309,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="340dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/selectDocumentFloatingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="@color/bloodOrange"
+        android:src="@drawable/sendprintblack"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

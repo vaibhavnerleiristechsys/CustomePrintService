@@ -606,7 +606,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
              call = apiService.getPrintJobStatuses(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
-                    printReleaseFragment.decodeJWT(context),
+                     printReleaseFragment.decodeJWT(context),
                     SignInCompanyPrefs.Companion.getIdpType(context).toString(),
                     SignInCompanyPrefs.Companion.getIdpName(context).toString(),
                     printReleaseFragment.decodeJWT(context),

@@ -7,7 +7,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 //ext.anko_version='0.10.8'
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'

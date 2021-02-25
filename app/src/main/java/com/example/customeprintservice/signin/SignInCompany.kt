@@ -40,6 +40,12 @@ class SignInCompany : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in_company)
       //  edtYourCompany.setText("https://");
         Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
+           val companyUrl =LoginPrefs.getCompanyUrl(this@SignInCompany)
+        if(companyUrl !=null){
+            edtYourCompany.setText(companyUrl.toString())
+            edtYourCompany.setSelection(edtYourCompany.getText().length);
+        }
+
 
         edtYourCompany.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {

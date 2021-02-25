@@ -1,12 +1,14 @@
 package com.example.customeprintservice.print;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
+import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
 import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.jipp.PrintActivity;
@@ -17,6 +19,7 @@ import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -33,6 +36,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,6 +49,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -82,6 +89,10 @@ public class PrintPreview extends AppCompatActivity {
     int totalPageCount=0;
     int noOfCopies=1;
     String realPath="";
+    Dialog dialog;
+    View v = null;
+    private NumberPicker picker1,picker2;
+    private String[] pickerVals,pickerVals2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +128,7 @@ public class PrintPreview extends AppCompatActivity {
         RadioButton radioBtnForPage =(RadioButton) findViewById(R.id.rb_page);
         Button addCopy = (Button) findViewById(R.id.plus);
         Button minusCopy = (Button) findViewById(R.id.minus);
-
+        FloatingActionButton selectDocumentFloatingButton = (FloatingActionButton) findViewById(R.id.selectDocumentFloatingButton);
 
         if (LoginPrefs.Companion.getOCTAToken(this) == null) {
             Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
@@ -228,7 +239,7 @@ public class PrintPreview extends AppCompatActivity {
         });
 
         Spinner staticSpinner = (Spinner) findViewById(R.id.static_spinner);
-        String[] printItems = new String[] { "Color", "Monochrome"};
+        String[] printItems = new String[] {"Monochrome", "Color"};
 
         ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printItems);
         staticSpinner.setAdapter(staticAdapter);
@@ -249,13 +260,24 @@ public class PrintPreview extends AppCompatActivity {
 
         radioGroup = (RadioGroup) findViewById(R.id.rg);
         RadioButton radioBtn =(RadioButton) findViewById(R.id.rb_all);
+        RadioButton radioBtnPage =(RadioButton) findViewById(R.id.rb_page);
         radioGroup.check(radioBtn.getId());
-        TextView print =(TextView) findViewById(R.id.print);
+      //  TextView print =(TextView) findViewById(R.id.print);
         TextView cancel =(TextView) findViewById(R.id.cancel);
 
+/*
+        radioBtnForPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("tag","Click on page radiobutton");
+                pickPrinterPageDialog();
+            }
+        });
+
+*/
 
 
-        print.setOnClickListener(new View.OnClickListener() {
+        selectDocumentFloatingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int selectedId = radioGroup.getCheckedRadioButtonId();
@@ -487,4 +509,65 @@ public class PrintPreview extends AppCompatActivity {
 
         return formatted+ "KB";
     }
+
+
+    private void pickPrinterPageDialog() {
+        dialog = new Dialog(context);
+        v = LayoutInflater.from(context).inflate(R.layout.dialog_page_range_picker, null);
+        dialog.setContentView(v);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        Window window = dialog.getWindow();
+        assert window != null;
+        window.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.BOTTOM;
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setDimAmount(0.5f);
+        window.setAttributes(wlp);
+
+
+
+        picker1 = dialog.findViewById(R.id.numberpicker_main_picker);
+        TextView txtCancel =dialog.findViewById(R.id.txtCancel);
+
+        txtCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.cancel();
+            }
+        });
+
+        picker1.setMaxValue(4);
+        picker1.setMinValue(0);
+        pickerVals  = new String[] {"1", "2", "3", "4", "5"};
+        picker1.setDisplayedValues(pickerVals);
+
+
+        picker1.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                int valuePicker1 = picker1.getValue();
+                Log.d("picker value", pickerVals[valuePicker1]);
+            }
+        });
+
+        picker2 = dialog.findViewById(R.id.numberpicker_main_picker2);
+        picker2.setMaxValue(4);
+        picker2.setMinValue(0);
+        pickerVals2  = new String[] {"1", "2", "3", "4", "5"};
+        picker2.setDisplayedValues(pickerVals);
+
+        picker2.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker numberPicker, int i, int i1) {
+                int valuePicker1 = picker2.getValue();
+                Log.d("picker value", pickerVals2[valuePicker1]);
+            }
+        });
+
+        dialog.show();
+    }
+
+
 }

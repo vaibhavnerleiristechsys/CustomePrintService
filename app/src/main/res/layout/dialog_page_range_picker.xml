@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/txtDialogPageRange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Page Range"
+        android:textColor="#000000"
+        android:textSize="19sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Cancel"
+        android:textColor="#FF4702"
+        android:textSize="17sp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtDialogPageRange"
+        app:layout_constraintEnd_toStartOf="@+id/txtDialogPageRange"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtDialogPageRange" />
+
+    <NumberPicker
+        android:id="@+id/numberpicker_main_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="64dp"
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtDialogPageRange"></NumberPicker>
+
+    <TextView
+        android:id="@+id/txtTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="to"
+        android:textColor="#000000"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/numberpicker_main_picker2"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toEndOf="@+id/numberpicker_main_picker"
+        app:layout_constraintTop_toBottomOf="@+id/txtDialogPageRange" />
+
+    <NumberPicker
+        android:id="@+id/numberpicker_main_picker2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtDialogPageRange"></NumberPicker>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
