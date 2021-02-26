@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -44,6 +46,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -507,9 +510,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
-
-
 
 }
 

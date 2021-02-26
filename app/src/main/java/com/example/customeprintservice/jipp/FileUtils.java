@@ -155,7 +155,7 @@ public class FileUtils {
             if (isGoogleDriveUri(uri)) {
                 return getDriveFilePath(uri, context);
             }
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 // return getFilePathFromURI(context,uri);
                 return getMediaFilePathForN(uri, context);
                 // return getRealPathFromURI(context,uri);

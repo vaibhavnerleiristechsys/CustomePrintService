@@ -77,18 +77,39 @@ class PrintersFragment : Fragment() {
             dialogAddManualPrinter()
           //  dialogSelectPrinter()
         }*/
+
+        setHasOptionsMenu(true)
         updateUi()
-        getPrinterList(requireContext(),decodeJWT())
+        getPrinterList(requireContext(), decodeJWT())
         Log.i("printer", "Login okta token" + LoginPrefs.getOCTAToken(requireContext()))
         val intent = Intent("qrcodefloatingbutton")
         intent.putExtra("qrCodeScanBtn", "InActive")
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
 
         swipeContainer.setOnRefreshListener {
-            getPrinterList(requireContext(),decodeJWT())
+            getPrinterList(requireContext(), decodeJWT())
 
         }
     }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_search, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.serach -> {
+                return true
+            }
+
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    //**************************
 
     @SuppressLint("WrongConstant")
     private fun updateUi() {
@@ -103,7 +124,7 @@ class PrintersFragment : Fragment() {
             )
         val adapter = FragmentPrinterListAdapter(
             context as Activity,
-            PrinterList().printerList,"printerTab"
+            PrinterList().printerList, "printerTab"
         )
         recyclerViewPrinterLst?.adapter = adapter
     }
@@ -114,7 +135,7 @@ class PrintersFragment : Fragment() {
     }
 
     fun getPrinterList(
-        context: Context,username:String
+        context: Context, username: String
     ) {
 
         @SuppressLint("WrongConstant")val sh: SharedPreferences =
@@ -151,7 +172,7 @@ class PrintersFragment : Fragment() {
                         "<system driverless=\"1\">\n" +
                         "  <machine>\n" +
                         "    <ips>\n" +
-                        "      <ip mask=\"255.255.255.0\">"+ipAddress+"</ip>\n" +
+                        "      <ip mask=\"255.255.255.0\">" + ipAddress + "</ip>\n" +
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
@@ -170,34 +191,35 @@ class PrintersFragment : Fragment() {
                         "</system>"
             )
         }else if(siteId.toString().contains("google")){
-            apiService.getPrinterListForGoogle(siteId.toString(),
-            "Bearer ${LoginPrefs.getOCTAToken(context)}",
-            username,
-            xIdpType.toString(),
-            xIdpName.toString(),
-           "serverId",
-            "1",
-            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                    "<system driverless=\"1\">\n" +
-                    "  <machine>\n" +
-                    "    <ips>\n" +
-                    "      <ip mask=\"255.255.255.0\">"+ipAddress+"</ip>\n" +
-                    "    </ips>\n" +
-                    "  </machine>\n" +
-                    "  <idp>\n" +
-                    "    {\"idpName\": \""+xIdpName+"\",\n" +
-                    "      \"username\":\""+username+"\",\n" +
-                    "      \"isLoggedIn\": \"true\",\n" +
-                    "      \"type\": \"auth-type\",\n" +
-                    "      \"token\":\""+LoginPrefs.getOCTAToken(context)+ "\"}\n" +
-                    "  </idp>\n" +
-                    "  <memberships>\n" +
-                    "    <computer />\n" +
-                    "    <user>\n" +
-                    "      <guid>S-1-1-0</guid>\n" +
-                    "    </user>\n" +
-                    "  </memberships>\n" +
-                    "</system>"
+            apiService.getPrinterListForGoogle(
+                siteId.toString(),
+                "Bearer ${LoginPrefs.getOCTAToken(context)}",
+                username,
+                xIdpType.toString(),
+                xIdpName.toString(),
+                "serverId",
+                "1",
+                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                        "<system driverless=\"1\">\n" +
+                        "  <machine>\n" +
+                        "    <ips>\n" +
+                        "      <ip mask=\"255.255.255.0\">" + ipAddress + "</ip>\n" +
+                        "    </ips>\n" +
+                        "  </machine>\n" +
+                        "  <idp>\n" +
+                        "    {\"idpName\": \"" + xIdpName + "\",\n" +
+                        "      \"username\":\"" + username + "\",\n" +
+                        "      \"isLoggedIn\": \"true\",\n" +
+                        "      \"type\": \"auth-type\",\n" +
+                        "      \"token\":\"" + LoginPrefs.getOCTAToken(context) + "\"}\n" +
+                        "  </idp>\n" +
+                        "  <memberships>\n" +
+                        "    <computer />\n" +
+                        "    <user>\n" +
+                        "      <guid>S-1-1-0</guid>\n" +
+                        "    </user>\n" +
+                        "  </memberships>\n" +
+                        "</system>"
 
             )
         }else{
@@ -214,15 +236,15 @@ class PrintersFragment : Fragment() {
                         "<system driverless=\"1\">\n" +
                         "  <machine>\n" +
                         "    <ips>\n" +
-                        "      <ip mask=\"255.255.255.0\">"+ipAddress+"</ip>\n" +
+                        "      <ip mask=\"255.255.255.0\">" + ipAddress + "</ip>\n" +
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
-                        "    {\"idpName\": \""+xIdpName+"\",\n" +
-                        "      \"username\":\""+username+"\",\n" +
+                        "    {\"idpName\": \"" + xIdpName + "\",\n" +
+                        "      \"username\":\"" + username + "\",\n" +
                         "      \"isLoggedIn\": \"true\",\n" +
                         "      \"type\": \"auth-type\",\n" +
-                        "      \"token\":\""+LoginPrefs.getOCTAToken(context)+ "\"}\n" +
+                        "      \"token\":\"" + LoginPrefs.getOCTAToken(context) + "\"}\n" +
                         "  </idp>\n" +
                         "  <memberships>\n" +
                         "    <computer />\n" +
@@ -252,7 +274,7 @@ class PrintersFragment : Fragment() {
                         //printerListForCheckIppPrinters.clear()
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
                         val element = document.select("command")
-                      //  val inetAddress = InetAddress.getByName("192.168.1.1")
+                        //  val inetAddress = InetAddress.getByName("192.168.1.1")
 
                         PrinterList().printerList.removeIf {
                             it.fromServer == true
@@ -260,7 +282,7 @@ class PrintersFragment : Fragment() {
                         val nodeId = document.select("command")
 
                         nodeId.forEach {
-                            Log.i("printer","it==>${it.attr("node_id")}")
+                            Log.i("printer", "it==>${it.attr("node_id")}")
                         }
                         PrintersFragment.serverPrinterListWithDetails.clear()
                         PrintersFragment.serverPullPrinterListWithDetails.clear()
@@ -269,14 +291,18 @@ class PrintersFragment : Fragment() {
                         element.forEach {
                             val printerModel: PrinterModel = PrinterModel()
                             printerModel.serviceName = it.text()
-                            printerModel.printerHost = InetAddress.getByName("192.168.1."+it.attr("node_id").toString())
-                           // printerModel.printerHost =inetAddress
+                            printerModel.printerHost = InetAddress.getByName(
+                                "192.168.1." + it.attr(
+                                    "node_id"
+                                ).toString()
+                            )
+                            // printerModel.printerHost =inetAddress
                             printerModel.printerPort = 631
                             printerModel.fromServer = true
-                            printerModel.nodeId =it.attr("node_id").toString()
+                            printerModel.nodeId = it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
                             PrinterList().addPrinterModel(printerModel)
-                         //   printerListForCheckIppPrinters.add(printerModel);
+                            //   printerListForCheckIppPrinters.add(printerModel);
 
                             PrinterListService().getPrinterDetails(
                                 context,
@@ -296,9 +322,9 @@ class PrintersFragment : Fragment() {
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
                     }
-                }else{
+                } else {
                     ProgressDialog.cancelLoading()
-                    if(swipeContainer!=null) {
+                    if (swipeContainer != null) {
                         swipeContainer.isRefreshing = false
                     }
                 }
@@ -306,7 +332,7 @@ class PrintersFragment : Fragment() {
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                if(swipeContainer!=null) {
+                if (swipeContainer != null) {
                     swipeContainer.isRefreshing = false
                 }
 
@@ -347,10 +373,10 @@ class PrintersFragment : Fragment() {
                 false
             )
             val adapter = FragmentPrinterListAdapter(
-            context as Activity,
-            PrinterList().printerList,
+                context as Activity,
+                PrinterList().printerList,
                 "printerTab"
-        )
+            )
         printerRecyclerView?.adapter = adapter
         dialog.show()
 
@@ -458,16 +484,19 @@ class PrintersFragment : Fragment() {
                 userName = decoded.email.toString()
             }
         } catch (ex: Exception) {
-            Log.d("exception",ex.toString())
+            Log.d("exception", ex.toString())
         }
         return userName.toString()
     }
 
     fun getPrinterListByPrinterId(
-        context: Context,printerId:String,purpose:String
+        context: Context, printerId: String, purpose: String
     ) {
 
-        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -483,7 +512,8 @@ class PrintersFragment : Fragment() {
             apiService.getPrinterDetailsByPrinterIdForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
-                LdapPassword.toString())
+                LdapPassword.toString()
+            )
         }else if(siteId.toString().contains("google")){
             apiService.getPrinterDetailsByPrinterIdForGoogle(
                 LoginPrefs.getOCTAToken(context).toString(),
@@ -491,14 +521,15 @@ class PrintersFragment : Fragment() {
                 SignInCompanyPrefs.getIdpType(context).toString(),
                 SignInCompanyPrefs.getIdpName(context).toString(),
                 "serverId"
-                )
+            )
         }
         else{
             apiService.getPrinterDetailsByPrinterId(
                 LoginPrefs.getOCTAToken(context).toString(),
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
-                SignInCompanyPrefs.getIdpName(context).toString())
+                SignInCompanyPrefs.getIdpName(context).toString()
+            )
         }
 
         call?.enqueue(object : Callback<Any> {
@@ -511,39 +542,39 @@ class PrintersFragment : Fragment() {
                 ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
 
-                   Log.d("response of printerId:",response.body().toString())
-                    var s =response.body().toString()
-                    s=s.replace("\"","")
-                    val hashMap:HashMap<String,String> = HashMap<String,String>()
+                    Log.d("response of printerId:", response.body().toString())
+                    var s = response.body().toString()
+                    s = s.replace("\"", "")
+                    val hashMap: HashMap<String, String> = HashMap<String, String>()
                     val pairs = s.split(",".toRegex()).toTypedArray()
                     for (i in pairs.indices) {
                         val pair = pairs[i]
                         val keyValue =
                             pair.split("=".toRegex()).toTypedArray()
-                        if(keyValue.size>1) {
-                            if(keyValue[0].trim().equals("pull-print")){
-                           if(!hashMap.containsKey("pull-print")) {
-                               hashMap.put(keyValue[0].trim(), keyValue[1])
-                           }
-                            }else{
+                        if (keyValue.size > 1) {
+                            if (keyValue[0].trim().equals("pull-print")) {
+                                if (!hashMap.containsKey("pull-print")) {
+                                    hashMap.put(keyValue[0].trim(), keyValue[1])
+                                }
+                            } else {
                                 hashMap.put(keyValue[0].trim(), keyValue[1])
                             }
                         }
                     }
-                   // Log.d("response of printerId:",response.body()?.data?.attributes?.host-address.toString())
-                    val title =  hashMap.get("title")
+                    // Log.d("response of printerId:",response.body()?.data?.attributes?.host-address.toString())
+                    val title = hashMap.get("title")
                     val hostAddress = hashMap.get("host-address")
                     val isPullPrinter = hashMap.get("is-pull-printer")
                     val printerToken = hashMap.get("printer-token")
                     val pull_print = hashMap.get("pull-print")
                     val id = hashMap.get("id")
-                    Log.d("title",title.toString())
-                    Log.d("hostAddress",hostAddress.toString())
-                    Log.d("isPullPrinter",isPullPrinter.toString())
-                    ServerPrintRelaseFragment.selectedPrinterId=id
-                    ServerPrintRelaseFragment.selectedPrinterToken=printerToken
+                    Log.d("title", title.toString())
+                    Log.d("hostAddress", hostAddress.toString())
+                    Log.d("isPullPrinter", isPullPrinter.toString())
+                    ServerPrintRelaseFragment.selectedPrinterId = id
+                    ServerPrintRelaseFragment.selectedPrinterToken = printerToken
                     val printer: PrinterModel = PrinterModel()
-                    printer.id =id
+                    printer.id = id
                     val thread = Thread(Runnable {
                         try {
                             printer.printerHost = InetAddress.getByName(hostAddress)
@@ -558,20 +589,20 @@ class PrintersFragment : Fragment() {
 
                     printer.serviceName = title
                     printer.printerPort = 631
-                    printer.manual=true
-                    printer.fromServer=false
-                    printer.isPullPrinter=isPullPrinter.toString()
-                    printer.pull_print=pull_print;
+                    printer.manual = true
+                    printer.fromServer = false
+                    printer.isPullPrinter = isPullPrinter.toString()
+                    printer.pull_print = pull_print;
                     var flagIsExist: Boolean = false
-                  //when select one document then only get printer by using queue id for display in dialog box
-                    if(purpose.equals("forSecureRelase")){
-                        printer.manual=false
-                        printer.fromServer=true
+                    //when select one document then only get printer by using queue id for display in dialog box
+                    if (purpose.equals("forSecureRelase")) {
+                        printer.manual = false
+                        printer.fromServer = true
                         serverSecurePrinterForHeldJob.clear()
                         serverSecurePrinterForHeldJob.add(printer)
                     }
 
-                    if(purpose.equals("printerDetailForAddPrinterTab")) {
+                    if (purpose.equals("printerDetailForAddPrinterTab")) {
 
                         PrinterList().printerList.forEach {
                             if (it.serviceName.equals(printer.serviceName)) {
@@ -581,7 +612,7 @@ class PrintersFragment : Fragment() {
 
                         if (!flagIsExist) {
                             PrinterList().addPrinterModel(printer)
-                            addPrinterForshareDocument(printer,context)
+                            addPrinterForshareDocument(printer, context)
                             Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT)
@@ -589,8 +620,11 @@ class PrintersFragment : Fragment() {
                         }
                     }
 
-                    if(purpose.equals("getPrinterDetailsForPullJob")){
-                        if(printer.isPullPrinter.equals("0.0") && (printer.pull_print.equals("2.0") || printer.pull_print.equals("0.0"))) {
+                    if (purpose.equals("getPrinterDetailsForPullJob")) {
+                        if (printer.isPullPrinter.equals("0.0") && (printer.pull_print.equals("2.0") || printer.pull_print.equals(
+                                "0.0"
+                            ))
+                        ) {
                             printer.manual = false
                             allPrintersForPullHeldJob.add(printer);
                         }
@@ -611,7 +645,7 @@ class PrintersFragment : Fragment() {
 
 
 
-    fun addPrinterForshareDocument(printer: PrinterModel,context: Context) {
+    fun addPrinterForshareDocument(printer: PrinterModel, context: Context) {
         if(printer.isPullPrinter.equals("0.0")) {
             var serverSecurePrinterListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
             val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
