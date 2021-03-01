@@ -158,7 +158,7 @@ internal class PrinterDiscoverySession(
     override fun onStartPrinterDiscovery(priorityList: List<PrinterId>) {
         Log.d("customprintservices", "onStartPrinterDiscovery")
 
-        val printUtils = PrintUtils()
+      val printUtils = PrintUtils()
         PrintersFragment.discoveredPrinterListWithDetails.clear()
         printUtils.setContextAndInitializeJMDNS(appContext)
         try {
@@ -203,47 +203,56 @@ internal class PrinterDiscoverySession(
 
         // PrintersFragment.printerListWithDetails.forEach(Consumer { p: PrinterModel ->
         if (sharedPreferencesStoredPrinterListWithDetails != null) {
+            Log.d("inside shared ","inside shared pref data"+sharedPreferencesStoredPrinterListWithDetails.size);
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
                 val printerId = ArrayList<PrinterId>()
-                printerId.add(printService.generatePrinterId(p.printerHost.toString()))
-                val builder = PrinterInfo.Builder(
-                    printService.generatePrinterId(p.printerHost.toString()),
-                    p.serviceName, PrinterInfo.STATUS_IDLE
-                ).build()
-                val capabilities = printerId.let {
-                    PrinterCapabilitiesInfo.Builder(it.get(0))
-                        .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
-                        .addResolution(
-                            PrintAttributes.Resolution("1234", "Default", 200, 200),
-                            true
-                        )
-                        .setColorModes(
-                            PrintAttributes.COLOR_MODE_MONOCHROME,
-                            PrintAttributes.COLOR_MODE_MONOCHROME
-                        )
-                        .build()
-                }
-                printerInfo = capabilities.let {
-                    PrinterInfo.Builder(builder)
-                        .setCapabilities(it)
-                        .build()
-                }
+                Log.d("service name",p.serviceName.toString())
 
-                printers.add(printerInfo)
-                // filter out the printers
+                if(p.printerHost!=null) {
+                    Log.d("host ", p.printerHost.toString())
+
+                    printerId.add(printService.generatePrinterId(p.printerHost.toString()))
+                    val builder = PrinterInfo.Builder(
+                        printService.generatePrinterId(p.printerHost.toString()),
+                        p.serviceName, PrinterInfo.STATUS_IDLE
+                    ).build()
+                    val capabilities = printerId.let {
+                        PrinterCapabilitiesInfo.Builder(it.get(0))
+                            .addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
+                            .addResolution(
+                                PrintAttributes.Resolution("1234", "Default", 200, 200),
+                                true
+                            )
+                            .setColorModes(
+                                PrintAttributes.COLOR_MODE_MONOCHROME,
+                                PrintAttributes.COLOR_MODE_MONOCHROME
+                            )
+                            .build()
+                    }
+                    printerInfo = capabilities.let {
+                        PrinterInfo.Builder(builder)
+                            .setCapabilities(it)
+                            .build()
+                    }
+
+                    printers.add(printerInfo)
+                    // filter out the printers
 
 
-                /*val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
+                    /*val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
             hashMap[printerId[0]] = p*/
-                printerHashmap.hashMap.put(printerId[0], p)
-
+                    printerHashmap.hashMap.put(printerId[0], p)
+                }
             })
 
             //for loop
 
             // for loop ends
-            addPrinters(printers);
+            if(printers!=null) {
+                addPrinters(printers);
+            }
         }
+        Log.d("outside shared","outside shared pref data");
     }
 
     override fun onStopPrinterDiscovery() {}
