@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -57,6 +58,9 @@ public class GalleryFragment extends Fragment {
         ViewGroup containerView = (ViewGroup) rootView.findViewById(R.id.container);
         context = rootView.getContext();
         swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
+
+
+
         //View root = inflater.inflate(R.layout.fragment_gallery, null, false);
 
         /*galleryViewModel =

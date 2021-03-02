@@ -27,5 +27,9 @@
         <!--<item name="android:divider">@android:drawable/divider_horizontal_bright</item>-->
     </style>
 
+    <style name="NavigationDrawerStyle">
+        <item name="android:textSize">15sp</item>
+        <item name="android:ellipsize">middle</item>
+    </style>
 
 </resources>

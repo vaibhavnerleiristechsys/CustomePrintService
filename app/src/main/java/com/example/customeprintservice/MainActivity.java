@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -51,9 +52,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -109,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private BottomNavigationView bottomNavView;
     private CoordinatorLayout contentView;
-    private Button signout;
+    private Button signout,print;
     private FloatingActionButton fab;
     public static ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
@@ -124,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main2);
         signout = findViewById(R.id.signout);
+        print=findViewById(R.id.print);
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
         BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
@@ -306,10 +311,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
 
 
+
             }
         });
 
-
+        print.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //loadFragment(new ServerPrintRelaseFragment());
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
@@ -368,6 +381,7 @@ public class MainActivity extends AppCompatActivity {
         contentView = findViewById(R.id.content_view);
 
 
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
@@ -391,10 +405,10 @@ public class MainActivity extends AppCompatActivity {
         MenuItem storage = menuNav.findItem(R.id.nav_slideshow);
         MenuItem forms = menuNav.findItem(R.id.nav_tools);
 
-        workspace.setEnabled(false);
-        reports.setEnabled(false);
-        storage.setEnabled(false);
-        forms.setEnabled(false);
+      //  workspace.setEnabled(false);
+       // reports.setEnabled(false);
+       // storage.setEnabled(false);
+      //  forms.setEnabled(false);
 
 
         animateNavigationDrawer();
@@ -511,6 +525,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    public boolean loadFragment(Fragment fragment) {
+        //switching fragment
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        FragmentManager fm = getSupportFragmentManager();
+        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+            fm.popBackStack();
+        }
+
+
+        if (fragment != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.nav_host_fragment, fragment)
+                    .commit();
+            return true;
+        }
+        return false;
+    }
 }
 
 
