@@ -73,8 +73,6 @@ class PrintReleaseFragment : Fragment() {
     private val bundle = Bundle()
     private var isFileSelected: Boolean = false
     private var list = ArrayList<SelectedFile>()
-//    private val rxPermissions = RxPermissions(this)
-
     private lateinit var app: PrintService
     private var adapter: FragmentSelectedFileListAdapter? = null
     private var toolbar: Toolbar? = null
@@ -92,14 +90,9 @@ class PrintReleaseFragment : Fragment() {
     var selectedServerFilelist = ArrayList<SelectedFile>()
      var localdocumentFromsharedPrefences = ArrayList<SelectedFile>()
     @SuppressLint("CheckResult")
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         initConfig()
-
         releaseJobCheckedList.clear()
-
         val disposable = Observable.fromCallable {
             val list = this.arguments?.getSerializable("sharedFileList") as ArrayList<SelectedFile>?
             if (list?.size!! > 0) {
@@ -121,35 +114,10 @@ class PrintReleaseFragment : Fragment() {
     @SuppressLint("CheckResult")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       // (requireActivity() as AppCompatActivity).supportActionBar?.hide()
-        /**
-        check read/write permission
-         */
         checkPermissions()
-        /**
-         * validate token
-         */
-//        validateToken()
-
-
-
 
         ProgressDialog.showLoadingDialog(requireContext(), "Getting Hold jobs")
-        getJobStatuses(
-            requireContext(),
-            decodeJWT(),
-            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
-            SignInCompanyPrefs.getIdpName(requireContext()).toString()
-        )
-/*
-        btnRelease.setOnClickListener {
-            ProgressDialog.showLoadingDialog(requireContext(), "Released Job")
-            releaseJob(requireContext())
-        }
-*/
-        /**
-         * Print Job status cancel
-         */
+        getJobStatuses(requireContext(), decodeJWT(), SignInCompanyPrefs.getIdpType(requireContext()).toString(), SignInCompanyPrefs.getIdpName(requireContext()).toString())
 
         drawer.setOnClickListener {
                val intent = Intent(context, MainActivity::class.java)
@@ -161,25 +129,6 @@ class PrintReleaseFragment : Fragment() {
         }
         val printersFragment =PrintersFragment()
         printersFragment.getPrinterList(requireContext(),decodeJWT());
-       /* btnDeleteJobs.setOnClickListener {
-            ProgressDialog.showLoadingDialog(requireContext(), "Cancel Job")
-           // cancelJob()
-        }*/
-      /*  imgLogout.setOnClickListener {
-            Toast.makeText(requireContext(), "Click on Logout", Toast.LENGTH_SHORT).show()
-            LoginPrefs.deleteToken(requireContext())
-            val sharedPreferences: SharedPreferences =
-                requireContext().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-            val myEdit = sharedPreferences.edit()
-            myEdit.putString("IsLdap","Others");
-            myEdit.commit()
-
-            val intent = Intent(requireContext(), SignInCompany::class.java)
-            startActivity(intent)
-            activity?.finish()
-        }
-
-       */
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
@@ -258,12 +207,7 @@ class PrintReleaseFragment : Fragment() {
 
 
         val call = if(IsLdap.equals("LDAP")){
-            apiService.jobStatusCancelForLdap(
-                siteId.toString(),
-                LdapUsername.toString(),
-                LdapPassword.toString(),
-                jobStatusCancel
-            )
+            apiService.jobStatusCancelForLdap(siteId.toString(), LdapUsername.toString(), LdapPassword.toString(), jobStatusCancel)
         }else if(siteId.toString().contains("google")){
             apiService.jobStatusCancelForGoogle(
                 "Bearer " + LoginPrefs.getOCTAToken(context),
@@ -304,7 +248,6 @@ class PrintReleaseFragment : Fragment() {
                         SignInCompanyPrefs.getIdpName(context).toString()
                     )
 
-
                 }
             }
 
@@ -317,8 +260,7 @@ class PrintReleaseFragment : Fragment() {
     }
 
     fun releaseJob(context: Context,release_t:String){
-        @SuppressLint("WrongConstant")val sh: SharedPreferences =
-            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -330,11 +272,7 @@ class PrintReleaseFragment : Fragment() {
         val siteId= LoginPrefs.getSiteId(context)
         var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/release/"
 
-
-
-        val apiService = RetrofitClient(context)
-            .getRetrofitInstance(BASE_URL)
-            .create(ApiService::class.java)
+        val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
         val releaseJobRequest = ReleaseJobRequest()
         val releaseJobs = ArrayList<ReleaseJobsItem>()
@@ -366,12 +304,7 @@ class PrintReleaseFragment : Fragment() {
             )
             }
             else{
-                apiService.releaseJobForLdap(
-                    releaseJobRequest,
-                    siteId.toString(),
-                    LdapUsername.toString(),
-                    LdapPassword.toString()
-                )
+                apiService.releaseJobForLdap(releaseJobRequest, siteId.toString(), LdapUsername.toString(), LdapPassword.toString())
             }
 
         }else if(siteId.toString().contains("google")){
@@ -457,20 +390,15 @@ class PrintReleaseFragment : Fragment() {
 
 
     fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
-        @SuppressLint("WrongConstant")val sh: SharedPreferences =
-            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
 
-        Log.d("IsLdap:", IsLdap!!)
-
         val siteId= LoginPrefs.getSiteId(context)
         var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
 
-        val apiService = RetrofitClient(context)
-            .getRetrofitInstance(BASE_URL)
-            .create(ApiService::class.java)
+        val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
          apiService.getPrintJobStatusesForLdap(
@@ -502,8 +430,6 @@ class PrintReleaseFragment : Fragment() {
 
                 val getJobStatusesResponse = response.body()?.printQueueJobStatus
                 if (getJobStatusesResponse?.size == 0) {
-
-
                     getdocumentList.clear()
                     val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
                     val gson = Gson()
@@ -511,18 +437,14 @@ class PrintReleaseFragment : Fragment() {
                     val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
                    if(jsonText !=null) {
                        localdocumentFromsharedPrefences = gson.fromJson(jsonText, type)
-
-                       // ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
                        getdocumentList.addAll(localdocumentFromsharedPrefences)
                    }
                     ProgressDialog.cancelLoading()
                 } else {
                     ProgressDialog.cancelLoading()
-                    val parseList: List<PrintQueueJobStatusItem?>? =
-                        getJobStatusesResponse
+                    val parseList: List<PrintQueueJobStatusItem?>? = getJobStatusesResponse
                     val disposable4 = Observable.fromCallable {
                         val selectedFileList = ArrayList<SelectedFile>()
-                        //ServerPrintRelaseFragment.serverDocumentlist.clear()
                         getdocumentList.clear()
                         parseList?.forEach {
                             val selectedFile = SelectedFile()
@@ -537,7 +459,6 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.workStationId = it?.workstationId
                             selectedFile.printerId = it?.printerDeviceQueue?.printers?.get(0)?.id
                             selectedFileList.add(selectedFile)
-                           // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
                             getdocumentList.add(selectedFile)
                         }
                         val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -545,8 +466,6 @@ class PrintReleaseFragment : Fragment() {
                         val jsonText: String? = prefs.getString("localdocumentlist", null)
                         val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
                         localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
-
-                        //ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
                         getdocumentList.addAll(localdocumentFromsharedPrefences)
 
                         val intent = Intent("refreshdocumentadapter")
@@ -586,11 +505,7 @@ class PrintReleaseFragment : Fragment() {
 
     private fun checkPermissions() {
         permissionsHelper = PermissionHelper()
-        permissionsHelper!!.checkAndRequestPermissions(
-            context as Activity,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
+        permissionsHelper!!.checkAndRequestPermissions(context as Activity, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
     }
 
     override fun onRequestPermissionsResult(
@@ -598,12 +513,7 @@ class PrintReleaseFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionsHelper!!.onRequestPermissionsResult(
-            context as Activity,
-            requestCode,
-            permissions,
-            grantResults
-        )
+        permissionsHelper!!.onRequestPermissionsResult(context as Activity, requestCode, permissions, grantResults)
     }
 
 
@@ -710,7 +620,7 @@ class PrintReleaseFragment : Fragment() {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 if (response.code() == 204)
                     Log.i("printer", "response validate token=>${response.isSuccessful}")
-                Log.i("printer", "response validate token=>${response}")
+                    Log.i("printer", "response validate token=>${response}")
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {
@@ -740,52 +650,6 @@ class PrintReleaseFragment : Fragment() {
             releaseJobCheckedList.add(it)
         }?.subscribe()
         recyclerViewDocumentList?.adapter = adapter
-
-
-//
-//        adapter?.setListener(object :
-//            FragmentSelectedFileListAdapter.ViewHolder.FragmentSelectedFileAdapterListener {
-//            override fun onItemClick(position: Int) {
-////                enableActionMode(position, context)
-//            }
-//
-//            override fun onItemLongClick(position: Int) {
-////                enableActionMode(position, context)
-//            }
-//        })
-//    }
-//
-//    private var actionMode: ActionMode? = null
-//
-//    private fun enableActionMode(position: Int, context: Context) {
-//
-//        if (actionMode == null)
-//            actionMode = AppCompatActivity().startSupportActionMode(object : ActionMode.Callback {
-//                override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-//                    mode.menuInflater.inflate(R.menu.menu_delete, menu)
-//                    return true
-//                }
-//
-//                override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
-//                    return false
-//                }
-//
-//                override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
-//                    if (item.itemId == R.id.action_delete) {
-//
-//                        mode.finish()
-//                        return true
-//                    }
-//                    return false
-//                }
-//
-//                override fun onDestroyActionMode(mode: ActionMode) {
-//
-//                    adapter?.notifyDataSetChanged()
-//                    actionMode = null
-//                }
-//            })
-
     }
 
 

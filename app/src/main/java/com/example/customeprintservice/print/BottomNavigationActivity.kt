@@ -11,7 +11,6 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import com.example.customeprintservice.R
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrintUtils
@@ -54,7 +53,6 @@ class BottomNavigationActivity : AppCompatActivity() {
         list.clear()
         when (intent.action) {
             Intent.ACTION_SEND_MULTIPLE -> {
-                Log.i("printer", "in action")
                 intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).let {
                     it?.forEach {
                         val realPath = FileUtils.getPath(this@BottomNavigationActivity, it)
@@ -82,32 +80,9 @@ class BottomNavigationActivity : AppCompatActivity() {
             }
 
             Intent.ACTION_SEND -> {
-//                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+
                 val imageUri =
                     intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-//
-//                Log.i("printer", "image uri=>${imageUri}")
-//                val fileImage = File(imageUri.toString())
-//                Log.i("printer", "file image =>${fileImage.name + " path =>${fileImage.path}"}")
-//
-//                var bmpUri: Uri? = null
-//                try {
-//                    val file = File(
-//                        Environment.getExternalStoragePublicDirectory(
-//                            Environment.DIRECTORY_DOWNLOADS
-//                        ), "share_image_$imageUri"
-//                    )
-//                    file.parentFile?.mkdirs()
-//                    val inputStream = contentResolver.openInputStream(Uri.parse(imageUri.toString()))
-//                    Log.i("printer", "Input stream ===>${inputStream?.readBytes()}")
-//
-//                    val fileUtils =  org.apache.commons.io.FileUtils.copyToFile(inputStream,file)
-//
-//                } catch (e: IOException) {
-//                    Log.i("printer", "exception ===>${e.message}")
-//
-//                }
 
                 if (imageUri != null) {
                     val realPath = FileUtils.getPath(this, imageUri as Uri?)
@@ -161,11 +136,6 @@ class BottomNavigationActivity : AppCompatActivity() {
             printReleaseFragment.arguments = bundle
         }
 
-
-
-
-        val printersFragment = PrintersFragment()
-        val servicePortalFragment = ServicePortalFragment()
 
         if (list.isNotEmpty()) {
             bundle.putSerializable("sharedFileList", list)

@@ -1,20 +1,13 @@
 package com.example.customeprintservice.print;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
-import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
-import com.example.customeprintservice.jipp.FileUtils;
-import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrintRenderUtils;
-import com.example.customeprintservice.jipp.PrintUtils;
-import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.room.SelectedFile;
@@ -22,7 +15,6 @@ import com.example.customeprintservice.signin.SignInCompany;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -31,13 +23,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.pdf.PdfRenderer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -49,21 +37,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -88,7 +71,6 @@ public class PrintPreview extends AppCompatActivity {
     int endPageIndex=0;
     int totalPageCount=0;
     int noOfCopies=1;
-    String realPath="";
     Dialog dialog;
     View v = null;
     private NumberPicker picker1,picker2;
@@ -97,24 +79,6 @@ public class PrintPreview extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-/*
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        if (action != null) {
-            switch (action) {
-                case Intent.ACTION_SEND:
-                    Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                    if (imageUri != null) {
-                         realPath = FileUtils.getPath(this, imageUri);
-                    }
-                    if (LoginPrefs.Companion.getOCTAToken(this) == null) {
-                        Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
-                        startActivity(intent1);
-                    }
-            }
-        }
-*/
-
         setContentView(R.layout.activity_print_preview);
         Bundle bundle = getIntent().getExtras();
         TextView copies = (TextView) findViewById(R.id.copies);
@@ -123,7 +87,6 @@ public class PrintPreview extends AppCompatActivity {
         context=this;
         list.clear();
         getSupportActionBar().hide();
-
         EditText pagesCount=(EditText) findViewById(R.id.pagesCount);
         RadioButton radioBtnForPage =(RadioButton) findViewById(R.id.rb_page);
         Button addCopy = (Button) findViewById(R.id.plus);
@@ -136,7 +99,6 @@ public class PrintPreview extends AppCompatActivity {
         }
 
         filePath = bundle.getString("filePath", "");
-      //  filePath=realPath;
         File file = new File(filePath);
         SelectedFile selectedFile = new SelectedFile();
         selectedFile.setFileName(file.getName());
@@ -164,28 +126,19 @@ public class PrintPreview extends AppCompatActivity {
             jpgOrPngImagePreview(file);
         }
         Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
-        PrinterList printerList =new PrinterList();
         ArrayList<String> items = new ArrayList<String>();
         items.add("select printer");
-
         SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson1 = new Gson();
         String json2 = prefs1.getString("prefServerSecurePrinterListWithDetails", null);
-        Type type1 = new TypeToken<ArrayList<PrinterModel>>() {
-        }.getType();
+        Type type1 = new TypeToken<ArrayList<PrinterModel>>() {}.getType();
         if (json2 != null) {
             serverSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json2, type1);
             for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
                 PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                 items.add(printerModel.getServiceName());
-
             }
         }
-
-
-
-        //String[] items = new String[] { "Chai Latte", "Green Tea", "Black Tea" };
-
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);
         dynamicSpinner.setAdapter(adapter);
 
@@ -193,13 +146,10 @@ public class PrintPreview extends AppCompatActivity {
         dynamicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.v("item", (String) parent.getItemAtPosition(position).toString());
                 selectPrinter=parent.getItemAtPosition(position).toString();
                 for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
                     PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                      if(printerModel.getServiceName().toString().equals(parent.getItemAtPosition(position).toString())){
-
-
                        selectedPrinterModel=printerModel;
                       }
 
@@ -208,7 +158,7 @@ public class PrintPreview extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
+
             }
         });
 
@@ -240,7 +190,6 @@ public class PrintPreview extends AppCompatActivity {
 
         Spinner staticSpinner = (Spinner) findViewById(R.id.static_spinner);
         String[] printItems = new String[] {"Monochrome", "Color"};
-
         ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printItems);
         staticSpinner.setAdapter(staticAdapter);
 
@@ -248,12 +197,12 @@ public class PrintPreview extends AppCompatActivity {
         staticSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
-                Log.v("item", (String) parent.getItemAtPosition(position));
+
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // TODO Auto-generated method stub
+
             }
         });
 
@@ -262,7 +211,6 @@ public class PrintPreview extends AppCompatActivity {
         RadioButton radioBtn =(RadioButton) findViewById(R.id.rb_all);
         RadioButton radioBtnPage =(RadioButton) findViewById(R.id.rb_page);
         radioGroup.check(radioBtn.getId());
-      //  TextView print =(TextView) findViewById(R.id.print);
         TextView cancel =(TextView) findViewById(R.id.cancel);
 
 /*
@@ -282,11 +230,9 @@ public class PrintPreview extends AppCompatActivity {
             public void onClick(View view) {
                 int selectedId = radioGroup.getCheckedRadioButtonId();
                 radioButton = (RadioButton) findViewById(selectedId);
-                Log.d("radio button value",radioButton.getText().toString());
                 Boolean PageIndexCorrect=true;
                 if(radioButton.getText().toString().equals("page")) {
                     String pagecount =pagesCount.getText().toString();
-                    Log.d("pageCount", pagecount);
                     String[] pageIndex = pagecount.split("-", 0);
                     startPageIndex= Integer.parseInt(pageIndex[0]);
                     endPageIndex= Integer.parseInt(pageIndex[1]);
@@ -324,8 +270,7 @@ public class PrintPreview extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                onBackPressed();
-             //   Intent myIntent = new Intent(context, MainActivity.class);
-             //   startActivity(myIntent);
+
             }
         });
     }
@@ -339,12 +284,7 @@ public class PrintPreview extends AppCompatActivity {
         PdfRenderer renderer = new PdfRenderer(fileDescriptor);
         final int pageCount = renderer.getPageCount();
         totalPageCount=pageCount;
-        PrintUtils printUtils = new PrintUtils();
-        Bitmap pageImage = null;
         int pagePrintCounter = 0;
-        int threadSleepInMilliSecs = 3000;
-        int timeThreshold = threadSleepInMilliSecs * 40;
-        int totalTimeThreadSleep = 0;
         ArrayList<File> files =new ArrayList<File>();
         while (pagePrintCounter < pageCount) {
             String path = "/storage/self/primary/sample" + pagePrintCounter + ".jpg";
@@ -360,7 +300,6 @@ public class PrintPreview extends AppCompatActivity {
 
             FileOutputStream out = new FileOutputStream(renderFile);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            Log.v("Saved Image - ", renderFile.getAbsolutePath());
             files.add(renderFile);
 
             out.flush();
@@ -375,8 +314,7 @@ public class PrintPreview extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
         }
-
-        public void jpgOrPngImagePreview(File file){
+    public void jpgOrPngImagePreview(File file){
             ArrayList<File> files =new ArrayList<File>();
             files.add(file);
             RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -456,19 +394,14 @@ public class PrintPreview extends AppCompatActivity {
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
-                       // Intent myIntent = new Intent(context, MainActivity.class);
-                       // startActivity(myIntent);
                         dialog1.cancel();
                         moveTaskToBack(true);
-
                     }
                     if (radioButton.getText().toString().equals("page") && selectedPrinterModel != null && filePath != null) {
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
-                      //  Intent myIntent = new Intent(context, MainActivity.class);
-                      //  startActivity(myIntent);
                         dialog1.cancel();
                         moveTaskToBack(true);
                     }
@@ -481,8 +414,6 @@ public class PrintPreview extends AppCompatActivity {
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
-                      //  Intent myIntent = new Intent(context, MainActivity.class);
-                      //  startActivity(myIntent);
                         dialog1.cancel();
                         moveTaskToBack(true);
 
@@ -499,18 +430,15 @@ public class PrintPreview extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);
-
-
     }
 
     private static String getFileSizeKiloBytes(File file) {
         DecimalFormat df = new DecimalFormat("#.##");
         String formatted = df.format(file.length() / 1024);
-
         return formatted+ "KB";
     }
 
-
+/*
     private void pickPrinterPageDialog() {
         dialog = new Dialog(context);
         v = LayoutInflater.from(context).inflate(R.layout.dialog_page_range_picker, null);
@@ -526,8 +454,6 @@ public class PrintPreview extends AppCompatActivity {
         window.setDimAmount(0.5f);
         window.setAttributes(wlp);
 
-
-
         picker1 = dialog.findViewById(R.id.numberpicker_main_picker);
         TextView txtCancel =dialog.findViewById(R.id.txtCancel);
 
@@ -542,7 +468,6 @@ public class PrintPreview extends AppCompatActivity {
         picker1.setMinValue(0);
         pickerVals  = new String[] {"1", "2", "3", "4", "5"};
         picker1.setDisplayedValues(pickerVals);
-
 
         picker1.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
             @Override
@@ -568,6 +493,6 @@ public class PrintPreview extends AppCompatActivity {
 
         dialog.show();
     }
-
+*/
 
 }

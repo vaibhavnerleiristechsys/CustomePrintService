@@ -1,46 +1,28 @@
 package com.example.customeprintservice.print;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.utils.ProgressDialog;
-
-import org.spongycastle.asn1.x509.Holder;
-
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
-/**
- * TODO: Replace the implementation with code for your data type.
- */
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
 
-    public static Set<SelectedFile> selectedServerFile = new HashSet<SelectedFile>();
     private final List<SelectedFile> mValues;
-    Menu menu;
     public Context context;
-    private int selectedPosition = -1;
     List<ViewHolder> holders= new ArrayList<ViewHolder>();
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
         mValues = items;
@@ -49,11 +31,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_server_print_relase, parent, false);
-
-
-
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_server_print_relase, parent, false);
         return new ViewHolder(view);
     }
 
@@ -63,9 +41,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mIdView.setText(mValues.get(position).getFileName());
         holder.mContentView.setText(mValues.get(position).getFileSelectedDate());
         holder.mFileSize.setText(mValues.get(position).getJobSize());
-
         holders.add(holder);
-        this.selectedPosition = position;
 
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,18 +61,12 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.documenticon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            Log.d("click on document icon","clock on document icon");
-
-             //   Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
                 Intent intent1 = new Intent("qrcodefloatingbutton");
                 intent1.putExtra("qrCodeScanBtn", "InActive");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
-
-
 
                 for(int i=0;i<holders.size();i++) {
                     ViewHolder holder = holders.get(i);
@@ -148,24 +118,18 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }
-                // holder.Documenticonchanged();
             }
 
         });
         holder.serverDocument.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-              //  Log.d("file name", Objects.requireNonNull(mValues.get(position).getFileName()));
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-
                 Intent intent1 = new Intent("qrcodefloatingbutton");
                 intent1.putExtra("qrCodeScanBtn", "InActive");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
-
-
 
                for(int i=0;i<holders.size();i++) {
                     ViewHolder holder = holders.get(i);
@@ -217,7 +181,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }
-               // holder.Documenticonchanged();
             }
 
         });
@@ -238,7 +201,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         public final CheckBox checkBox;
         public SelectedFile mItem;
         public ImageView documenticon;
-        List a =new ArrayList<View>();
         public ViewHolder(View view) {
             super(view);
             mView = view;
@@ -250,42 +212,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             checkBox = view.findViewById(R.id.checkbox);
             checkBox.setVisibility(View.GONE);
             documenticon =view.findViewById(R.id.documenticon);
-/*
-
-           documenticon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Log.d( "document icon click", ":successfull");
-                   // Documenticonchanged();
-                }
-
-            });
-
-            serverDocument.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    Log.d( "document click", ":successfull");
-                //    Documenticonchanged();
-                }
-
-            });
-
-*/
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
-        }
-
-        public void Documenticonchanged(){
-            for(int i=0;i<holders.size();i++){
-                ViewHolder holder1 = holders.get(i);
-                holder1.checkBox.setVisibility(View.VISIBLE);
-                holder1.documenticon.setVisibility(View.GONE);
-            }
         }
 
     }
