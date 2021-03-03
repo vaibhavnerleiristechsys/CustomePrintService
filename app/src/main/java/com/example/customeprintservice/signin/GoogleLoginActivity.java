@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.prefs.LoginPrefs;
-import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
 import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -25,10 +24,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,9 +80,6 @@ public class GoogleLoginActivity extends AppCompatActivity {
 
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
-
-
-
             }
 
 
@@ -98,7 +92,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
             String username=account.getEmail();
             Log.d("idToken",idToken);
             Toast.makeText(getApplicationContext(), idToken, Toast.LENGTH_SHORT).show();
-           Logger LOG = LoggerFactory.getLogger(BottomNavigationActivityForServerPrint.class);
+            Logger LOG = LoggerFactory.getLogger(BottomNavigationActivityForServerPrint.class);
             LOG.info("Papertrail idToken log management demo"+idToken);
             SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
             SharedPreferences.Editor myEdit= sharedPreferences.edit();

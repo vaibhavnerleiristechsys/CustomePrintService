@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
-import android.view.Gravity
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -18,10 +17,8 @@ import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.prefs.LoginPrefs
-import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
-import com.example.customeprintservice.utils.GoogleAPI
 import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import okhttp3.ResponseBody
@@ -43,8 +40,7 @@ class SignInActivity : AppCompatActivity() {
             bundle = intent.extras!!
             btnSignInWithOkta.visibility= View.VISIBLE
             txtOr.visibility= View.VISIBLE
-            val sharedPreferences: SharedPreferences =
-                getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+            val sharedPreferences: SharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
             val myEdit = sharedPreferences.edit()
             myEdit.putString("IsLdap","");
             myEdit.putString("LdapUsername","");
@@ -53,13 +49,10 @@ class SignInActivity : AppCompatActivity() {
 
 
             if (bundle.getString("buttonName") == "Okta") {
-               // btnSignInWithOkta.text = bundle.getString("buttonName")
                 btnSignInWithOkta.text ="    Sign In With Okta"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_okta)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_okta)
-                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
-                    drawable, null, null, null)
-              //  btnSignInWithOkta.gravity = Gravity.CENTER
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
@@ -67,26 +60,20 @@ class SignInActivity : AppCompatActivity() {
                 imgShowPassword.visibility= View.GONE
 
             } else if (bundle.getString("buttonName") == "Azure AD") {
-              //  btnSignInWithOkta.text = bundle.getString("buttonName")
                 btnSignInWithOkta.text = "    Sign In With Azure AD"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_azure)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_azure)
-                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
-                    drawable, null, null, null)
-                //btnSignInWithOkta.gravity = Gravity.CENTER
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
                 txtOr.visibility= View.GONE
                 imgShowPassword.visibility= View.GONE
             }else if(bundle.getString("buttonName")=="Google"){
-               // btnSignInWithOkta.text = bundle.getString("buttonName")
                 btnSignInWithOkta.text = "    Sign In With Google"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_google)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_google)
-                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
-                    drawable, null, null, null)
-              //  btnSignInWithOkta.gravity = Gravity.CENTER
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
@@ -115,15 +102,12 @@ class SignInActivity : AppCompatActivity() {
         showPassword(isShowPass)
 
         btnSignIn.setOnClickListener {
-          //  HideKeyboard.hideKeyboard(this@SignInActivity)
-           // val intent = Intent(this@SignInActivity, BottomNavigationActivity::class.java)
-           // startActivity(intent)
+
             val username = edtUserName.text.toString()
             val password = edtPassword.text.toString()
 
            Log.d("username",edtUserName.text.toString())
                    Log.d("password",edtPassword.text.toString())
-          //  getPrinterListForCheckLdapLogin(this@SignInActivity,username,password)
             checkLdapLogin(this@SignInActivity,username,password)
 
         }
@@ -140,10 +124,6 @@ class SignInActivity : AppCompatActivity() {
                 searchWeb(desktopUrl)
             }
             else if(bundle.getString("buttonName")=="Google"){
-
-                //val intent = Intent(this@SignInActivity, GoogleLoginActivity::class.java)
-                //intent.putExtras(bundle)
-                //startActivity(intent)
 
                 val desktopUrl = "https://gw.app.printercloud.com/googleid/authn/idp/Google/oidc/desktop/login"
                 searchWeb(desktopUrl)
@@ -214,61 +194,7 @@ class SignInActivity : AppCompatActivity() {
         finish()
     }
 
-    fun getPrinterListForCheckLdapLogin(
-        context: Context,username:String,password:String
-    ) {
-        val BASE_URL =
-            "https://gw.app.printercloud.com/devncoldap/prs/v1/printers/1/"
-
-        val apiService = RetrofitClient(context)
-            .getRetrofitInstance(BASE_URL)
-            .create(ApiService::class.java)
-
-        val call = apiService.getPrinterForLdap(
-            "devncoldap",
-            username,
-            password
-        )
-
-        call.enqueue(object : Callback<ResponseBody> {
-
-            @RequiresApi(Build.VERSION_CODES.N)
-            override fun onResponse(
-                call: Call<ResponseBody>,
-                response: Response<ResponseBody>
-            ) {
-                ProgressDialog.cancelLoading()
-                if (response.isSuccessful) {
-                    Log.i("LDAP printers Response",response.toString())
-                    toast("Login Successfully")
-                    val sharedPreferences: SharedPreferences =
-                        getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
-                    val myEdit = sharedPreferences.edit()
-                    myEdit.putString("IsLdap","LDAP");
-                    myEdit.putString("LdapUsername",username);
-                    myEdit.putString("LdapPassword",password);
-                    myEdit.commit()
-                    val intent = Intent(this@SignInActivity,MainActivity::class.java)
-                     startActivity(intent)
-                }
-                if (response.code()==401){
-                    toast("Login Not Successfully Please Try Again")
-                }
-            }
-
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                ProgressDialog.cancelLoading()
-                Log.i("printer", "Error html response==>${t.message.toString()}")
-                toast("Login Not Successfully Please Try Again")
-            }
-        })
-    }
-
-
-    fun checkLdapLogin(
-        context: Context,username:String,password:String
-    ) {
-
+    fun checkLdapLogin(context: Context,username:String,password:String) {
         val companyUrl = LoginPrefs.getCompanyUrl(context)
         val BASE_URL = "https://"+companyUrl+"/api/verify-login/"
         val apiService = RetrofitClient(context)

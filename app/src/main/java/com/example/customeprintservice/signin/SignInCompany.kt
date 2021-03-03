@@ -12,7 +12,6 @@ import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.prefs.LoginPrefs
-import com.example.customeprintservice.prefs.LoginPrefs.Companion.getSiteId
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
@@ -33,12 +32,10 @@ class SignInCompany : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (LoginPrefs.getOCTAToken(this@SignInCompany) != null) {
-        //    val intent = Intent(this@SignInCompany, BottomNavigationActivity::class.java)
             val intent = Intent(this@SignInCompany, MainActivity::class.java)
             startActivity(intent)
         }
         setContentView(R.layout.activity_sign_in_company)
-      //  edtYourCompany.setText("https://");
         Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
            val companyUrl =LoginPrefs.getCompanyUrl(this@SignInCompany)
         if(companyUrl !=null){
@@ -50,9 +47,7 @@ class SignInCompany : AppCompatActivity() {
         edtYourCompany.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if(!s.toString().startsWith("https://")){
-                 //   edtYourCompany.setText("https://");
                     Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
-
                 }
 
 
@@ -92,9 +87,7 @@ class SignInCompany : AppCompatActivity() {
 
             }
             else{
-
                    var url= edtYourCompany.text.toString()
-
                     val stringurl=url.substring(0,url.length)
                     LoginPrefs.saveCompanyUrl(this@SignInCompany, stringurl.toString())
                     val siteId: String = MainActivity.findSiteId(stringurl)
@@ -110,11 +103,6 @@ class SignInCompany : AppCompatActivity() {
 
 
                     getIdpInfo(url)
-              /*  }else{
-                    toast("please check url")
-                    ProgressDialog.cancelLoading()
-                }*/
-
             }
 
     }
@@ -150,9 +138,7 @@ class SignInCompany : AppCompatActivity() {
                 if (response.code() == 200) {
                     ProgressDialog.cancelLoading()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
-
                     if(edtYourCompany.text.toString().contains("devncoldap")){
-
                         bundle.putString("buttonName", "LDAP")
                     }
 

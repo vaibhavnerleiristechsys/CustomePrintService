@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
-
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.print.ServerPrintRelaseFragment;
 import com.hp.jipp.encoding.Attribute;
@@ -17,7 +16,6 @@ import com.hp.jipp.model.Operation;
 import com.hp.jipp.model.Status;
 import com.hp.jipp.trans.IppClientTransport;
 import com.hp.jipp.trans.IppPacketData;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import static com.hp.jipp.model.Types.documentFormat;
 import static com.hp.jipp.model.Types.requestedAttributes;
 import static com.hp.jipp.model.Types.requestingUserName;

@@ -46,12 +46,8 @@ class FragmentSelectedFileListAdapter(
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
-    override fun onBindViewHolder(
-        holder: FragmentSelectedFileListAdapter.ViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: FragmentSelectedFileListAdapter.ViewHolder, position: Int) {
         holder.getFileName().text = "" + list!![position].fileName
-
         holder.getSelectedDate().text = "" + list[position].fileSelectedDate
         holder.getFileSize().text = "" + ((list[position].filePath)?.length)
         holder.getCheckbox().setOnCheckedChangeListener { buttonView, isChecked ->
@@ -60,27 +56,6 @@ class FragmentSelectedFileListAdapter(
             }
         }
 
-//        holder.getFileSize().text =
-//            "" + (File(list[position].filePath.toString()).length() / 1024) + " KB"
-//        if (list[position].isFromApi == true) {
-//            holder.getFileCardView()
-//                .setCardBackgroundColor(ContextCompat.getColor(context, R.color.battleshipGrey))
-//        }
-//        try {
-//            val stringDate = list[position].fileSelectedDate
-//            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm")
-//            val date = dateFormat.parse(stringDate)
-//            val longDate:Long = date.time
-//            Log.i("printer","simple date format=>${DateTime.getDisplayableTime(longDate)}")
-//
-//            holder.getSelectedDate().text = DateTime.getDisplayableTime(longDate)
-//        } catch (ex: Exception) {
-//
-//        }
-//        holder.getFileCardView().setOnLongClickListener {
-//           listener.onItemLongClick(position)
-//            return@setOnLongClickListener true
-//        }
     }
 
     override fun getItemCount(): Int {

@@ -38,10 +38,8 @@ class SelectedFileListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.getSelectedFileName().text = list[position].filePath
-
         holder.getRadioButton().setOnCheckedChangeListener(checkedChangeListener)
         if (holder.getRadioButton().isChecked) checkedRadioButton = holder.getRadioButton()
-
         holder.getRadioButton().setOnClickListener {
             publishSubject.onNext(list[position].filePath.toString())
             removeAt(position)

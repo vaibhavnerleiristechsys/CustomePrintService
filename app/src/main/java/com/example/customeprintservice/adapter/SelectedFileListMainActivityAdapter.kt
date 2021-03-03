@@ -24,10 +24,7 @@ class SelectedFileListMainActivityAdapter(
         return list.size
     }
 
-    override fun onBindViewHolder(
-        holder: SelectedFileListMainActivityAdapter.ViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: SelectedFileListMainActivityAdapter.ViewHolder, position: Int) {
         holder.getSelectedFileName().text = list[position]
         holder.getRemoveItem().setOnClickListener {
             removeAt(position)

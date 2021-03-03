@@ -62,8 +62,6 @@ class FragmentPrinterListAdapter(
         this.selectedPosition = position
         if(location.equals("selectPrinter")) {
         holder.getCardview().setOnClickListener {
-            //   it.setBackgroundColor(Color.GRAY)
-
             if (list[position].printerHost != null) {
                 Log.d("selected printerdetails", list[position].serviceName.toString())
                 Log.d("selected printerdetails", list[position].printerHost.toString())
@@ -77,8 +75,7 @@ class FragmentPrinterListAdapter(
                 }
 
                 if (list[position].manual == true) {
-                    var finalLocalurl =
-                        "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"
+                    var finalLocalurl = "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"
                     ServerPrintRelaseFragment.localPrinturl = finalLocalurl
                 } else {
 
@@ -102,13 +99,11 @@ class FragmentPrinterListAdapter(
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
             for (i in holders.indices) {
-
                 val holder = holders[i]
                 if (i == position) {
                     if (location.equals("selectPrinter")) {
                         holder.getCardview().setCardBackgroundColor(Color.GRAY)
                     }
-
                 } else {
                     holder.getCardview().setCardBackgroundColor(Color.WHITE)
                 }
@@ -118,46 +113,8 @@ class FragmentPrinterListAdapter(
 
 
         holder.getRemovePrinter().setOnClickListener {
-           /* if(list[position].serviceName != null) {
-                Log.d("selected printerdetails", list[position].serviceName.toString())
-                Log.d("selected printerdetails", list[position].printerHost.toString())
-                var printer: PrinterModel = PrinterModel()
-                PrinterList().printerList.forEach{
-
-                    try {
-                        if (it.printerHost.equals(list[position].printerHost)) {
-                            //PrinterList().printerList.remove(printerModel)
-                            printer= it
-                        }
-                    }catch(e: Exception){
-                        Log.d("excpetion",e.message.toString())
-                    }
-                }
-                PrinterList().printerList.remove(printer)
-                notifyDataSetChanged()
-
-            }*/
-
               dialogDeletePrinter(context,list[position])
-         //   val handler = Handler()
-          //  handler.postDelayed({ notifyDataSetChanged() }, 2000)
-
-
         }
-//        holder.bind(list?.get(position))
-//
-//        if (list?.get(position) is PrinterModel) {
-//            val dataItem = list?.get(position) as PrinterModel
-//            if (dataItem.isSelected) {
-//                context?.let { ContextCompat.getColor(it, R.color.colorOrange) }
-//                    ?.let { holder.getCardview().setBackgroundColor(it) }
-//
-//            } else {
-//                context?.let { ContextCompat.getColor(it, R.color.white) }
-//                    ?.let { holder.getCardview().setBackgroundColor(it) }
-//
-//            }
-//        }
     }
 
     override fun getItemCount(): Int {
@@ -213,29 +170,22 @@ class FragmentPrinterListAdapter(
             AbsListView.LayoutParams.WRAP_CONTENT,
             AbsListView.LayoutParams.WRAP_CONTENT
         )
-//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        //        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         val wlp = window.attributes
         wlp.gravity = Gravity.CENTER
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         window.setDimAmount(0.5f)
         window.attributes = wlp
-        val button =
-            dialog.findViewById<Button>(R.id.ok)
-        val cancel =
-            dialog.findViewById<Button>(R.id.cancel)
+        val button = dialog.findViewById<Button>(R.id.ok)
+        val cancel = dialog.findViewById<Button>(R.id.cancel)
         dialog.show()
 
         button.setOnClickListener {
             if(printerModel.serviceName != null) {
-                Log.d("selected printerdetails", printerModel.serviceName.toString())
-                Log.d("selected printerdetails", printerModel.printerHost.toString())
                 var printer: PrinterModel = PrinterModel()
                 PrinterList().printerList.forEach{
 
                     try {
                         if (it.printerHost.equals(printerModel.printerHost)) {
-                            //PrinterList().printerList.remove(printerModel)
                             printer= it
                         }
                     }catch(e: Exception){
@@ -243,13 +193,10 @@ class FragmentPrinterListAdapter(
                     }
                 }
                 PrinterList().printerList.remove(printer)
-
-
             }
 
             dialog.cancel()
             notifyDataSetChanged()
-
 
         }
 

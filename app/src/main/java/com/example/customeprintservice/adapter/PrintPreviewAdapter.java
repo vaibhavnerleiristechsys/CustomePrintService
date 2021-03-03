@@ -36,9 +36,7 @@ public class PrintPreviewAdapter extends RecyclerView.Adapter<PrintPreviewAdapte
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.file_preview_image, parent, false);
-
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.file_preview_image, parent, false);
         return new PrintPreviewAdapter.ViewHolder(view);
     }
 
@@ -46,12 +44,9 @@ public class PrintPreviewAdapter extends RecyclerView.Adapter<PrintPreviewAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         File file = mValues.get(position);
         if(file.exists()){
-
             Bitmap myBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             holder.image.setImageBitmap(myBitmap);
-
         }
-
     }
 
     @Override

@@ -51,7 +51,7 @@ class QRCodeScanActivity : AppCompatActivity() {
     lateinit var printerRecyclerView :RecyclerView;
     lateinit var  emptyviewForQrCode :ConstraintLayout;
     companion object {
-        public val getdocumentListFromQrCode = java.util.ArrayList<SelectedFile>()
+         val getdocumentListFromQrCode = java.util.ArrayList<SelectedFile>()
     }
 
     private var floatButton: FloatingActionButton? = null
@@ -98,8 +98,7 @@ class QRCodeScanActivity : AppCompatActivity() {
             scannerView.setOnClickListener {
                 codeScanner.startPreview()
             }
-        //    PrintReleaseFragment printReleaseFragment = new PrintReleaseFragment();
-        //   printReleaseFragment.getJobStatusesForServerList(requireContext());
+
         LocalBroadcastManager.getInstance(this).registerReceiver(
             mMessageReceiver1,
             IntentFilter("menuFunctionlityDisplay")
@@ -141,8 +140,7 @@ class QRCodeScanActivity : AppCompatActivity() {
 
     fun getJobListByPrinterId(context: Context,printerId:String) {
 
-        @SuppressLint("WrongConstant")val sh: SharedPreferences =
-            context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -152,9 +150,7 @@ class QRCodeScanActivity : AppCompatActivity() {
 
         var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
 
-        val apiService = RetrofitClient(context)
-            .getRetrofitInstance(BASE_URL)
-            .create(ApiService::class.java)
+        val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
             apiService.getPrintJobStatusesForLdap(
@@ -180,7 +176,6 @@ class QRCodeScanActivity : AppCompatActivity() {
                 val getJobStatusesResponse = response.body()?.printQueueJobStatus
                 if (getJobStatusesResponse?.size == 0) {
                     getdocumentListFromQrCode.clear()
-                   // Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT).show()
                     ProgressDialog.cancelLoading()
                     runOnUiThread(Runnable {
                         dialogSelectPrinter(context);
@@ -191,7 +186,6 @@ class QRCodeScanActivity : AppCompatActivity() {
                     ProgressDialog.cancelLoading()
                     val parseList: List<PrintQueueJobStatusItem?>? =
                         getJobStatusesResponse
-                    //  ServerPrintRelaseFragment.serverDocumentlist.clear()
                     getdocumentListFromQrCode.clear()
                     PrintReleaseFragment.getdocumentList.clear()
                     val disposable4 = Observable.fromCallable {
@@ -209,9 +203,6 @@ class QRCodeScanActivity : AppCompatActivity() {
                             selectedFile.workStationId = it?.workstationId
                             selectedFileList.add(selectedFile)
                             getdocumentListFromQrCode.add(selectedFile)
-
-
-
                         }
                         runOnUiThread(Runnable {
                             dialogSelectPrinter(context);
@@ -222,17 +213,13 @@ class QRCodeScanActivity : AppCompatActivity() {
                         .subscribe(
                             {
                                 Log.i("printer", "it=>${it}")
-                                //  listUpdate(it as ArrayList<SelectedFile>?, context)
 
                             },
                             {
                                 Log.i("printer", "Error=>${it.message}")
                             }
                         )
-
-
                 }
-
             }
 
             override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
@@ -271,20 +258,15 @@ class QRCodeScanActivity : AppCompatActivity() {
             AbsListView.LayoutParams.MATCH_PARENT,
             AbsListView.LayoutParams.MATCH_PARENT
         )
-//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        //        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         val wlp = window.attributes
         wlp.gravity = Gravity.BOTTOM
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
         window.setDimAmount(0.5f)
         window.attributes = wlp
-
-         printerRecyclerView =
-            dialog.findViewById<RecyclerView>(R.id.dialogSelectDocumentRecyclerView)
-        val imgCancel = dialog.findViewById<TextView>(R.id.imgDialogSelectPrinterCancel)
-
+         printerRecyclerView = dialog.findViewById<RecyclerView>(R.id.dialogSelectDocumentRecyclerView)
+         val imgCancel = dialog.findViewById<TextView>(R.id.imgDialogSelectPrinterCancel)
          floatButton  =dialog.findViewById<FloatingActionButton>(R.id.dialogSelectPrinterFloatingButton)
-        emptyviewForQrCode=dialog.findViewById<ConstraintLayout>(R.id.empty_viewForQrCode)
+         emptyviewForQrCode=dialog.findViewById<ConstraintLayout>(R.id.empty_viewForQrCode)
 
         printerRecyclerView?.layoutManager =
             LinearLayoutManager(
@@ -335,8 +317,6 @@ class QRCodeScanActivity : AppCompatActivity() {
                     printReleaseFragment.releaseJob(context, "null")
                 }
             }
-            //getJobListByPrinterId(this,printerId)
-
         }
     }
 
