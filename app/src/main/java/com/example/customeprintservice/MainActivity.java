@@ -6,55 +6,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.jipp.QRCodeScanActivity;
 import com.example.customeprintservice.model.TokenResponse;
 import com.example.customeprintservice.prefs.LoginPrefs;
-import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
-import com.example.customeprintservice.print.MyItemRecyclerViewAdapter;
 import com.example.customeprintservice.print.PrintPreview;
-import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.example.customeprintservice.print.PrintersFragment;
-import com.example.customeprintservice.print.ServerPrintRelaseFragment;
-import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse;
-import com.example.customeprintservice.printjobstatus.model.getjobstatuses.PrintQueueJobStatusItem;
 import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
 import com.example.customeprintservice.utils.GoogleAPI;
 import com.example.customeprintservice.utils.PermissionHelper;
-import com.example.customeprintservice.utils.ProgressDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -63,46 +37,24 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 import com.google.android.material.navigation.NavigationView;
-
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import com.example.customeprintservice.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.Toast;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -117,15 +69,12 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     public static ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
-
     public PrintService app;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         checkPermissions();
-
         setContentView(R.layout.activity_main2);
         signout = findViewById(R.id.signout);
         print=findViewById(R.id.print);
@@ -179,13 +128,10 @@ public class MainActivity extends AppCompatActivity {
                         list.addAll(localDocumentSharedPreflist);
                     }
                     SharedPreferences.Editor editor1 = prefs1.edit();
-
                     String convertedJson = gson1.toJson(list);
                     editor1.putString("localdocumentlist", convertedJson);
                     editor1.apply();
-                    // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
-                    Toast.makeText(this, "file added", Toast.LENGTH_LONG)
-                            .show();
+                    Toast.makeText(this, "file added", Toast.LENGTH_LONG).show();
 
                     if (LoginPrefs.Companion.getOCTAToken(this) == null) {
                         Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
@@ -206,39 +152,12 @@ public class MainActivity extends AppCompatActivity {
                         Date date = new Date();
                         String strDate = dateFormat.format(date);
                         selectedFile.setFileSelectedDate(strDate);
-
-
                                 Intent intent1 = new Intent(getApplicationContext(), PrintPreview.class);
                                 Bundle bundle = new Bundle();
                                 bundle.putString("filePath", realPath);
                                 intent1.putExtras(bundle);
                                 startActivity(intent1);
 
-
-
-                        /*
-
-                        list.add(selectedFile);
-
-                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-                        Gson gson = new Gson();
-                        String json1 = prefs.getString("localdocumentlist", null);
-                        Type type = new TypeToken<ArrayList<SelectedFile>>() {
-                        }.getType();
-                        localDocumentSharedPreflist = gson.fromJson(json1, type);
-                        if (localDocumentSharedPreflist != null) {
-                            list.addAll(localDocumentSharedPreflist);
-                        }
-                        SharedPreferences.Editor editor = prefs.edit();
-
-                        String json = gson.toJson(list);
-                        editor.putString("localdocumentlist", json);
-                        editor.apply();
-                        // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile);
-                        Toast.makeText(this, "file added", Toast.LENGTH_LONG)
-                                .show();
-
-                         */
                     }
                     if (LoginPrefs.Companion.getOCTAToken(this) == null) {
                         Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
@@ -248,10 +167,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        Uri intent2 = intent.getData();
+    Uri intent2 = intent.getData();
         if (intent2 != null) {
             String decodeUrl = intent2.getEncodedPath().replaceFirst("/", "").toString();
-
             BottomNavigationActivity bottomNavigationActivity = new BottomNavigationActivity();
             String decode = bottomNavigationActivity.decode(decodeUrl);
 
@@ -274,9 +192,7 @@ public class MainActivity extends AppCompatActivity {
                         requestUri = pair.substring(11, pair.length());
                     }
                 }
-                Log.d("code", code);
-                Log.d("requestUri", requestUri);
-                // getTokenForGoogleLogin(code, requestUri);
+
                 GoogleAPI googleApi = new GoogleAPI();
                 googleApi.getData(code, requestUri, this);
             }else{
@@ -284,22 +200,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver,
-                new IntentFilter("qrcodefloatingbutton"));
-
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("qrcodefloatingbutton"));
 
         initToolbar();
         initFab();
         initNavigation();
 
 
-        //showBottomNavigation(false);
-
-
         signout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Click on Logout", Toast.LENGTH_SHORT).show();
                 LoginPrefs.Companion.deleteToken(getApplicationContext());
                 PrinterList printerList =new PrinterList();
                 printerList.removePrinters();
@@ -309,16 +219,12 @@ public class MainActivity extends AppCompatActivity {
                 myEdit.commit();
                 Intent intent = new Intent(getApplicationContext(), SignInCompany.class);
                 startActivity(intent);
-
-
-
             }
         });
 
         print.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //loadFragment(new ServerPrintRelaseFragment());
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(intent);
             }
@@ -336,21 +242,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initToolbar() {
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
     }
 
     private void initFab() {
-
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), QRCodeScanActivity.class);
                 startActivity(intent);
-
             }
         });
 
@@ -373,17 +274,12 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void initNavigation() {
-
         drawer = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         navigationView.setItemIconTintList(null);
         bottomNavView = findViewById(R.id.bottom_nav_view);
         contentView = findViewById(R.id.content_view);
 
-
-
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send,
@@ -397,37 +293,27 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
         NavigationUI.setupWithNavController(bottomNavView, navController);
 
-        //   NavigationView navigationView= findViewById(R.id.nav_id_in_layout)
-
         Menu menuNav = navigationView.getMenu();
         MenuItem workspace = menuNav.findItem(R.id.nav_home);
         MenuItem reports = menuNav.findItem(R.id.nav_gallery);
         MenuItem storage = menuNav.findItem(R.id.nav_slideshow);
         MenuItem forms = menuNav.findItem(R.id.nav_tools);
 
-      //  workspace.setEnabled(false);
-       // reports.setEnabled(false);
-       // storage.setEnabled(false);
-      //  forms.setEnabled(false);
-
-
         animateNavigationDrawer();
     }
 
 
     private void animateNavigationDrawer() {
-//        drawerLayout.setScrimColor(getResources().getColor(R.color.text_brown));
+
         drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
-
-                // Scale the View based on current slide offset
                 final float diffScaledOffset = slideOffset * (1 - END_SCALE);
                 final float offsetScale = 1 - diffScaledOffset;
                 contentView.setScaleX(offsetScale);
                 contentView.setScaleY(offsetScale);
 
-                // Translate the View, accounting for the scaled width
+
                 final float xOffset = drawerView.getWidth() * slideOffset;
                 final float xOffsetDiff = contentView.getWidth() * diffScaledOffset / 2;
                 final float xTranslation = xOffset - xOffsetDiff;
@@ -441,7 +327,6 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getStringExtra("getPrintResponse") != null) {
                 String printResponseStatus = intent.getStringExtra("getPrintResponse").toString();
-                // Log.i("printer", "printResponseStatus=>$printResponseStatus")
                 Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show();
             }
 
@@ -451,7 +336,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -465,87 +349,22 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
-
     }
-
 
     public static String findSiteId(String completeUrl) {
         String siteId = "";
         int periodLocation = completeUrl.indexOf(".");
         if (periodLocation != -1) {
             siteId = completeUrl.substring(0, periodLocation);
-
         }
         return siteId;
     }
 
-
-    public void getTokenForGoogleLogin(String code, String requestUri) {
-        String url = LoginPrefs.Companion.getgoogleTokenUrl(this);
-        String clientId = LoginPrefs.Companion.getClientId(this);
-        String serverSecret = LoginPrefs.Companion.getClientSecret(this);
-
-        String BASE_URL = url;
-        ApiService apiService = new RetrofitClient(this)
-                .getRetrofitInstance(BASE_URL)
-                .create(ApiService.class);
-
-
-        Call call = apiService.getIdTokenFromGoogle(
-                "authorization_code",
-                code,
-                requestUri,
-                clientId,
-                serverSecret
-
-
-        );
-        call.enqueue(new Callback<TokenResponse>() {
-            public void onResponse(Call<TokenResponse> call, Response<TokenResponse> response) {
-                if (response.isSuccessful()) {
-
-
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<TokenResponse> call, Throwable t) {
-                call.cancel();
-            }
-        });
-
-
-    }
-
-
-    public boolean loadFragment(Fragment fragment) {
-        //switching fragment
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }
-        FragmentManager fm = getSupportFragmentManager();
-        for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
-            fm.popBackStack();
-        }
-
-
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.nav_host_fragment, fragment)
-                    .commit();
-            return true;
-        }
-        return false;
-    }
 }
 
 

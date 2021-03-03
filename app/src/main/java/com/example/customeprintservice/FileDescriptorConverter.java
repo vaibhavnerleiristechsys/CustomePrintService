@@ -16,7 +16,6 @@ public class FileDescriptorConverter {
 
         File output = new File(context.getCacheDir(), "test.pdf");
 
-        long bytesWritten = 0;
         int bufferSizeInput = 4 * 8192;
         int bufferSizeOutput = 4 * 8192;
         int internalCopyWriteBufferSize = 8192;
@@ -55,7 +54,7 @@ public class FileDescriptorConverter {
                     e.printStackTrace();
                 }
             }
-        } // End of the try - catch finally //
+        }
         System.out.println("LogWriter: copying : >> Done <<");
 
         StringBuilder sb = new StringBuilder();

@@ -1,14 +1,10 @@
 package com.example.customeprintservice;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.print.ui.gallery.GalleryFragment;
 import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
@@ -50,12 +46,7 @@ public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItem
         view.findViewById(R.id.btn_addFolder).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // TreeNode newFolder = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder, "New Folder"));
-               // getTreeView().addNode(node, newFolder);
-
                 IconTreeItemHolder.IconTreeItem item = (IconTreeItemHolder.IconTreeItem) value;
-
-
                         for(int i=0;i<GalleryFragment.listOfPrinters.size();i++){
                             Printer printer=GalleryFragment.listOfPrinters.get(i);
                             if(printer.getNode_title().equals(item.text.toString())){
@@ -65,10 +56,6 @@ public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItem
                                 }
                             }
                         }
-
-
-              //  new PrintersFragment().getPrinterListByPrinterId(context,"1");
-
             }
         });
 

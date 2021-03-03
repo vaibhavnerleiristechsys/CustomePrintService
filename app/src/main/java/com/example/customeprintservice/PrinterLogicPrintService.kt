@@ -19,7 +19,6 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrintUtils
-import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.print.PrintersFragment
 import com.google.gson.Gson
@@ -149,9 +148,7 @@ internal class PrinterDiscoverySession(
     var printService: PrinterLogicPrintService
     private var printerInfo: PrinterInfo? = null
     private var appContext: Context? = null
-    public var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
-    public var commonPrinterListFromDiscoveryAndServer = java.util.ArrayList<PrinterModel>()
-
+     var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
 
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -168,49 +165,22 @@ internal class PrinterDiscoverySession(
         }
         val printers: ArrayList<PrinterInfo?> = ArrayList()
         val printerHashmap = PrinterHashmap()
-        val printerList = PrinterList()
 
-
-        val prefs =
-            PreferenceManager.getDefaultSharedPreferences(appContext)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(appContext)
         val gson = Gson()
-      //  val json = prefs.getString("printerListWithDetails", null)
         val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
         val type = object :
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
         if (json != null) {
-            sharedPreferencesStoredPrinterListWithDetails =
-                gson.fromJson<java.util.ArrayList<PrinterModel>>(json, type)
-        }
-       /* for (i in sharedPreferencesStoredPrinterListWithDetails.indices) {
-            for (j in PrintersFragment.discoveredPrinterListWithDetails.indices) {
-                if (sharedPreferencesStoredPrinterListWithDetails[i].printerHost.equals(
-                        PrintersFragment.discoveredPrinterListWithDetails[j].printerHost
-                    )
-                ) {
-                    commonPrinterListFromDiscoveryAndServer.add(
-                        sharedPreferencesStoredPrinterListWithDetails[i]
-                    )
-                }
-            }
+            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(json, type)
         }
 
-        */
-
-
-        // sharedPreferencesStoredPrinterListWithDetails.addAll(PrintersFragment.discoveredPrinterListWithDetails)
-
-
-        // PrintersFragment.printerListWithDetails.forEach(Consumer { p: PrinterModel ->
         if (sharedPreferencesStoredPrinterListWithDetails != null) {
-            Log.d("inside shared ","inside shared pref data"+sharedPreferencesStoredPrinterListWithDetails.size);
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
                 val printerId = ArrayList<PrinterId>()
                 Log.d("service name",p.serviceName.toString())
-
                 if(p.printerHost!=null) {
                     Log.d("host ", p.printerHost.toString())
-
                     printerId.add(printService.generatePrinterId(p.printerHost.toString()))
                     val builder = PrinterInfo.Builder(
                         printService.generatePrinterId(p.printerHost.toString()),
@@ -236,23 +206,15 @@ internal class PrinterDiscoverySession(
                     }
 
                     printers.add(printerInfo)
-                    // filter out the printers
 
-
-                    /*val hashMap: HashMap<PrinterId?, PrinterModel?> = HashMap()
-            hashMap[printerId[0]] = p*/
                     printerHashmap.hashMap.put(printerId[0], p)
                 }
             })
 
-            //for loop
-
-            // for loop ends
             if(printers!=null) {
                 addPrinters(printers);
             }
         }
-        Log.d("outside shared","outside shared pref data");
     }
 
     override fun onStopPrinterDiscovery() {}

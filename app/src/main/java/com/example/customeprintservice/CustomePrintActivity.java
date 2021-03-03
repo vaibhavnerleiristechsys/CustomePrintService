@@ -44,9 +44,7 @@ public class CustomePrintActivity extends AppCompatActivity {
         String jobName = this.getString(R.string.app_name) +
                 " Document";
 
-        printManager.print(jobName, new
-                        MyPrintDocumentAdapter(this),
-                null);
+        printManager.print(jobName, new MyPrintDocumentAdapter(this), null);
     }
 
     public class MyPrintDocumentAdapter extends PrintDocumentAdapter {
@@ -114,10 +112,8 @@ public class CustomePrintActivity extends AppCompatActivity {
 
             myPdfDocument = new PrintedPdfDocument(context, newAttributes);
 
-            pageHeight =
-                    newAttributes.getMediaSize().getHeightMils() / 1000 * 72;
-            pageWidth =
-                    newAttributes.getMediaSize().getWidthMils() / 1000 * 72;
+            pageHeight = newAttributes.getMediaSize().getHeightMils() / 1000 * 72;
+            pageWidth = newAttributes.getMediaSize().getWidthMils() / 1000 * 72;
 
             if (cancellationSignal.isCanceled()) {
                 callback.onLayoutCancelled();
@@ -138,18 +134,12 @@ public class CustomePrintActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onWrite(final PageRange[] pageRanges,
-                            final ParcelFileDescriptor destination,
-                            final CancellationSignal
-                                    cancellationSignal,
-                            final WriteResultCallback callback) {
+        public void onWrite(final PageRange[] pageRanges, final ParcelFileDescriptor destination, final CancellationSignal cancellationSignal, final WriteResultCallback callback) {
             for (int i = 0; i < totalpages; i++) {
                 if (pageInRange(pageRanges, i)) {
-                    PdfDocument.PageInfo newPage = new PdfDocument.PageInfo.Builder(pageWidth,
-                            pageHeight, i).create();
+                    PdfDocument.PageInfo newPage = new PdfDocument.PageInfo.Builder(pageWidth, pageHeight, i).create();
 
-                    PdfDocument.Page page =
-                            myPdfDocument.startPage(newPage);
+                    PdfDocument.Page page = myPdfDocument.startPage(newPage);
 
                     if (cancellationSignal.isCanceled()) {
                         callback.onWriteCancelled();
