@@ -59,6 +59,8 @@ import com.google.gson.reflect.TypeToken;
 import com.unnamed.b.atv.model.TreeNode;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -238,6 +240,16 @@ public class ServerPrintRelaseFragment extends Fragment {
                            }
                       }
 
+                      Collections.sort(PrintersFragment.Companion.getServerSecurePrinterListWithDetails(), new Comparator<PrinterModel>() {
+                          @Override
+                          public int compare(PrinterModel item, PrinterModel t1) {
+                              String s1 = item.getServiceName();
+                              String s2 = t1.getServiceName();
+                              return s1.compareToIgnoreCase(s2);
+                          }
+
+                      });
+
                       selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterListWithDetails());
                   }
 
@@ -287,13 +299,23 @@ public class ServerPrintRelaseFragment extends Fragment {
         TextWatcher watcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
                Log.d("text:",s.toString());
-                ArrayList<PrinterModel> filterList =new ArrayList<>();
+                ArrayList<PrinterModel> filterList =new ArrayList<PrinterModel>();
                for(int i=0;i<list.size();i++){
                    PrinterModel printerModel=list.get(i);
                    if(printerModel.getServiceName().toLowerCase().contains(s.toString().toLowerCase())){
                        filterList.add(printerModel);
                    }
                }
+                Collections.sort(filterList, new Comparator<PrinterModel>() {
+                    @Override
+                    public int compare(PrinterModel item, PrinterModel t1) {
+                        String s1 = item.getServiceName();
+                        String s2 = t1.getServiceName();
+                        return s1.compareToIgnoreCase(s2);
+                    }
+
+                });
+
                 printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,filterList,"selectPrinter"));
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

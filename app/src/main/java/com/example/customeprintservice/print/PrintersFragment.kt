@@ -9,6 +9,8 @@ import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -28,7 +30,6 @@ import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
-import com.example.customeprintservice.utils.Inet
 import com.example.customeprintservice.utils.IpAddress
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
@@ -49,6 +50,7 @@ import java.net.InetAddress
 class PrintersFragment : Fragment() {
 
     val printerList = ArrayList<PrinterModel>()
+
     companion object {
          val discoveredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
          val serverPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
@@ -58,7 +60,11 @@ class PrintersFragment : Fragment() {
          val allPrintersForPullHeldJob= java.util.ArrayList<PrinterModel>()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_printers, container, false)
     }
 
@@ -66,7 +72,9 @@ class PrintersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        updateUi()
+        search.visibility=View.GONE
+        clear.visibility=View.GONE
+        updateUi(PrinterList().printerList)
         getPrinterList(requireContext(), decodeJWT())
         Log.i("printer", "Login token" + LoginPrefs.getOCTAToken(requireContext()))
         val intent = Intent("qrcodefloatingbutton")
@@ -77,6 +85,13 @@ class PrintersFragment : Fragment() {
             getPrinterList(requireContext(), decodeJWT())
 
         }
+
+        clear.setOnClickListener {
+            search.visibility=View.GONE;
+            clear.visibility=View.GONE
+        }
+
+        search.addTextChangedListener(watcher)
     }
 
 
@@ -87,6 +102,8 @@ class PrintersFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.serach -> {
+                search.visibility = View.VISIBLE
+                clear.visibility = View.VISIBLE
                 return true
             }
         }
@@ -95,16 +112,27 @@ class PrintersFragment : Fragment() {
 
 
     @SuppressLint("WrongConstant")
-    private fun updateUi() {
+    private fun updateUi(list: java.util.ArrayList<PrinterModel>) {
         val recyclerViewPrinterLst = view?.findViewById<RecyclerView>(R.id.recyclerViewFragmentPrinterList)
-        recyclerViewPrinterLst?.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL, false)
-        val adapter = FragmentPrinterListAdapter(context as Activity, PrinterList().printerList, "printerTab")
+        recyclerViewPrinterLst?.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayout.VERTICAL,
+            false
+        )
+        val adapter = FragmentPrinterListAdapter(
+            context as Activity,
+            list,
+            "printerTab"
+        )
         recyclerViewPrinterLst?.adapter = adapter
     }
 
 
     fun getPrinterList(context: Context, username: String){
-        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
         val ipAddress =IpAddress.getLocalIpAddress();
         if(ipAddress!=null) {
             Log.d("ipAddress of device:", ipAddress);
@@ -256,7 +284,10 @@ class PrintersFragment : Fragment() {
 
                             val thread = Thread(Runnable {
                                 try {
-                                    PrinterListService().getPrinterDetails(context, LoginPrefs.getOCTAToken(context).toString(), username,
+                                    PrinterListService().getPrinterDetails(
+                                        context, LoginPrefs.getOCTAToken(
+                                            context
+                                        ).toString(), username,
                                         SignInCompanyPrefs.getIdpType(context).toString(),
                                         SignInCompanyPrefs.getIdpName(context).toString(),
                                         it.attr("node_id").toString(),
@@ -270,9 +301,8 @@ class PrintersFragment : Fragment() {
                             thread.start()
 
 
-
                         }
-                        updateUi()
+                        updateUi(PrinterList().printerList)
                         swipeContainer.isRefreshing = false
 
 
@@ -305,7 +335,10 @@ class PrintersFragment : Fragment() {
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(true)
         val window = dialog.window
-        window!!.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT)
+        window!!.setLayout(
+            AbsListView.LayoutParams.MATCH_PARENT,
+            AbsListView.LayoutParams.MATCH_PARENT
+        )
 
         val wlp = window.attributes
         wlp.gravity = Gravity.BOTTOM
@@ -319,8 +352,16 @@ class PrintersFragment : Fragment() {
         val floatButton =
             dialog.findViewById<FloatingActionButton>(R.id.dialogSelectPrinterFloatingButton)
 
-        printerRecyclerView?.layoutManager = LinearLayoutManager(context, LinearLayout.VERTICAL, false)
-        val adapter = FragmentPrinterListAdapter(context as Activity, PrinterList().printerList, "printerTab")
+        printerRecyclerView?.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayout.VERTICAL,
+            false
+        )
+        val adapter = FragmentPrinterListAdapter(
+            context as Activity,
+            PrinterList().printerList,
+            "printerTab"
+        )
         printerRecyclerView?.adapter = adapter
         dialog.show()
 
@@ -339,7 +380,11 @@ class PrintersFragment : Fragment() {
         var userName: String? = null
         try {
             val mapper = jacksonObjectMapper()
-            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(LoginPrefs.getOCTAToken(requireContext())?.let { JwtDecode.decoded(it) }!!)
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(
+                    requireContext()
+                )?.let { JwtDecode.decoded(it) }!!
+            )
             userName = decoded.user.toString()
             if(decoded.email!=null) {
                 userName = decoded.email.toString()
@@ -355,7 +400,11 @@ class PrintersFragment : Fragment() {
         var userName: String? = null
         try {
             val mapper = jacksonObjectMapper()
-            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(LoginPrefs.getOCTAToken(context)?.let { JwtDecode.decoded(it) }!!)
+            val decoded: DecodedJWTResponse = mapper.readValue<DecodedJWTResponse>(
+                LoginPrefs.getOCTAToken(
+                    context
+                )?.let { JwtDecode.decoded(it) }!!
+            )
             userName = decoded.user.toString()
             if(decoded.email!=null) {
                 userName = decoded.email.toString()
@@ -367,7 +416,10 @@ class PrintersFragment : Fragment() {
     }
 
     fun getPrinterListByPrinterId(context: Context, printerId: String, purpose: String) {
-        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -375,15 +427,19 @@ class PrintersFragment : Fragment() {
         val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/prs/v1/printers/"+printerId+"/"
 
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
-        val call = if(IsLdap.equals("LDAP")){ apiService.getPrinterDetailsByPrinterIdForLdap(siteId.toString(), LdapUsername.toString(), LdapPassword.toString())
+        val call = if(IsLdap.equals("LDAP")){ apiService.getPrinterDetailsByPrinterIdForLdap(
+            siteId.toString(),
+            LdapUsername.toString(),
+            LdapPassword.toString()
+        )
         }else if(siteId.toString().contains("google")){
                 apiService.getPrinterDetailsByPrinterIdForGoogle(
-                LoginPrefs.getOCTAToken(context).toString(),
-                decodeJWT(context),
-                SignInCompanyPrefs.getIdpType(context).toString(),
-                SignInCompanyPrefs.getIdpName(context).toString(),
-                "serverId"
-            )
+                    LoginPrefs.getOCTAToken(context).toString(),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString(),
+                    "serverId"
+                )
         }
         else{
             apiService.getPrinterDetailsByPrinterId(
@@ -475,12 +531,15 @@ class PrintersFragment : Fragment() {
                             addPrinterForshareDocument(printer, context)
                             Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
 
                     if (purpose.equals("getPrinterDetailsForPullJob")) {
-                        if (printer.isPullPrinter.equals("0.0") && (printer.pull_print.equals("2.0") || printer.pull_print.equals("0.0"))
+                        if (printer.isPullPrinter.equals("0.0") && (printer.pull_print.equals("2.0") || printer.pull_print.equals(
+                                "0.0"
+                            ))
                         ) {
                             printer.manual = false
                             allPrintersForPullHeldJob.add(printer);
@@ -508,7 +567,10 @@ class PrintersFragment : Fragment() {
             val type1 = object :
                 TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
             if (json2 != null) {
-                serverSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson<java.util.ArrayList<PrinterModel>>(json2, type1)
+                serverSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson<java.util.ArrayList<PrinterModel>>(
+                    json2,
+                    type1
+                )
                 serverSecurePrinterListWithDetailsSharedPreflist.add(printer)
                 val editor = prefs1.edit()
                 val json1 = gson1.toJson(serverSecurePrinterListWithDetailsSharedPreflist)
@@ -518,4 +580,25 @@ class PrintersFragment : Fragment() {
             }
         }
     }
+
+    val watcher: TextWatcher = object : TextWatcher {
+        override fun afterTextChanged(s: Editable) {
+            Log.d("text:", s.toString())
+            val filterList = java.util.ArrayList<PrinterModel>()
+            for (i in PrinterList().printerList.indices) {
+                val printerModel: PrinterModel = PrinterList().printerList.get(i)
+                if (printerModel.serviceName.toLowerCase()
+                        .contains(s.toString().toLowerCase())
+                ) {
+                    filterList.add(printerModel)
+                }
+            }
+
+            updateUi(filterList)
+        }
+
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+    }
+
 }
