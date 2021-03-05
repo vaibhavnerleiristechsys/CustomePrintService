@@ -8,23 +8,14 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<!--
-    <TextView
-        android:padding="8dp"
-        android:textSize="16sp"
-        android:text="Last Clicked:"
-        android:layout_alignParentTop="true"
-        android:background="@android:color/holo_blue_dark"
-        android:id="@+id/status_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />-->
+
 
     <RelativeLayout
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="60dp"
-        android:id="@+id/container"></RelativeLayout>
+        android:id="@+id/container"/>
 
 
 </RelativeLayout>

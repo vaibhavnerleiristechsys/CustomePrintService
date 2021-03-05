@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -386,13 +387,32 @@ public class PrintPreview extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 File file = new File(filePath);
+                ArrayList<URI> ippUri =new ArrayList<URI>();
+                if(selectedPrinterModel != null){
+                    String printerHost = selectedPrinterModel.getPrinterHost().toString();
+                    ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/print"));
+                    ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/printer"));
+                    ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/lp"));
+                    ippUri.add(URI.create("ipp:/"+printerHost+"/printer"));
+                    ippUri.add(URI.create("ipp:/"+printerHost+"/ipp/print"));
+                    ippUri.add(URI.create("http:/"+printerHost+":631/ipp"));
+                    ippUri.add(URI.create("http:/"+printerHost+":631/ipp/print"));
+                    ippUri.add(URI.create("http:/"+printerHost+":631/ipp/printer"));
+                    ippUri.add(URI.create("http:/"+printerHost+":631/print"));
+                    ippUri.add(URI.create("http:/"+printerHost+"/ipp/print"));
+                    ippUri.add(URI.create("http:/"+printerHost));
+                    ippUri.add(URI.create("http:/"+printerHost+":631/printers/lp1"));
+                    ippUri.add(URI.create("https:/"+printerHost));
+                    ippUri.add(URI.create("https:/"+printerHost+":443/ipp/print"));
+                    ippUri.add(URI.create("ipps:/"+printerHost+":443/ipp/print"));
+                }
 
 
                 if(file.getName().contains(".pdf")) {
                     if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null) {
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies);
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
@@ -400,7 +420,7 @@ public class PrintPreview extends AppCompatActivity {
                     if (radioButton.getText().toString().equals("page") && selectedPrinterModel != null && filePath != null) {
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies);
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies,ippUri);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
@@ -412,7 +432,7 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies);
+                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);

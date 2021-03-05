@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Map;
 
 import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
@@ -196,7 +197,7 @@ public class PrintRenderUtils {
     }
 
 
-    public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies) {
+    public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri) {
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -221,8 +222,10 @@ public class PrintRenderUtils {
                         int totalTimeThreadSleep = 0;
                         int startIndexOfPage=startIndex-1;
                         int endIndexOfPage=endIndex-1;
+                        int counter=0;
                         while (pagePrintCounter < pageCount) {
                             if (startIndexOfPage <= pagePrintCounter && endIndexOfPage >= pagePrintCounter) {
+
                                 String path = "/storage/self/primary/sample" + pagePrintCounter + ".jpg";
                                 File renderFile = new File(path);
 
@@ -253,8 +256,26 @@ public class PrintRenderUtils {
 
                                     break;
                                 } else {
+                                    String ippUriFinal =finalUri.toString();
+                                    new Handler(Looper.getMainLooper()).post(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(context, ippUriFinal, Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
 
                                     Map map = printUtils.print(finalUri, renderFile, context, "");
+
+                                    String exception = (String) map.get("Exception");
+                                    new Handler(Looper.getMainLooper()).post(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
+                                                }
+                                            });
 
                                     if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
                                         String expMessage = "The get attributes call failed ";
@@ -267,7 +288,15 @@ public class PrintRenderUtils {
                                                 });
 
                                         Log.i("printer", expMessage);
-                                        break;
+                                        if(counter<15) {
+                                            finalUri = ippUri.get(counter);
+                                            counter++;
+                                            continue;
+                                        }else {
+                                            counter=0;
+                                            break;
+                                        }
+
                                     }
 
                                     if (map.get("status").equals("server-error-busy")) {
@@ -323,12 +352,11 @@ public class PrintRenderUtils {
     }
 
 
-    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context,int noOfCopies) {
+    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri) {
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
             {
-
                 try {
                     URI finalUri = URI.create(printerString);
                     PrintUtils printUtils = new PrintUtils();
@@ -338,21 +366,47 @@ public class PrintRenderUtils {
                         int threadSleepInMilliSecs = 3000;
                         int timeThreshold = threadSleepInMilliSecs * 40;
                         int totalTimeThreadSleep = 0;
+                        int counter=0;
                         while (pagePrintCounter < 1) {
-                                    Map map = printUtils.print(finalUri, file, context, "");
+                            String ippUriFinal =finalUri.toString();
+                            new Handler(Looper.getMainLooper()).post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(context, ippUriFinal, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
 
+                                    Map map = printUtils.print(finalUri, file, context, "");
+                                    String exception = (String) map.get("Exception");
+                                    new Handler(Looper.getMainLooper()).post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
                                     if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
                                         String expMessage = "The get attributes call failed ";
                                         new Handler(Looper.getMainLooper()).post(
                                                 new Runnable() {
                                                     @Override
                                                     public void run() {
+
                                                         Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+
                                                     }
                                                 });
 
                                         Log.i("printer", expMessage);
-                                        break;
+
+                                        if(counter<15) {
+                                            finalUri = ippUri.get(counter);
+                                            counter++;
+                                            continue;
+                                        }else {
+                                            break;
+                                        }
                                     }
 
                                     if (map.get("status").equals("server-error-busy")) {

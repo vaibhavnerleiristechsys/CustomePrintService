@@ -42,7 +42,7 @@
         android:layout_marginBottom="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDialogPageRange"></NumberPicker>
+        app:layout_constraintTop_toBottomOf="@+id/txtDialogPageRange"/>
 
     <TextView
         android:id="@+id/txtTo"
@@ -64,6 +64,6 @@
         android:layout_marginEnd="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDialogPageRange"></NumberPicker>
+        app:layout_constraintTop_toBottomOf="@+id/txtDialogPageRange"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

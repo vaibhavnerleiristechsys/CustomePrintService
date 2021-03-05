@@ -47,20 +47,6 @@
         app:layout_constraintStart_toStartOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent" />
 
-  <!--  <TextView
-        android:id="@+id/print"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="print"
-        android:textColor="#FFFFFF"
-        android:textSize="14dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/documentPreview"
-        app:layout_constraintTop_toTopOf="parent" />
-
-        -->
-
     <androidx.cardview.widget.CardView
         android:id="@+id/printDetails"
         android:layout_width="match_parent"
@@ -229,78 +215,6 @@
                 app:layout_constraintVertical_bias="1.0"
                 tools:ignore="MissingConstraints" />
 
-
-            <!--
-                        <RadioButton
-                            android:id="@+id/radioButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="80dp"
-                            android:layout_marginTop="24dp"
-                            app:layout_constraintStart_toEndOf="@+id/pages"
-                            app:layout_constraintTop_toBottomOf="@+id/static_spinner" />
-
-
-                        <RadioButton
-                            android:id="@+id/radioButtonforpage"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginStart="80dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/page"
-                            app:layout_constraintStart_toEndOf="@+id/pages"
-                            app:layout_constraintTop_toBottomOf="@+id/radioButton"
-                            app:layout_constraintVertical_bias="0.2" />
-
-                        <TextView
-                            android:id="@+id/all"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="All"
-                            android:textSize="16dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toEndOf="@+id/radioButton"
-                            app:layout_constraintTop_toBottomOf="@+id/static_spinner"
-                            app:layout_constraintVertical_bias="0.308" />
-
-
-                        <TextView
-                            android:id="@+id/page"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="20dp"
-                            android:text="page"
-                            android:textSize="16dp"
-                            app:layout_constraintEnd_toStartOf="@+id/pagesCount"
-                            app:layout_constraintHorizontal_bias="0.0"
-                            app:layout_constraintStart_toEndOf="@+id/radioButtonforpage"
-                            app:layout_constraintTop_toBottomOf="@+id/all" />
-
-                        <EditText
-                            android:id="@+id/pagesCount"
-                            android:layout_width="90dp"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginBottom="5dp"
-                            android:alpha="0.42"
-                            android:hint="1-4"
-                            android:singleLine="true"
-                            android:textColor="#000000"
-                            android:textColorHint="#000000"
-                            android:textSize="12sp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/page"
-                            app:layout_constraintTop_toBottomOf="@+id/all"
-                            app:layout_constraintVertical_bias="0.72" />
-            -->
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
