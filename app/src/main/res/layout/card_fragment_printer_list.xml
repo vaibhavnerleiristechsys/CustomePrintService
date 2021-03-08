@@ -18,8 +18,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:background="@drawable/print"
+        app:layout_constraintBottom_toBottomOf="@+id/txtFragmentBuildingName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtFragmentPrinterName" />
+
+    <TextView
+        android:id="@+id/textForHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="25dp"
+        android:text="A"
+        android:textColor="#000000"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,14 +40,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:text="Master Builder"
-        android:textSize="17sp"
         android:textColor="#000000"
+        android:textSize="17sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/imgPrintImage"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textForHeader" />
 
     <TextView
         android:id="@+id/txtFragmentBuildingName"
@@ -56,11 +68,11 @@
         android:id="@+id/removePrinter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:background="@drawable/removeprinter"
+        app:layout_constraintBottom_toBottomOf="@+id/txtFragmentBuildingName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/txtFragmentPrinterName" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

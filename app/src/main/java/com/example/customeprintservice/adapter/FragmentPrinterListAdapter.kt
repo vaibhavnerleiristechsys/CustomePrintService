@@ -40,7 +40,7 @@ class FragmentPrinterListAdapter(
 ) : RecyclerView.Adapter<FragmentPrinterListAdapter.ViewHolder>() {
     val holders = ArrayList<ViewHolder>()
     private var selectedPosition = -1
-
+    val headers = ArrayList<String>()
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -58,11 +58,39 @@ class FragmentPrinterListAdapter(
         if(list[position].manual==true){
             holder.getRemovePrinter().visibility=View.VISIBLE
         }
+        if(location.equals("printerTab")){
+            holder.getPrinterHeaderName().visibility=View.GONE
+        }else{
+            holder.getPrinterHeaderName().visibility=View.VISIBLE
+        }
+
+        var isExist= false
+            for (header in headers){
+                if(header.equals(list[position].serviceName.get(0).toString().toLowerCase())){
+                    isExist =true;
+                }
+            }
+        if(isExist==false){
+            headers.add(list[position].serviceName.get(0).toString().toLowerCase())
+            holder.getPrinterHeaderName().setBackgroundColor(Color.parseColor("#F1F2F3"))
+            holder.getPrinterHeaderName().text=list[position].serviceName.get(0).toString().toUpperCase();
+        }
+        if(isExist==true){
+            holder.getPrinterHeaderName().visibility=View.GONE
+        }
+
+
+
+
+
+
+
         holders.add(holder)
         this.selectedPosition = position
         if(location.equals("selectPrinter")) {
         holder.getCardview().setOnClickListener {
             if (list[position].printerHost != null) {
+
                 Log.d("selected printerdetails", list[position].serviceName.toString())
                 Log.d("selected printerdetails", list[position].printerHost.toString())
 
@@ -125,6 +153,10 @@ class FragmentPrinterListAdapter(
 
         fun getPrinterName(): TextView {
             return itemView.findViewById(R.id.txtFragmentPrinterName)
+        }
+
+        fun getPrinterHeaderName(): TextView {
+            return itemView.findViewById(R.id.textForHeader)
         }
 
         fun getBuildingName(): TextView {

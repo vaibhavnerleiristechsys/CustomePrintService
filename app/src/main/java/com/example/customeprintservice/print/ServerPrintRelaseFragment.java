@@ -193,9 +193,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }
                   if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")){
 
-                      PrinterList printerList = new PrinterList();
+                     /*  PrinterList printerList = new PrinterList();
                       PrinterModel printerModel;
-                      for(int i=0;i<printerList.getPrinterList().size();i++){
+                     for(int i=0;i<printerList.getPrinterList().size();i++){
                           Boolean isAvailable=false;
                           printerModel=printerList.getPrinterList().get(i);
                           if(printerModel.getIsPullPrinter() !=null) {
@@ -213,7 +213,16 @@ public class ServerPrintRelaseFragment extends Fragment {
                               }
                           }
                       }
+*/
+                      Collections.sort(PrintersFragment.Companion.getAllPrintersForPullHeldJob(), new Comparator<PrinterModel>() {
+                          @Override
+                          public int compare(PrinterModel item, PrinterModel t1) {
+                              String s1 = item.getServiceName();
+                              String s2 = t1.getServiceName();
+                              return s1.compareToIgnoreCase(s2);
+                          }
 
+                      });
                       selectePrinterDialog(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
 
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
@@ -283,7 +292,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         WindowManager.LayoutParams wlp = window.getAttributes();
         wlp.gravity = Gravity.BOTTOM;
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        window.setDimAmount(0.5f);
+       window.setDimAmount(0.5f);
         window.setAttributes(wlp);
 
         RecyclerView printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
@@ -596,7 +605,6 @@ public class ServerPrintRelaseFragment extends Fragment {
         String LdapUsername= prefs.getString("LdapUsername", "");
         String LdapPassword= prefs.getString("LdapPassword", "");
         Log.d("IsLdap:", IsLdap);
-
         String siteId=LoginPrefs.Companion.getSiteId(requireContext());
         String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
         ApiService apiService = new RetrofitClient(requireContext()).getRetrofitInstance(url).create(ApiService.class);
@@ -655,13 +663,17 @@ public class ServerPrintRelaseFragment extends Fragment {
                 else
                 {
                     int code = response.code();
+
                 }
             }
 
             @Override
             public void onFailure(Call<List<Printer>> call, Throwable t) {
                 int code  = call.hashCode();
+
             }
         });
     }
+
+
 }
