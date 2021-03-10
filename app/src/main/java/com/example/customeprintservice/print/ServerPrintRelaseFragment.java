@@ -223,7 +223,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                           }
 
                       });
-                      selectePrinterDialog(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
+                    ArrayList<PrinterModel> RecentPrinterAddedList =  addRecentPrintersToDisplay(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
+                    //  selectePrinterDialog(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
+                      selectePrinterDialog(RecentPrinterAddedList);
 
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
                       selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterForHeldJob());
@@ -324,8 +326,12 @@ public class ServerPrintRelaseFragment extends Fragment {
                     }
 
                 });
-
-                printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,filterList,"selectPrinter"));
+               if(s.toString().equals("")) {
+                   ArrayList<PrinterModel> RecentPrinterAddedList = addRecentPrintersToDisplay(filterList);
+                   printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context, RecentPrinterAddedList, "selectPrinter"));
+               }else{
+                   printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context, filterList, "selectPrinter"));
+               }
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -675,5 +681,38 @@ public class ServerPrintRelaseFragment extends Fragment {
         });
     }
 
+public ArrayList<PrinterModel> addRecentPrintersToDisplay(ArrayList<PrinterModel> originalList){
+    ArrayList<PrinterModel> removeRecentPrinters=new ArrayList<PrinterModel>();
+    removeRecentPrinters.addAll(originalList);
+    originalList.clear();
+    for(int i=0;i<removeRecentPrinters.size();i++){
+        PrinterModel removeRecentTagPrinter = removeRecentPrinters.get(i);
+        removeRecentTagPrinter.setRecentUsed(false);
+        originalList.add(removeRecentTagPrinter);
+    }
 
+
+
+    SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+    ArrayList<PrinterModel> recentPrinters=new ArrayList<PrinterModel>();
+    Gson gson1 = new Gson();
+    String json2 = prefs1.getString("recentUsedPrinters", null);
+    Type type1 = new TypeToken<ArrayList<PrinterModel>>() {}.getType();
+    if (json2 != null) {
+        recentPrinters = gson1.fromJson(json2, type1);
+        for(int i=0;i<recentPrinters.size();i++){
+            PrinterModel printerModel= recentPrinters.get(i);
+           for(int j=0;j<originalList.size();j++){
+               PrinterModel OriginalPrinterModel = originalList.get(j);
+               if(OriginalPrinterModel.getServiceName().equals(printerModel.getServiceName())){
+                   originalList.remove(OriginalPrinterModel);
+                   OriginalPrinterModel.setRecentUsed(true);
+                   originalList.add(i,OriginalPrinterModel);
+               }
+           }
+
+        }
+    }
+    return originalList;
+}
 }

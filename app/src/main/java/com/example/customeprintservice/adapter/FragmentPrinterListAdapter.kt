@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.*
 import android.widget.AbsListView
@@ -28,6 +29,8 @@ import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 
 class FragmentPrinterListAdapter(
@@ -65,19 +68,31 @@ class FragmentPrinterListAdapter(
         }
 
         var isExist= false
-            for (header in headers){
-                if(header.equals(list[position].serviceName.get(0).toString().toLowerCase())){
-                    isExist =true;
+
+
+            for (header in headers) {
+                if(header.equals("Recent") && list[position].recentUsed==true){
+                    isExist = true;
+                }
+                else if (header.equals(list[position].serviceName.get(0).toString().toLowerCase())) {
+                    isExist = true;
                 }
             }
-        if(isExist==false){
-            headers.add(list[position].serviceName.get(0).toString().toLowerCase())
-            holder.getPrinterHeaderName().setBackgroundColor(Color.parseColor("#F1F2F3"))
-            holder.getPrinterHeaderName().text=list[position].serviceName.get(0).toString().toUpperCase();
-        }
-        if(isExist==true){
-            holder.getPrinterHeaderName().visibility=View.GONE
-        }
+            if (isExist == false) {
+                if(list[position].recentUsed==true){
+                    headers.add("Recent");
+                    holder.getPrinterHeaderName().setBackgroundColor(Color.parseColor("#F1F2F3"))
+                    holder.getPrinterHeaderName().text="Recent"
+                }else {
+                    headers.add(list[position].serviceName.get(0).toString().toLowerCase())
+                    holder.getPrinterHeaderName().setBackgroundColor(Color.parseColor("#F1F2F3"))
+                    holder.getPrinterHeaderName().text =
+                        list[position].serviceName.get(0).toString().toUpperCase();
+                }
+            }
+            if (isExist == true) {
+                holder.getPrinterHeaderName().visibility = View.GONE
+            }
 
 
 
@@ -90,7 +105,9 @@ class FragmentPrinterListAdapter(
         if(location.equals("selectPrinter")) {
         holder.getCardview().setOnClickListener {
             if (list[position].printerHost != null) {
-
+                if(list[position].recentUsed != true) {
+                    addRecentPrintersToPref(list[position])
+                }
                 Log.d("selected printerdetails", list[position].serviceName.toString())
                 Log.d("selected printerdetails", list[position].printerHost.toString())
 
@@ -236,6 +253,38 @@ class FragmentPrinterListAdapter(
             dialog.cancel()
         }
 
+    }
+
+    fun addRecentPrintersToPref(printerModel: PrinterModel){
+        var recentUsedPrinters = java.util.ArrayList<PrinterModel>()
+        val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson1 = Gson()
+        val json2 = prefs1.getString("recentUsedPrinters", null)
+        val type1 = object :
+            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+        if (json2 != null) {
+            recentUsedPrinters = gson1.fromJson<java.util.ArrayList<PrinterModel>>(
+                json2,
+                type1
+            )
+            if(recentUsedPrinters.size<4) {
+                recentUsedPrinters.add(0,printerModel)
+            }else{
+                recentUsedPrinters.removeAt(3)
+                recentUsedPrinters.add(0,printerModel)
+            }
+            val editor = prefs1.edit()
+            val json1 = gson1.toJson(recentUsedPrinters)
+            editor.putString("recentUsedPrinters", json1)
+            editor.apply()
+
+        }else{
+            recentUsedPrinters.add(0,printerModel)
+            val editor = prefs1.edit()
+            val json1 = gson1.toJson(recentUsedPrinters)
+            editor.putString("recentUsedPrinters", json1)
+            editor.apply()
+        }
     }
 }
 

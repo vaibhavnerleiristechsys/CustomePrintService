@@ -22,6 +22,9 @@ public class PrinterModel {
 
     private String pull_print;
 
+    private Boolean isRecentUsed = false;
+
+
     public String getNodeId() {
         return nodeId;
     }
@@ -92,6 +95,14 @@ public class PrinterModel {
 
     public void setPull_print(String pull_print) {
         this.pull_print = pull_print;
+    }
+
+    public Boolean getRecentUsed() {
+        return isRecentUsed;
+    }
+
+    public void setRecentUsed(Boolean recentUsed) {
+        isRecentUsed = recentUsed;
     }
 }
 

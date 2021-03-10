@@ -213,16 +213,28 @@ public class PrintRenderUtils {
                     URI finalUri = URI.create(printerString);
                     PrintUtils printUtils = new PrintUtils();
                     Bitmap pageImage = null;
+                    Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
+                    if (!resultMap.containsKey("status")) {
+                        // show error
+                        new Handler(Looper.getMainLooper()).post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
+                                    }
+                                });
 
-
-                    for(int i=0;i<noOfCopies;i++) {
+                        // show toast
+                    } else if(resultMap.get("status").equals("successful-ok")) {
+                        finalUri = URI.create(resultMap.get("finalUri"));
+                    for (int i = 0; i < noOfCopies; i++) {
                         int pagePrintCounter = 0;
                         int threadSleepInMilliSecs = 3000;
                         int timeThreshold = threadSleepInMilliSecs * 40;
                         int totalTimeThreadSleep = 0;
-                        int startIndexOfPage=startIndex-1;
-                        int endIndexOfPage=endIndex-1;
-                        int counter=0;
+                        int startIndexOfPage = startIndex - 1;
+                        int endIndexOfPage = endIndex - 1;
+                        int counter = 0;
                         while (pagePrintCounter < pageCount) {
                             if (startIndexOfPage <= pagePrintCounter && endIndexOfPage >= pagePrintCounter) {
 
@@ -256,7 +268,7 @@ public class PrintRenderUtils {
 
                                     break;
                                 } else {
-                                    String ippUriFinal =finalUri.toString();
+                                    String ippUriFinal = finalUri.toString();
                                     new Handler(Looper.getMainLooper()).post(
                                             new Runnable() {
                                                 @Override
@@ -288,12 +300,12 @@ public class PrintRenderUtils {
                                                 });
 
                                         Log.i("printer", expMessage);
-                                        if(counter<15) {
+                                        if (counter < 15) {
                                             finalUri = ippUri.get(counter);
                                             counter++;
                                             continue;
-                                        }else {
-                                            counter=0;
+                                        } else {
+                                            counter = 0;
                                             break;
                                         }
 
@@ -320,6 +332,7 @@ public class PrintRenderUtils {
                                         totalTimeThreadSleep = 0;
                                     }
                                 }
+
                             } else {
                                 pagePrintCounter++;
                                 totalTimeThreadSleep = 0;
@@ -327,7 +340,7 @@ public class PrintRenderUtils {
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     }
-
+                }
 
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
@@ -360,15 +373,30 @@ public class PrintRenderUtils {
                 try {
                     URI finalUri = URI.create(printerString);
                     PrintUtils printUtils = new PrintUtils();
+                    Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
 
-                    for(int i=0;i<noOfCopies;i++) {
+                    if (!resultMap.containsKey("status")) {
+                        // show error
+                        new Handler(Looper.getMainLooper()).post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                        // show toast
+                    } else if(resultMap.get("status").equals("successful-ok")) {
+                        finalUri = URI.create(resultMap.get("finalUri"));
+
+                    for (int i = 0; i < noOfCopies; i++) {
                         int pagePrintCounter = 0;
                         int threadSleepInMilliSecs = 3000;
                         int timeThreshold = threadSleepInMilliSecs * 40;
                         int totalTimeThreadSleep = 0;
-                        int counter=0;
+                        int counter = 0;
                         while (pagePrintCounter < 1) {
-                            String ippUriFinal =finalUri.toString();
+                            String ippUriFinal = finalUri.toString();
                             new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
@@ -377,65 +405,68 @@ public class PrintRenderUtils {
                                         }
                                     });
 
-                                    Map map = printUtils.print(finalUri, file, context, "");
-                                    String exception = (String) map.get("Exception");
-                                    new Handler(Looper.getMainLooper()).post(
+                            Map map = printUtils.print(finalUri, file, context, "");
+                            String exception = (String) map.get("Exception");
+                            new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
                                         }
                                     });
-                                    if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
-                                        String expMessage = "The get attributes call failed ";
-                                        new Handler(Looper.getMainLooper()).post(
-                                                new Runnable() {
-                                                    @Override
-                                                    public void run() {
+                            if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
+                                String expMessage = "Print Status is null";
+                                //  String expMessage = "The get attributes call failed ";
+                                new Handler(Looper.getMainLooper()).post(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
 
-                                                        Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                                Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
 
-                                                    }
-                                                });
+                                            }
+                                        });
 
-                                        Log.i("printer", expMessage);
+                                Log.i("printer", expMessage);
 
-                                        if(counter<15) {
+                                        /*if(counter<15) {
                                             finalUri = ippUri.get(counter);
                                             counter++;
                                             continue;
                                         }else {
                                             break;
-                                        }
-                                    }
+                                        }*/
+                            }
 
-                                    if (map.get("status").equals("server-error-busy")) {
-                                        Thread.sleep(threadSleepInMilliSecs);
-                                        totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
-                                        if (totalTimeThreadSleep > timeThreshold) {
-                                            String expMessage = "The printer is unresponsive. Aborting ";
-                                            new Handler(Looper.getMainLooper()).post(
-                                                    new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
+                            if (map.get("status").equals("server-error-busy")) {
+                                Thread.sleep(threadSleepInMilliSecs);
+                                totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
+                                if (totalTimeThreadSleep > timeThreshold) {
+                                    String expMessage = "The printer is unresponsive. Aborting ";
+                                    new Handler(Looper.getMainLooper()).post(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                                }
+                                            });
 
-                                            Log.i("printer", expMessage);
-                                            break;
-                                        }
-                                    } else {
-                                        pagePrintCounter++;
-                                        totalTimeThreadSleep = 0;
-                                    }
+                                    Log.i("printer", expMessage);
+                                    break;
+                                }
+                            } else {
+                                pagePrintCounter++;
+                                totalTimeThreadSleep = 0;
+                            }
 
 
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     }
 
+                }else{
 
+                    }
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                     // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();

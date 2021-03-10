@@ -3,6 +3,8 @@ package com.example.customeprintservice.jipp;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 import com.example.customeprintservice.MainActivity;
@@ -213,21 +215,34 @@ public class PrintUtils {
                 Log.i("printer", "format--->" + format.toLowerCase().trim());
             }
             List<String> att=new ArrayList<String>();
-            try {
+            List<String> attributes=new ArrayList<String>();
+
+            /*try {
                 att = getPrinterSupportedFormats(uri, context);
                 resultMap.put("getPrinterSupportedFormatsatt", att.toString());
             }catch(Exception e){
                 resultMap.put("Exception",e.getMessage());
                 return resultMap;
+            }*/
+
+            /*try {
+                attributes = getPrinterSupportedVersion(uri, context);
+                resultMap.put("getPrinterSupportedVersionsatt", attributes.toString());
+            }catch(Exception e){
+                resultMap.put("Exception",e.getMessage());
+                return resultMap;
             }
+
+
             if(att.isEmpty())
             {
                 resultMap.put("status","getAttributefailed") ;
                 return resultMap;
 
-            }
+            }*/
 
-            if (format != null && att.contains(format.toLowerCase().trim())) {
+          //  if (format != null && att.contains(format.toLowerCase().trim())) {
+            if (format != null) {
                 IppPacket printRequest = IppPacket.printJob(uri)
                         .putOperationAttributes(
                                 requestingUserName.of(CMD_NAME),
@@ -265,6 +280,69 @@ public class PrintUtils {
             context.sendBroadcast(intent);
         }
         return resultMap;
+    }
+
+    public Map<String, String> getAttributesCall(ArrayList<URI> ippUri, Context context)
+    {
+        Map<String, String> resultMap = new HashMap<>();
+        int count = 0;
+
+        for(URI specificUri: ippUri) {
+            count++;
+            IppPacket attributeRequest =
+                    IppPacket.getPrinterAttributes(specificUri)
+                            .build();
+
+            IppPacketData request = new IppPacketData(attributeRequest);
+            IppPacketData response = null;
+            try{
+                response = transport.sendData(specificUri, request);
+                IppPacket responsePacket = response.getPacket();
+                resultMap =  getResponseDetails(responsePacket);
+                if(resultMap.get("status").trim().equalsIgnoreCase("successful-ok"))
+                {
+                    resultMap.put("finalUri",specificUri.toString());
+                    resultMap.put("result","success");
+                    return resultMap;
+                }
+                else
+                {
+                    resultMap.put("uri-"+count,specificUri.toString());
+                    resultMap.put("result-"+count,resultMap.get("status"));
+                    String result ="result-"+count+" uri-"+specificUri.toString()+" status-"+resultMap.get("status");
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context,result , Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+                }
+            }
+            catch (IOException e){
+               // Log.i("printer", "print status===>" + status + "\nprint status String===>" + statusString);
+                resultMap.put("uri-"+count,specificUri.toString());
+                resultMap.put("result-"+count,e.getMessage());
+                String result ="exception result-"+count+" uri-"+specificUri.toString()+" exception-"+e.getMessage();
+                new Handler(Looper.getMainLooper()).post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+
+                continue;
+            }
+
+
+
+        }
+
+       return resultMap;
+     //   return resultMap;
     }
 
     private Map<String, String> getResponseDetails(IppPacket responsePacket) {
@@ -307,10 +385,14 @@ public class PrintUtils {
             attributeList = new ArrayList<>();
             Attribute<String> requested;
             requested = requestedAttributes.of("all");
+
             IppPacket attributeRequest =
                     IppPacket.getPrinterAttributes(uri)
                             .putOperationAttributes(requestingUserName.of("print"), requested)
                             .build();
+
+            String attributeRequestStringified  = attributeRequest.toString();
+            Log.d("attributeRequest",attributeRequestStringified);
 
            IppPacketData request = new IppPacketData(attributeRequest);
             IppPacketData response = transport.sendData(uri, request);
@@ -350,6 +432,64 @@ public class PrintUtils {
             context.sendBroadcast(printerSupportedFormatsIntent);
             return attributeList;
     }
+
+
+
+    public List<String> getPrinterSupportedVersion(URI uri, Context context) throws
+            IOException {
+        List<String> attributeList = null;
+        attributeList = new ArrayList<>();
+        Attribute<String> requested;
+        requested = requestedAttributes.of("all");
+
+        IppPacket attributeRequest =
+                IppPacket.getPrinterAttributes(uri)
+                        .putOperationAttributes(requestingUserName.of("print"), requested)
+                        .build();
+
+        String attributeRequestStringified  = attributeRequest.toString();
+        Log.d("attributeRequest",attributeRequestStringified);
+
+        IppPacketData request = new IppPacketData(attributeRequest);
+        IppPacketData response = transport.sendData(uri, request);
+        attributeList.add(response.toString());
+        IppPacket responsePacket = response.getPacket();
+
+        Intent intent =
+                new Intent("com.example.PRINT_RESPONSE")
+                        .putExtra("getPrinterAttributes", response.toString());
+        context.sendBroadcast(intent);
+
+
+        List<AttributeGroup> attributeGroupList = responsePacket.getAttributeGroups();
+
+        for (AttributeGroup attributeGroup : attributeGroupList) {
+            if (attributeGroup.get("ipp-versions-supported") != null) {
+                Log.i("printer", "attribute groups-->" + attributeGroup.get("ipp-versions-supported"));
+                Attribute attribute = attributeGroup.get("ipp-versions-supported");
+                for (int i = 0; i < attribute.size(); i++) {
+                    Object att = attribute.get(i);
+                  //  if (att instanceof OtherString) {
+                      //  OtherString attOtherString = (OtherString) att;
+                    //    ValueTag valueTag = attOtherString.getTag();
+                    //    String tagName = valueTag.getName();
+                    //    String tagValue = attOtherString.getValue().trim().toLowerCase();
+                        //attributeList.add(tagValue);
+                    attributeList.add(att.toString());
+                  //  }
+                    Log.i("printer", "Format: " + i + " " + att);
+                }
+            }
+        }
+
+        Log.i("printer", "attribute list in print utils->>" + attributeList);
+        Intent printerSupportedFormatsIntent =
+                new Intent("com.example.PRINT_RESPONSE")
+                        .putExtra("printerSupportedFormats", attributeList.toString());
+        context.sendBroadcast(printerSupportedFormatsIntent);
+        return attributeList;
+    }
+
 
 
     public  String mapToString(Map<String, String> map) {
