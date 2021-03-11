@@ -6,15 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import com.example.customeprintservice.print.PrintersFragment;
+import com.example.customeprintservice.print.ServerPrintRelaseFragment;
 import com.example.customeprintservice.print.ui.gallery.GalleryFragment;
 import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.github.johnkil.print.PrintView;
 
 import com.unnamed.b.atv.model.TreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItemHolder.IconTreeItem> {
     private TextView tvValue;
     private PrintView arrowView;
+    Logger logger = LoggerFactory.getLogger(IconTreeItemHolder.class);
 
     public IconTreeItemHolder(Context context) {
         super(context);
@@ -52,6 +57,7 @@ public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItem
                             if(printer.getNode_title().equals(item.text.toString())){
                                 if(printer.getObject_id()!=null) {
                                     Log.d("printer id", printer.getObject_id().toString());
+                                    logger.info("printer id", printer.getObject_id().toString());
                                     new PrintersFragment().getPrinterListByPrinterId(context,printer.getObject_id().toString(),"printerDetailForAddPrinterTab");
                                 }
                             }

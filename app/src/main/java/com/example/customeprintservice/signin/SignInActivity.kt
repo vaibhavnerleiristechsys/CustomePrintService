@@ -17,12 +17,14 @@ import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import okhttp3.ResponseBody
 import org.jetbrains.anko.toast
+import org.slf4j.LoggerFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,7 +33,7 @@ class SignInActivity : AppCompatActivity() {
 
     private var isShowPass = false
     private var bundle = Bundle()
-
+    var LOG = LoggerFactory.getLogger(SignInActivity::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +42,14 @@ class SignInActivity : AppCompatActivity() {
             bundle = intent.extras!!
             btnSignInWithOkta.visibility= View.VISIBLE
             txtOr.visibility= View.VISIBLE
-            val sharedPreferences: SharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+            val sharedPreferences: SharedPreferences = getSharedPreferences(
+                "MySharedPref",
+                Context.MODE_PRIVATE
+            )
             val myEdit = sharedPreferences.edit()
-            myEdit.putString("IsLdap","");
-            myEdit.putString("LdapUsername","");
-            myEdit.putString("LdapPassword","");
+            myEdit.putString("IsLdap", "");
+            myEdit.putString("LdapUsername", "");
+            myEdit.putString("LdapPassword", "");
             myEdit.commit()
 
 
@@ -52,7 +57,12 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.text ="    Sign In With Okta"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_okta)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_okta)
-                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
+                    drawable,
+                    null,
+                    null,
+                    null
+                )
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
@@ -63,7 +73,12 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.text = "    Sign In With Azure AD"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_azure)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_azure)
-                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
+                    drawable,
+                    null,
+                    null,
+                    null
+                )
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
@@ -73,7 +88,12 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.text = "    Sign In With Google"
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_google)
                 val drawable = baseContext.resources.getDrawable(R.mipmap.icon_google)
-                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null)
+                btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
+                    drawable,
+                    null,
+                    null,
+                    null
+                )
                 edtUserName.visibility= View.GONE
                 edtPassword.visibility= View.GONE
                 btnSignIn.visibility= View.GONE
@@ -89,6 +109,7 @@ class SignInActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Log.i("printer", "exception=>$e")
+            LOG.info("printer", "exception=>$e")
             toast("exception=>$e")
         }
         supportActionBar?.setHomeAsUpIndicator(R.drawable.button_sign_in_google)
@@ -106,19 +127,22 @@ class SignInActivity : AppCompatActivity() {
             val username = edtUserName.text.toString()
             val password = edtPassword.text.toString()
 
-           Log.d("username",edtUserName.text.toString())
-                   Log.d("password",edtPassword.text.toString())
-            checkLdapLogin(this@SignInActivity,username,password)
+            Log.d("username", edtUserName.text.toString())
+            LOG.info("username", edtUserName.text.toString())
+            Log.d("password", edtPassword.text.toString())
+            LOG.info("password", edtPassword.text.toString())
+            checkLdapLogin(this@SignInActivity, username, password)
 
         }
 
         backarrow.setOnClickListener {
-            val intent = Intent(this@SignInActivity , SignInCompany::class.java)
+            val intent = Intent(this@SignInActivity, SignInCompany::class.java)
             startActivity(intent)
         }
 
         val desktopUrl: String? = bundle.getString("desktopLoginUrl")
         Log.i("printer", "desktopUrl--->${desktopUrl}")
+        LOG.info("printer", "desktopUrl--->${desktopUrl}")
         btnSignInWithOkta.setOnClickListener {
             if (bundle.getString("buttonName") == "Okta") {
                 searchWeb(desktopUrl)
@@ -194,7 +218,7 @@ class SignInActivity : AppCompatActivity() {
         finish()
     }
 
-    fun checkLdapLogin(context: Context,username:String,password:String) {
+    fun checkLdapLogin(context: Context, username: String, password: String) {
         val companyUrl = LoginPrefs.getCompanyUrl(context)
         val BASE_URL = "https://"+companyUrl+"/api/verify-login/"
         val apiService = RetrofitClient(context)
@@ -215,20 +239,20 @@ class SignInActivity : AppCompatActivity() {
                 response: Response<ResponseBody>
             ) {
                 ProgressDialog.cancelLoading()
-                if (response.code()==204) {
-                    Log.i("LDAP printers Response",response.toString())
+                if (response.code() == 204) {
+                    Log.i("LDAP printers Response", response.toString())
+                    LOG.info("LDAP printers Response", response.toString())
                     toast("Login Successfully")
                     val sharedPreferences: SharedPreferences =
                         getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
                     val myEdit = sharedPreferences.edit()
-                    myEdit.putString("IsLdap","LDAP");
-                    myEdit.putString("LdapUsername",username);
-                    myEdit.putString("LdapPassword",password);
+                    myEdit.putString("IsLdap", "LDAP");
+                    myEdit.putString("LdapUsername", username);
+                    myEdit.putString("LdapPassword", password);
                     myEdit.commit()
-                    val intent = Intent(this@SignInActivity,MainActivity::class.java)
+                    val intent = Intent(this@SignInActivity, MainActivity::class.java)
                     startActivity(intent)
-                }
-                else{
+                } else {
                     toast("Login Not Successfully Please Try Again")
                 }
 
@@ -237,6 +261,7 @@ class SignInActivity : AppCompatActivity() {
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 ProgressDialog.cancelLoading()
                 Log.i("printer", "Error html response==>${t.message.toString()}")
+                LOG.info("printer", "Error html response==>${t.message.toString()}")
                 toast("Login Not Successfully Please Try Again")
             }
         })

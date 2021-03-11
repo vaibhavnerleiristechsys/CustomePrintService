@@ -15,7 +15,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.room.SelectedFile;
+import com.example.customeprintservice.signin.GoogleLoginActivity;
 import com.example.customeprintservice.utils.ProgressDialog;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +32,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
         mValues = items;
     }
-
+    Logger logger = LoggerFactory.getLogger(MyItemRecyclerViewAdapter.class);
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -62,22 +67,24 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
+                logger.info("check value", String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 Intent intent1 = new Intent("qrcodefloatingbutton");
                 intent1.putExtra("qrCodeScanBtn", "InActive");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
+                 try{
+                for (int i = 0; i < holders.size(); i++) {
 
-                for(int i=0;i<holders.size();i++) {
                     ViewHolder holder = holders.get(i);
                     if (i == position) {
                         holder.checkBox.setVisibility(View.VISIBLE);
                         holder.documenticon.setVisibility(View.GONE);
                         holder.checkBox.setChecked(true);
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
-                        if(!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                        if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
                             SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
-                            if(selectedFile.getFileName().equals(mValues.get(position).getFileName())){
+                            if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
                                 holder.checkBox.setChecked(false);
                                 holder.documenticon.setVisibility(View.VISIBLE);
                                 holder.checkBox.setVisibility(View.GONE);
@@ -88,22 +95,22 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 Intent intent3 = new Intent("qrcodefloatingbutton");
                                 intent3.putExtra("qrCodeScanBtn", "Active");
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
-                            }else{
+                            } else {
                                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                                 BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
                             }
 
-                        }else{
+                        } else {
                             BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                             BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
                         }
 
-                        if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+                        if (BottomNavigationActivityForServerPrint.selectedServerFile.size() > 0) {
                             SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                             if (selectedFile.isFromApi() == true) {
-                                if(selectedFile.getPrinterId()!=null) {
+                                if (selectedFile.getPrinterId() != null) {
                                     PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
-                                    if(selectedFile.getJobType().equals("secure_release")){
+                                    if (selectedFile.getJobType().equals("secure_release")) {
                                         ProgressDialog.Companion.showLoadingDialog(context, "please wait");
                                     }
                                     new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
@@ -118,6 +125,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }
+            }catch(Exception e){
+                     Log.e("File SelectionException",e.getMessage());
+                     logger.info("File SelectionException",e.getMessage());
+                 }
             }
 
         });
@@ -125,22 +136,23 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
+                logger.info("check value", String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 Intent intent1 = new Intent("qrcodefloatingbutton");
                 intent1.putExtra("qrCodeScanBtn", "InActive");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
-
-               for(int i=0;i<holders.size();i++) {
+                try{
+                for (int i = 0; i < holders.size(); i++) {
                     ViewHolder holder = holders.get(i);
                     if (i == position) {
                         holder.checkBox.setVisibility(View.VISIBLE);
                         holder.documenticon.setVisibility(View.GONE);
                         holder.checkBox.setChecked(true);
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
-                        if(!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                        if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
                             SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
-                            if(selectedFile.getFileName().equals(mValues.get(position).getFileName())){
+                            if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
                                 holder.checkBox.setChecked(false);
                                 holder.documenticon.setVisibility(View.VISIBLE);
                                 holder.checkBox.setVisibility(View.GONE);
@@ -151,22 +163,22 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 Intent intent3 = new Intent("qrcodefloatingbutton");
                                 intent3.putExtra("qrCodeScanBtn", "Active");
                                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
-                            }else{
+                            } else {
                                 BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                                 BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
                             }
 
-                        }else{
+                        } else {
                             BottomNavigationActivityForServerPrint.selectedServerFile.clear();
                             BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
                         }
 
-                        if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+                        if (BottomNavigationActivityForServerPrint.selectedServerFile.size() > 0) {
                             SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
                             if (selectedFile.isFromApi() == true) {
-                                if(selectedFile.getPrinterId()!=null) {
+                                if (selectedFile.getPrinterId() != null) {
                                     PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
-                                    if(selectedFile.getJobType().equals("secure_release")){
+                                    if (selectedFile.getJobType().equals("secure_release")) {
                                         ProgressDialog.Companion.showLoadingDialog(context, "please wait");
                                     }
                                     new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
@@ -181,6 +193,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                         holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     }
                 }
+            }catch(Exception e){
+                Log.e("File SelectionException",e.getMessage());
+                logger.info("File SelectionException",e.getMessage());
+            }
             }
 
         });

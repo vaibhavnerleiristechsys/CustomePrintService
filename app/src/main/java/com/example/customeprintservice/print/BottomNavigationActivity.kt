@@ -20,6 +20,7 @@ import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.signin.SignInActivity
 import com.example.customeprintservice.signin.SignInCompany
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
@@ -29,6 +30,7 @@ import kotlinx.android.synthetic.main.activity_bottom_navigation.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.noHistory
 import org.jetbrains.anko.toast
+import org.slf4j.LoggerFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,13 +44,14 @@ class BottomNavigationActivity : AppCompatActivity() {
     private var list = ArrayList<SelectedFile>()
     private var bundle = Bundle()
     val printReleaseFragment = PrintReleaseFragment()
+    var logger = LoggerFactory.getLogger(BottomNavigationActivity::class.java)
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bottom_navigation)
-        val printersFragment1 = PrintersFragment()
-        printersFragment1.getPrinterList(applicationContext,decodeJWT(applicationContext))
+     //   val printersFragment1 = PrintersFragment()
+      //  printersFragment1.getPrinterList(applicationContext,decodeJWT(applicationContext))
 
         list.clear()
         when (intent.action) {
@@ -57,6 +60,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     it?.forEach {
                         val realPath = FileUtils.getPath(this@BottomNavigationActivity, it)
                         Log.i("printer", "realpath==>$realPath")
+                        logger.info("printer", "realpath==>$realPath")
                         val selectedFile = SelectedFile()
                         selectedFile.filePath = realPath
                         selectedFile.fileName = File(realPath).name
@@ -68,6 +72,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     }
                 }
                 Log.i("printer", "list of shared url=>$list")
+                logger.info("printer", "list of shared url=>$list")
                 if (LoginPrefs.getOCTAToken(this@BottomNavigationActivity) == null) {
 
                     startActivity(intentFor<SignInCompany>().noHistory())
@@ -114,6 +119,7 @@ class BottomNavigationActivity : AppCompatActivity() {
 
         if (intent != null) {
             Log.i("printer", "intent data--->${intent.encodedPath}")
+            logger.info("printer", "intent data--->${intent.encodedPath}")
 
             val decodeUrl: String =
                 intent.encodedPath
@@ -170,16 +176,18 @@ class BottomNavigationActivity : AppCompatActivity() {
         call.enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
                 Log.i("printer", "token url->" + call.request().url())
+                logger.info("printer", "token url->" + call.request().url())
 
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     LoginPrefs.saveOctaToken(context, token.toString())
                     Log.i("printer", "tok==>$token")
+                    logger.info("printer", "tok==>$token")
                //     ProgressDialog.cancelLoading()
                     printReleaseFragment.arguments = bundle
 
-                    val printersFragment1 = PrintersFragment()
-                    printersFragment1.getPrinterList(context,decodeJWT(context))
+                  //  val printersFragment1 = PrintersFragment()
+                  //  printersFragment1.getPrinterList(context,decodeJWT(context))
                 } else {
                    // toast("Response is Not Successful")
                 }
@@ -188,8 +196,9 @@ class BottomNavigationActivity : AppCompatActivity() {
             override fun onFailure(call: Call<TokenResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
                 Log.i("printer", "token url->" + call.request().url())
+                logger.info("printer", "token url->" + call.request().url())
                 Log.i("printer", "Token error response-->" + t.message)
-                toast("Error-" + t.message)
+                logger.info("printer", "Token error response-->" + t.message)
             }
         })
     }

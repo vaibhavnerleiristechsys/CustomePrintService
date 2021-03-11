@@ -48,6 +48,12 @@ class MyReceiver : BroadcastReceiver() {
 
         }
 
+        var uri: String = ""
+        if (intent.getStringExtra("finalUri") != null) {
+            uri = intent.getStringExtra("finalUri").toString()
+            Toast.makeText(context,"uri:"+uri,Toast.LENGTH_LONG).show()
+        }
+
         var exception: String = ""
         if (intent.getStringExtra("exception") != null) {
             exception = intent.getStringExtra("exception").toString()

@@ -4,8 +4,10 @@
             <pattern>%d{MMM dd HH:mm:ss} customeprintservice: %-5level %logger{35} %m%n</pattern>
         </layout>
         <syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogConfig">
-            <host>logs2.papertrailapp.com</host>
-            <port>28704</port>
+           <!-- <host>logs2.papertrailapp.com</host>
+                 <port>28704</port>-->
+            <host>logs6.papertrailapp.com</host>
+            <port>12789</port>
             <sendLocalName>false</sendLocalName>
             <sendLocalTimestamp>false</sendLocalTimestamp>
             <maxMessageLength>128000</maxMessageLength>

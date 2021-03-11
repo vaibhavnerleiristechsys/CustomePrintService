@@ -46,6 +46,10 @@ import com.google.gson.reflect.TypeToken;
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.Toast;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
     public PrintService app;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,9 +85,9 @@ public class MainActivity extends AppCompatActivity {
         print=findViewById(R.id.print);
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
-        BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
-        PrintersFragment printersFragment1 = new PrintersFragment();
-        printersFragment1.getPrinterList(this, bottomNavigationActivity1.decodeJWT(this));
+       // BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
+     //   PrintersFragment printersFragment1 = new PrintersFragment();
+      //  printersFragment1.getPrinterList(this, bottomNavigationActivity1.decodeJWT(this));
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver1,
                 new IntentFilter("om.example.PRINT_RESPONSE"));

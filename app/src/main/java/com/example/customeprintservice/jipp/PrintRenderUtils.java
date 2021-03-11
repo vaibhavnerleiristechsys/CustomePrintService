@@ -407,13 +407,13 @@ public class PrintRenderUtils {
 
                             Map map = printUtils.print(finalUri, file, context, "");
                             String exception = (String) map.get("Exception");
-                            new Handler(Looper.getMainLooper()).post(
+                          /*  new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
                                         }
-                                    });
+                                    });*/
                             if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
                                 String expMessage = "Print Status is null";
                                 //  String expMessage = "The get attributes call failed ";

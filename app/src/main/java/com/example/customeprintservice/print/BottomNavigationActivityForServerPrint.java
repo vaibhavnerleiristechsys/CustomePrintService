@@ -3,15 +3,21 @@ package com.example.customeprintservice.print;
 import android.os.Bundle;
 import android.view.MenuItem;
 import com.example.customeprintservice.room.SelectedFile;
+import com.example.customeprintservice.signin.GoogleLoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.customeprintservice.R;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 
 public class BottomNavigationActivityForServerPrint extends AppCompatActivity  implements BottomNavigationView.OnNavigationItemSelectedListener{
     public static ArrayList<SelectedFile> selectedServerFile =new ArrayList<SelectedFile>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

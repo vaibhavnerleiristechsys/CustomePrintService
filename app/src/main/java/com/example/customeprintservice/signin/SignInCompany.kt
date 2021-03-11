@@ -21,6 +21,7 @@ import com.example.customeprintservice.utils.HideKeyboard
 import com.example.customeprintservice.utils.ProgressDialog
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
 import org.jetbrains.anko.toast
+import org.slf4j.LoggerFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +30,8 @@ import retrofit2.Response
 class SignInCompany : AppCompatActivity() {
 
     private var bundle = Bundle()
+    var logger = LoggerFactory.getLogger(SignInActivity::class.java)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (LoginPrefs.getOCTAToken(this@SignInCompany) != null) {
@@ -138,6 +141,7 @@ class SignInCompany : AppCompatActivity() {
                 if (response.code() == 200) {
                     ProgressDialog.cancelLoading()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
+                    logger.info("printer", "response of api==>" + response.isSuccessful)
                     if(edtYourCompany.text.toString().contains("devncoldap")){
                         bundle.putString("buttonName", "LDAP")
                     }
@@ -194,6 +198,7 @@ class SignInCompany : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 toast("Idp response ${t.message}")
                 Log.i("printer", "Error response of api==>" + t.message)
+                logger.info("printer", "Error response of api==>" + t.message)
             }
         })
     }

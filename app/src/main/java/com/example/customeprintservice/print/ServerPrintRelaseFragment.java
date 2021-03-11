@@ -57,6 +57,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.unnamed.b.atv.model.TreeNode;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,6 +88,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     private RecyclerView recyclerViewList;
     private ConstraintLayout noDataMessage;
     public  List<Printer> listOfPrinters=new ArrayList<Printer>();
+    Logger logger = LoggerFactory.getLogger(ServerPrintRelaseFragment.class);
 
     public ServerPrintRelaseFragment() {
     }
@@ -119,7 +124,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         recyclerViewList =(RecyclerView) view.findViewById(R.id.list);
         noDataMessage =(ConstraintLayout) view.findViewById(R.id.empty_view);
         context = view.getContext();
-
+        BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
 
      if(LoginPrefs.Companion.getOCTAToken(context)==null) {
          final Handler handler = new Handler();
@@ -128,11 +133,15 @@ public class ServerPrintRelaseFragment extends Fragment {
              public void run() {
                  getjobListStatus();
                  serverCallForGettingAllPrinters(requireContext());
+                 PrintersFragment printersFragment1 = new PrintersFragment();
+                 printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
              }
          }, 5000);
      }else{
          getjobListStatus();
          serverCallForGettingAllPrinters(requireContext());
+         PrintersFragment printersFragment1 = new PrintersFragment();
+         printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
      }
 
 
@@ -310,6 +319,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         TextWatcher watcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
                Log.d("text:",s.toString());
+                logger.info("text:",s.toString());
                 ArrayList<PrinterModel> filterList =new ArrayList<PrinterModel>();
                for(int i=0;i<list.size();i++){
                    PrinterModel printerModel=list.get(i);
@@ -440,6 +450,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         String LdapUsername= prefs.getString("LdapUsername", "");
         String LdapPassword= prefs.getString("LdapPassword", "");
         Log.d("IsLdap:", IsLdap);
+        logger.info("IsLdap:", IsLdap);
         ProgressDialog.Companion.showLoadingDialog(context, "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();

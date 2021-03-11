@@ -203,6 +203,12 @@ public class PrintUtils {
 
         try {
             resultMap.put("uri",uri.toString()) ;
+          /*  Intent intent =
+                    new Intent("com.example.PRINT_RESPONSE")
+                            .putExtra("finalUri", uri.toString());
+            context.sendBroadcast(intent);*/
+
+
             File inputFile = new File(file.getAbsolutePath());
             boolean exists = inputFile.exists();
             Log.i("printer", String.valueOf(exists));
@@ -299,6 +305,12 @@ public class PrintUtils {
                 response = transport.sendData(specificUri, request);
                 IppPacket responsePacket = response.getPacket();
                 resultMap =  getResponseDetails(responsePacket);
+                String responseStringified=response.toString();
+                Intent intent =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("getPrinterAttributes", response.toString());
+                context.sendBroadcast(intent);
+
                 if(resultMap.get("status").trim().equalsIgnoreCase("successful-ok"))
                 {
                     resultMap.put("finalUri",specificUri.toString());
