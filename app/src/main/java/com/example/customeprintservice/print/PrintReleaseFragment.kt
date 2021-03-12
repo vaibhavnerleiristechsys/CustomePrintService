@@ -10,12 +10,14 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -29,6 +31,7 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentSelectedFileListAdapter
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
+import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -43,10 +46,7 @@ import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJo
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
-import com.example.customeprintservice.utils.JwtDecode
-import com.example.customeprintservice.utils.PermissionHelper
-import com.example.customeprintservice.utils.Permissions
-import com.example.customeprintservice.utils.ProgressDialog
+import com.example.customeprintservice.utils.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.gson.Gson
@@ -56,6 +56,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_print_release.*
+import kotlinx.android.synthetic.main.fragment_printers.*
+import okhttp3.ResponseBody
+import org.apache.commons.codec.binary.Base64;
 import org.jetbrains.anko.doAsync
 import org.slf4j.LoggerFactory
 import retrofit2.Call
@@ -66,7 +69,8 @@ import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class PrintReleaseFragment : Fragment() {
 
@@ -93,7 +97,11 @@ class PrintReleaseFragment : Fragment() {
     var selectedServerFilelist = ArrayList<SelectedFile>()
      var localdocumentFromsharedPrefences = ArrayList<SelectedFile>()
     @SuppressLint("CheckResult")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         initConfig()
         releaseJobCheckedList.clear()
         val disposable = Observable.fromCallable {
@@ -121,7 +129,14 @@ class PrintReleaseFragment : Fragment() {
         checkPermissions()
 
         ProgressDialog.showLoadingDialog(requireContext(), "Getting Hold jobs")
-        getJobStatuses(requireContext(), decodeJWT(), SignInCompanyPrefs.getIdpType(requireContext()).toString(), SignInCompanyPrefs.getIdpName(requireContext()).toString())
+        getJobStatuses(
+            requireContext(),
+            decodeJWT(),
+            SignInCompanyPrefs.getIdpType(requireContext()).toString(),
+            SignInCompanyPrefs.getIdpName(
+                requireContext()
+            ).toString()
+        )
 
         drawer.setOnClickListener {
                val intent = Intent(context, MainActivity::class.java)
@@ -211,7 +226,12 @@ class PrintReleaseFragment : Fragment() {
 
 
         val call = if(IsLdap.equals("LDAP")){
-            apiService.jobStatusCancelForLdap(siteId.toString(), LdapUsername.toString(), LdapPassword.toString(), jobStatusCancel)
+            apiService.jobStatusCancelForLdap(
+                siteId.toString(),
+                LdapUsername.toString(),
+                LdapPassword.toString(),
+                jobStatusCancel
+            )
         }else if(siteId.toString().contains("google")){
             apiService.jobStatusCancelForGoogle(
                 "Bearer " + LoginPrefs.getOCTAToken(context),
@@ -265,8 +285,11 @@ class PrintReleaseFragment : Fragment() {
         })
     }
 
-    fun releaseJob(context: Context,release_t:String){
-        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+    fun releaseJob(context: Context, release_t: String){
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -286,8 +309,8 @@ class PrintReleaseFragment : Fragment() {
         releaseJobCheckedListForServer.forEach {
             val releaseJobsItem = ReleaseJobsItem()
             releaseJobsItem.jobNum = it.jobNum
-            Log.d("jobtype",it.jobType.toString())
-            logger.info("jobtype",it.jobType.toString())
+            Log.d("jobtype", it.jobType.toString())
+            logger.info("jobtype", it.jobType.toString())
             if(it.jobType.toString().equals("secure_release")) {
                 releaseJobsItem.jobType = "1"
             }else{
@@ -312,7 +335,12 @@ class PrintReleaseFragment : Fragment() {
             )
             }
             else{
-                apiService.releaseJobForLdap(releaseJobRequest, siteId.toString(), LdapUsername.toString(), LdapPassword.toString())
+                apiService.releaseJobForLdap(
+                    releaseJobRequest,
+                    siteId.toString(),
+                    LdapUsername.toString(),
+                    LdapPassword.toString()
+                )
             }
 
         }else if(siteId.toString().contains("google")){
@@ -367,12 +395,12 @@ class PrintReleaseFragment : Fragment() {
                     val response = response.body().toString()
                     Log.i("printer", "response release job==>${response}")
                     logger.info("printer", "response release job==>${response}")
-                    BottomNavigationActivityForServerPrint.selectedServerFile.clear()
+                    //BottomNavigationActivityForServerPrint.selectedServerFile.clear()
                     val activity: Activity? = activity
                     if (activity != null) {
 
                     }
-
+                    sendMetaData(context)
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         context,
@@ -381,7 +409,7 @@ class PrintReleaseFragment : Fragment() {
                         SignInCompanyPrefs.getIdpName(context).toString()
                     )
 
-                        dialogSuccessfullyPrint(context);
+                    dialogSuccessfullyPrint(context);
 
 
                 }
@@ -400,7 +428,10 @@ class PrintReleaseFragment : Fragment() {
 
 
     fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {
-        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -422,14 +453,16 @@ class PrintReleaseFragment : Fragment() {
                 userName,
                 idpType,
                 idpName,
-                "serverId",userName,"printerDeviceQueue.printers")
+                "serverId", userName, "printerDeviceQueue.printers"
+            )
         }
         else{
             apiService.getPrintJobStatuses(
-               "Bearer " + LoginPrefs.getOCTAToken(context),
-               userName,
-               idpType,
-               idpName,userName,"printerDeviceQueue.printers")
+                "Bearer " + LoginPrefs.getOCTAToken(context),
+                userName,
+                idpType,
+                idpName, userName, "printerDeviceQueue.printers"
+            )
        }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {
@@ -441,14 +474,17 @@ class PrintReleaseFragment : Fragment() {
                 val getJobStatusesResponse = response.body()?.printQueueJobStatus
                 if (getJobStatusesResponse?.size == 0) {
                     getdocumentList.clear()
-                    val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                    val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(
+                        context
+                    )
                     val gson = Gson()
                     val jsonText: String? = prefs.getString("localdocumentlist", null)
-                    val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
-                   if(jsonText !=null) {
-                       localdocumentFromsharedPrefences = gson.fromJson(jsonText, type)
-                       getdocumentList.addAll(localdocumentFromsharedPrefences)
-                   }
+                    val type: Type =
+                        object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                    if (jsonText != null) {
+                        localdocumentFromsharedPrefences = gson.fromJson(jsonText, type)
+                        getdocumentList.addAll(localdocumentFromsharedPrefences)
+                    }
                     ProgressDialog.cancelLoading()
                 } else {
                     ProgressDialog.cancelLoading()
@@ -471,11 +507,15 @@ class PrintReleaseFragment : Fragment() {
                             selectedFileList.add(selectedFile)
                             getdocumentList.add(selectedFile)
                         }
-                        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                        val prefs: SharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(
+                                context
+                            )
                         val gson = Gson()
                         val jsonText: String? = prefs.getString("localdocumentlist", null)
-                        val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
-                        localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+                        val type: Type =
+                            object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                        localdocumentFromsharedPrefences = gson.fromJson(jsonText, type)
                         getdocumentList.addAll(localdocumentFromsharedPrefences)
 
                         val intent = Intent("refreshdocumentadapter")
@@ -519,7 +559,11 @@ class PrintReleaseFragment : Fragment() {
 
     private fun checkPermissions() {
         permissionsHelper = PermissionHelper()
-        permissionsHelper!!.checkAndRequestPermissions(context as Activity, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        permissionsHelper!!.checkAndRequestPermissions(
+            context as Activity,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -527,7 +571,12 @@ class PrintReleaseFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        permissionsHelper!!.onRequestPermissionsResult(context as Activity, requestCode, permissions, grantResults)
+        permissionsHelper!!.onRequestPermissionsResult(
+            context as Activity,
+            requestCode,
+            permissions,
+            grantResults
+        )
     }
 
 
@@ -615,8 +664,8 @@ class PrintReleaseFragment : Fragment() {
                 userName = decoded.email.toString()
             }
         } catch (ex: Exception) {
-            Log.d("exception",ex.toString())
-            logger.info("exception",ex.toString())
+            Log.d("exception", ex.toString())
+            logger.info("exception", ex.toString())
         }
         return userName.toString()
     }
@@ -638,9 +687,9 @@ class PrintReleaseFragment : Fragment() {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 if (response.code() == 204)
                     Log.i("printer", "response validate token=>${response.isSuccessful}")
-                    logger.info("printer", "response validate token=>${response.isSuccessful}")
-                    Log.i("printer", "response validate token=>${response}")
-                   logger.info("printer", "response validate token=>${response}")
+                logger.info("printer", "response validate token=>${response.isSuccessful}")
+                Log.i("printer", "response validate token=>${response}")
+                logger.info("printer", "response validate token=>${response}")
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {
@@ -706,7 +755,8 @@ class PrintReleaseFragment : Fragment() {
                 SignInCompanyPrefs.getIdpType(context).toString(),
                 SignInCompanyPrefs.getIdpName(context).toString(),
                 "serverId",
-                decodeJWT(context),"printerDeviceQueue.printers")
+                decodeJWT(context), "printerDeviceQueue.printers"
+            )
         }
         else{
             apiService.getPrintJobStatuses(
@@ -714,7 +764,8 @@ class PrintReleaseFragment : Fragment() {
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
                 SignInCompanyPrefs.getIdpName(context).toString(),
-                decodeJWT(context),"printerDeviceQueue.printers")
+                decodeJWT(context), "printerDeviceQueue.printers"
+            )
         }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {
@@ -728,18 +779,21 @@ class PrintReleaseFragment : Fragment() {
                     doAsync {
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                     }
-                   // ServerPrintRelaseFragment.serverDocumentlist.clear()
+                    // ServerPrintRelaseFragment.serverDocumentlist.clear()
                     getdocumentList.clear();
                     Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT)
                         .show()
 
-                    val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                    val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(
+                        context
+                    )
                     val gson = Gson()
                     val jsonText: String? = prefs.getString("localdocumentlist", null)
-                    val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
-                    localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+                    val type: Type =
+                        object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                    localdocumentFromsharedPrefences = gson.fromJson(jsonText, type)
 
-                //    ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                    //    ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
                     getdocumentList.addAll(localdocumentFromsharedPrefences)
 
                     val intent = Intent("refreshdocumentadapter")
@@ -751,7 +805,7 @@ class PrintReleaseFragment : Fragment() {
                     ProgressDialog.cancelLoading()
                     val parseList: List<PrintQueueJobStatusItem?>? =
                         getJobStatusesResponse
-                  //  ServerPrintRelaseFragment.serverDocumentlist.clear()
+                    //  ServerPrintRelaseFragment.serverDocumentlist.clear()
                     getdocumentList.clear()
                     val disposable4 = Observable.fromCallable {
                         val selectedFileList = ArrayList<SelectedFile>()
@@ -767,18 +821,22 @@ class PrintReleaseFragment : Fragment() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFileList.add(selectedFile)
-                           // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
+                            // ServerPrintRelaseFragment.serverDocumentlist.add(selectedFile)
                             getdocumentList.add(selectedFile)
                         }
-                        val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                        val prefs: SharedPreferences =
+                            PreferenceManager.getDefaultSharedPreferences(
+                                context
+                            )
                         val gson = Gson()
                         val jsonText: String? = prefs.getString("localdocumentlist", null)
-                        val type: Type = object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
-                        localdocumentFromsharedPrefences =gson.fromJson(jsonText, type)
+                        val type: Type =
+                            object : TypeToken<java.util.ArrayList<SelectedFile?>?>() {}.getType()
+                        localdocumentFromsharedPrefences = gson.fromJson(jsonText, type)
 
-                       // ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
+                        // ServerPrintRelaseFragment.serverDocumentlist.addAll(localdocumentFromsharedPrefences);
                         getdocumentList.addAll(localdocumentFromsharedPrefences)
-                       // ServerPrintRelaseFragment.serverDocumentlist.addAll(MainActivity.list);
+                        // ServerPrintRelaseFragment.serverDocumentlist.addAll(MainActivity.list);
 
 
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
@@ -819,7 +877,7 @@ class PrintReleaseFragment : Fragment() {
     }
 
     @SuppressLint("WrongConstant")
-    fun dialogSuccessfullyPrint(context:Context) {
+    fun dialogSuccessfullyPrint(context: Context) {
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_successful_print)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
@@ -844,14 +902,164 @@ class PrintReleaseFragment : Fragment() {
 
         button.setOnClickListener {
             dialog.cancel()
-            val intent = Intent(context,MainActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java)
             context.startActivity(intent)
 
         }
     }
 
 
+//************************************************************
+fun sendMetaData(context: Context){
+    var username =decodeJWT(context)
+    var printerName:String=""
+    var selectedPrinteripAddress:String=""
+    var printerId:String=""
+    var fileName:String=""
+    if (BottomNavigationActivityForServerPrint.selectedServerFile.size > 0) {
+       val selectedFile:SelectedFile = BottomNavigationActivityForServerPrint.selectedServerFile[0]
+        fileName=selectedFile.fileName.toString()
+    }
+    if(BottomNavigationActivityForServerPrint.selectedPrinter!=null){
+         val selectedPrinter:PrinterModel = BottomNavigationActivityForServerPrint.selectedPrinter
+        selectedPrinteripAddress =selectedPrinter.printerHost.toString().replace("/", "")
+         printerName =selectedPrinter.serviceName.toString()
+        printerId=selectedPrinter.id.toString()
+    }
 
+    val ipAddress = IpAddress.getLocalIpAddress();
+    if(ipAddress!=null) {
+        Log.d("ipAddress of device:", ipAddress);
+        logger.info("ipAddress of device:", ipAddress);
+    }
+    var BASE_URL =""
+    val companyUrl = LoginPrefs.getCompanyUrl(context)
+    val siteId= LoginPrefs.getSiteId(context)
+    val xIdpType =SignInCompanyPrefs.getIdpType(context)
+    val xIdpName =SignInCompanyPrefs.getIdpName(context)
+
+    val idpInfo ="{\"os\":"+"android"+",\"idpName\":"+xIdpName+",\"username\":"+username+",\"isLoggedIn\":"+true+",\"type\":"+xIdpType+",\"token\":"+LoginPrefs.getOCTAToken(context)+"}";
+    val bytesEncoded: ByteArray = Base64.encodeBase64(idpInfo.toByteArray())
+    val encodedIdpInfo =String(bytesEncoded)
+    Log.d("encodedIdpInfo", URLEncoder.encode(idpInfo));
+
+    BASE_URL = "https://"+companyUrl+"/client/gateway.php/"
+
+    val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
+
+    val call = if(siteId.toString().contains("google")){
+        apiService.sendMetaDataForGoogle(
+            siteId.toString(),
+            "Bearer ${LoginPrefs.getOCTAToken(context)}",
+            username,
+            xIdpType.toString(),
+            xIdpName.toString(),
+            "1",
+            " <?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    " <printjobs>\n" +
+                    " <machine>\n" +
+                    " <commonnames>\n" +
+                    "<name>"+selectedPrinteripAddress+"</name>\n" +
+                    "</commonnames>\n" +
+                    "</machine>\n" +
+                    "<jobs>\n" +
+                    "<job iscolor=\"0\" istcpip=\"1\">\n" +
+                    " <printer id=\""+printerId+"\">\n" +
+                    "<name>"+printerName+"</name>\n" +
+                    "<share />\n" +
+                    "</printer>\n" +
+                    "<source>\n" +
+                    "<user>"+username+"</user>\n" +
+                    "<machine>"+selectedPrinteripAddress+"</machine>\n" +
+                    "<ip_address>"+selectedPrinteripAddress+"</ip_address>\n" +
+                    "<mgr />\n" +
+                    "<dpt />\n" +
+                    "<com />\n" +
+                    "<fn />\n" +
+                    " <jt />\n" +
+                    "<aun>"+URLEncoder.encode(idpInfo)+"</aun>\n" +
+                    "</source>\n" +
+                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\"1\">\n" +
+                    "<submitted>2021-03-11 04:31:54</submitted>\n" +
+                    "<completed>2021-03-11 04:32:14</completed>\n" +
+                    "<title>"+fileName+"</title>\n" +
+                    " </document>\n" +
+                    "</job>\n" +
+                    " </jobs>\n" +
+                    "</printjobs>"
+
+        )
+    }else{
+        apiService.sendMetaDataForOtherIdp(
+            siteId.toString(),
+            "Bearer ${LoginPrefs.getOCTAToken(context)}",
+            username,
+            xIdpType.toString(),
+            xIdpName.toString(),
+            "1",
+           " <?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+       " <printjobs>\n" +
+       " <machine>\n" +
+       " <commonnames>\n" +
+       "<name>"+selectedPrinteripAddress+"</name>\n" +
+        "</commonnames>\n" +
+        "</machine>\n" +
+       "<jobs>\n" +
+        "<job iscolor=\"0\" istcpip=\"1\">\n" +
+       " <printer id=\""+printerId+"\">\n" +
+        "<name>"+printerName+"</name>\n" +
+        "<share />\n" +
+        "</printer>\n" +
+        "<source>\n" +
+        "<user>"+username+"</user>\n" +
+        "<machine>"+selectedPrinteripAddress+"</machine>\n" +
+        "<ip_address>"+selectedPrinteripAddress+"</ip_address>\n" +
+        "<mgr />\n" +
+       "<dpt />\n" +
+        "<com />\n" +
+       "<fn />\n" +
+        " <jt />\n" +
+       "<aun>"+URLEncoder.encode(idpInfo)+"</aun>\n" +
+       "</source>\n" +
+       "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\"1\">\n" +
+       "<submitted>2021-03-11 04:31:54</submitted>\n" +
+       "<completed>2021-03-11 04:32:14</completed>\n" +
+       "<title>"+fileName+"</title>\n" +
+       " </document>\n" +
+       "</job>\n" +
+       " </jobs>\n" +
+       "</printjobs>"
+        )
+    }
+
+    call.enqueue(object : Callback<ResponseBody> {
+
+        @RequiresApi(Build.VERSION_CODES.N)
+        override fun onResponse(
+            call: Call<ResponseBody>,
+            response: Response<ResponseBody>
+        ) {
+            ProgressDialog.cancelLoading()
+            if (response.isSuccessful) {
+                try {
+                } catch (e: Exception) {
+                    Log.i("printer", "e=>${e.message.toString()}")
+                    logger.info("printer", "e=>${e.message.toString()}")
+                }
+            } else {
+                ProgressDialog.cancelLoading()
+
+            }
+        }
+
+        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            ProgressDialog.cancelLoading()
+
+            Log.i("printer", "Error html response==>${t.message.toString()}")
+            logger.info("printer", "Error html response==>${t.message.toString()}")
+        }
+    })
+}
 
 
 }

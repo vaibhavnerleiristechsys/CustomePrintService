@@ -2,6 +2,8 @@ package com.example.customeprintservice.print;
 
 import android.os.Bundle;
 import android.view.MenuItem;
+
+import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.GoogleLoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 
 public class BottomNavigationActivityForServerPrint extends AppCompatActivity  implements BottomNavigationView.OnNavigationItemSelectedListener{
     public static ArrayList<SelectedFile> selectedServerFile =new ArrayList<SelectedFile>();
+    public static PrinterModel selectedPrinter =new PrinterModel();
 
 
     @Override

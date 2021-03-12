@@ -22,6 +22,7 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.print.PrintersFragment
 import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.PrinterListService
@@ -110,6 +111,9 @@ class FragmentPrinterListAdapter(
                 }
                 Log.d("selected printerdetails", list[position].serviceName.toString())
                 Log.d("selected printerdetails", list[position].printerHost.toString())
+                BottomNavigationActivityForServerPrint.selectedPrinter.serviceName=list[position].serviceName.toString()
+                BottomNavigationActivityForServerPrint.selectedPrinter.printerHost=list[position].printerHost
+                BottomNavigationActivityForServerPrint.selectedPrinter.id=list[position].id
 
                 if (list[position].id != null) {
                     PrintersFragment().getPrinterListByPrinterId(

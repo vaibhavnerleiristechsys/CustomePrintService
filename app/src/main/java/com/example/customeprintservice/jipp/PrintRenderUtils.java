@@ -12,6 +12,7 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPageTree;
 import com.tom_roush.pdfbox.rendering.PDFRenderer;
@@ -120,7 +121,8 @@ public class PrintRenderUtils {
                     }
 
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
-
+                    PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
+                    printReleaseFrament.sendMetaData(context);
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                    // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
@@ -340,6 +342,8 @@ public class PrintRenderUtils {
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     }
+                        PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
+                        printReleaseFrament.sendMetaData(context);
                 }
 
                 } catch (Exception exp) {
@@ -463,7 +467,8 @@ public class PrintRenderUtils {
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     }
-
+                        PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
+                        printReleaseFrament.sendMetaData(context);
                 }else{
 
                     }

@@ -97,6 +97,31 @@ interface ApiService {
 
 
 
+    @POST(".")
+    fun sendMetaDataForGoogle(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") XUserName: String,
+        @Header("X-IdP-Type") XIdPType: String,
+        @Header("X-IdP-Name") XIdPName: String,
+        @Query("printjobevents") printjobevents: String,
+        @Query("eventdata") eventdata: String
+    ): Call<ResponseBody>
+
+
+    @POST(".")
+    fun sendMetaDataForOtherIdp(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") XUserName: String,
+        @Header("X-IdP-Type") XIdPType: String,
+        @Header("X-IdP-Name") XIdPName: String,
+        @Query("printjobevents") printjobevents: String,
+        @Query("eventdata") eventdata: String
+    ): Call<ResponseBody>
+
+
+
     @GET(".")
     fun getPrinterDetailsByNodeId(
         @Header("Authorization") authorization: String,

@@ -20,7 +20,9 @@ import androidx.core.content.ContextCompat
 import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterModel
+import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.print.PrintersFragment
+import com.example.customeprintservice.room.SelectedFile
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.slf4j.LoggerFactory
@@ -117,7 +119,9 @@ class PrinterLogicPrintService : PrintService() {
             .printerHost + ":" + printerHashmap.hashMap[printerId]!!.printerPort + "/ipp/print"
 
         finalUrl = finalUrl.replace("///", "//")
-
+        BottomNavigationActivityForServerPrint.selectedPrinter.printerHost=printerHashmap.hashMap[printerId]!!.printerHost
+        BottomNavigationActivityForServerPrint.selectedPrinter.serviceName=printerHashmap.hashMap[printerId]!!.serviceName
+        BottomNavigationActivityForServerPrint.selectedPrinter.id=printerHashmap.hashMap[printerId]!!.id
         val info = printJob.info
         val file = File(filesDir, info.label + ".pdf")
         var `in`: InputStream? = null
@@ -134,6 +138,11 @@ class PrinterLogicPrintService : PrintService() {
             out.flush()
             out.close()
             val printRenderUtils = PrintRenderUtils()
+            BottomNavigationActivityForServerPrint.selectedServerFile.clear()
+            val selectedFile :SelectedFile= SelectedFile()
+            selectedFile.fileName=file.name
+            selectedFile.filePath=file.path
+            BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile)
 
             printRenderUtils.renderPageUsingDefaultPdfRenderer(
                 file,

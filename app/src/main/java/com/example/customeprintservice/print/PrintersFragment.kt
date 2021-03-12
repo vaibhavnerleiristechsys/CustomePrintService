@@ -531,6 +531,12 @@ class PrintersFragment : Fragment() {
                         serverSecurePrinterForHeldJob.add(printer)
                     }
 
+                    if(purpose.equals("getprinterToken")){
+                        BottomNavigationActivityForServerPrint.selectedPrinter.serviceName=title
+                        BottomNavigationActivityForServerPrint.selectedPrinter.printerHost=InetAddress.getByName(hostAddress)
+                        BottomNavigationActivityForServerPrint.selectedPrinter.id=printerId
+                    }
+
                     if (purpose.equals("printerDetailForAddPrinterTab")) {
 
                         PrinterList().printerList.forEach {
