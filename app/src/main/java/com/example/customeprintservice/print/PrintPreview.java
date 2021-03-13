@@ -414,21 +414,22 @@ public class PrintPreview extends AppCompatActivity {
                     ippUri.add(URI.create("ipps:/"+printerHost+":443/ipp/print"));
                 }
 
+                if(selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null){
+                    BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                    SelectedFile selectedFile=new SelectedFile();
+                    selectedFile.setFileName(file.getName());
+                    selectedFile.setFilePath(file.getAbsolutePath());
+                    BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile);
+
+                    BottomNavigationActivityForServerPrint.selectedPrinter.setPrinterHost(selectedPrinterModel.getPrinterHost());
+                    BottomNavigationActivityForServerPrint.selectedPrinter.setServiceName(selectedPrinterModel.getServiceName());
+                    BottomNavigationActivityForServerPrint.selectedPrinter.setId(selectedPrinterModel.getId());
+                }
+
+
 
                 if(file.getName().contains(".pdf")) {
                     if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null) {
-                        BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                        SelectedFile selectedFile=new SelectedFile();
-                        selectedFile.setFileName(file.getName());
-                        selectedFile.setFilePath(file.getAbsolutePath());
-                        BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile);
-
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setPrinterHost(selectedPrinterModel.getPrinterHost());
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setServiceName(selectedPrinterModel.getServiceName());
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setId(selectedPrinterModel.getId());
-
-
-
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri);
@@ -437,16 +438,6 @@ public class PrintPreview extends AppCompatActivity {
                        // moveTaskToBack(true);
                     }
                     if (radioButton.getText().toString().equals("page") && selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null) {
-                        BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                        SelectedFile selectedFile=new SelectedFile();
-                        selectedFile.setFileName(file.getName());
-                        selectedFile.setFilePath(file.getAbsolutePath());
-                        BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile);
-
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setPrinterHost(selectedPrinterModel.getPrinterHost());
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setServiceName(selectedPrinterModel.getServiceName());
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setId(selectedPrinterModel.getId());
-
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
@@ -459,16 +450,6 @@ public class PrintPreview extends AppCompatActivity {
 
                 }else{
                     if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null && selectedPrinterModel.getPrinterHost() != null) {
-                        BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                        SelectedFile selectedFile=new SelectedFile();
-                        selectedFile.setFileName(file.getName());
-                        selectedFile.setFilePath(file.getAbsolutePath());
-                        BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile);
-
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setPrinterHost(selectedPrinterModel.getPrinterHost());
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setServiceName(selectedPrinterModel.getServiceName());
-                        BottomNavigationActivityForServerPrint.selectedPrinter.setId(selectedPrinterModel.getId());
-
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();

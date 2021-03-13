@@ -199,9 +199,14 @@ public class PrintUtils {
     }
 
 
-    public Map<String, String> print(URI uri, File file, Context context, String fileFormat) {
+    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber) {
         Map<String, String> resultMap = new HashMap<>();
-
+        int versionNo=0x200;
+         if(versionNumber.equalsIgnoreCase("0x200")){
+             versionNo=0x200;
+         }else if(versionNumber.equalsIgnoreCase("0x100")){
+             versionNo=0x100;
+         }
         try {
             resultMap.put("uri",uri.toString()) ;
           /*  Intent intent =
@@ -253,7 +258,7 @@ public class PrintUtils {
                 IppPacket printRequest = IppPacket.printJob(uri)
                         .putOperationAttributes(
                                 requestingUserName.of(CMD_NAME),
-                                documentFormat.of(format))
+                                documentFormat.of(format)).setMajorVersionNumber(versionNo)
                         .build();
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
 
@@ -300,16 +305,27 @@ public class PrintUtils {
         for(URI specificUri: ippUri) {
             count++;
             IppPacket attributeRequest =
-                    IppPacket.getPrinterAttributes(specificUri)
+                    IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x200)
                             .build();
 
             IppPacketData request = new IppPacketData(attributeRequest);
-            IppPacketData response = null;
+            IppPacketData response;
             try{
                 response = transport.sendData(specificUri, request);
                 IppPacket responsePacket = response.getPacket();
                 resultMap =  getResponseDetails(responsePacket);
                 String responseStringified=response.toString();
+                resultMap.put("versionNumber","0x200");
+                if(resultMap.get("status").equalsIgnoreCase("server-error-version-not-supported")){
+                     attributeRequest = IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x100)
+                                    .build();
+                     request = new IppPacketData(attributeRequest);
+                    response = transport.sendData(specificUri, request);
+                     responsePacket = response.getPacket();
+                    resultMap =  getResponseDetails(responsePacket);
+                    resultMap.put("versionNumber","0x100");
+                }
+
                 Intent intent =
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("getPrinterAttributes", response.toString());

@@ -74,9 +74,12 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.2'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    //implementation files('libs\\jipp-custom-core-0.7.9.jar')
+    //implementation files('libs\\jipp-core-0.7.9.jar')
+
     testImplementation 'junit:junit:4.12'
-    implementation 'com.hp.jipp:jipp-core:0.7.6'
-    implementation 'com.hp.jipp:jipp-pdl:0.7.6'
+   // implementation 'com.hp.jipp:jipp-core:0.7.9'
+   // implementation 'com.hp.jipp:jipp-pdl:0.7.9'
     implementation 'org.jmdns:jmdns:3.5.5'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

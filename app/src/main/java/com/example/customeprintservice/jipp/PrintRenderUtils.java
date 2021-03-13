@@ -81,7 +81,7 @@ public class PrintRenderUtils {
                             break;
                         } else {
 
-                            Map map = printUtils.print(finalUri, renderFile, context, "");
+                            Map map = printUtils.print(finalUri, renderFile, context, "","0x200");
 
 
 
@@ -180,7 +180,7 @@ public class PrintRenderUtils {
                             fileOut.close();
                         }
 
-                        Map map = printUtils.print(finalUri, renderFile, context, "");
+                        Map map = printUtils.print(finalUri, renderFile, context, "","0x200");
 
                         if (map.get("status") == "server-error-busy") {
                             Thread.sleep(5000);
@@ -229,6 +229,8 @@ public class PrintRenderUtils {
                         // show toast
                     } else if(resultMap.get("status").equals("successful-ok")) {
                         finalUri = URI.create(resultMap.get("finalUri"));
+                        String versionNumber =resultMap.get("versionNumber");
+                       // int versionNumber =Integer.parseInt(versionNo);
                     for (int i = 0; i < noOfCopies; i++) {
                         int pagePrintCounter = 0;
                         int threadSleepInMilliSecs = 3000;
@@ -280,7 +282,7 @@ public class PrintRenderUtils {
                                             });
 
 
-                                    Map map = printUtils.print(finalUri, renderFile, context, "");
+                                    Map map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
 
                                     String exception = (String) map.get("Exception");
                                     new Handler(Looper.getMainLooper()).post(
@@ -392,13 +394,13 @@ public class PrintRenderUtils {
                         // show toast
                     } else if(resultMap.get("status").equals("successful-ok")) {
                         finalUri = URI.create(resultMap.get("finalUri"));
+                        String versionNumber =resultMap.get("versionNumber");
 
                     for (int i = 0; i < noOfCopies; i++) {
                         int pagePrintCounter = 0;
                         int threadSleepInMilliSecs = 3000;
                         int timeThreshold = threadSleepInMilliSecs * 40;
                         int totalTimeThreadSleep = 0;
-                        int counter = 0;
                         while (pagePrintCounter < 1) {
                             String ippUriFinal = finalUri.toString();
                             new Handler(Looper.getMainLooper()).post(
@@ -409,7 +411,7 @@ public class PrintRenderUtils {
                                         }
                                     });
 
-                            Map map = printUtils.print(finalUri, file, context, "");
+                            Map map = printUtils.print(finalUri, file, context, "",versionNumber);
                             String exception = (String) map.get("Exception");
                           /*  new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {

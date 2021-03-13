@@ -959,7 +959,7 @@ fun sendMetaData(context: Context){
                     " <printjobs>\n" +
                     " <machine>\n" +
                     " <commonnames>\n" +
-                    "<name>"+selectedPrinteripAddress+"</name>\n" +
+                    "<name>"+ipAddress+"</name>\n" +
                     "</commonnames>\n" +
                     "</machine>\n" +
                     "<jobs>\n" +
@@ -970,8 +970,8 @@ fun sendMetaData(context: Context){
                     "</printer>\n" +
                     "<source>\n" +
                     "<user>"+username+"</user>\n" +
-                    "<machine>"+selectedPrinteripAddress+"</machine>\n" +
-                    "<ip_address>"+selectedPrinteripAddress+"</ip_address>\n" +
+                    "<machine>"+ipAddress+"</machine>\n" +
+                    "<ip_address>"+ipAddress+"</ip_address>\n" +
                     "<mgr />\n" +
                     "<dpt />\n" +
                     "<com />\n" +
@@ -1001,7 +1001,7 @@ fun sendMetaData(context: Context){
        " <printjobs>\n" +
        " <machine>\n" +
        " <commonnames>\n" +
-       "<name>"+selectedPrinteripAddress+"</name>\n" +
+       "<name>"+ipAddress+"</name>\n" +
         "</commonnames>\n" +
         "</machine>\n" +
        "<jobs>\n" +
@@ -1012,8 +1012,8 @@ fun sendMetaData(context: Context){
         "</printer>\n" +
         "<source>\n" +
         "<user>"+username+"</user>\n" +
-        "<machine>"+selectedPrinteripAddress+"</machine>\n" +
-        "<ip_address>"+selectedPrinteripAddress+"</ip_address>\n" +
+        "<machine>"+ipAddress+"</machine>\n" +
+        "<ip_address>"+ipAddress+"</ip_address>\n" +
         "<mgr />\n" +
        "<dpt />\n" +
         "<com />\n" +
