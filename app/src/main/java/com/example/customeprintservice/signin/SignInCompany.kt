@@ -141,7 +141,7 @@ class SignInCompany : AppCompatActivity() {
                 if (response.code() == 200) {
                     ProgressDialog.cancelLoading()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
-                    logger.info("printer", "response of api==>" + response.isSuccessful)
+                    logger.info("printer"+ "response of api==>" + response.isSuccessful)
                     if(edtYourCompany.text.toString().contains("devncoldap")){
                         bundle.putString("buttonName", "LDAP")
                     }
@@ -198,7 +198,7 @@ class SignInCompany : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 toast("Idp response ${t.message}")
                 Log.i("printer", "Error response of api==>" + t.message)
-                logger.info("printer", "Error response of api==>" + t.message)
+                logger.info("printer"+ "Error response of api==>" + t.message)
             }
         })
     }

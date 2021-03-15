@@ -50,7 +50,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
         @SuppressLint("WrongConstant") SharedPreferences sh = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
         String clientIdForGoogleLogin = sh.getString("clientIdForGoogleLogin", "");
         Log.d("clientIdForGoogleLogin:",clientIdForGoogleLogin);
-        logger.info("clientIdForGoogleLogin:",clientIdForGoogleLogin);
+        logger.info("clientIdForGoogleLogin:"+clientIdForGoogleLogin);
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com")
                 .requestEmail()

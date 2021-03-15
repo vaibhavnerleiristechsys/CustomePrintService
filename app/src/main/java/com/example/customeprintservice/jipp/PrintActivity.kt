@@ -329,13 +329,13 @@ class PrintActivity : AppCompatActivity() {
                 val printRenderUtils = PrintRenderUtils()
 
                 //printRenderUtils.renderPage(file,edtPrinterActivityEditUrl.text.toString(),this@PrintActivity)
-                printRenderUtils.renderPageUsingDefaultPdfRenderer(
+            /*    printRenderUtils.renderPageUsingDefaultPdfRenderer(
                     file,
                     edtPrinterActivityEditUrl.text.toString(),
                     this@PrintActivity
                 )
 
-
+*/
                 /*try {
                     val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
 
@@ -609,13 +609,13 @@ class PrintActivity : AppCompatActivity() {
 
            val printRenderUtils = PrintRenderUtils()
 
-           printRenderUtils.renderPageUsingDefaultPdfRenderer(
+        /*   printRenderUtils.renderPageUsingDefaultPdfRenderer(
                file,
                printerString,
                context
            )
 
-
+*/
 
        } else {
            file = File(selectedFileString)

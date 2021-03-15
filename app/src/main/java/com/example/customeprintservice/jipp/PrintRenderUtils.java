@@ -31,7 +31,7 @@ import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
 public class PrintRenderUtils {
 
 
-    public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context) {
+    public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress) {
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -39,12 +39,49 @@ public class PrintRenderUtils {
 
                 try {
 
+                    ArrayList<URI> ippUri = new ArrayList<URI>();
+                    if (hostAddress != null) {
+                        String printerHost = hostAddress;
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/print"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/printer"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/lp"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/printer"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/printer"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + "/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/printers/lp1"));
+                        ippUri.add(URI.create("https:/" + printerHost));
+                        ippUri.add(URI.create("https:/" + printerHost + ":443/ipp/print"));
+                        ippUri.add(URI.create("ipps:/" + printerHost + ":443/ipp/print"));
+                    }
+
+
+
+                    PrintUtils printUtils = new PrintUtils();
+                    Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
+                    if (!resultMap.containsKey("status")) {
+                        // show error
+                        new Handler(Looper.getMainLooper()).post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                        // show toast
+                    } else if(resultMap.get("status").equals("successful-ok")) {
+                        URI finalUri = URI.create(resultMap.get("finalUri"));
+                        String versionNumber =resultMap.get("versionNumber");
+
                     ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
                     PdfRenderer renderer = new PdfRenderer(fileDescriptor);
                     final int pageCount = renderer.getPageCount();
-                    URI finalUri = URI.create(printerString);
-                    PrintUtils printUtils = new PrintUtils();
-                    Bitmap pageImage = null;
+
                     int pagePrintCounter = 0;
                     int threadSleepInMilliSecs = 3000;
                     int timeThreshold = threadSleepInMilliSecs * 40;
@@ -76,13 +113,13 @@ public class PrintRenderUtils {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                        }});
+                                        }
+                                    });
 
                             break;
                         } else {
 
-                            Map map = printUtils.print(finalUri, renderFile, context, "","0x200");
-
+                            Map map = printUtils.print(finalUri, renderFile, context, "", versionNumber);
 
 
                             if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
@@ -92,7 +129,8 @@ public class PrintRenderUtils {
                                             @Override
                                             public void run() {
                                                 Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                            }});
+                                            }
+                                        });
 
                                 Log.i("printer", expMessage);
                                 break;
@@ -108,7 +146,8 @@ public class PrintRenderUtils {
                                                 @Override
                                                 public void run() {
                                                     Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                }});
+                                                }
+                                            });
 
                                     Log.i("printer", expMessage);
                                     break;
@@ -121,8 +160,9 @@ public class PrintRenderUtils {
                     }
 
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
-                    PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
+                    PrintReleaseFragment printReleaseFrament = new PrintReleaseFragment();
                     printReleaseFrament.sendMetaData(context);
+                }
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                    // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
@@ -153,6 +193,8 @@ public class PrintRenderUtils {
             {
 
                 try {
+
+
 
                     URI finalUri = URI.create(printerString);
                     InputStream pdfInputStream =
@@ -188,6 +230,7 @@ public class PrintRenderUtils {
                             pagePrintCounter++;
                         }
                     }
+
                 } catch (Exception exp) {
                     exp.printStackTrace();
                 }

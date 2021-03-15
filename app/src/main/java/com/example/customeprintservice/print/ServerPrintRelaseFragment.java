@@ -319,7 +319,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         TextWatcher watcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
                Log.d("text:",s.toString());
-                logger.info("text:",s.toString());
+                logger.info("text:"+s.toString());
                 ArrayList<PrinterModel> filterList =new ArrayList<PrinterModel>();
                for(int i=0;i<list.size();i++){
                    PrinterModel printerModel=list.get(i);
@@ -450,7 +450,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         String LdapUsername= prefs.getString("LdapUsername", "");
         String LdapPassword= prefs.getString("LdapPassword", "");
         Log.d("IsLdap:", IsLdap);
-        logger.info("IsLdap:", IsLdap);
+        logger.info("IsLdap:"+ IsLdap);
         ProgressDialog.Companion.showLoadingDialog(context, "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();

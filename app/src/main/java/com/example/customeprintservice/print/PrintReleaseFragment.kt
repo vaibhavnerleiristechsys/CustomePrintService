@@ -114,7 +114,7 @@ class PrintReleaseFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Log.i("printer", "Saved")
-                logger.info("printer", "Saved")
+                logger.info("printer"+"Saved")
             }, {
                 it.message
             })
@@ -264,7 +264,7 @@ class PrintReleaseFragment : Fragment() {
                     BottomNavigationActivityForServerPrint.selectedServerFile.clear()
                     val resp = response.body().toString()
                     Log.i("printer", "response cancel job==>${resp}")
-                    logger.info("printer", "response cancel job==>${resp}")
+                    logger.info("printer"+ "response cancel job==>${resp}")
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         context,
@@ -280,7 +280,7 @@ class PrintReleaseFragment : Fragment() {
                 ProgressDialog.cancelLoading()
                 Toast.makeText(context, "Validation Failed", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response cancel job==>${t.message}")
-                logger.info("printer", "Error response cancel job==>${t.message}")
+                logger.info("printer"+ "Error response cancel job==>${t.message}")
             }
         })
     }
@@ -295,7 +295,7 @@ class PrintReleaseFragment : Fragment() {
         val LdapPassword= sh.getString("LdapPassword", "")
 
         Log.d("IsLdap:", IsLdap!!)
-        logger.info("IsLdap:", IsLdap!!)
+        logger.info("IsLdap:"+ IsLdap!!)
 
         ProgressDialog.showLoadingDialog(context, "Released Job")
         releaseJobCheckedListForServer = BottomNavigationActivityForServerPrint.selectedServerFile as ArrayList<SelectedFile>
@@ -310,7 +310,7 @@ class PrintReleaseFragment : Fragment() {
             val releaseJobsItem = ReleaseJobsItem()
             releaseJobsItem.jobNum = it.jobNum
             Log.d("jobtype", it.jobType.toString())
-            logger.info("jobtype", it.jobType.toString())
+            logger.info("jobtype"+ it.jobType.toString())
             if(it.jobType.toString().equals("secure_release")) {
                 releaseJobsItem.jobType = "1"
             }else{
@@ -394,7 +394,7 @@ class PrintReleaseFragment : Fragment() {
                 if (response.code() == 200) {
                     val response = response.body().toString()
                     Log.i("printer", "response release job==>${response}")
-                    logger.info("printer", "response release job==>${response}")
+                    logger.info("printer"+ "response release job==>${response}")
                     //BottomNavigationActivityForServerPrint.selectedServerFile.clear()
                     val activity: Activity? = activity
                     if (activity != null) {
@@ -419,7 +419,7 @@ class PrintReleaseFragment : Fragment() {
                 ProgressDialog.cancelLoading()
                 Toast.makeText(context, "Validation Failed", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response release job==>${t.message}")
-                logger.info("printer", "Error response release job==>${t.message}")
+                logger.info("printer"+ "Error response release job==>${t.message}")
             }
 
         })
@@ -531,18 +531,18 @@ class PrintReleaseFragment : Fragment() {
                         .subscribe(
                             {
                                 Log.i("printer", "it=>${it}")
-                                logger.info("printer", "it=>${it}")
+                                logger.info("printer"+ "it=>${it}")
                                 listUpdate(it as ArrayList<SelectedFile>?, requireContext())
                             },
                             {
                                 Log.i("printer", "Error=>${it.message}")
-                                logger.info("printer", "Error=>${it.message}")
+                                logger.info("printer"+ "Error=>${it.message}")
                             }
                         )
                     compositeDisposable.add(disposable4)
                     isFileSelected = true
                     Log.i("printer", "list of Files-->$list")
-                    logger.info("printer", "list of Files-->$list")
+                    logger.info("printer"+ "list of Files-->$list")
 
                 }
 
@@ -552,7 +552,7 @@ class PrintReleaseFragment : Fragment() {
                 ProgressDialog.cancelLoading()
                 Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
                 Log.i("printer", t.message.toString())
-                logger.info("printer", t.message.toString())
+                logger.info("printer"+ t.message.toString())
             }
         })
     }
@@ -606,20 +606,20 @@ class PrintReleaseFragment : Fragment() {
                 .subscribe(
                     {
                         Log.i("printer", "it=>${it}")
-                        logger.info("printer", "it=>${it}")
+                        logger.info("printer"+ "it=>${it}")
                         isFileSelected = true
                         bundle.putSerializable("selectedFileList", it as ArrayList<SelectedFile>)
                         listUpdate(it as ArrayList<SelectedFile>?, requireContext())
                     },
                     {
                         Log.i("printer", "Error=>${it.message}")
-                        logger.info("printer", "Error=>${it.message}")
+                        logger.info("printer"+ "Error=>${it.message}")
                     }
                 )
             compositeDisposable.add(disposable3)
             isFileSelected = true
             Log.i("printer", "list of Files-->$list")
-            logger.info("printer", "list of Files-->$list")
+            logger.info("printer"+ "list of Files-->$list")
         }
     }
 
@@ -665,7 +665,7 @@ class PrintReleaseFragment : Fragment() {
             }
         } catch (ex: Exception) {
             Log.d("exception", ex.toString())
-            logger.info("exception", ex.toString())
+            logger.info("exception"+ ex.toString())
         }
         return userName.toString()
     }
@@ -687,14 +687,14 @@ class PrintReleaseFragment : Fragment() {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 if (response.code() == 204)
                     Log.i("printer", "response validate token=>${response.isSuccessful}")
-                logger.info("printer", "response validate token=>${response.isSuccessful}")
+                logger.info("printer"+ "response validate token=>${response.isSuccessful}")
                 Log.i("printer", "response validate token=>${response}")
-                logger.info("printer", "response validate token=>${response}")
+                logger.info("printer"+ "response validate token=>${response}")
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {
                 Log.i("printer", "response validate token Error=>${t.message}")
-                logger.info("printer", "response validate token Error=>${t.message}")
+                logger.info("printer"+ "response validate token Error=>${t.message}")
             }
         })
     }
@@ -717,7 +717,7 @@ class PrintReleaseFragment : Fragment() {
         )
         adapter?.itemClick()?.doOnNext {
             Log.i("printer", "item checked ===>${it}")
-            logger.info("printer", "item checked ===>${it}")
+            logger.info("printer"+ "item checked ===>${it}")
             releaseJobCheckedList.add(it)
         }?.subscribe()
         recyclerViewDocumentList?.adapter = adapter
@@ -847,18 +847,18 @@ class PrintReleaseFragment : Fragment() {
                         .subscribe(
                             {
                                 Log.i("printer", "it=>${it}")
-                                logger.info("printer", "it=>${it}")
+                                logger.info("printer"+ "it=>${it}")
                                 //  listUpdate(it as ArrayList<SelectedFile>?, context)
                             },
                             {
                                 Log.i("printer", "Error=>${it.message}")
-                                logger.info("printer", "Error=>${it.message}")
+                                logger.info("printer"+ "Error=>${it.message}")
                             }
                         )
                     compositeDisposable.add(disposable4)
                     isFileSelected = true
                     Log.i("printer", "list of Files-->$list")
-                    logger.info("printer", "list of Files-->$list")
+                    logger.info("printer"+ "list of Files-->$list")
 
                 }
 
@@ -868,7 +868,7 @@ class PrintReleaseFragment : Fragment() {
                 ProgressDialog.cancelLoading()
                 Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
                 Log.i("printer", t.message.toString())
-                logger.info("printer", t.message.toString())
+                logger.info("printer"+ t.message.toString())
             }
         })
 
@@ -930,7 +930,7 @@ fun sendMetaData(context: Context){
     val ipAddress = IpAddress.getLocalIpAddress();
     if(ipAddress!=null) {
         Log.d("ipAddress of device:", ipAddress);
-        logger.info("ipAddress of device:", ipAddress);
+        logger.info("ipAddress of device:"+ ipAddress);
     }
     var BASE_URL =""
     val companyUrl = LoginPrefs.getCompanyUrl(context)
@@ -1044,7 +1044,7 @@ fun sendMetaData(context: Context){
                 try {
                 } catch (e: Exception) {
                     Log.i("printer", "e=>${e.message.toString()}")
-                    logger.info("printer", "e=>${e.message.toString()}")
+                    logger.info("printer"+ "e=>${e.message.toString()}")
                 }
             } else {
                 ProgressDialog.cancelLoading()
@@ -1056,7 +1056,7 @@ fun sendMetaData(context: Context){
             ProgressDialog.cancelLoading()
 
             Log.i("printer", "Error html response==>${t.message.toString()}")
-            logger.info("printer", "Error html response==>${t.message.toString()}")
+            logger.info("printer"+ "Error html response==>${t.message.toString()}")
         }
     })
 }

@@ -24,6 +24,8 @@ public class PrinterModel {
 
     private Boolean isRecentUsed = false;
 
+    private String location;
+
 
     public String getNodeId() {
         return nodeId;
@@ -103,6 +105,14 @@ public class PrinterModel {
 
     public void setRecentUsed(Boolean recentUsed) {
         isRecentUsed = recentUsed;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
 

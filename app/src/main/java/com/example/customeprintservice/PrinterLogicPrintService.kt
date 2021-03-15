@@ -44,7 +44,7 @@ class PrinterLogicPrintService : PrintService() {
 
     override fun onConnected() {
         Log.i(TAG, "#onConnected()")
-        logger.info(TAG, "#onConnected()")
+        logger.info(TAG+ "#onConnected()")
 
         val permissionWrite = ContextCompat.checkSelfPermission(
             this,
@@ -60,7 +60,7 @@ class PrinterLogicPrintService : PrintService() {
             || permissionRead != PackageManager.PERMISSION_GRANTED
         ) {
             Log.i(TAG, "Permission to record denied")
-            logger.info(TAG, "Permission to record denied")
+            logger.info(TAG+ "Permission to record denied")
             Toast.makeText(this, "Please login to Printerlogic app", Toast.LENGTH_LONG).show()
         }
 
@@ -69,7 +69,7 @@ class PrinterLogicPrintService : PrintService() {
     override fun onDisconnected() {
         super.onDisconnected()
         Log.i(TAG, "#onDisConnected()")
-        logger.info(TAG, "#onDisConnected()")
+        logger.info(TAG+ "#onDisConnected()")
         stopSelf()
     }
 
@@ -80,13 +80,13 @@ class PrinterLogicPrintService : PrintService() {
     override fun onRequestCancelPrintJob(printJob: PrintJob) {
         printJob.cancel()
         Log.i(TAG, "#onRequestCancelPrintJob() printJobId: " + printJob.id)
-        logger.info(TAG, "#onRequestCancelPrintJob() printJobId: " + printJob.id)
+        logger.info(TAG+ "#onRequestCancelPrintJob() printJobId: " + printJob.id)
 
     }
 
     override fun onPrintJobQueued(printJob: PrintJob) {
         Log.i(TAG, "override on Print Job Queued ")
-        logger.info(TAG, "override on Print Job Queued ")
+        logger.info(TAG+ "override on Print Job Queued ")
 
         val permissionWrite = ContextCompat.checkSelfPermission(
             this,
@@ -109,7 +109,7 @@ class PrinterLogicPrintService : PrintService() {
 
 
         Log.i(TAG, "Handle Queued Print Job")
-        logger.info(TAG, "Handle Queued Print Job")
+        logger.info(TAG+ "Handle Queued Print Job")
         if (printJob.isQueued) {
             printJob.start()
         }
@@ -147,7 +147,8 @@ class PrinterLogicPrintService : PrintService() {
             printRenderUtils.renderPageUsingDefaultPdfRenderer(
                 file,
                 finalUrl,
-                this@PrinterLogicPrintService
+                this@PrinterLogicPrintService,
+                printerHashmap.hashMap[printerId]!!.printerHost.toString()
             )
 
             printJob.complete()
@@ -173,7 +174,7 @@ internal class PrinterDiscoverySession(
     @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onStartPrinterDiscovery(priorityList: List<PrinterId>) {
         Log.d("customprintservices", "onStartPrinterDiscovery")
-        logger.info("customprintservices", "onStartPrinterDiscovery")
+        logger.info("customprintservices"+ "onStartPrinterDiscovery")
 
       val printUtils = PrintUtils()
         PrintersFragment.discoveredPrinterListWithDetails.clear()
@@ -201,7 +202,7 @@ internal class PrinterDiscoverySession(
                 Log.d("service name",p.serviceName.toString())
                 if(p.printerHost!=null) {
                     Log.d("host ", p.printerHost.toString())
-                    logger.info("host ", p.printerHost.toString())
+                    logger.info("host "+ p.printerHost.toString())
                     printerId.add(printService.generatePrinterId(p.printerHost.toString()))
                     val builder = PrinterInfo.Builder(
                         printService.generatePrinterId(p.printerHost.toString()),

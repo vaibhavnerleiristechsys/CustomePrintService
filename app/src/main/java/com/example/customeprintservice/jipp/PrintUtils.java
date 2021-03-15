@@ -317,6 +317,7 @@ public class PrintUtils {
                 String responseStringified=response.toString();
                 resultMap.put("versionNumber","0x200");
                 if(resultMap.get("status").equalsIgnoreCase("server-error-version-not-supported")){
+                    //resultMap.clear();
                      attributeRequest = IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x100)
                                     .build();
                      request = new IppPacketData(attributeRequest);

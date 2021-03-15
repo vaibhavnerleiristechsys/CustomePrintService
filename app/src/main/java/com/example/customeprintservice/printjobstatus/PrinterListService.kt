@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
+import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.print.PrintersFragment
@@ -202,6 +203,8 @@ class PrinterListService {
                         printerModel.printerPort = 631
                         printerModel.fromServer = true
                         printerModel.nodeId = nodeId
+                        printerModel.location=response.body()?.data?.attributes?.location.toString()
+
                         printerModel.id=response.body()?.data?.attributes?.id.toString()
                         PrintersFragment.serverPrinterListWithDetails.add(printerModel)
                         if(response.body()?.data?.attributes?.is_pull_printer==1){

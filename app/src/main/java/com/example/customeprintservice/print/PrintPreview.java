@@ -116,7 +116,7 @@ public class PrintPreview extends AppCompatActivity {
         String strDate = dateFormat.format(date);
         selectedFile.setFileSelectedDate(strDate);
         Log.d("file name",file.getName());
-        logger.info("file name",file.getName());
+        logger.info("file name"+file.getName());
         if(file.getName().contains(".pdf")) {
             try {
                 renderPageUsingDefaultPdfRendererFile(file);

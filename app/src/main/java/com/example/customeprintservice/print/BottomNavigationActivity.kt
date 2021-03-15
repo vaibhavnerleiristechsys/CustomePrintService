@@ -60,7 +60,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     it?.forEach {
                         val realPath = FileUtils.getPath(this@BottomNavigationActivity, it)
                         Log.i("printer", "realpath==>$realPath")
-                        logger.info("printer", "realpath==>$realPath")
+                        logger.info("printer"+ "realpath==>$realPath")
                         val selectedFile = SelectedFile()
                         selectedFile.filePath = realPath
                         selectedFile.fileName = File(realPath).name
@@ -72,7 +72,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                     }
                 }
                 Log.i("printer", "list of shared url=>$list")
-                logger.info("printer", "list of shared url=>$list")
+                logger.info("printer"+ "list of shared url=>$list")
                 if (LoginPrefs.getOCTAToken(this@BottomNavigationActivity) == null) {
 
                     startActivity(intentFor<SignInCompany>().noHistory())
@@ -119,7 +119,7 @@ class BottomNavigationActivity : AppCompatActivity() {
 
         if (intent != null) {
             Log.i("printer", "intent data--->${intent.encodedPath}")
-            logger.info("printer", "intent data--->${intent.encodedPath}")
+            logger.info("printer"+ "intent data--->${intent.encodedPath}")
 
             val decodeUrl: String =
                 intent.encodedPath
@@ -176,13 +176,13 @@ class BottomNavigationActivity : AppCompatActivity() {
         call.enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
                 Log.i("printer", "token url->" + call.request().url())
-                logger.info("printer", "token url->" + call.request().url())
+                logger.info("printer"+ "token url->" + call.request().url())
 
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     LoginPrefs.saveOctaToken(context, token.toString())
                     Log.i("printer", "tok==>$token")
-                    logger.info("printer", "tok==>$token")
+                    logger.info("printer"+ "tok==>$token")
                //     ProgressDialog.cancelLoading()
                     printReleaseFragment.arguments = bundle
 
@@ -196,9 +196,9 @@ class BottomNavigationActivity : AppCompatActivity() {
             override fun onFailure(call: Call<TokenResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
                 Log.i("printer", "token url->" + call.request().url())
-                logger.info("printer", "token url->" + call.request().url())
+                logger.info("printer"+ "token url->" + call.request().url())
                 Log.i("printer", "Token error response-->" + t.message)
-                logger.info("printer", "Token error response-->" + t.message)
+                logger.info("printer"+ "Token error response-->" + t.message)
             }
         })
     }
