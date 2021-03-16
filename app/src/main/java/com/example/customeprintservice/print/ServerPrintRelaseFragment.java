@@ -455,7 +455,9 @@ public class ServerPrintRelaseFragment extends Fragment {
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
         String siteId= LoginPrefs.Companion.getSiteId(context);
-        String BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/";
+        String tanentUrl =LoginPrefs.Companion.getTenantUrl(context);
+        //String BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/";
+        String BASE_URL =""+tanentUrl+"/"+siteId+"/pq/api/job-statuses/";
         ApiService apiService = new RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService.class);
         Call call;
         if(IsLdap.equals("LDAP")){
@@ -623,7 +625,11 @@ public class ServerPrintRelaseFragment extends Fragment {
         String LdapPassword= prefs.getString("LdapPassword", "");
         Log.d("IsLdap:", IsLdap);
         String siteId=LoginPrefs.Companion.getSiteId(requireContext());
-        String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
+        String tanentUrl =LoginPrefs.Companion.getTenantUrl(context);
+
+        String url = ""+tanentUrl+"/"+siteId+"/tree/api/node/";
+        //String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
+
         ApiService apiService = new RetrofitClient(requireContext()).getRetrofitInstance(url).create(ApiService.class);
         PrintReleaseFragment prf = new PrintReleaseFragment();
         Call call;

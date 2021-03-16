@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
@@ -21,7 +22,9 @@ class PrintJobStatuses {
         idpName: String
     ) {
         val siteId= LoginPrefs.getSiteId(context)
-        val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
+        val tanentUrl = getTenantUrl(context)
+        val BASE_URL = ""+tanentUrl+"/"+siteId+"/pq/api/job-statuses/"
+        //val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)

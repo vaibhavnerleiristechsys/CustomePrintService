@@ -1,5 +1,6 @@
 package com.example.customeprintservice.signin
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -19,6 +20,7 @@ import com.example.customeprintservice.utils.CheckInternetConnection
 import com.example.customeprintservice.utils.GoogleAPI
 import com.example.customeprintservice.utils.HideKeyboard
 import com.example.customeprintservice.utils.ProgressDialog
+import com.google.gson.internal.LinkedTreeMap
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
 import org.jetbrains.anko.toast
 import org.slf4j.LoggerFactory
@@ -140,6 +142,7 @@ class SignInCompany : AppCompatActivity() {
             ) {
                 if (response.code() == 200) {
                     ProgressDialog.cancelLoading()
+                    getTenantBaseUrl()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
                     logger.info("printer"+ "response of api==>" + response.isSuccessful)
                     if(edtYourCompany.text.toString().contains("devncoldap")){
@@ -207,6 +210,46 @@ class SignInCompany : AppCompatActivity() {
         super.onBackPressed()
         finish()
     }
+
+    private fun getTenantBaseUrl() {
+        val companyUrl = LoginPrefs.getCompanyUrl(this@SignInCompany)
+
+        val BASE_URL = "https://"+companyUrl+"/api/discovery/gateway-tenant/"
+
+        val apiService = RetrofitClient(this@SignInCompany)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+        val call = apiService.getTenantBaseUrlResponse()
+
+        call.enqueue(object : Callback<LinkedTreeMap<String,String>> {
+            override fun onResponse(
+                call: Call<LinkedTreeMap<String,String>>,
+                response: Response<LinkedTreeMap<String,String>>
+            ) {
+
+                    ProgressDialog.cancelLoading()
+                    Log.d("TenantBaseUrl", "response of api==>" + response.body())
+                    logger.info("TenantBaseUrl"+ "response of api==>" + response.isSuccessful)
+                val map : LinkedTreeMap<String, String>? =response.body()
+                if (map != null) {
+                    Log.d("TenantBaseUrl:", map.getValue("tenantBaseUrl"))
+                    val tenantBaseUrl = map.getValue("tenantBaseUrl")
+                    val findTenantBaseUrl: String = MainActivity.findTenantBaseUrl(tenantBaseUrl)
+                    LoginPrefs.saveTenantUrl(this@SignInCompany, findTenantBaseUrl.toString())
+                }
+                    ProgressDialog.cancelLoading()
+
+            }
+
+            override fun onFailure(call: Call<LinkedTreeMap<String,String>>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                toast("Idp response ${t.message}")
+                Log.i("printer", "Error response of api==>" + t.message)
+                logger.info("printer"+ "Error response of api==>" + t.message)
+            }
+        })
+    }
+
 
 
 }

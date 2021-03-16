@@ -17,6 +17,9 @@ import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPageTree;
 import com.tom_roush.pdfbox.rendering.PDFRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,7 +32,7 @@ import java.util.Map;
 import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
 
 public class PrintRenderUtils {
-
+    Logger logger = LoggerFactory.getLogger(PrintUtils.class);
 
     public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress) {
         new Thread() {
@@ -102,6 +105,7 @@ public class PrintRenderUtils {
                         FileOutputStream out = new FileOutputStream(renderFile);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                         Log.v("Saved Image - ", renderFile.getAbsolutePath());
+                        logger.info("Saved Image - "+ renderFile.getAbsolutePath());
                         out.flush();
                         out.close();
 
@@ -133,6 +137,7 @@ public class PrintRenderUtils {
                                         });
 
                                 Log.i("printer", expMessage);
+                                logger.info("Devnco_Android printer"+ expMessage);
                                 break;
                             }
 
@@ -150,6 +155,7 @@ public class PrintRenderUtils {
                                             });
 
                                     Log.i("printer", expMessage);
+                                    logger.info("Devnco_Android printer:"+ expMessage);
                                     break;
                                 }
                             } else {
@@ -160,6 +166,7 @@ public class PrintRenderUtils {
                     }
 
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
+                    logger.info("Saved Image - "+ "page print counter: " + pagePrintCounter);
                     PrintReleaseFragment printReleaseFrament = new PrintReleaseFragment();
                     printReleaseFrament.sendMetaData(context);
                 }
@@ -175,6 +182,7 @@ public class PrintRenderUtils {
 
 
                     Log.v("Saved Image - ", exp.toString());
+                    logger.info("Devnco_Android Saved Image - "+ exp.toString());
                     exp.printStackTrace();
                 }
 
@@ -251,7 +259,10 @@ public class PrintRenderUtils {
                 try {
 
                     Log.d("startIndex", String.valueOf(startIndex));
+                    logger.info("Devnco_Android startIndex"+ String.valueOf(startIndex));
                     Log.d("endIndex", String.valueOf(endIndex));
+                    logger.info("Devnco_Android endIndex:"+ String.valueOf(endIndex));
+
                     ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
                     PdfRenderer renderer = new PdfRenderer(fileDescriptor);
                     final int pageCount = renderer.getPageCount();
@@ -259,6 +270,17 @@ public class PrintRenderUtils {
                     PrintUtils printUtils = new PrintUtils();
                     Bitmap pageImage = null;
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
+                      String attributeStatus ="attrribute status:"+resultMap.get("status");
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, attributeStatus, Toast.LENGTH_LONG).show();
+                                }
+                            });
+
+
+
                     if (!resultMap.containsKey("status")) {
                         // show error
                         new Handler(Looper.getMainLooper()).post(
@@ -299,6 +321,7 @@ public class PrintRenderUtils {
                                 FileOutputStream out = new FileOutputStream(renderFile);
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                 Log.v("Saved Image - ", renderFile.getAbsolutePath());
+                                logger.info("Saved Image - "+ renderFile.getAbsolutePath());
                                 out.flush();
                                 out.close();
 
@@ -326,6 +349,15 @@ public class PrintRenderUtils {
 
 
                                     Map map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
+                                    String print ="print status:"+map.get("status").toString();
+                                    new Handler(Looper.getMainLooper()).post(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Toast.makeText(context, print, Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+
 
                                     String exception = (String) map.get("Exception");
                                     new Handler(Looper.getMainLooper()).post(
@@ -336,7 +368,7 @@ public class PrintRenderUtils {
                                                 }
                                             });
 
-                                    if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
+                                  /*  if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
                                         String expMessage = "The get attributes call failed ";
                                         new Handler(Looper.getMainLooper()).post(
                                                 new Runnable() {
@@ -347,7 +379,9 @@ public class PrintRenderUtils {
                                                 });
 
                                         Log.i("printer", expMessage);
-                                        if (counter < 15) {
+                                        logger.info("printer:"+ expMessage);
+
+                                      /*  if (counter < 15) {
                                             finalUri = ippUri.get(counter);
                                             counter++;
                                             continue;
@@ -356,7 +390,7 @@ public class PrintRenderUtils {
                                             break;
                                         }
 
-                                    }
+                                    }*/
 
                                     if (map.get("status").equals("server-error-busy")) {
                                         Thread.sleep(threadSleepInMilliSecs);
@@ -372,6 +406,7 @@ public class PrintRenderUtils {
                                                     });
 
                                             Log.i("printer", expMessage);
+                                            logger.info("printer:"+ expMessage);
                                             break;
                                         }
                                     } else {
@@ -386,10 +421,19 @@ public class PrintRenderUtils {
                             }
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
+                        logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     }
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
                         printReleaseFrament.sendMetaData(context);
-                }
+                }else{
+                        new Handler(Looper.getMainLooper()).post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, resultMap.get("status").toString(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
 
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
@@ -403,6 +447,7 @@ public class PrintRenderUtils {
 
 
                     Log.v("Saved Image - ", exp.toString());
+                    logger.info("Saved Image - "+ exp.toString());
                     exp.printStackTrace();
                 }
 
@@ -423,6 +468,16 @@ public class PrintRenderUtils {
                     URI finalUri = URI.create(printerString);
                     PrintUtils printUtils = new PrintUtils();
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
+
+                    String attributeStatus ="attrribute status:"+resultMap.get("status");
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, attributeStatus, Toast.LENGTH_LONG).show();
+                                }
+                            });
+
 
                     if (!resultMap.containsKey("status")) {
                         // show error
@@ -455,6 +510,14 @@ public class PrintRenderUtils {
                                     });
 
                             Map map = printUtils.print(finalUri, file, context, "",versionNumber);
+                            String print ="print status:"+map.get("status").toString();
+                            new Handler(Looper.getMainLooper()).post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(context, print, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
                             String exception = (String) map.get("Exception");
                           /*  new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
@@ -463,29 +526,7 @@ public class PrintRenderUtils {
                                             Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
                                         }
                                     });*/
-                            if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
-                                String expMessage = "Print Status is null";
-                                //  String expMessage = "The get attributes call failed ";
-                                new Handler(Looper.getMainLooper()).post(
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
 
-                                                Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-
-                                            }
-                                        });
-
-                                Log.i("printer", expMessage);
-
-                                        /*if(counter<15) {
-                                            finalUri = ippUri.get(counter);
-                                            counter++;
-                                            continue;
-                                        }else {
-                                            break;
-                                        }*/
-                            }
 
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
@@ -515,6 +556,13 @@ public class PrintRenderUtils {
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
                         printReleaseFrament.sendMetaData(context);
                 }else{
+                        new Handler(Looper.getMainLooper()).post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, resultMap.get("status").toString(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
 
                     }
                 } catch (Exception exp) {

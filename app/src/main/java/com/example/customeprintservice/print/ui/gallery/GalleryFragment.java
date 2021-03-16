@@ -118,7 +118,9 @@ public class GalleryFragment extends Fragment {
 
 
         String siteId=LoginPrefs.Companion.getSiteId(requireContext());
-        String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
+        String tanentUrl =LoginPrefs.Companion.getTenantUrl(context);
+        String url = ""+tanentUrl+"/"+siteId+"/tree/api/node/";
+       // String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
         ApiService apiService = new RetrofitClient(requireContext())
                 .getRetrofitInstance(url)
                 .create(ApiService.class);

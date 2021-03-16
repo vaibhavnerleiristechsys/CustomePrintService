@@ -10,6 +10,7 @@ object Constants {
     const val company_url="companyUrl"
     const val googleToken_url="googleTokenUrl"
     const val client_id="ClientId"
+    const val TenantUrl="TenantUrl"
     const val ClientSecret="ClientSecret"
 
 }

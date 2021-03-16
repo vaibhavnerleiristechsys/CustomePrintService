@@ -370,6 +370,14 @@ public class MainActivity extends AppCompatActivity {
         return siteId;
     }
 
+    public static String findTenantBaseUrl(String tenantBaseUrl) {
+        String tenantUrl = "";
+       //String url ="https://gw.app.printercloud.com/devncookta/";
+        int i =tenantBaseUrl.indexOf("/",9);
+        tenantUrl =tenantBaseUrl.substring(0,i);
+        return tenantUrl;
+    }
+
 }
 
 

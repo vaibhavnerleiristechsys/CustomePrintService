@@ -10,6 +10,7 @@ import com.example.customeprintservice.printjobstatus.model.printerlist.Printer
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
 import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobRequest
 import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobResponse
+import com.google.gson.internal.LinkedTreeMap
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
@@ -21,6 +22,11 @@ interface ApiService {
     @Headers1("Content-Type: application/json")
     @GET(".")
     fun getIdpResponse(): Call<List<IdpResponse>>
+
+    @Headers1("Content-Type: application/json")
+    @GET(".")
+    fun getTenantBaseUrlResponse(): Call<LinkedTreeMap<String, String>>
+
 
     @GET(".")
     fun getToken(

@@ -26,6 +26,7 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getSiteId
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
@@ -433,7 +434,9 @@ class PrintersFragment : Fragment() {
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
         val siteId = getSiteId(context)
-        val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/prs/v1/printers/"+printerId+"/"
+        val tanentUrl = getTenantUrl(context)
+        val BASE_URL = ""+tanentUrl+"/"+siteId+"/prs/v1/printers/"+printerId+"/"
+        //val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/prs/v1/printers/"+printerId+"/"
 
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
         val call = if(IsLdap.equals("LDAP")){ apiService.getPrinterDetailsByPrinterIdForLdap(

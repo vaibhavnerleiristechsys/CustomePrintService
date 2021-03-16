@@ -3,6 +3,7 @@ package com.example.customeprintservice.prefs
 import android.content.Context
 import com.example.customeprintservice.utils.Constants.ClientSecret
 import com.example.customeprintservice.utils.Constants.OCTA_TOKEN
+import com.example.customeprintservice.utils.Constants.TenantUrl
 import com.example.customeprintservice.utils.Constants.client_id
 import com.example.customeprintservice.utils.Constants.company_url
 import com.example.customeprintservice.utils.Constants.googleToken_url
@@ -15,6 +16,7 @@ class LoginPrefs {
         private val COMPANYURL = "companyUrl"
         private val GOOGLETOKENURL = "googleTokenUrl"
         private val clientID = "clientId"
+        private val TenantURL="TenantURL"
         private val ClientSecret= "ClientSecret"
 
         fun saveOctaToken(context: Context, token: String) {
@@ -83,6 +85,19 @@ class LoginPrefs {
         fun getClientSecret(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(ClientSecret, Context.MODE_PRIVATE)
             return sharedPreferences.getString(ClientSecret, null)
+        }
+
+
+
+        fun saveTenantUrl(context: Context, clientSecret: String) {
+            val sharedPreferences = context.getSharedPreferences(TenantUrl, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(TenantURL, clientSecret).apply()
+        }
+
+        fun getTenantUrl(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(TenantUrl, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(TenantURL, null)
         }
 
 

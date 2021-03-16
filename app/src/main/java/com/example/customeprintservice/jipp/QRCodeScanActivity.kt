@@ -23,6 +23,7 @@ import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.print.*
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
@@ -148,7 +149,9 @@ class QRCodeScanActivity : AppCompatActivity() {
         Log.d("IsLdap:", IsLdap!!)
         val siteId= LoginPrefs.getSiteId(context)
 
-        var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
+        val tanentUrl = getTenantUrl(context)
+        var BASE_URL = ""+tanentUrl+"/"+siteId+"/pq/api/job-statuses/"
+        //var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/"
 
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 

@@ -9,6 +9,7 @@ import android.widget.Toast
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.print.PrintersFragment
 import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
@@ -146,8 +147,9 @@ class PrinterListService {
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
 
-        val BASE_URL =
-            "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/"+nodeId+"/printer/"
+        val tanentUrl = getTenantUrl(context)
+        val BASE_URL = ""+tanentUrl+"/"+siteId+"/tree/api/node/"+nodeId+"/printer/"
+      //  val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/"+nodeId+"/printer/"
 
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
