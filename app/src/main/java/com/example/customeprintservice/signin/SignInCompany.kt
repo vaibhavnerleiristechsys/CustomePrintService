@@ -14,6 +14,7 @@ import com.example.customeprintservice.R
 import com.example.customeprintservice.model.IdpResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.print.ServerPrintRelaseFragment
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.CheckInternetConnection
@@ -37,6 +38,8 @@ class SignInCompany : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (LoginPrefs.getOCTAToken(this@SignInCompany) != null) {
+           val serverPrintRelaseFragment=ServerPrintRelaseFragment()
+            serverPrintRelaseFragment.serverCallForGettingAllPrinters(this@SignInCompany)
             val intent = Intent(this@SignInCompany, MainActivity::class.java)
             startActivity(intent)
         }
@@ -92,7 +95,7 @@ class SignInCompany : AppCompatActivity() {
 
             }
             else{
-                   var url= edtYourCompany.text.toString()
+                   var url:String= edtYourCompany.text.toString().trim()
                     val stringurl=url.substring(0,url.length)
                     LoginPrefs.saveCompanyUrl(this@SignInCompany, stringurl.toString())
                     val siteId: String = MainActivity.findSiteId(stringurl)
@@ -144,7 +147,7 @@ class SignInCompany : AppCompatActivity() {
                     ProgressDialog.cancelLoading()
                     getTenantBaseUrl()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
-                    logger.info("printer"+ "response of api==>" + response.isSuccessful)
+                    logger.info("Devnco_Android printer"+ "response of api==>" + response.isSuccessful)
                     if(edtYourCompany.text.toString().contains("devncoldap")){
                         bundle.putString("buttonName", "LDAP")
                     }
@@ -201,7 +204,7 @@ class SignInCompany : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 toast("Idp response ${t.message}")
                 Log.i("printer", "Error response of api==>" + t.message)
-                logger.info("printer"+ "Error response of api==>" + t.message)
+                logger.info("Devnco_Android printer"+ "Error response of api==>" + t.message)
             }
         })
     }
@@ -229,7 +232,7 @@ class SignInCompany : AppCompatActivity() {
 
                     ProgressDialog.cancelLoading()
                     Log.d("TenantBaseUrl", "response of api==>" + response.body())
-                    logger.info("TenantBaseUrl"+ "response of api==>" + response.isSuccessful)
+                    logger.info("Devnco_Android TenantBaseUrl"+ "response of api==>" + response.isSuccessful)
                 val map : LinkedTreeMap<String, String>? =response.body()
                 if (map != null) {
                     Log.d("TenantBaseUrl:", map.getValue("tenantBaseUrl"))
@@ -245,7 +248,7 @@ class SignInCompany : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 toast("Idp response ${t.message}")
                 Log.i("printer", "Error response of api==>" + t.message)
-                logger.info("printer"+ "Error response of api==>" + t.message)
+                logger.info("Devnco_Android printer"+ "Error response of api==>" + t.message)
             }
         })
     }

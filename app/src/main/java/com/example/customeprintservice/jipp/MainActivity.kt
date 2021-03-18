@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 )
                 i.type = "*/*"
                 startActivityForResult(i, 1)
-                PrintUtils().setContextAndInitializeJMDNS(this@MainActivity)
+          //      PrintUtils().setContextAndInitializeJMDNS(this@MainActivity)
 //            val mRequestFileIntent = Intent(Intent.ACTION_GET_CONTENT)
 //            startActivityForResult(mRequestFileIntent, 1)
             } else {

@@ -116,7 +116,7 @@ public class PrintPreview extends AppCompatActivity {
         String strDate = dateFormat.format(date);
         selectedFile.setFileSelectedDate(strDate);
         Log.d("file name",file.getName());
-        logger.info("file name"+file.getName());
+        logger.info("Devnco_Android file name"+file.getName());
         if(file.getName().contains(".pdf")) {
             try {
                 renderPageUsingDefaultPdfRendererFile(file);
@@ -412,6 +412,7 @@ public class PrintPreview extends AppCompatActivity {
                     ippUri.add(URI.create("https:/"+printerHost));
                     ippUri.add(URI.create("https:/"+printerHost+":443/ipp/print"));
                     ippUri.add(URI.create("ipps:/"+printerHost+":443/ipp/print"));
+                    ippUri.add(URI.create("http:/"+printerHost+":631/ipp/lp"));
                 }
 
                 if(selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null){

@@ -50,7 +50,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
         @SuppressLint("WrongConstant") SharedPreferences sh = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
         String clientIdForGoogleLogin = sh.getString("clientIdForGoogleLogin", "");
         Log.d("clientIdForGoogleLogin:",clientIdForGoogleLogin);
-        logger.info("clientIdForGoogleLogin:"+clientIdForGoogleLogin);
+        logger.info("Devnco_Android clientIdForGoogleLogin:"+clientIdForGoogleLogin);
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken("179384819622-j6vellprfrbso2soigrjbulbkqob1n87.apps.googleusercontent.com")
                 .requestEmail()
@@ -92,7 +92,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
             String username=account.getEmail();
             Log.d("idToken",idToken);
             Toast.makeText(getApplicationContext(), idToken, Toast.LENGTH_SHORT).show();
-            logger.info("Papertrail idToken log management demo"+idToken);
+            logger.info("Devnco_Android Papertrail idToken log management demo"+idToken);
             SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
             SharedPreferences.Editor myEdit= sharedPreferences.edit();
             myEdit.putString("idToken",idToken);

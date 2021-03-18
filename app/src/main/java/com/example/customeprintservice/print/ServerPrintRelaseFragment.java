@@ -139,7 +139,7 @@ public class ServerPrintRelaseFragment extends Fragment {
          }, 5000);
      }else{
          getjobListStatus();
-         serverCallForGettingAllPrinters(requireContext());
+        // serverCallForGettingAllPrinters(requireContext());
          PrintersFragment printersFragment1 = new PrintersFragment();
          printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
      }
@@ -319,7 +319,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         TextWatcher watcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
                Log.d("text:",s.toString());
-                logger.info("text:"+s.toString());
+                logger.info("Devnco_Android text:"+s.toString());
                 ArrayList<PrinterModel> filterList =new ArrayList<PrinterModel>();
                for(int i=0;i<list.size();i++){
                    PrinterModel printerModel=list.get(i);
@@ -450,7 +450,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         String LdapUsername= prefs.getString("LdapUsername", "");
         String LdapPassword= prefs.getString("LdapPassword", "");
         Log.d("IsLdap:", IsLdap);
-        logger.info("IsLdap:"+ IsLdap);
+        logger.info("Devnco_Android IsLdap:"+ IsLdap);
         ProgressDialog.Companion.showLoadingDialog(context, "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
@@ -614,7 +614,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     }
 
 
-    private void serverCallForGettingAllPrinters(Context context)
+    public void serverCallForGettingAllPrinters(Context context)
     {
         TreeNode root = TreeNode.root();
         listOfPrinters.clear();
@@ -624,13 +624,13 @@ public class ServerPrintRelaseFragment extends Fragment {
         String LdapUsername= prefs.getString("LdapUsername", "");
         String LdapPassword= prefs.getString("LdapPassword", "");
         Log.d("IsLdap:", IsLdap);
-        String siteId=LoginPrefs.Companion.getSiteId(requireContext());
+        String siteId=LoginPrefs.Companion.getSiteId(context);
         String tanentUrl =LoginPrefs.Companion.getTenantUrl(context);
 
         String url = ""+tanentUrl+"/"+siteId+"/tree/api/node/";
         //String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
 
-        ApiService apiService = new RetrofitClient(requireContext()).getRetrofitInstance(url).create(ApiService.class);
+        ApiService apiService = new RetrofitClient(context).getRetrofitInstance(url).create(ApiService.class);
         PrintReleaseFragment prf = new PrintReleaseFragment();
         Call call;
         if(IsLdap.equals("LDAP")){
@@ -641,19 +641,19 @@ public class ServerPrintRelaseFragment extends Fragment {
             );
         }else if(siteId.contains("google")){
             call = apiService.getPrintersListForGoogle(
-                    "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
-                    prf.decodeJWT(requireContext()),
-                    SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
-                    SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString(),
+                    "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
+                    prf.decodeJWT(context),
+                    SignInCompanyPrefs.Companion.getIdpType(context).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(context).toString(),
                     "serverId"
             );
         }
         else {
             call = apiService.getPrintersList(
-                    "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
-                    prf.decodeJWT(requireContext()),
-                    SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
-                    SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString()
+                    "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
+                    prf.decodeJWT(context),
+                    SignInCompanyPrefs.Companion.getIdpType(context).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(context).toString()
             );
         }
 

@@ -8,12 +8,17 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.widget.*
+import android.widget.AbsListView
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -34,6 +39,7 @@ import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.IpAddress
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
+import com.example.customeprintservice.utils.ProgressDialog.Companion.showLoadingDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -80,7 +86,11 @@ class PrintersFragment : Fragment() {
         updateUi(PrinterList().printerList)
         getPrinterList(requireContext(), decodeJWT())
         Log.i("printer", "Login token" + LoginPrefs.getOCTAToken(requireContext()))
-        logger.info("printer"+ "Login token" + LoginPrefs.getOCTAToken(requireContext()))
+        logger.info(
+            "Devnco_Android printer" + "Login token" + LoginPrefs.getOCTAToken(
+                requireContext()
+            )
+        )
         val intent = Intent("qrcodefloatingbutton")
         intent.putExtra("qrCodeScanBtn", "InActive")
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
@@ -140,7 +150,7 @@ class PrintersFragment : Fragment() {
         val ipAddress =IpAddress.getLocalIpAddress();
         if(ipAddress!=null) {
             Log.d("ipAddress of device:", ipAddress);
-            logger.info("ipAddress of device:"+ ipAddress);
+            logger.info("Devnco_Android ipAddress of device:" + ipAddress);
         }
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
@@ -268,7 +278,7 @@ class PrintersFragment : Fragment() {
 
                         nodeId.forEach {
                             Log.i("printer", "it==>${it.attr("node_id")}")
-                            logger.info("printer"+ "it==>${it.attr("node_id")}")
+                            logger.info("Devnco_Android printer" + "it==>${it.attr("node_id")}")
                         }
                         PrintersFragment.serverPrinterListWithDetails.clear()
                         PrintersFragment.serverPullPrinterListWithDetails.clear()
@@ -286,7 +296,7 @@ class PrintersFragment : Fragment() {
                             printerModel.fromServer = true
                             printerModel.nodeId = it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
-                            logger.info("printer"+ "html res=>${it.text()}")
+                            logger.info("Devnco_Android printer" + "html res=>${it.text()}")
                             PrinterList().addPrinterModel(printerModel)
 
                             val thread = Thread(Runnable {
@@ -315,7 +325,7 @@ class PrintersFragment : Fragment() {
 
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
-                        logger.info("printer"+ "e=>${e.message.toString()}")
+                        logger.info("Devnco_Android printer" + "e=>${e.message.toString()}")
                     }
                 } else {
                     ProgressDialog.cancelLoading()
@@ -332,7 +342,7 @@ class PrintersFragment : Fragment() {
                 }
 
                 Log.i("printer", "Error html response==>${t.message.toString()}")
-                logger.info("printer"+ "Error html response==>${t.message.toString()}")
+                logger.info("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
             }
         })
     }
@@ -420,7 +430,7 @@ class PrintersFragment : Fragment() {
             }
         } catch (ex: Exception) {
             Log.d("exception", ex.toString())
-            logger.info("exception"+ ex.toString())
+            logger.info("Devnco_Android exception" + ex.toString())
         }
         return userName.toString()
     }
@@ -430,6 +440,8 @@ class PrintersFragment : Fragment() {
             "MySharedPref",
             Context.MODE_APPEND
         )
+
+
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -469,11 +481,13 @@ class PrintersFragment : Fragment() {
                 call: Call<Any>,
                 response: Response<Any>
             ) {
-                ProgressDialog.cancelLoading()
+
                 if (response.isSuccessful) {
 
                     Log.d("response of printerId:", response.body().toString())
-                    logger.info("response of printerId:"+ response.body().toString())
+                    logger.info(
+                        "Devnco_Android response of printerId:" + response.body().toString()
+                    )
                     var s = response.body().toString()
                     s = s.replace("\"", "")
                     val hashMap: HashMap<String, String> = HashMap<String, String>()
@@ -499,11 +513,11 @@ class PrintersFragment : Fragment() {
                     val pull_print = hashMap.get("pull-print")
                     val id = hashMap.get("id")
                     Log.d("title", title.toString())
-                    logger.info("title:"+ title.toString())
+                    logger.info("Devnco_Android title:" + title.toString())
                     Log.d("hostAddress", hostAddress.toString())
-                    logger.info("hostAddress:"+ hostAddress.toString())
+                    logger.info("Devnco_Android hostAddress:" + hostAddress.toString())
                     Log.d("isPullPrinter", isPullPrinter.toString())
-                    logger.info("isPullPrinter:"+ isPullPrinter.toString())
+                    logger.info("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
                     ServerPrintRelaseFragment.selectedPrinterId = id
                     ServerPrintRelaseFragment.selectedPrinterToken = printerToken
                     val printer: PrinterModel = PrinterModel()
@@ -534,10 +548,13 @@ class PrintersFragment : Fragment() {
                         serverSecurePrinterForHeldJob.add(printer)
                     }
 
-                    if(purpose.equals("getprinterToken")){
-                        BottomNavigationActivityForServerPrint.selectedPrinter.serviceName=title
-                        BottomNavigationActivityForServerPrint.selectedPrinter.printerHost=InetAddress.getByName(hostAddress)
-                        BottomNavigationActivityForServerPrint.selectedPrinter.id=printerId
+                    if (purpose.equals("getprinterToken")) {
+                        BottomNavigationActivityForServerPrint.selectedPrinter.serviceName = title
+                        BottomNavigationActivityForServerPrint.selectedPrinter.printerHost =
+                            InetAddress.getByName(
+                                hostAddress
+                            )
+                        BottomNavigationActivityForServerPrint.selectedPrinter.id = printerId
                     }
 
                     if (purpose.equals("printerDetailForAddPrinterTab")) {
@@ -567,6 +584,7 @@ class PrintersFragment : Fragment() {
                             allPrintersForPullHeldJob.add(printer);
                         }
                     }
+
                 }
 
             }
@@ -606,7 +624,7 @@ class PrintersFragment : Fragment() {
     val watcher: TextWatcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable) {
             Log.d("text:", s.toString())
-            logger.info("text:"+ s.toString())
+            logger.info("Devnco_Android text:" + s.toString())
             val filterList = java.util.ArrayList<PrinterModel>()
             for (i in PrinterList().printerList.indices) {
                 val printerModel: PrinterModel = PrinterList().printerList.get(i)

@@ -67,7 +67,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
-                logger.info("check value"+ String.valueOf(holder.checkBox.isChecked()));
+                logger.info("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 Intent intent1 = new Intent("qrcodefloatingbutton");
@@ -127,7 +127,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 }
             }catch(Exception e){
                      Log.e("File SelectionException",e.getMessage());
-                     logger.info("File SelectionException"+e.getMessage());
+                     logger.info("Devnco_Android File SelectionException"+e.getMessage());
                  }
             }
 
@@ -136,7 +136,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
-                logger.info("check value"+ String.valueOf(holder.checkBox.isChecked()));
+                logger.info("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 Intent intent1 = new Intent("qrcodefloatingbutton");
@@ -195,7 +195,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 }
             }catch(Exception e){
                 Log.e("File SelectionException",e.getMessage());
-                logger.info("File SelectionException"+e.getMessage());
+                logger.info("Devnco_Android File SelectionException"+e.getMessage());
             }
             }
 

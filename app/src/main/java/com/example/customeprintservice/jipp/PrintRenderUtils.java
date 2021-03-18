@@ -105,7 +105,7 @@ public class PrintRenderUtils {
                         FileOutputStream out = new FileOutputStream(renderFile);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                         Log.v("Saved Image - ", renderFile.getAbsolutePath());
-                        logger.info("Saved Image - "+ renderFile.getAbsolutePath());
+                        logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
                         out.flush();
                         out.close();
 
@@ -166,7 +166,7 @@ public class PrintRenderUtils {
                     }
 
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
-                    logger.info("Saved Image - "+ "page print counter: " + pagePrintCounter);
+                    logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     PrintReleaseFragment printReleaseFrament = new PrintReleaseFragment();
                     printReleaseFrament.sendMetaData(context);
                 }
@@ -271,6 +271,8 @@ public class PrintRenderUtils {
                     Bitmap pageImage = null;
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
                       String attributeStatus ="attrribute status:"+resultMap.get("status");
+                    logger.info("Devnco_Android attrribute status:"+ attributeStatus);
+
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -293,6 +295,7 @@ public class PrintRenderUtils {
 
                         // show toast
                     } else if(resultMap.get("status").equals("successful-ok")) {
+                        logger.info("Devnco_Android status successful-ok");
                         finalUri = URI.create(resultMap.get("finalUri"));
                         String versionNumber =resultMap.get("versionNumber");
                        // int versionNumber =Integer.parseInt(versionNo);
@@ -321,7 +324,7 @@ public class PrintRenderUtils {
                                 FileOutputStream out = new FileOutputStream(renderFile);
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                 Log.v("Saved Image - ", renderFile.getAbsolutePath());
-                                logger.info("Saved Image - "+ renderFile.getAbsolutePath());
+                                logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
                                 out.flush();
                                 out.close();
 
@@ -350,6 +353,7 @@ public class PrintRenderUtils {
 
                                     Map map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
                                     String print ="print status:"+map.get("status").toString();
+                                    logger.info("Devnco_Android print status:"+map.get("status").toString());
                                     new Handler(Looper.getMainLooper()).post(
                                             new Runnable() {
                                                 @Override
@@ -406,7 +410,7 @@ public class PrintRenderUtils {
                                                     });
 
                                             Log.i("printer", expMessage);
-                                            logger.info("printer:"+ expMessage);
+                                            logger.info("Devnco_Android printer:"+ expMessage);
                                             break;
                                         }
                                     } else {
@@ -447,7 +451,7 @@ public class PrintRenderUtils {
 
 
                     Log.v("Saved Image - ", exp.toString());
-                    logger.info("Saved Image - "+ exp.toString());
+                    logger.info("Devnco_Android Saved Image - "+ exp.toString());
                     exp.printStackTrace();
                 }
 
@@ -470,6 +474,7 @@ public class PrintRenderUtils {
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
 
                     String attributeStatus ="attrribute status:"+resultMap.get("status");
+                    logger.info("Devnco_Android attrribute status:"+ attributeStatus);
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -491,6 +496,7 @@ public class PrintRenderUtils {
 
                         // show toast
                     } else if(resultMap.get("status").equals("successful-ok")) {
+                        logger.info("Devnco_Android status successful-ok");
                         finalUri = URI.create(resultMap.get("finalUri"));
                         String versionNumber =resultMap.get("versionNumber");
 
@@ -511,6 +517,7 @@ public class PrintRenderUtils {
 
                             Map map = printUtils.print(finalUri, file, context, "",versionNumber);
                             String print ="print status:"+map.get("status").toString();
+                            logger.info("Devnco_Android print status:"+map.get("status").toString());
                             new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
