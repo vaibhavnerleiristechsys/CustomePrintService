@@ -280,6 +280,7 @@ public class PrintUtils {
 
           //  if (format != null && att.contains(format.toLowerCase().trim())) {
             if (format != null) {
+
                 IppPacket printRequest;
                 if(versionNo==0x100) {
                      printRequest = IppPacket.printJob(uri)
@@ -291,7 +292,7 @@ public class PrintUtils {
                      printRequest = IppPacket.printJob(uri)
                             .putOperationAttributes(
                                     requestingUserName.of(CMD_NAME),
-                                    documentFormat.of(format))
+                                    documentFormat.of(format)).setMajorVersionNumber(versionNo)
                             .build();
                 }
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
@@ -449,7 +450,7 @@ public class PrintUtils {
             }
             catch (Exception e){
                // Log.i("printer", "print status===>" + status + "\nprint status String===>" + statusString);
-                logger.info("Devnco_Android Exception in getAttributeCall ==> Uri:"+specificUri+" ==> "+e.getMessage());
+                logger.info("Devnco_Android Exception in getAttributeCall ==> Uri:"+specificUri+" ==> "+e.toString()+" <==");
                 resultMap.put("uri-"+count,specificUri.toString());
                 resultMap.put("result-"+count,e.getMessage());
                 String result ="exception result-"+count+" uri-"+specificUri.toString()+" exception-"+e.getMessage();

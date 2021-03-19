@@ -401,6 +401,7 @@ public class PrintPreview extends AppCompatActivity {
                     ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/printer"));
                     ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/lp"));
                     ippUri.add(URI.create("ipp:/"+printerHost+"/printer"));
+                    ippUri.add(URI.create("ipp:/"+printerHost+"/ipp"));
                     ippUri.add(URI.create("ipp:/"+printerHost+"/ipp/print"));
                     ippUri.add(URI.create("http:/"+printerHost+":631/ipp"));
                     ippUri.add(URI.create("http:/"+printerHost+":631/ipp/print"));

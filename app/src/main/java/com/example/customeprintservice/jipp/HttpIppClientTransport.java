@@ -26,6 +26,8 @@ public class HttpIppClientTransport implements IppClientTransport {
         connection.setConnectTimeout(6 * 1000);
         connection.setRequestMethod("POST");
         connection.addRequestProperty("Content-type", "application/ipp");
+        connection.setRequestProperty("Accept-Encoding",null);
+        connection.setRequestProperty("Transfer-Encoding","chunked");
         connection.setChunkedStreamingMode(0);
         connection.setDoOutput(true);
 

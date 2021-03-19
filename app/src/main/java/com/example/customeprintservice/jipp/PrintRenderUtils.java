@@ -49,6 +49,7 @@ public class PrintRenderUtils {
                         ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/printer"));
                         ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/lp"));
                         ippUri.add(URI.create("ipp:/" + printerHost + "/printer"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/ipp"));
                         ippUri.add(URI.create("ipp:/" + printerHost + "/ipp/print"));
                         ippUri.add(URI.create("http:/" + printerHost + ":631/ipp"));
                         ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/print"));
@@ -60,6 +61,7 @@ public class PrintRenderUtils {
                         ippUri.add(URI.create("https:/" + printerHost));
                         ippUri.add(URI.create("https:/" + printerHost + ":443/ipp/print"));
                         ippUri.add(URI.create("ipps:/" + printerHost + ":443/ipp/print"));
+                        ippUri.add(URI.create("http:/"+printerHost+":631/ipp/lp"));
                     }
 
 
