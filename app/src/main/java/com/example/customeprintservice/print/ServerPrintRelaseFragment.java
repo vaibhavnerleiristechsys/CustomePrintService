@@ -467,6 +467,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     LdapPassword.toString()
             );
         }else if(siteId.contains("google")){
+            logger.info("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
             call = apiService.getPrintJobStatusesForGoogle(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                     printReleaseFragment.decodeJWT(context),
@@ -479,6 +480,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         }
         else {
 
+            logger.info("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
              call = apiService.getPrintJobStatuses(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                      printReleaseFragment.decodeJWT(context),
@@ -640,6 +642,8 @@ public class ServerPrintRelaseFragment extends Fragment {
                     LdapPassword.toString()
             );
         }else if(siteId.contains("google")){
+
+            logger.info("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+prf.decodeJWT(context));
             call = apiService.getPrintersListForGoogle(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                     prf.decodeJWT(context),
@@ -649,6 +653,7 @@ public class ServerPrintRelaseFragment extends Fragment {
             );
         }
         else {
+            logger.info("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+prf.decodeJWT(context));
             call = apiService.getPrintersList(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                     prf.decodeJWT(context),

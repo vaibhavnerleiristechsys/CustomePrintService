@@ -261,9 +261,9 @@ public class PrintRenderUtils {
                 try {
 
                     Log.d("startIndex", String.valueOf(startIndex));
-                    logger.info("Devnco_Android startIndex"+ String.valueOf(startIndex));
+              //      logger.info("Devnco_Android startIndex"+ String.valueOf(startIndex));
                     Log.d("endIndex", String.valueOf(endIndex));
-                    logger.info("Devnco_Android endIndex:"+ String.valueOf(endIndex));
+                //    logger.info("Devnco_Android endIndex:"+ String.valueOf(endIndex));
 
                     ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
                     PdfRenderer renderer = new PdfRenderer(fileDescriptor);
@@ -297,7 +297,7 @@ public class PrintRenderUtils {
 
                         // show toast
                     } else if(resultMap.get("status").equals("successful-ok")) {
-                        logger.info("Devnco_Android status successful-ok");
+                //        logger.info("Devnco_Android status successful-ok");
                         finalUri = URI.create(resultMap.get("finalUri"));
                         String versionNumber =resultMap.get("versionNumber");
                        // int versionNumber =Integer.parseInt(versionNo);
@@ -326,7 +326,7 @@ public class PrintRenderUtils {
                                 FileOutputStream out = new FileOutputStream(renderFile);
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                 Log.v("Saved Image - ", renderFile.getAbsolutePath());
-                                logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
+                          //      logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
                                 out.flush();
                                 out.close();
 
@@ -427,7 +427,7 @@ public class PrintRenderUtils {
                             }
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
-                        logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
+                    //    logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     }
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
                         printReleaseFrament.sendMetaData(context);
@@ -443,6 +443,7 @@ public class PrintRenderUtils {
 
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
+                    logger.info("Devnco_Android Exception - "+expMessage);
                     // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
@@ -453,7 +454,7 @@ public class PrintRenderUtils {
 
 
                     Log.v("Saved Image - ", exp.toString());
-                    logger.info("Devnco_Android Saved Image - "+ exp.toString());
+
                     exp.printStackTrace();
                 }
 
@@ -475,8 +476,8 @@ public class PrintRenderUtils {
                     PrintUtils printUtils = new PrintUtils();
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
 
-                    String attributeStatus ="attrribute status:"+resultMap.get("status");
-                    logger.info("Devnco_Android attrribute status:"+ attributeStatus);
+                    String attributeStatus ="attribute status:"+resultMap.get("status");
+                    logger.info("Devnco_Android attribute status:"+ attributeStatus);
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -498,7 +499,7 @@ public class PrintRenderUtils {
 
                         // show toast
                     } else if(resultMap.get("status").equals("successful-ok")) {
-                        logger.info("Devnco_Android status successful-ok");
+                      //  logger.info("Devnco_Android status successful-ok");
                         finalUri = URI.create(resultMap.get("finalUri"));
                         String versionNumber =resultMap.get("versionNumber");
 
@@ -577,6 +578,7 @@ public class PrintRenderUtils {
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                     // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                    logger.info("Devnco_Android Exception - "+expMessage);
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override

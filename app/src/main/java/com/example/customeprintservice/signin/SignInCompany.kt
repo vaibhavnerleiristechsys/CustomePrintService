@@ -1,6 +1,5 @@
 package com.example.customeprintservice.signin
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -21,6 +20,9 @@ import com.example.customeprintservice.utils.CheckInternetConnection
 import com.example.customeprintservice.utils.GoogleAPI
 import com.example.customeprintservice.utils.HideKeyboard
 import com.example.customeprintservice.utils.ProgressDialog
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import com.google.gson.internal.LinkedTreeMap
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
 import org.jetbrains.anko.toast
@@ -98,8 +100,8 @@ class SignInCompany : AppCompatActivity() {
                    var url:String= edtYourCompany.text.toString().trim()
                     val stringurl=url.substring(0,url.length)
                     LoginPrefs.saveCompanyUrl(this@SignInCompany, stringurl.toString())
-                    val siteId: String = MainActivity.findSiteId(stringurl)
-                    LoginPrefs.saveSiteId(this@SignInCompany, siteId.toString())
+                  //  val siteId: String = MainActivity.findSiteId(stringurl)
+                   // LoginPrefs.saveSiteId(this@SignInCompany, siteId.toString())
 
                     if(!url.contains("https://")){
                         url= "https://"+url
@@ -146,6 +148,7 @@ class SignInCompany : AppCompatActivity() {
                 if (response.code() == 200) {
                     ProgressDialog.cancelLoading()
                     getTenantBaseUrl()
+                    getSiteId()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
                     logger.info("Devnco_Android printer"+ "response of api==>" + response.isSuccessful)
                     if(edtYourCompany.text.toString().contains("devncoldap")){
@@ -253,6 +256,46 @@ class SignInCompany : AppCompatActivity() {
         })
     }
 
+
+
+    private fun getSiteId() {
+        val companyUrl = LoginPrefs.getCompanyUrl(this@SignInCompany)
+
+        val BASE_URL = "https://"+companyUrl+"/api/discovery/site-id/"
+
+        val apiService = RetrofitClient(this@SignInCompany)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+        val call = apiService.getSiteIdResponse()
+
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(
+                call: Call<JsonObject>,
+                response: Response<JsonObject>
+            ) {
+
+                ProgressDialog.cancelLoading()
+                Log.d("siteId", "response of api==>" + (response.body() ))
+                logger.info("Devnco_Android response for siteId ==>" + response.body())
+                val jsonObject: JsonObject? = response.body()?.getAsJsonObject("meta")
+                if (jsonObject != null) {
+                    Log.d("siteId", "siteId ==>" +jsonObject.get("site-id").toString())
+                    logger.info("Devnco_Android siteId ==>" +jsonObject.get("site-id").toString())
+                    val siteId:String =jsonObject.get("site-id").toString().replace("\"", "")
+                    LoginPrefs.saveSiteId(this@SignInCompany,siteId)
+                }
+                ProgressDialog.cancelLoading()
+
+            }
+
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                toast("Idp response ${t.message}")
+                Log.i("printer", "Error response of api==>" + t.message)
+                logger.info("Devnco_Android printer"+ "Error response of api==>" + t.message)
+            }
+        })
+    }
 
 
 }

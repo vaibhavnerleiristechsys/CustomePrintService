@@ -10,6 +10,7 @@ import com.example.customeprintservice.printjobstatus.model.printerlist.Printer
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
 import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobRequest
 import com.example.customeprintservice.printjobstatus.model.releasejob.ReleaseJobResponse
+import com.google.gson.JsonObject
 import com.google.gson.internal.LinkedTreeMap
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -364,5 +365,10 @@ interface ApiService {
         @Field("client_secret") client_secret: String
 
     ): Call<TokenResponse>
+
+
+    @Headers1("Content-Type: application/json")
+    @GET(".")
+    fun getSiteIdResponse(): Call<JsonObject>
 
 }

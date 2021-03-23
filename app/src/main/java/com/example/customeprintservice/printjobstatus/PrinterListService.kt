@@ -20,6 +20,7 @@ import com.example.customeprintservice.utils.ProgressDialog
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
+import org.slf4j.LoggerFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,7 +28,7 @@ import java.net.InetAddress
 
 
 class PrinterListService {
-
+    var logger = LoggerFactory.getLogger(PrinterListService::class.java)
     fun getPrinterNodeSession(
         context: Context,
         idpName: String,
@@ -160,11 +161,13 @@ class PrinterListService {
                 LdapUsername.toString(),
                 LdapPassword.toString())
         }else if(siteId.toString().contains("google")){
+            logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +authorization + " username: " + userName)
             apiService.getPrinterDetailsByNodeIdForGoogle(
                 authorization, userName, idpType, idpName,"serverId"
             )
         }
         else {
+            logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +authorization + " username: " + userName)
             apiService.getPrinterDetailsByNodeId(
                 authorization, userName, idpType, idpName
             )

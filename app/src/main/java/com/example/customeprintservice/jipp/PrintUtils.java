@@ -237,16 +237,16 @@ public class PrintUtils {
             File inputFile = new File(file.getAbsolutePath());
             boolean exists = inputFile.exists();
             Log.i("printer", String.valueOf(exists));
-            logger.info("Devnco_Android printer:"+ String.valueOf(exists));
+          //  logger.info("Devnco_Android printer:"+ String.valueOf(exists));
             Log.i("printer", "input File-->" + inputFile);
-            logger.info("Devnco_Android printer"+ "input File-->" + inputFile);
+          //  logger.info("Devnco_Android printer"+ "input File-->" + inputFile);
             String fileName = inputFile.getName();
             String format = inputFile.getName();
             resultMap.put("fileName",fileName.toString()) ;
             if (fileName.contains(".")) {
                 format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 Log.i("printer", "format--->" + format.toLowerCase().trim());
-                logger.info("Devnco_Android printer"+ "format--->" + format.toLowerCase().trim());
+           //     logger.info("Devnco_Android printer"+ "format--->" + format.toLowerCase().trim());
             }
            /*
             List<String> att=new ArrayList<String>();
@@ -298,9 +298,9 @@ public class PrintUtils {
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
                 logger.info("Devnco_Android printer in print : "+ "printRequest->" + printRequest.toString());
                 Log.i("printer", "In print utils method");
-                logger.info("Devnco_Android printer"+ "In print utils method");
+           //     logger.info("Devnco_Android printer"+ "In print utils method");
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
-                logger.info("Devnco_Android IppPacketData request in print :"+request.toString());
+             //   logger.info("Devnco_Android IppPacketData request in print :"+request.toString());
                 IppPacketData printResponse = transport.sendData(uri, request);
                 logger.info("Devnco_Android IppPacketData printResponse in print :"+printResponse.toString());
                 resultMap.put("printResponse :",printResponse.toString()) ;
@@ -329,6 +329,7 @@ public class PrintUtils {
             return resultMap;
         } catch (Exception e) {
             resultMap.put("Exception", e.getMessage());
+            logger.info("Devnco_Android Exception in print : "+ e.getMessage());
             Intent intent =
                     new Intent("com.example.PRINT_RESPONSE")
                             .putExtra("getPrintResponse", e.toString());
@@ -358,7 +359,7 @@ public class PrintUtils {
                     });
 
             IppPacketData request = new IppPacketData(attributeRequest);
-            logger.info("Devnco_Android IppPacketData request for 0x200  ==> Uri:"+specificUri+" ==> "+request.toString());
+           // logger.info("Devnco_Android IppPacketData request for 0x200  ==> Uri:"+specificUri+" ==> "+request.toString());
             String request1 ="request:"+request.toString();
             new Handler(Looper.getMainLooper()).post(
                     new Runnable() {
@@ -381,7 +382,7 @@ public class PrintUtils {
                         });
 
                 IppPacket responsePacket = response.getPacket();
-                logger.info("Devnco_Android responsePacket for 0x200 Uri:"+specificUri+" ==> "+responsePacket.toString());
+               // logger.info("Devnco_Android responsePacket for 0x200 Uri:"+specificUri+" ==> "+responsePacket.toString());
 
                 resultMap = getResponseDetails(responsePacket);
 
@@ -401,11 +402,11 @@ public class PrintUtils {
                             });
 
                      request = new IppPacketData(attributeRequest);
-                    logger.info("Devnco_Android IppPacketData request for version 0x100 ==> Uri:"+specificUri+" ==> "+request.toString());
+                //    logger.info("Devnco_Android IppPacketData request for version 0x100 ==> Uri:"+specificUri+" ==> "+request.toString());
 
                     response = transport.sendData(specificUri, request);
                     logger.info("Devnco_Android IppPacketData response for version  0x100 ==> Uri:"+specificUri+" ==> "+response.toString());
-                    String response2 ="response for 1:"+response.toString();
+                    String response2 ="response for 0x100:"+response.toString();
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -415,7 +416,7 @@ public class PrintUtils {
                             });
 
                      responsePacket = response.getPacket();
-                    logger.info("Devnco_Android responsePacket for version  0x100 ==> Uri:"+specificUri+" ==> "+responsePacket.toString());
+              //      logger.info("Devnco_Android responsePacket for version  0x100 ==> Uri:"+specificUri+" ==> "+responsePacket.toString());
 
                     resultMap =  getResponseDetails(responsePacket);
                     resultMap.put("versionNumber","0x100");
@@ -508,7 +509,7 @@ public class PrintUtils {
         int statusStringCode = status.getCode();
         resultMap.put("status", statusString);
         Log.i("printer", "print status===>" + status + "\nprint status String===>" + statusString);
-        logger.info("Devnco_Android printer"+ "print status===>" + status + "\nprint status String===>" + statusString);
+      //  logger.info("Devnco_Android printer"+ "print status===>" + status + "\nprint status String===>" + statusString);
         Operation operation = responsePacket.getOperation();
         String operationName = operation.getName();
         int operationCode = operation.getCode();

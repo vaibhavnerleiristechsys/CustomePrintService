@@ -8,8 +8,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,6 +28,7 @@ import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getOCTAToken
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getSiteId
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -39,7 +38,6 @@ import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.IpAddress
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
-import com.example.customeprintservice.utils.ProgressDialog.Companion.showLoadingDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -194,6 +192,11 @@ class PrintersFragment : Fragment() {
                         "</system>"
             )
         }else if(siteId.toString().contains("google")){
+            logger.info(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ) + " username: " + username
+            )
             apiService.getPrinterListForGoogle(
                 siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
@@ -226,6 +229,11 @@ class PrintersFragment : Fragment() {
 
             )
         }else{
+            logger.info(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ) + " username: " + username
+            )
             apiService.getPrinterList(
                 siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
@@ -457,6 +465,7 @@ class PrintersFragment : Fragment() {
             LdapPassword.toString()
         )
         }else if(siteId.toString().contains("google")){
+            logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +LoginPrefs.getOCTAToken(context).toString() + " username: " + decodeJWT(context))
                 apiService.getPrinterDetailsByPrinterIdForGoogle(
                     LoginPrefs.getOCTAToken(context).toString(),
                     decodeJWT(context),
@@ -466,6 +475,7 @@ class PrintersFragment : Fragment() {
                 )
         }
         else{
+            logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +LoginPrefs.getOCTAToken(context).toString() + " username: " + decodeJWT(context))
             apiService.getPrinterDetailsByPrinterId(
                 LoginPrefs.getOCTAToken(context).toString(),
                 decodeJWT(context),
