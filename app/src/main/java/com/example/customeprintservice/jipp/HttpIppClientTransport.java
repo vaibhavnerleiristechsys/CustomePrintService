@@ -2,11 +2,14 @@ package com.example.customeprintservice.jipp;
 
 import android.util.Log;
 
+import com.example.customeprintservice.print.ServerPrintRelaseFragment;
 import com.hp.jipp.encoding.IppInputStream;
 import com.hp.jipp.trans.IppClientTransport;
 import com.hp.jipp.trans.IppPacketData;
 
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,11 +26,11 @@ import java.util.List;
 import java.util.Map;
 
 public class HttpIppClientTransport implements IppClientTransport {
+    Logger logger = LoggerFactory.getLogger(HttpIppClientTransport.class);
     @Override
     @NotNull
     public IppPacketData sendData(@NotNull URI uri, @NotNull IppPacketData request) throws IOException {
         URL url = new URL(uri.toString().replaceAll("^ipp", "http"));
-     //   URL url = new URL(uri.toString());
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(6 * 1000);
         connection.setRequestMethod("POST");
@@ -37,10 +40,11 @@ public class HttpIppClientTransport implements IppClientTransport {
         connection.setChunkedStreamingMode(0);
         connection.setDoOutput(true);
       //  Map<String, List<String>> map = connection.getHeaderFields();
-        Map<String, List<String>> map  = connection.getRequestProperties();
+      /*  Map<String, List<String>> map  = connection.getRequestProperties();
         for (Map.Entry<String, List<String>> entry : map.entrySet()){
             Log.d("headers","Key = " + entry.getKey() + ", Value = " + Arrays.toString(entry.getValue().toArray()));
-    }
+            logger.info("Devnco_Android HttpIppClientTransport headers Key = " + entry.getKey() + ", Value = " + Arrays.toString(entry.getValue().toArray()));
+    }*/
 
         // Copy IppPacket to the output stream
         try (OutputStream output = connection.getOutputStream()) {
@@ -71,4 +75,5 @@ public class HttpIppClientTransport implements IppClientTransport {
             readAmount = data.read(buffer);
         }
     }
+
 }

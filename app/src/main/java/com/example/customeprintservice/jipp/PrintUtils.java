@@ -251,7 +251,6 @@ public class PrintUtils {
            /*
             List<String> att=new ArrayList<String>();
             List<String> attributes=new ArrayList<String>();
-
             try {
                 att = getPrinterSupportedFormats(uri, context);
                 resultMap.put("getPrinterSupportedFormatsatt", att.toString());

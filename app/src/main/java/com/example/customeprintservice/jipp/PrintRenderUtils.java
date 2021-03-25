@@ -272,7 +272,7 @@ public class PrintRenderUtils {
                     PrintUtils printUtils = new PrintUtils();
                     Bitmap pageImage = null;
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
-                      String attributeStatus ="attrribute status:"+resultMap.get("status");
+                    String attributeStatus ="attrribute status:"+resultMap.get("status");
                     logger.info("Devnco_Android attrribute status:"+ attributeStatus);
 
                     new Handler(Looper.getMainLooper()).post(
@@ -296,11 +296,16 @@ public class PrintRenderUtils {
                                 });
 
                         // show toast
-                    } else if(resultMap.get("status").equals("successful-ok")) {
+                    } else
+                        if(resultMap.get("status").equals("successful-ok")) {
+
                 //        logger.info("Devnco_Android status successful-ok");
+                     //   String url = "http://192.168.3.225:631/ipp";
                         finalUri = URI.create(resultMap.get("finalUri"));
+                     //   finalUri = URI.create(url);
                         String versionNumber =resultMap.get("versionNumber");
-                       // int versionNumber =Integer.parseInt(versionNo);
+                       // String versionNumber ="0x200";
+
                     for (int i = 0; i < noOfCopies; i++) {
                         int pagePrintCounter = 0;
                         int threadSleepInMilliSecs = 3000;
@@ -436,7 +441,7 @@ public class PrintRenderUtils {
                                 new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(context, resultMap.get("status").toString(), Toast.LENGTH_LONG).show();
+                                       Toast.makeText(context, resultMap.get("status").toString(), Toast.LENGTH_LONG).show();
                                     }
                                 });
                     }
@@ -474,7 +479,7 @@ public class PrintRenderUtils {
                 try {
                     URI finalUri = URI.create(printerString);
                     PrintUtils printUtils = new PrintUtils();
-                    Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
+                 Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
 
                     String attributeStatus ="attribute status:"+resultMap.get("status");
                     logger.info("Devnco_Android attribute status:"+ attributeStatus);
@@ -498,11 +503,11 @@ public class PrintRenderUtils {
                                 });
 
                         // show toast
-                    } else if(resultMap.get("status").equals("successful-ok")) {
+                         } else if(resultMap.get("status").equals("successful-ok")) {
+
                       //  logger.info("Devnco_Android status successful-ok");
                         finalUri = URI.create(resultMap.get("finalUri"));
-                        String versionNumber =resultMap.get("versionNumber");
-
+                       String versionNumber =resultMap.get("versionNumber");
                     for (int i = 0; i < noOfCopies; i++) {
                         int pagePrintCounter = 0;
                         int threadSleepInMilliSecs = 3000;
