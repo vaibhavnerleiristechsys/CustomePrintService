@@ -506,12 +506,15 @@ public class ServerPrintRelaseFragment extends Fragment {
                     selectedFile.setJobType(PrintQueueJobStatusItem.getJobType());
                     selectedFile.setQueueId(PrintQueueJobStatusItem.getPrinterDeviceQueueId());
                     selectedFile.setUserName(PrintQueueJobStatusItem.getUserName());
+                    selectedFile.setPages(PrintQueueJobStatusItem.getPages());
                     Integer sizeInKb =PrintQueueJobStatusItem.getJobSize() /1024;
                     String fileSize=sizeInKb.toString()+"KB";
                     selectedFile.setJobSize(fileSize);
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
-                    if(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size()>0) {
-                        selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+                    if(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters() !=null) {
+                        if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size() > 0) {
+                            selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+                        }
                     }
 
                     PrintReleaseFragment.Companion.getGetdocumentList().add(selectedFile);

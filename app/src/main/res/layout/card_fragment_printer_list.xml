@@ -23,6 +23,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/txtFragmentPrinterName" />
 
+
+    <ImageView
+        android:id="@+id/imgColorPrintImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/colorprintericon"
+        app:layout_constraintBottom_toBottomOf="@+id/txtFragmentBuildingName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtFragmentPrinterName" />
+
     <TextView
         android:id="@+id/textForHeader"
         android:layout_width="0dp"

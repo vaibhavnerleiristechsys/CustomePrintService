@@ -204,6 +204,7 @@ class QRCodeScanActivity : AppCompatActivity() {
                             selectedFile.queueId = it?.printerDeviceQueueId
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
+                            selectedFile.pages = it?.pages
                             selectedFileList.add(selectedFile)
                             getdocumentListFromQrCode.add(selectedFile)
                         }

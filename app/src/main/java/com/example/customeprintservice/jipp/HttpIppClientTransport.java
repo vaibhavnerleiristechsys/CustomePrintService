@@ -35,16 +35,17 @@ public class HttpIppClientTransport implements IppClientTransport {
         connection.setConnectTimeout(6 * 1000);
         connection.setRequestMethod("POST");
         connection.addRequestProperty("Content-type", "application/ipp");
-        //connection.setRequestProperty("Accept-Encoding",null);
-        //connection.setRequestProperty("Transfer-Encoding","chunked");
+        connection.setRequestProperty("Accept","");
+        connection.setRequestProperty("Accept-Encoding","");
         connection.setChunkedStreamingMode(0);
         connection.setDoOutput(true);
+        //connection.setRequestProperty("Transfer-Encoding","chunked");
       //  Map<String, List<String>> map = connection.getHeaderFields();
-      /*  Map<String, List<String>> map  = connection.getRequestProperties();
+        Map<String, List<String>> map  = connection.getRequestProperties();
         for (Map.Entry<String, List<String>> entry : map.entrySet()){
             Log.d("headers","Key = " + entry.getKey() + ", Value = " + Arrays.toString(entry.getValue().toArray()));
             logger.info("Devnco_Android HttpIppClientTransport headers Key = " + entry.getKey() + ", Value = " + Arrays.toString(entry.getValue().toArray()));
-    }*/
+         }
 
         // Copy IppPacket to the output stream
         try (OutputStream output = connection.getOutputStream()) {

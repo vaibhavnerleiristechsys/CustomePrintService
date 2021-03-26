@@ -170,7 +170,7 @@ public class PrintRenderUtils {
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     PrintReleaseFragment printReleaseFrament = new PrintReleaseFragment();
-                    printReleaseFrament.sendMetaData(context);
+                    printReleaseFrament.sendMetaData(context,pageCount);
                 }
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
@@ -252,7 +252,7 @@ public class PrintRenderUtils {
     }
 
 
-    public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri) {
+    public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount) {
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -435,7 +435,7 @@ public class PrintRenderUtils {
                     //    logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     }
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
-                        printReleaseFrament.sendMetaData(context);
+                        printReleaseFrament.sendMetaData(context,TotalPageCount);
                 }else{
                         new Handler(Looper.getMainLooper()).post(
                                 new Runnable() {
@@ -569,7 +569,7 @@ public class PrintRenderUtils {
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     }
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
-                        printReleaseFrament.sendMetaData(context);
+                        printReleaseFrament.sendMetaData(context,1);
                 }else{
                         new Handler(Looper.getMainLooper()).post(
                                 new Runnable() {

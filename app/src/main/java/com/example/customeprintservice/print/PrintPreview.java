@@ -283,10 +283,6 @@ public class PrintPreview extends AppCompatActivity {
         });
     }
 
-
-
-
-
     public void renderPageUsingDefaultPdfRendererFile(File file) throws IOException {
         ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
         PdfRenderer renderer = new PdfRenderer(fileDescriptor);
@@ -368,7 +364,6 @@ public class PrintPreview extends AppCompatActivity {
                 selectedFile.setFileSelectedDate(strDate);
                 list.add(selectedFile);
 
-
                 SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
                 Gson gson1 = new Gson();
                 String json2 = prefs1.getString("localdocumentlist", null);
@@ -434,7 +429,7 @@ public class PrintPreview extends AppCompatActivity {
                     if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null) {
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri);
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri,totalPageCount);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                        // moveTaskToBack(true);
@@ -443,7 +438,7 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies,ippUri);
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies,ippUri,totalPageCount);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                      //   moveTaskToBack(true);

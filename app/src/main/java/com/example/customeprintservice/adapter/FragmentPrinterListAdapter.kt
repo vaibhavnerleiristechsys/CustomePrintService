@@ -62,6 +62,20 @@ class FragmentPrinterListAdapter(
         if(list[position].manual==true){
             holder.getRemovePrinter().visibility=View.VISIBLE
         }
+        if(list[position].location !="" && list[position].location != null){
+            holder.getBuildingName().text = list[position].location.toString()
+        }else{
+            holder.getBuildingName().text ="-"
+        }
+
+        if(list[position].isColor==0){
+            holder.getPrinterImageIcon().visibility=View.VISIBLE
+            holder.getColorPrinterImageIcon().visibility=View.GONE
+        }else if(list[position].isColor==0){
+            holder.getPrinterImageIcon().visibility=View.GONE
+            holder.getColorPrinterImageIcon().visibility=View.VISIBLE
+        }
+
         if(location.equals("printerTab")){
             holder.getPrinterHeaderName().visibility=View.GONE
         }else{
@@ -189,6 +203,14 @@ class FragmentPrinterListAdapter(
         }
         fun getRemovePrinter(): ImageView {
             return itemView.findViewById(R.id.removePrinter)
+        }
+
+        fun getPrinterImageIcon(): ImageView {
+            return itemView.findViewById(R.id.imgPrintImage)
+        }
+
+        fun getColorPrinterImageIcon(): ImageView {
+            return itemView.findViewById(R.id.imgColorPrintImage)
         }
 
 

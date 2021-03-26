@@ -295,7 +295,7 @@ class PrintReleaseFragment : Fragment() {
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
-
+        var pageCount:Int=1
         Log.d("IsLdap:", IsLdap!!)
         logger.info("Devnco_Android IsLdap:" + IsLdap!!)
 
@@ -323,6 +323,7 @@ class PrintReleaseFragment : Fragment() {
             releaseJobsItem.queueId = it.queueId
             releaseJobsItem.userName = it.userName
             releaseJobsItem.workstationId = it.workStationId
+            pageCount= it.pages!!
             releaseJobs.add(releaseJobsItem)
         }
         releaseJobRequest.releaseJobs = releaseJobs
@@ -404,7 +405,8 @@ class PrintReleaseFragment : Fragment() {
                     if (activity != null) {
 
                     }
-                    sendMetaData(context)
+                    sendMetaData(context,pageCount)
+                  //  sendMetaData(context,1)
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         context,
@@ -917,7 +919,7 @@ class PrintReleaseFragment : Fragment() {
 
 
 //************************************************************
-fun sendMetaData(context: Context){
+fun sendMetaData(context: Context,TotalPageCount:Int){
     var username =decodeJWT(context)
     var printerName:String=""
     var selectedPrinteripAddress:String=""
@@ -944,6 +946,7 @@ fun sendMetaData(context: Context){
     val siteId= LoginPrefs.getSiteId(context)
     val xIdpType =SignInCompanyPrefs.getIdpType(context)
     val xIdpName =SignInCompanyPrefs.getIdpName(context)
+    val dateTime:String =DateTimeConversion.currentDateTime();
 
     val idpInfo ="{\"os\":"+"android"+",\"idpName\":"+xIdpName+",\"username\":"+username+",\"isLoggedIn\":"+true+",\"type\":"+xIdpType+",\"token\":"+LoginPrefs.getOCTAToken(
         context
@@ -964,7 +967,7 @@ fun sendMetaData(context: Context){
             xIdpType.toString(),
             xIdpName.toString(),
             "1",
-            " <?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     " <printjobs>\n" +
                     " <machine>\n" +
                     " <commonnames>\n" +
@@ -988,9 +991,9 @@ fun sendMetaData(context: Context){
                     " <jt />\n" +
                     "<aun>" + URLEncoder.encode(idpInfo) + "</aun>\n" +
                     "</source>\n" +
-                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\"1\">\n" +
-                    "<submitted>2021-03-11 04:31:54</submitted>\n" +
-                    "<completed>2021-03-11 04:32:14</completed>\n" +
+                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\""+TotalPageCount+"\">\n" +
+                    "<submitted>"+dateTime+"</submitted>\n" +
+                    "<completed>"+dateTime+"</completed>\n" +
                     "<title>" + fileName + "</title>\n" +
                     " </document>\n" +
                     "</job>\n" +
@@ -1006,7 +1009,7 @@ fun sendMetaData(context: Context){
             xIdpType.toString(),
             xIdpName.toString(),
             "1",
-            " <?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     " <printjobs>\n" +
                     " <machine>\n" +
                     " <commonnames>\n" +
@@ -1030,9 +1033,9 @@ fun sendMetaData(context: Context){
                     " <jt />\n" +
                     "<aun>" + URLEncoder.encode(idpInfo) + "</aun>\n" +
                     "</source>\n" +
-                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\"1\">\n" +
-                    "<submitted>2021-03-11 04:31:54</submitted>\n" +
-                    "<completed>2021-03-11 04:32:14</completed>\n" +
+                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\""+TotalPageCount+"\">\n" +
+                    "<submitted>"+dateTime+"</submitted>\n" +
+                    "<completed>"+dateTime+"</completed>\n" +
                     "<title>" + fileName + "</title>\n" +
                     " </document>\n" +
                     "</job>\n" +

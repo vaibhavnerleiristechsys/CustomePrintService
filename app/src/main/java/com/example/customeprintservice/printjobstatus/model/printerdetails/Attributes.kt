@@ -11,7 +11,7 @@ data class Attributes(
 	val globalDisableSingleSignOn: Int? = null,
 
 	@field:JsonProperty("is_color")
-	val isColor: Int? = null,
+	val is_color: Int? = null,
 
 	@field:JsonProperty("console_secret")
 	val consoleSecret: String? = null,

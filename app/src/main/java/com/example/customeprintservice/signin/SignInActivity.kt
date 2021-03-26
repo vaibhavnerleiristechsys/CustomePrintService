@@ -149,7 +149,8 @@ class SignInActivity : AppCompatActivity() {
             }
             else if(bundle.getString("buttonName")=="Google"){
 
-                val desktopUrl = "https://gw.app.printercloud.com/googleid/authn/idp/Google/oidc/desktop/login"
+               // val desktopUrl = "https://gw.app.printercloud.com/googleid/authn/idp/Google/oidc/desktop/login"
+               // val desktopUrl
                 searchWeb(desktopUrl)
             }
             else{
@@ -241,7 +242,7 @@ class SignInActivity : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 if (response.code() == 204) {
                     Log.i("LDAP printers Response", response.toString())
-                    LOG.info("LDAP printers Response", response.toString())
+                    LOG.info("LDAP printers Response"+ response.toString())
                     toast("Login Successfully")
                     val sharedPreferences: SharedPreferences =
                         getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)

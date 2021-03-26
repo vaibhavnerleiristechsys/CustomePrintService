@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -28,7 +29,6 @@ import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
-import com.example.customeprintservice.prefs.LoginPrefs.Companion.getOCTAToken
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getSiteId
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -38,6 +38,8 @@ import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.IpAddress
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
+import com.example.customeprintservice.utils.ProgressDialog.Companion.cancelLoading
+import com.example.customeprintservice.utils.ProgressDialog.Companion.showLoadingDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -81,8 +83,9 @@ class PrintersFragment : Fragment() {
         setHasOptionsMenu(true)
         search.visibility=View.GONE
         clear.visibility=View.GONE
-        updateUi(PrinterList().printerList)
-        getPrinterList(requireContext(), decodeJWT())
+        updateUi(PrinterList().printerList, requireContext())
+     //   PrinterList().printerList.clear()
+    //    getPrinterList(requireContext(), decodeJWT())
         Log.i("printer", "Login token" + LoginPrefs.getOCTAToken(requireContext()))
         logger.info(
             "Devnco_Android printer" + "Login token" + LoginPrefs.getOCTAToken(
@@ -94,6 +97,7 @@ class PrintersFragment : Fragment() {
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
 
         swipeContainer.setOnRefreshListener {
+            PrinterList().printerList.clear()
             getPrinterList(requireContext(), decodeJWT())
 
         }
@@ -124,7 +128,7 @@ class PrintersFragment : Fragment() {
 
 
     @SuppressLint("WrongConstant")
-    private fun updateUi(list: java.util.ArrayList<PrinterModel>) {
+     fun updateUi(list: java.util.ArrayList<PrinterModel>, context: Context) {
         val recyclerViewPrinterLst = view?.findViewById<RecyclerView>(R.id.recyclerViewFragmentPrinterList)
         recyclerViewPrinterLst?.layoutManager = LinearLayoutManager(
             context,
@@ -132,7 +136,7 @@ class PrintersFragment : Fragment() {
             false
         )
         val adapter = FragmentPrinterListAdapter(
-            context as Activity,
+            context,
             list,
             "printerTab"
         )
@@ -150,6 +154,7 @@ class PrintersFragment : Fragment() {
             Log.d("ipAddress of device:", ipAddress);
             logger.info("Devnco_Android ipAddress of device:" + ipAddress);
         }
+        showLoadingDialog(context, "please wait")
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -305,7 +310,7 @@ class PrintersFragment : Fragment() {
                             printerModel.nodeId = it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
                             logger.info("Devnco_Android printer" + "html res=>${it.text()}")
-                            PrinterList().addPrinterModel(printerModel)
+                            //   PrinterList().addPrinterModel(printerModel)
 
                             val thread = Thread(Runnable {
                                 try {
@@ -327,9 +332,18 @@ class PrintersFragment : Fragment() {
 
 
                         }
-                        updateUi(PrinterList().printerList)
-                        swipeContainer.isRefreshing = false
 
+                        Handler().postDelayed({
+                            updateUi(PrinterList().printerList, context)
+                            if (swipeContainer != null) {
+                                swipeContainer.isRefreshing = false
+                            }
+
+
+                        }, 3000)
+                        // updateUi(PrinterList().printerList)
+                        // swipeContainer.isRefreshing = false
+                        cancelLoading()
 
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
@@ -465,7 +479,11 @@ class PrintersFragment : Fragment() {
             LdapPassword.toString()
         )
         }else if(siteId.toString().contains("google")){
-            logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +LoginPrefs.getOCTAToken(context).toString() + " username: " + decodeJWT(context))
+            logger.info(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ).toString() + " username: " + decodeJWT(context)
+            )
                 apiService.getPrinterDetailsByPrinterIdForGoogle(
                     LoginPrefs.getOCTAToken(context).toString(),
                     decodeJWT(context),
@@ -475,7 +493,11 @@ class PrintersFragment : Fragment() {
                 )
         }
         else{
-            logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +LoginPrefs.getOCTAToken(context).toString() + " username: " + decodeJWT(context))
+            logger.info(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ).toString() + " username: " + decodeJWT(context)
+            )
             apiService.getPrinterDetailsByPrinterId(
                 LoginPrefs.getOCTAToken(context).toString(),
                 decodeJWT(context),
@@ -521,6 +543,14 @@ class PrintersFragment : Fragment() {
                     val isPullPrinter = hashMap.get("is-pull-printer")
                     val printerToken = hashMap.get("printer-token")
                     val pull_print = hashMap.get("pull-print")
+                    val is_Color =hashMap.get("is-color")
+                    val isColor:Int
+                    if(is_Color.equals("0.0")){
+                        isColor=0
+                    }else{
+                        isColor=1
+                    }
+                    val location :String =hashMap.getOrDefault("location","")
                     val id = hashMap.get("id")
                     Log.d("title", title.toString())
                     logger.info("Devnco_Android title:" + title.toString())
@@ -549,6 +579,8 @@ class PrintersFragment : Fragment() {
                     printer.fromServer = false
                     printer.isPullPrinter = isPullPrinter.toString()
                     printer.pull_print = pull_print;
+                    printer.isColor=isColor
+                    printer.location=location
                     var flagIsExist: Boolean = false
                     //when select one document then only get printer by using queue id for display in dialog box
                     if (purpose.equals("forSecureRelase")) {
@@ -594,7 +626,7 @@ class PrintersFragment : Fragment() {
                             allPrintersForPullHeldJob.add(printer);
                         }
                     }
-
+                    ProgressDialog.cancelLoading()
                 }
 
             }
@@ -645,7 +677,7 @@ class PrintersFragment : Fragment() {
                 }
             }
 
-            updateUi(filterList)
+            updateUi(filterList, requireContext())
         }
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}

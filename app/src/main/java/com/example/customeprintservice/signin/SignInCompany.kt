@@ -78,7 +78,7 @@ class SignInCompany : AppCompatActivity() {
                     ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
                     checkValidation()
 
-                   if(edtYourCompany.text.toString().contains("googleid")) {
+                   if(edtYourCompany.text.toString().contains("google")) {
                       GoogleAPI.getGoogleData(this@SignInCompany)
                     }
                 }
@@ -151,7 +151,7 @@ class SignInCompany : AppCompatActivity() {
                     getSiteId()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
                     logger.info("Devnco_Android printer"+ "response of api==>" + response.isSuccessful)
-                    if(edtYourCompany.text.toString().contains("devncoldap")){
+                    if(edtYourCompany.text.toString().contains("ldap")){
                         bundle.putString("buttonName", "LDAP")
                     }
 

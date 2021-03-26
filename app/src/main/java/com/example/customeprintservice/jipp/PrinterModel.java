@@ -26,6 +26,8 @@ public class PrinterModel {
 
     private String location;
 
+    private Integer isColor;
+
 
     public String getNodeId() {
         return nodeId;
@@ -113,6 +115,14 @@ public class PrinterModel {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Integer getIsColor() {
+        return isColor;
+    }
+
+    public void setIsColor(Integer isColor) {
+        this.isColor = isColor;
     }
 }
 
