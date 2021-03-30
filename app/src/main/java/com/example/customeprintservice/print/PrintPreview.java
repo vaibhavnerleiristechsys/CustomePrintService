@@ -78,6 +78,7 @@ public class PrintPreview extends AppCompatActivity {
     int noOfCopies=1;
     Dialog dialog;
     View v = null;
+    public boolean isColor=false;
     private NumberPicker picker1,picker2;
     private String[] pickerVals,pickerVals2;
     Logger logger = LoggerFactory.getLogger(PrintPreview.class);
@@ -201,11 +202,17 @@ public class PrintPreview extends AppCompatActivity {
         ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printItems);
         staticSpinner.setAdapter(staticAdapter);
 
-
         staticSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
-
+                String printType = parent.getItemAtPosition(position).toString();
+              Log.d("printType=",printType);
+              if(printType.contains("Color")){
+                  isColor=true;
+                }
+                if(printType.contains("Monochrome")){
+                    isColor=false;
+                }
             }
 
             @Override
@@ -242,8 +249,13 @@ public class PrintPreview extends AppCompatActivity {
                 if(radioButton.getText().toString().equals("page")) {
                     String pagecount =pagesCount.getText().toString();
                     String[] pageIndex = pagecount.split("-", 0);
-                    startPageIndex= Integer.parseInt(pageIndex[0]);
-                    endPageIndex= Integer.parseInt(pageIndex[1]);
+                    if(pageIndex.length==2){
+                        startPageIndex= Integer.parseInt(pageIndex[0]);
+                        endPageIndex= Integer.parseInt(pageIndex[1]);
+                    }else{
+                        Toast.makeText(context, "please check pages number", Toast.LENGTH_LONG).show();
+                        PageIndexCorrect=false;
+                    }
                      if(startPageIndex>endPageIndex){
                          Toast.makeText(context, "please check pages number", Toast.LENGTH_LONG).show();
                          PageIndexCorrect=false;
@@ -429,7 +441,7 @@ public class PrintPreview extends AppCompatActivity {
                     if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null) {
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri,totalPageCount);
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri,totalPageCount,isColor);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                        // moveTaskToBack(true);
@@ -438,7 +450,7 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies,ippUri,totalPageCount);
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies,ippUri,totalPageCount,isColor);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                      //   moveTaskToBack(true);
@@ -450,7 +462,7 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri);
+                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                       //  moveTaskToBack(true);
@@ -477,6 +489,7 @@ public class PrintPreview extends AppCompatActivity {
     }
 
 /*
+
     private void pickPrinterPageDialog() {
         dialog = new Dialog(context);
         v = LayoutInflater.from(context).inflate(R.layout.dialog_page_range_picker, null);

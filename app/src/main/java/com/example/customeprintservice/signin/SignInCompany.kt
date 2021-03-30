@@ -183,7 +183,11 @@ class SignInCompany : AppCompatActivity() {
 
                     if(size==0){
                         if(!url.contains("ldap")) {
-                            toast("please check url")
+                           // toast("please check url")
+                            val intent = Intent(this@SignInCompany, SignInActivity::class.java)
+                            bundle.putString("buttonName", "LDAP")
+                            intent.putExtras(bundle)
+                            startActivity(intent)
                         }
                         if(url.contains("ldap")){
                             val intent = Intent(this@SignInCompany, SignInActivity::class.java)

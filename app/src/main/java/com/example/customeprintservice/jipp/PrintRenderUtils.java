@@ -3,8 +3,12 @@ package com.example.customeprintservice.jipp;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,7 +27,9 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -252,7 +258,7 @@ public class PrintRenderUtils {
     }
 
 
-    public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount) {
+    public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount,boolean isColor) {
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -300,12 +306,8 @@ public class PrintRenderUtils {
                         if(resultMap.get("status").equals("successful-ok")) {
 
                 //        logger.info("Devnco_Android status successful-ok");
-                     //   String url = "http://192.168.3.225:631/ipp";
                         finalUri = URI.create(resultMap.get("finalUri"));
-                     //   finalUri = URI.create(url);
                         String versionNumber =resultMap.get("versionNumber");
-                       // String versionNumber ="0x200";
-
                     for (int i = 0; i < noOfCopies; i++) {
                         int pagePrintCounter = 0;
                         int threadSleepInMilliSecs = 3000;
@@ -323,8 +325,16 @@ public class PrintRenderUtils {
                                 PdfRenderer.Page page = renderer.openPage(pagePrintCounter);
                                 Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
                                 Canvas canvas = new Canvas(bitmap);
-                                canvas.drawColor(Color.WHITE);
-                                canvas.drawBitmap(bitmap, 0, 0, null);
+                                if(isColor==true) {
+                                    canvas.drawColor(Color.WHITE);
+                                    canvas.drawBitmap(bitmap, 0, 0, null);
+                                }else{
+                                    ColorMatrix colorMatrix = new ColorMatrix();
+                                    colorMatrix.setSaturation(0);
+                                    Paint paint = new Paint();
+                                    paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+                                    canvas.drawBitmap(bitmap, 0, 0, paint);
+                                }
                                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
                                 page.close();
 
@@ -471,7 +481,7 @@ public class PrintRenderUtils {
     }
 
 
-    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri) {
+    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor) {
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -522,8 +532,12 @@ public class PrintRenderUtils {
                                             Toast.makeText(context, ippUriFinal, Toast.LENGTH_LONG).show();
                                         }
                                     });
-
-                            Map map = printUtils.print(finalUri, file, context, "",versionNumber);
+                            Map map;
+                            if(isColor == true) {
+                                map = printUtils.print(finalUri, file, context, "", versionNumber);
+                            }else{
+                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber);
+                            }
                             String print ="print status:"+map.get("status").toString();
                             logger.info("Devnco_Android print status:"+map.get("status").toString());
                             new Handler(Looper.getMainLooper()).post(
@@ -540,6 +554,7 @@ public class PrintRenderUtils {
                                         public void run() {
                                             Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
                                         }
+
                                     });*/
 
 
@@ -601,5 +616,24 @@ public class PrintRenderUtils {
         }.start();
 
 
+    }
+
+    private File convertColorToMonochrome(File colorFile) throws IOException {
+
+        String filePath = colorFile.getPath();
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+        Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(mutableBitmap);
+        ColorMatrix colorMatrix = new ColorMatrix();
+        colorMatrix.setSaturation(0);
+        Paint paint = new Paint();
+        paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
+        canvas.drawBitmap(mutableBitmap, 0, 0, paint);
+        FileOutputStream out = new FileOutputStream(colorFile);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        //      logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
+        out.flush();
+        out.close();
+        return colorFile;
     }
 }
