@@ -15,6 +15,8 @@ import com.example.customeprintservice.signin.SignInCompany;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -102,8 +104,12 @@ public class PrintPreview extends AppCompatActivity {
         FloatingActionButton selectDocumentFloatingButton = (FloatingActionButton) findViewById(R.id.selectDocumentFloatingButton);
 
         if (LoginPrefs.Companion.getOCTAToken(this) == null) {
-            Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
-            startActivity(intent1);
+            @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+            String IsLdap = prefs.getString("IsLdap", "");
+            if(!IsLdap.equals("LDAP")) {
+                Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                startActivity(intent1);
+            }
         }
 
         filePath = bundle.getString("filePath", "");
@@ -444,7 +450,7 @@ public class PrintPreview extends AppCompatActivity {
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri,totalPageCount,isColor);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
-                       // moveTaskToBack(true);
+                        moveTaskToBack(true);
                     }
                     if (radioButton.getText().toString().equals("page") && selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null) {
 
@@ -453,7 +459,7 @@ public class PrintPreview extends AppCompatActivity {
                         printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies,ippUri,totalPageCount,isColor);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
-                     //   moveTaskToBack(true);
+                        moveTaskToBack(true);
                     }
                 }else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
 
@@ -465,7 +471,7 @@ public class PrintPreview extends AppCompatActivity {
                         printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
-                      //  moveTaskToBack(true);
+                        moveTaskToBack(true);
 
                     }
                 }

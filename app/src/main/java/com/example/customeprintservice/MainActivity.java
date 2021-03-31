@@ -1,6 +1,7 @@
 package com.example.customeprintservice;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -165,8 +166,12 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                     if (LoginPrefs.Companion.getOCTAToken(this) == null) {
-                        Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
-                        startActivity(intent1);
+                        @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+                        String IsLdap = prefs.getString("IsLdap", "");
+                        if(!IsLdap.equals("LDAP")) {
+                            Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                            startActivity(intent1);
+                        }
                     }
 
             }

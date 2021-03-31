@@ -127,16 +127,25 @@ public class ServerPrintRelaseFragment extends Fragment {
         BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
 
      if(LoginPrefs.Companion.getOCTAToken(context)==null) {
-         final Handler handler = new Handler();
-         handler.postDelayed(new Runnable() {
-             @Override
-             public void run() {
-                 getjobListStatus();
-                 serverCallForGettingAllPrinters(requireContext());
-                 PrintersFragment printersFragment1 = new PrintersFragment();
-                 printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
-             }
-         }, 5000);
+         @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+         String IsLdap = prefs.getString("IsLdap", "");
+         if(IsLdap.equals("LDAP")) {
+             getjobListStatus();
+         //    serverCallForGettingAllPrinters(requireContext());
+             PrintersFragment printersFragment1 = new PrintersFragment();
+             printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
+         }else {
+             final Handler handler = new Handler();
+             handler.postDelayed(new Runnable() {
+                 @Override
+                 public void run() {
+                     getjobListStatus();
+                     serverCallForGettingAllPrinters(context);
+                     PrintersFragment printersFragment1 = new PrintersFragment();
+                     printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
+                 }
+             }, 5000);
+         }
      }else{
          getjobListStatus();
         // serverCallForGettingAllPrinters(requireContext());

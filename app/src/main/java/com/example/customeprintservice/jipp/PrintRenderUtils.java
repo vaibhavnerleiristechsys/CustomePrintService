@@ -133,7 +133,17 @@ public class PrintRenderUtils {
 
                             Map map = printUtils.print(finalUri, renderFile, context, "", versionNumber);
 
+                            String print ="print status:"+map.get("status").toString();
+                            logger.info("Devnco_Android print status:"+map.get("status").toString());
+                            new Handler(Looper.getMainLooper()).post(
+                                    new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(context, print, Toast.LENGTH_LONG).show();
+                                        }
+                                    });
 
+/*
                             if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
                                 String expMessage = "The get attributes call failed ";
                                 new Handler(Looper.getMainLooper()).post(
@@ -148,7 +158,7 @@ public class PrintRenderUtils {
                                 logger.info("Devnco_Android printer"+ expMessage);
                                 break;
                             }
-
+*/
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
                                 totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
@@ -281,7 +291,7 @@ public class PrintRenderUtils {
                     String attributeStatus ="attrribute status:"+resultMap.get("status");
                     logger.info("Devnco_Android attrribute status:"+ attributeStatus);
 
-                    new Handler(Looper.getMainLooper()).post(
+                   /* new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
@@ -289,7 +299,7 @@ public class PrintRenderUtils {
                                 }
                             });
 
-
+*/
 
                     if (!resultMap.containsKey("status")) {
                         // show error
@@ -359,7 +369,7 @@ public class PrintRenderUtils {
                                     break;
                                 } else {
                                     String ippUriFinal = finalUri.toString();
-                                    new Handler(Looper.getMainLooper()).post(
+                               /*     new Handler(Looper.getMainLooper()).post(
                                             new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -367,7 +377,7 @@ public class PrintRenderUtils {
                                                 }
                                             });
 
-
+                               */
                                     Map map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
                                     String print ="print status:"+map.get("status").toString();
                                     logger.info("Devnco_Android print status:"+map.get("status").toString());
@@ -493,7 +503,7 @@ public class PrintRenderUtils {
 
                     String attributeStatus ="attribute status:"+resultMap.get("status");
                     logger.info("Devnco_Android attribute status:"+ attributeStatus);
-                    new Handler(Looper.getMainLooper()).post(
+                  /*  new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
@@ -501,7 +511,7 @@ public class PrintRenderUtils {
                                 }
                             });
 
-
+                     */
                     if (!resultMap.containsKey("status")) {
                         // show error
                         new Handler(Looper.getMainLooper()).post(
@@ -525,13 +535,15 @@ public class PrintRenderUtils {
                         int totalTimeThreadSleep = 0;
                         while (pagePrintCounter < 1) {
                             String ippUriFinal = finalUri.toString();
-                            new Handler(Looper.getMainLooper()).post(
+
+                        /*    new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, ippUriFinal, Toast.LENGTH_LONG).show();
                                         }
                                     });
+                            */
                             Map map;
                             if(isColor == true) {
                                 map = printUtils.print(finalUri, file, context, "", versionNumber);

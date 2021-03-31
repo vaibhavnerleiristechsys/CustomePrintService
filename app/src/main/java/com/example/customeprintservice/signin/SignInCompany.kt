@@ -1,6 +1,9 @@
 package com.example.customeprintservice.signin
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.Selection
@@ -40,10 +43,23 @@ class SignInCompany : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (LoginPrefs.getOCTAToken(this@SignInCompany) != null) {
-           val serverPrintRelaseFragment=ServerPrintRelaseFragment()
-            serverPrintRelaseFragment.serverCallForGettingAllPrinters(this@SignInCompany)
-            val intent = Intent(this@SignInCompany, MainActivity::class.java)
-            startActivity(intent)
+                val serverPrintRelaseFragment = ServerPrintRelaseFragment()
+                serverPrintRelaseFragment.serverCallForGettingAllPrinters(this@SignInCompany)
+                val intent = Intent(this@SignInCompany, MainActivity::class.java)
+                startActivity(intent)
+
+        }else{
+            @SuppressLint("WrongConstant")val sh: SharedPreferences = getSharedPreferences(
+                "MySharedPref",
+                Context.MODE_APPEND
+            )
+            val IsLdap = sh.getString("IsLdap", "")
+            if(IsLdap.equals("LDAP")){
+                val serverPrintRelaseFragment = ServerPrintRelaseFragment()
+                serverPrintRelaseFragment.serverCallForGettingAllPrinters(this@SignInCompany)
+                val intent = Intent(this@SignInCompany, MainActivity::class.java)
+                startActivity(intent)
+            }
         }
         setContentView(R.layout.activity_sign_in_company)
         Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);

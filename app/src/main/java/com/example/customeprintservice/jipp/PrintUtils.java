@@ -311,12 +311,13 @@ public class PrintUtils {
 
 
 
-
+/*
                 Intent printResponseIntent =
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("printResponse", printResponse.toString());
                 context.sendBroadcast(printResponseIntent);
 
+ */
                 Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
                // logger.info("Devnco_Android printer"+ "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
             } else {
@@ -348,7 +349,7 @@ public class PrintUtils {
                     IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x200)
                             .build();
            logger.info("Devnco_Android attributeRequest for 0x200==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
-           String attr ="attributeRequest:"+attributeRequest.toString();
+          /* String attr ="attributeRequest:"+attributeRequest.toString();
             new Handler(Looper.getMainLooper()).post(
                     new Runnable() {
                         @Override
@@ -356,10 +357,10 @@ public class PrintUtils {
                             Toast.makeText(context, attr, Toast.LENGTH_LONG).show();
                         }
                     });
-
+*/
             IppPacketData request = new IppPacketData(attributeRequest);
            // logger.info("Devnco_Android IppPacketData request for 0x200  ==> Uri:"+specificUri+" ==> "+request.toString());
-            String request1 ="request:"+request.toString();
+       /*     String request1 ="request:"+request.toString();
             new Handler(Looper.getMainLooper()).post(
                     new Runnable() {
                         @Override
@@ -367,19 +368,21 @@ public class PrintUtils {
                             Toast.makeText(context, request1, Toast.LENGTH_LONG).show();
                         }
                     });
+
+        */
             IppPacketData response;
             try{
                 response = transport.sendData(specificUri, request);
                 logger.info("Devnco_Android IppPacketData response for 0x200==> Uri:"+specificUri+" ==> "+response.toString());
-                String response1 ="response:"+response.toString();
-                new Handler(Looper.getMainLooper()).post(
+             /*     String response1 ="response:"+response.toString();
+              new Handler(Looper.getMainLooper()).post(
                         new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(context, response1, Toast.LENGTH_LONG).show();
                             }
                         });
-
+*/
                 IppPacket responsePacket = response.getPacket();
                // logger.info("Devnco_Android responsePacket for 0x200 Uri:"+specificUri+" ==> "+responsePacket.toString());
 
@@ -391,21 +394,21 @@ public class PrintUtils {
                      attributeRequest = IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x100)
                                     .build();
                     logger.info("Devnco_Android attributeRequest for version 0x100 ==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
-                    String attributeRequest1 ="attributeRequest for 1:"+attributeRequest.toString();
-                    new Handler(Looper.getMainLooper()).post(
+              /*       String attributeRequest1 ="attributeRequest for 1:"+attributeRequest.toString();
+                   new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(context, attributeRequest1, Toast.LENGTH_LONG).show();
                                 }
                             });
-
+*/
                      request = new IppPacketData(attributeRequest);
                 //    logger.info("Devnco_Android IppPacketData request for version 0x100 ==> Uri:"+specificUri+" ==> "+request.toString());
 
                     response = transport.sendData(specificUri, request);
                     logger.info("Devnco_Android IppPacketData response for version  0x100 ==> Uri:"+specificUri+" ==> "+response.toString());
-                    String response2 ="response for 0x100:"+response.toString();
+                 /*   String response2 ="response for 0x100:"+response.toString();
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -414,6 +417,8 @@ public class PrintUtils {
                                 }
                             });
 
+
+                  */
                      responsePacket = response.getPacket();
               //      logger.info("Devnco_Android responsePacket for version  0x100 ==> Uri:"+specificUri+" ==> "+responsePacket.toString());
 
@@ -421,11 +426,11 @@ public class PrintUtils {
                     resultMap.put("versionNumber","0x100");
                 }
 
-                Intent intent =
+              /*  Intent intent =
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("getPrinterAttributes", response.toString());
                 context.sendBroadcast(intent);
-
+*/
                 if(resultMap.get("status").trim().equalsIgnoreCase("successful-ok"))
                 {
                     resultMap.put("finalUri",specificUri.toString());
@@ -438,14 +443,14 @@ public class PrintUtils {
                     resultMap.put("result-"+count,resultMap.get("status"));
                     String result ="result-"+count+" uri-"+specificUri.toString()+" status-"+resultMap.get("status");
                     logger.info("Devnco_Android status of getAttributeCall ==> Uri:"+specificUri+" ==> "+resultMap.get("status"));
-                    new Handler(Looper.getMainLooper()).post(
+               /*     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(context,result , Toast.LENGTH_LONG).show();
                                 }
                             });
-
+*/
                 }
             }
             catch (Exception e){

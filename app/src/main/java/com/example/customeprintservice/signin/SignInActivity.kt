@@ -17,10 +17,10 @@ import androidx.core.widget.doOnTextChanged
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.prefs.LoginPrefs
-import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
+import com.example.customeprintservice.utils.ProgressDialog.Companion.showLoadingDialog
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import okhttp3.ResponseBody
 import org.jetbrains.anko.toast
@@ -34,7 +34,6 @@ class SignInActivity : AppCompatActivity() {
     private var isShowPass = false
     private var bundle = Bundle()
     var LOG = LoggerFactory.getLogger(SignInActivity::class.java)
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
@@ -128,9 +127,9 @@ class SignInActivity : AppCompatActivity() {
             val password = edtPassword.text.toString()
 
             Log.d("username", edtUserName.text.toString())
-            LOG.info("username", edtUserName.text.toString())
+            LOG.info("username:" + edtUserName.text.toString())
             Log.d("password", edtPassword.text.toString())
-            LOG.info("password", edtPassword.text.toString())
+            LOG.info("password:" + edtPassword.text.toString())
             checkLdapLogin(this@SignInActivity, username, password)
 
         }
@@ -220,6 +219,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     fun checkLdapLogin(context: Context, username: String, password: String) {
+        showLoadingDialog(context, "Please Wait")
         val companyUrl = LoginPrefs.getCompanyUrl(context)
         val BASE_URL = "https://"+companyUrl+"/api/verify-login/"
         val apiService = RetrofitClient(context)
@@ -242,8 +242,8 @@ class SignInActivity : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 if (response.code() == 204) {
                     Log.i("LDAP printers Response", response.toString())
-                    LOG.info("LDAP printers Response"+ response.toString())
-                    toast("Login Successfully")
+                    LOG.info("LDAP printers Response" + response.toString())
+                 //   toast("Login Successfully")
                     val sharedPreferences: SharedPreferences =
                         getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
                     val myEdit = sharedPreferences.edit()
