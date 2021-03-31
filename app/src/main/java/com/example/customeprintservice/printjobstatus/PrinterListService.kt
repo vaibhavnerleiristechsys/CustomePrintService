@@ -224,7 +224,7 @@ class PrinterListService {
                             val gson1 = Gson()
                             val editor = prefs1.edit()
                             val json1 = gson1.toJson(PrintersFragment.serverSecurePrinterListWithDetails)
-                            editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                            editor.putString("deployedsecurePrinterListWithDetails", json1)
                             editor.apply()
                         }
 

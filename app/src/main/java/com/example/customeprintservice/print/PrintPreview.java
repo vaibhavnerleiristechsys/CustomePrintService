@@ -73,6 +73,7 @@ public class PrintPreview extends AppCompatActivity {
     public static ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
     public ArrayList<PrinterModel>serverSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
+    public ArrayList<PrinterModel>deployedSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
     public String selectPrinter=null;
     int startPageIndex=0;
     int endPageIndex=0;
@@ -145,15 +146,30 @@ public class PrintPreview extends AppCompatActivity {
         items.add("select printer");
         SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
         Gson gson1 = new Gson();
-        String json2 = prefs1.getString("prefServerSecurePrinterListWithDetails", null);
         Type type1 = new TypeToken<ArrayList<PrinterModel>>() {}.getType();
+
+
+
+
+
+        String json = prefs1.getString("deployedsecurePrinterListWithDetails", null);
+        if (json != null) {
+            deployedSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json, type1);
+        }
+
+        String json2 = prefs1.getString("prefServerSecurePrinterListWithDetails", null);
         if (json2 != null) {
             serverSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json2, type1);
+
+        }
+        if(deployedSecurePrinterListWithDetailsSharedPreflist!=null && deployedSecurePrinterListWithDetailsSharedPreflist.size()>0){
+            serverSecurePrinterListWithDetailsSharedPreflist.addAll(deployedSecurePrinterListWithDetailsSharedPreflist);
             for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
                 PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                 items.add(printerModel.getServiceName());
             }
         }
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);
         dynamicSpinner.setAdapter(adapter);
 

@@ -106,5 +106,6 @@ class LoginPrefs {
             val editor = sharedPreferences.edit().clear()
             editor.apply()
         }
+
     }
 }

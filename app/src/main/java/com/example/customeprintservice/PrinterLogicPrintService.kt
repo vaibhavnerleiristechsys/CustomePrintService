@@ -18,7 +18,6 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.example.customeprintservice.jipp.PrintRenderUtils
-import com.example.customeprintservice.jipp.PrintUtils
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.print.PrintersFragment
@@ -44,7 +43,7 @@ class PrinterLogicPrintService : PrintService() {
 
     override fun onConnected() {
         Log.i(TAG, "#onConnected()")
-        logger.info("Devnco_Android "+TAG+ "#onConnected()")
+        logger.info("Devnco_Android " + TAG + "#onConnected()")
 
         val permissionWrite = ContextCompat.checkSelfPermission(
             this,
@@ -60,7 +59,7 @@ class PrinterLogicPrintService : PrintService() {
             || permissionRead != PackageManager.PERMISSION_GRANTED
         ) {
             Log.i(TAG, "Permission to record denied")
-            logger.info("Devnco_Android "+TAG+ "Permission to record denied")
+            logger.info("Devnco_Android " + TAG + "Permission to record denied")
             Toast.makeText(this, "Please login to Printerlogic app", Toast.LENGTH_LONG).show()
         }
 
@@ -69,7 +68,7 @@ class PrinterLogicPrintService : PrintService() {
     override fun onDisconnected() {
         super.onDisconnected()
         Log.i(TAG, "#onDisConnected()")
-        logger.info("Devnco_Android "+TAG+ "#onDisConnected()")
+        logger.info("Devnco_Android " + TAG + "#onDisConnected()")
         stopSelf()
     }
 
@@ -80,13 +79,13 @@ class PrinterLogicPrintService : PrintService() {
     override fun onRequestCancelPrintJob(printJob: PrintJob) {
         printJob.cancel()
         Log.i(TAG, "#onRequestCancelPrintJob() printJobId: " + printJob.id)
-        logger.info("Devnco_Android "+TAG+ "#onRequestCancelPrintJob() printJobId: " + printJob.id)
+        logger.info("Devnco_Android " + TAG + "#onRequestCancelPrintJob() printJobId: " + printJob.id)
 
     }
 
     override fun onPrintJobQueued(printJob: PrintJob) {
         Log.i(TAG, "override on Print Job Queued ")
-        logger.info("Devnco_Android "+TAG+ "override on Print Job Queued ")
+        logger.info("Devnco_Android " + TAG + "override on Print Job Queued ")
 
         val permissionWrite = ContextCompat.checkSelfPermission(
             this,
@@ -109,7 +108,7 @@ class PrinterLogicPrintService : PrintService() {
 
 
         Log.i(TAG, "Handle Queued Print Job")
-        logger.info("Devnco_Android "+TAG+ "Handle Queued Print Job")
+        logger.info("Devnco_Android " + TAG + "Handle Queued Print Job")
         if (printJob.isQueued) {
             printJob.start()
         }
@@ -168,13 +167,14 @@ internal class PrinterDiscoverySession(
     private var printerInfo: PrinterInfo? = null
     private var appContext: Context? = null
      var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+     var deployedSecurePrinterListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
     var logger = LoggerFactory.getLogger(PrinterDiscoverySession::class.java)
 
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onStartPrinterDiscovery(priorityList: List<PrinterId>) {
         Log.d("customprintservices", "onStartPrinterDiscovery")
-        logger.info("Devnco_Android customprintservices"+ "onStartPrinterDiscovery")
+        logger.info("Devnco_Android customprintservices" + "onStartPrinterDiscovery")
 
 
         PrintersFragment.discoveredPrinterListWithDetails.clear()
@@ -195,17 +195,34 @@ internal class PrinterDiscoverySession(
         val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
         val type = object :
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+
+        val deployedPrinterjson = prefs.getString("deployedsecurePrinterListWithDetails", null)
         if (json != null) {
-            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(json, type)
+            deployedSecurePrinterListWithDetailsSharedPreflist = gson.fromJson(
+                deployedPrinterjson,
+                type
+            )
+        }
+
+
+        if (json != null) {
+            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(
+                json,
+                type
+            )
+        }
+
+        if (deployedSecurePrinterListWithDetailsSharedPreflist != null && deployedSecurePrinterListWithDetailsSharedPreflist.size > 0) {
+            sharedPreferencesStoredPrinterListWithDetails.addAll(deployedSecurePrinterListWithDetailsSharedPreflist)
         }
 
         if (sharedPreferencesStoredPrinterListWithDetails != null) {
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
                 val printerId = ArrayList<PrinterId>()
-                Log.d("service name",p.serviceName.toString())
-                if(p.printerHost!=null) {
+                Log.d("service name", p.serviceName.toString())
+                if (p.printerHost != null) {
                     Log.d("host ", p.printerHost.toString())
-                    logger.info("Devnco_Android host "+ p.printerHost.toString())
+                    logger.info("Devnco_Android host " + p.printerHost.toString())
                     printerId.add(printService.generatePrinterId(p.printerHost.toString()))
                     val builder = PrinterInfo.Builder(
                         printService.generatePrinterId(p.printerHost.toString()),

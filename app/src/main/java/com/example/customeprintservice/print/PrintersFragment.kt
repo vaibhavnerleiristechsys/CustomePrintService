@@ -661,6 +661,12 @@ class PrintersFragment : Fragment() {
                 editor.putString("prefServerSecurePrinterListWithDetails", json1)
                 editor.apply()
 
+            }else{
+                serverSecurePrinterListWithDetailsSharedPreflist.add(printer)
+                val editor = prefs1.edit()
+                val json1 = gson1.toJson(serverSecurePrinterListWithDetailsSharedPreflist)
+                editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                editor.apply()
             }
         }
     }
@@ -685,5 +691,17 @@ class PrintersFragment : Fragment() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     }
+
+   fun removePrinters(context: Context){
+       var emptyList = java.util.ArrayList<PrinterModel>()
+       val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
+       val gson1 = Gson()
+           val editor = prefs1.edit()
+           val json1 = gson1.toJson(emptyList)
+           editor.putString("prefServerSecurePrinterListWithDetails", json1)
+           editor.apply()
+
+
+   }
 
 }

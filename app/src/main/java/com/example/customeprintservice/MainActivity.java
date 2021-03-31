@@ -226,7 +226,12 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
                 SharedPreferences.Editor myEdit = sharedPreferences.edit();
                 myEdit.putString("IsLdap", "Others");
+
                 myEdit.commit();
+
+                PrintersFragment printersFragment=new PrintersFragment();
+                printersFragment.removePrinters(getApplicationContext());
+
                 Intent intent = new Intent(getApplicationContext(), SignInCompany.class);
                 startActivity(intent);
             }
