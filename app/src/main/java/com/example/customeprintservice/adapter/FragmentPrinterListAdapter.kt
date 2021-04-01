@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.*
@@ -13,6 +14,7 @@ import android.widget.AbsListView
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,6 +34,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.util.function.Consumer
 
 
 class FragmentPrinterListAdapter(
@@ -56,6 +59,7 @@ class FragmentPrinterListAdapter(
         return FragmentPrinterListAdapter.ViewHolder(view)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     override fun onBindViewHolder(holder: FragmentPrinterListAdapter.ViewHolder, position: Int) {
         holder.getPrinterName().text = list[position].serviceName.toString()
         holder.getRemovePrinter().visibility=View.GONE
@@ -234,6 +238,7 @@ class FragmentPrinterListAdapter(
 
 
     @SuppressLint("WrongConstant")
+    @RequiresApi(api = Build.VERSION_CODES.N)
     fun dialogDeletePrinter(context:Context,printerModel: PrinterModel){
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_confirmation_delete_printer)
@@ -268,6 +273,39 @@ class FragmentPrinterListAdapter(
                     }
                 }
                 PrinterList().printerList.remove(printer)
+
+
+                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+                val gson = Gson()
+                val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
+                val type = object :
+                    TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+                var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+                if (json != null) {
+                    sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(
+                        json,
+                        type
+                    )
+                }
+
+                if (sharedPreferencesStoredPrinterListWithDetails != null && sharedPreferencesStoredPrinterListWithDetails.size > 0) {
+                    var removePrinter: PrinterModel = PrinterModel()
+                    sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
+                        if (p.printerHost.equals(printerModel.printerHost)) {
+                            removePrinter=p
+                        }
+                    })
+                    if(removePrinter !=null) {
+                        sharedPreferencesStoredPrinterListWithDetails.remove(removePrinter)
+                        val editor = prefs.edit()
+                        val json1 = gson.toJson(sharedPreferencesStoredPrinterListWithDetails)
+                        editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                        editor.apply()
+                    }
+                //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
+                }
+
+
             }
 
             dialog.cancel()

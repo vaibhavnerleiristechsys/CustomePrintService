@@ -197,7 +197,7 @@ internal class PrinterDiscoverySession(
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
 
         val deployedPrinterjson = prefs.getString("deployedsecurePrinterListWithDetails", null)
-        if (json != null) {
+        if (deployedPrinterjson != null) {
             deployedSecurePrinterListWithDetailsSharedPreflist = gson.fromJson(
                 deployedPrinterjson,
                 type

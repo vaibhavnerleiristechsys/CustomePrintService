@@ -54,6 +54,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
+import java.util.function.Consumer
 
 class PrintersFragment : Fragment() {
 
@@ -77,6 +78,7 @@ class PrintersFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_printers, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("WrongConstant")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -127,8 +129,41 @@ class PrintersFragment : Fragment() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("WrongConstant")
      fun updateUi(list: java.util.ArrayList<PrinterModel>, context: Context) {
+
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson = Gson()
+        val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
+        val type = object :
+            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+        var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        if (json != null) {
+            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(
+                json,
+                type
+            )
+        }
+
+        if (sharedPreferencesStoredPrinterListWithDetails != null && sharedPreferencesStoredPrinterListWithDetails.size > 0) {
+            sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
+               var isAvailable:Boolean=false
+                list.forEach(Consumer { deployedPrinter:PrinterModel ->
+                    if(p.serviceName.equals(deployedPrinter.serviceName)){
+                        isAvailable=true;
+                    }
+                })
+               if(isAvailable==false){
+                   list.add(p)
+               }
+
+            })
+
+          //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
+        }
+
+
         val recyclerViewPrinterLst = view?.findViewById<RecyclerView>(R.id.recyclerViewFragmentPrinterList)
         recyclerViewPrinterLst?.layoutManager = LinearLayoutManager(
             context,
@@ -672,6 +707,7 @@ class PrintersFragment : Fragment() {
     }
 
     val watcher: TextWatcher = object : TextWatcher {
+        @RequiresApi(Build.VERSION_CODES.N)
         override fun afterTextChanged(s: Editable) {
             Log.d("text:", s.toString())
             logger.info("Devnco_Android text:" + s.toString())
