@@ -315,7 +315,7 @@ class PrintersFragment : Fragment() {
                 call: Call<ResponseBody>,
                 response: Response<ResponseBody>
             ) {
-                ProgressDialog.cancelLoading()
+             //   ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
                     try {
                         val html = response.body()?.string()

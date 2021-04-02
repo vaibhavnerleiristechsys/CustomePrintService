@@ -5,18 +5,28 @@
     android:id="@+id/swipeContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollview">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
     <RelativeLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="60dp"
-        android:id="@+id/container"/>
+        android:id="@+id/container">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+    </RelativeLayout>
 
 </RelativeLayout>
+</ScrollView>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
