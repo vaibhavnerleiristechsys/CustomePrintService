@@ -66,14 +66,16 @@ class SignInCompany : AppCompatActivity() {
            val companyUrl =LoginPrefs.getCompanyUrl(this@SignInCompany)
         if(companyUrl !=null){
             edtYourCompany.setText(companyUrl.toString())
-            edtYourCompany.setSelection(edtYourCompany.getText().length);
+            edtYourCompany.setSelection(edtYourCompany.getText().length)
+            btnNextSignInCompany.setBackgroundResource(R.drawable.button_change_color)
+            btnNextSignInCompany.setTextColor(resources.getColor(R.color.white))
         }
 
 
         edtYourCompany.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if(!s.toString().startsWith("https://")){
-                    Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
+                  //  Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
                 }
 
 
@@ -137,12 +139,12 @@ class SignInCompany : AppCompatActivity() {
         edtYourCompany.doOnTextChanged { text, start, before, count ->
 
             if (start == 0) {
-                edtYourCompany.alpha = 0.75F
+             //   edtYourCompany.alpha = 0.75F
                 btnNextSignInCompany.setBackgroundResource(R.drawable.button_change_color)
                 btnNextSignInCompany.setTextColor(resources.getColor(R.color.white))
             }
             if (text?.length == 0) {
-                edtYourCompany.alpha = 0.42F
+             //   edtYourCompany.alpha = 0.42F
                 btnNextSignInCompany.setBackgroundResource(R.drawable.button_radius)
                 btnNextSignInCompany.setTextColor(resources.getColor(R.color.silver))
             }
