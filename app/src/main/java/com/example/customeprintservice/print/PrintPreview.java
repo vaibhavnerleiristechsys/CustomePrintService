@@ -149,9 +149,6 @@ public class PrintPreview extends AppCompatActivity {
         Type type1 = new TypeToken<ArrayList<PrinterModel>>() {}.getType();
 
 
-
-
-
         String json = prefs1.getString("deployedsecurePrinterListWithDetails", null);
         if (json != null) {
             deployedSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json, type1);
@@ -164,10 +161,11 @@ public class PrintPreview extends AppCompatActivity {
         }
         if(deployedSecurePrinterListWithDetailsSharedPreflist!=null && deployedSecurePrinterListWithDetailsSharedPreflist.size()>0){
             serverSecurePrinterListWithDetailsSharedPreflist.addAll(deployedSecurePrinterListWithDetailsSharedPreflist);
-            for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
-                PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
-                items.add(printerModel.getServiceName());
-            }
+        }
+
+        for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
+            PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
+            items.add(printerModel.getServiceName());
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);

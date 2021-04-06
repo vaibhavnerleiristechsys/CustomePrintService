@@ -520,9 +520,11 @@ public class ServerPrintRelaseFragment extends Fragment {
                     String fileSize=sizeInKb.toString()+"KB";
                     selectedFile.setJobSize(fileSize);
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
-                    if(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters() !=null) {
-                        if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size() > 0) {
-                            selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+                    if(PrintQueueJobStatusItem.getPrinterDeviceQueue() !=null) {
+                        if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters() != null) {
+                            if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size() > 0) {
+                                selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+                            }
                         }
                     }
 

@@ -135,7 +135,7 @@ class PrintersFragment : Fragment() {
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
-        val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
+        val json = prefs.getString("prefaddedPrinterListWithDetails", null)
         val type = object :
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
         var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
@@ -369,6 +369,11 @@ class PrintersFragment : Fragment() {
 
 
                         }
+
+                        if(element.size==0){
+                            removePreferencesDeployedPrinters(context)
+                        }
+
 
                         Handler().postDelayed({
                             updateUi(PrinterList().printerList, context)
@@ -649,7 +654,7 @@ class PrintersFragment : Fragment() {
                             addPrinterForshareDocument(printer, context)
                             Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(context, "Unable to add Printer", Toast.LENGTH_SHORT)
+                            Toast.makeText(context, "Printer Already Added", Toast.LENGTH_SHORT)
                                 .show()
                         }
                     }
@@ -704,6 +709,32 @@ class PrintersFragment : Fragment() {
                 editor.apply()
             }
         }
+
+
+        var addedListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
+        val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson1 = Gson()
+        val json2 = prefs1.getString("prefaddedPrinterListWithDetails", null)
+        val type1 = object :
+            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+        if (json2 != null) {
+            addedListWithDetailsSharedPreflist = gson1.fromJson<java.util.ArrayList<PrinterModel>>(
+                json2,
+                type1
+            )
+            addedListWithDetailsSharedPreflist.add(printer)
+            val editor = prefs1.edit()
+            val json1 = gson1.toJson(addedListWithDetailsSharedPreflist)
+            editor.putString("prefaddedPrinterListWithDetails", json1)
+            editor.apply()
+
+        }else{
+            addedListWithDetailsSharedPreflist.add(printer)
+            val editor = prefs1.edit()
+            val json1 = gson1.toJson(addedListWithDetailsSharedPreflist)
+            editor.putString("prefaddedPrinterListWithDetails", json1)
+            editor.apply()
+        }
     }
 
     val watcher: TextWatcher = object : TextWatcher {
@@ -739,5 +770,18 @@ class PrintersFragment : Fragment() {
 
 
    }
+
+    fun removePreferencesDeployedPrinters(context: Context){
+        var emptyList = java.util.ArrayList<PrinterModel>()
+        val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson1 = Gson()
+        val editor = prefs1.edit()
+        val json1 = gson1.toJson(emptyList)
+        editor.putString("deployedsecurePrinterListWithDetails", json1)
+        editor.apply()
+
+
+    }
+
 
 }

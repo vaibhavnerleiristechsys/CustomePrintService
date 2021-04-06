@@ -180,7 +180,18 @@ class FragmentPrinterListAdapter(
 
 
         holder.getRemovePrinter().setOnClickListener {
-              dialogDeletePrinter(context,list[position])
+            Log.d("printer name tag:",holder.getPrinterName().text.toString())
+           list.forEach{
+
+                try {
+                    if (it.serviceName.equals(holder.getPrinterName().text.toString())) {
+                        dialogDeletePrinter(context,it)
+                    }
+                }catch(e: Exception){
+                    Log.d("excpetion",e.message.toString())
+                }
+            }
+
         }
     }
 
@@ -275,36 +286,8 @@ class FragmentPrinterListAdapter(
                 PrinterList().printerList.remove(printer)
 
 
-                val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-                val gson = Gson()
-                val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
-                val type = object :
-                    TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
-                var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
-                if (json != null) {
-                    sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(
-                        json,
-                        type
-                    )
-                }
-
-                if (sharedPreferencesStoredPrinterListWithDetails != null && sharedPreferencesStoredPrinterListWithDetails.size > 0) {
-                    var removePrinter: PrinterModel = PrinterModel()
-                    sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
-                        if (p.printerHost.equals(printerModel.printerHost)) {
-                            removePrinter=p
-                        }
-                    })
-                    if(removePrinter !=null) {
-                        sharedPreferencesStoredPrinterListWithDetails.remove(removePrinter)
-                        val editor = prefs.edit()
-                        val json1 = gson.toJson(sharedPreferencesStoredPrinterListWithDetails)
-                        editor.putString("prefServerSecurePrinterListWithDetails", json1)
-                        editor.apply()
-                    }
-                //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
-                }
-
+                removePrinterFromSharedDocumentPrinterList(printerModel)
+                removePrinterFromPrinterTabList(printerModel)
 
             }
 
@@ -315,6 +298,74 @@ class FragmentPrinterListAdapter(
 
         cancel.setOnClickListener {
             dialog.cancel()
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun removePrinterFromSharedDocumentPrinterList(printerModel:PrinterModel){
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson = Gson()
+        val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
+        val type = object :
+            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+        var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        if (json != null) {
+            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(
+                json,
+                type
+            )
+        }
+
+        if (sharedPreferencesStoredPrinterListWithDetails != null && sharedPreferencesStoredPrinterListWithDetails.size > 0) {
+            var removePrinter: PrinterModel = PrinterModel()
+            sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
+                if (p.printerHost.equals(printerModel.printerHost)) {
+                    removePrinter=p
+                }
+            })
+            if(removePrinter !=null) {
+                sharedPreferencesStoredPrinterListWithDetails.remove(removePrinter)
+                val editor = prefs.edit()
+                val json1 = gson.toJson(sharedPreferencesStoredPrinterListWithDetails)
+                editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                editor.apply()
+            }
+            //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun removePrinterFromPrinterTabList(printerModel:PrinterModel){
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson = Gson()
+        val json = prefs.getString("prefaddedPrinterListWithDetails", null)
+        val type = object :
+            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+        var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
+        if (json != null) {
+            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(
+                json,
+                type
+            )
+        }
+
+        if (sharedPreferencesStoredPrinterListWithDetails != null && sharedPreferencesStoredPrinterListWithDetails.size > 0) {
+            var removePrinter: PrinterModel = PrinterModel()
+            sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
+                if (p.printerHost.equals(printerModel.printerHost)) {
+                    removePrinter=p
+                }
+            })
+            if(removePrinter !=null) {
+                sharedPreferencesStoredPrinterListWithDetails.remove(removePrinter)
+                val editor = prefs.edit()
+                val json1 = gson.toJson(sharedPreferencesStoredPrinterListWithDetails)
+                editor.putString("prefaddedPrinterListWithDetails", json1)
+                editor.apply()
+            }
+            //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
         }
 
     }
