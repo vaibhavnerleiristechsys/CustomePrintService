@@ -19,9 +19,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.customeprintservice.IconTreeItemHolder;
 import com.example.customeprintservice.R;
+import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.prefs.SignInCompanyPrefs;
 import com.example.customeprintservice.print.PrintReleaseFragment;
+import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.print.ServerPrintRelaseFragment;
 import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.example.customeprintservice.rest.ApiService;
@@ -36,6 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -166,6 +170,17 @@ public class GalleryFragment extends Fragment {
                     Map<Printer,TreeNode> mapPrinter2TreeNode = new HashMap<>();
 
                     listOfPrinters = response.body();
+                    Collections.sort(listOfPrinters, new Comparator<Printer>() {
+                        @Override
+                        public int compare(Printer item, Printer t1) {
+                            String s1 = item.getNode_title();
+                            String s2 = t1.getNode_title();
+                            return s1.compareToIgnoreCase(s2);
+                        }
+
+                    });
+
+
                     for(Printer printer:listOfPrinters) {
                         TreeNode child = new TreeNode(new IconTreeItemHolder.IconTreeItem(R.string.ic_folder,printer.getNode_title()));
                         mapPrinter2TreeNode.put(printer,child);
