@@ -3,9 +3,7 @@ package com.example.customeprintservice.print
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -37,6 +35,7 @@ import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.IpAddress
 import com.example.customeprintservice.utils.JwtDecode
+import com.example.customeprintservice.utils.PrinterListComparator
 import com.example.customeprintservice.utils.ProgressDialog
 import com.example.customeprintservice.utils.ProgressDialog.Companion.cancelLoading
 import com.example.customeprintservice.utils.ProgressDialog.Companion.showLoadingDialog
@@ -54,7 +53,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
+import java.util.*
 import java.util.function.Consumer
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class PrintersFragment : Fragment() {
 
@@ -68,6 +70,14 @@ class PrintersFragment : Fragment() {
          val serverSecurePrinterListWithDetails = java.util.ArrayList<PrinterModel>()
          val serverSecurePrinterForHeldJob= java.util.ArrayList<PrinterModel>()
          val allPrintersForPullHeldJob= java.util.ArrayList<PrinterModel>()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState);
+        LocalBroadcastManager.getInstance(requireContext())
+            .registerReceiver(mMessageReceiver, IntentFilter("callUpdateUIMethod"))
+
     }
 
     override fun onCreateView(
@@ -148,22 +158,22 @@ class PrintersFragment : Fragment() {
 
         if (sharedPreferencesStoredPrinterListWithDetails != null && sharedPreferencesStoredPrinterListWithDetails.size > 0) {
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
-               var isAvailable:Boolean=false
-                list.forEach(Consumer { deployedPrinter:PrinterModel ->
-                    if(p.serviceName.equals(deployedPrinter.serviceName)){
-                        isAvailable=true;
+                var isAvailable: Boolean = false
+                list.forEach(Consumer { deployedPrinter: PrinterModel ->
+                    if (p.serviceName.equals(deployedPrinter.serviceName)) {
+                        isAvailable = true;
                     }
                 })
-               if(isAvailable==false){
-                   list.add(p)
-               }
+                if (isAvailable == false) {
+                    list.add(p)
+                }
 
             })
 
           //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
         }
 
-
+        val sortedList:ArrayList<PrinterModel> = PrinterListComparator.getSortedPrinterList(list)
         val recyclerViewPrinterLst = view?.findViewById<RecyclerView>(R.id.recyclerViewFragmentPrinterList)
         recyclerViewPrinterLst?.layoutManager = LinearLayoutManager(
             context,
@@ -172,7 +182,7 @@ class PrintersFragment : Fragment() {
         )
         val adapter = FragmentPrinterListAdapter(
             context,
-            list,
+            sortedList,
             "printerTab"
         )
         recyclerViewPrinterLst?.adapter = adapter
@@ -216,7 +226,7 @@ class PrintersFragment : Fragment() {
                         "      <ip mask=\"255.255.255.0\">" + ipAddress + "</ip>\n" +
                         "    </ips>\n" +
                         "  </machine>\n" +
-                      /*  "  <idp>\n" +
+                        /*  "  <idp>\n" +
                         "    {\"idpName\": \"Okta\",\n" +
                         "      \"username\": \"ranjeeta.balakrishnan@devnco.co\",\n" +
                         "      \"isLoggedIn\": \"true\",\n" +
@@ -315,7 +325,7 @@ class PrintersFragment : Fragment() {
                 call: Call<ResponseBody>,
                 response: Response<ResponseBody>
             ) {
-             //   ProgressDialog.cancelLoading()
+                //   ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
                     try {
                         val html = response.body()?.string()
@@ -370,7 +380,7 @@ class PrintersFragment : Fragment() {
 
                         }
 
-                        if(element.size==0){
+                        if (element.size == 0) {
                             removePreferencesDeployedPrinters(context)
                         }
 
@@ -585,14 +595,14 @@ class PrintersFragment : Fragment() {
                     val isPullPrinter = hashMap.get("is-pull-printer")
                     val printerToken = hashMap.get("printer-token")
                     val pull_print = hashMap.get("pull-print")
-                    val is_Color =hashMap.get("is-color")
-                    val isColor:Int
-                    if(is_Color.equals("0.0")){
-                        isColor=0
-                    }else{
-                        isColor=1
+                    val is_Color = hashMap.get("is-color")
+                    val isColor: Int
+                    if (is_Color.equals("0.0")) {
+                        isColor = 0
+                    } else {
+                        isColor = 1
                     }
-                    val location :String =hashMap.getOrDefault("location","")
+                    val location: String = hashMap.getOrDefault("location", "")
                     val id = hashMap.get("id")
                     Log.d("title", title.toString())
                     logger.info("Devnco_Android title:" + title.toString())
@@ -621,8 +631,8 @@ class PrintersFragment : Fragment() {
                     printer.fromServer = false
                     printer.isPullPrinter = isPullPrinter.toString()
                     printer.pull_print = pull_print;
-                    printer.isColor=isColor
-                    printer.location=location
+                    printer.isColor = isColor
+                    printer.location = location
                     var flagIsExist: Boolean = false
                     //when select one document then only get printer by using queue id for display in dialog box
                     if (purpose.equals("forSecureRelase")) {
@@ -783,5 +793,9 @@ class PrintersFragment : Fragment() {
 
     }
 
-
+    var mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            updateUi(PrinterList().printerList, context)
+        }
+    }
 }

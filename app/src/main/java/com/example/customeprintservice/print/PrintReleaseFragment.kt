@@ -96,6 +96,9 @@ class PrintReleaseFragment : Fragment() {
 
     var selectedServerFilelist = ArrayList<SelectedFile>()
      var localdocumentFromsharedPrefences = ArrayList<SelectedFile>()
+
+
+
     @SuppressLint("CheckResult")
     override fun onCreateView(
         inflater: LayoutInflater,

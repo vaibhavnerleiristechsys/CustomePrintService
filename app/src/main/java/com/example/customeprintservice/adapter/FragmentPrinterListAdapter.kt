@@ -40,8 +40,7 @@ import java.util.function.Consumer
 class FragmentPrinterListAdapter(
     val context: Context,
     val list: ArrayList<PrinterModel>,
-    val location:String
-
+    val location: String
 
 
 ) : RecyclerView.Adapter<FragmentPrinterListAdapter.ViewHolder>() {
@@ -80,12 +79,14 @@ class FragmentPrinterListAdapter(
             holder.getColorPrinterImageIcon().visibility=View.VISIBLE
         }
 
-       if(location.equals("printerTab")){
+    /*   if(location.equals("printerTab")){
             holder.getPrinterHeaderName().visibility=View.GONE
         }else{
             holder.getPrinterHeaderName().visibility=View.VISIBLE
         }
-       // holder.getPrinterHeaderName().visibility=View.VISIBLE
+
+     */
+       holder.getPrinterHeaderName().visibility=View.VISIBLE
         var isExist= false
 
 
@@ -180,15 +181,15 @@ class FragmentPrinterListAdapter(
 
 
         holder.getRemovePrinter().setOnClickListener {
-            Log.d("printer name tag:",holder.getPrinterName().text.toString())
+            Log.d("printer name tag:", holder.getPrinterName().text.toString())
            list.forEach{
 
                 try {
                     if (it.serviceName.equals(holder.getPrinterName().text.toString())) {
-                        dialogDeletePrinter(context,it)
+                        dialogDeletePrinter(context, it)
                     }
-                }catch(e: Exception){
-                    Log.d("excpetion",e.message.toString())
+                }catch (e: Exception){
+                    Log.d("excpetion", e.message.toString())
                 }
             }
 
@@ -250,7 +251,7 @@ class FragmentPrinterListAdapter(
 
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
-    fun dialogDeletePrinter(context:Context,printerModel: PrinterModel){
+    fun dialogDeletePrinter(context: Context, printerModel: PrinterModel){
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_confirmation_delete_printer)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
@@ -279,8 +280,8 @@ class FragmentPrinterListAdapter(
                         if (it.printerHost.equals(printerModel.printerHost)) {
                             printer= it
                         }
-                    }catch(e: Exception){
-                        Log.d("excpetion",e.message.toString())
+                    }catch (e: Exception){
+                        Log.d("excpetion", e.message.toString())
                     }
                 }
                 PrinterList().printerList.remove(printer)
@@ -292,7 +293,9 @@ class FragmentPrinterListAdapter(
             }
 
             dialog.cancel()
-            notifyDataSetChanged()
+          //  notifyDataSetChanged()
+            val intent = Intent("callUpdateUIMethod")
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
         }
 
@@ -303,7 +306,7 @@ class FragmentPrinterListAdapter(
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun removePrinterFromSharedDocumentPrinterList(printerModel:PrinterModel){
+    fun removePrinterFromSharedDocumentPrinterList(printerModel: PrinterModel){
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
         val json = prefs.getString("prefServerSecurePrinterListWithDetails", null)
@@ -321,7 +324,7 @@ class FragmentPrinterListAdapter(
             var removePrinter: PrinterModel = PrinterModel()
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
                 if (p.printerHost.equals(printerModel.printerHost)) {
-                    removePrinter=p
+                    removePrinter = p
                 }
             })
             if(removePrinter !=null) {
@@ -337,7 +340,7 @@ class FragmentPrinterListAdapter(
     }
 
     @RequiresApi(Build.VERSION_CODES.N)
-    fun removePrinterFromPrinterTabList(printerModel:PrinterModel){
+    fun removePrinterFromPrinterTabList(printerModel: PrinterModel){
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
         val json = prefs.getString("prefaddedPrinterListWithDetails", null)
@@ -355,7 +358,7 @@ class FragmentPrinterListAdapter(
             var removePrinter: PrinterModel = PrinterModel()
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
                 if (p.printerHost.equals(printerModel.printerHost)) {
-                    removePrinter=p
+                    removePrinter = p
                 }
             })
             if(removePrinter !=null) {
@@ -383,10 +386,10 @@ class FragmentPrinterListAdapter(
                 type1
             )
             if(recentUsedPrinters.size<4) {
-                recentUsedPrinters.add(0,printerModel)
+                recentUsedPrinters.add(0, printerModel)
             }else{
                 recentUsedPrinters.removeAt(3)
-                recentUsedPrinters.add(0,printerModel)
+                recentUsedPrinters.add(0, printerModel)
             }
             val editor = prefs1.edit()
             val json1 = gson1.toJson(recentUsedPrinters)
@@ -394,7 +397,7 @@ class FragmentPrinterListAdapter(
             editor.apply()
 
         }else{
-            recentUsedPrinters.add(0,printerModel)
+            recentUsedPrinters.add(0, printerModel)
             val editor = prefs1.edit()
             val json1 = gson1.toJson(recentUsedPrinters)
             editor.putString("recentUsedPrinters", json1)
