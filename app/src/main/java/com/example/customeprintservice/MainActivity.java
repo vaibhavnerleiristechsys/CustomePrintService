@@ -216,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
         initFab();
         initNavigation();
 
-
         signout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -369,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+
     }
 
     public static String findSiteId(String completeUrl) {

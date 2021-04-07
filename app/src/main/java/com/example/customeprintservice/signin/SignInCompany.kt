@@ -23,9 +23,7 @@ import com.example.customeprintservice.utils.CheckInternetConnection
 import com.example.customeprintservice.utils.GoogleAPI
 import com.example.customeprintservice.utils.HideKeyboard
 import com.example.customeprintservice.utils.ProgressDialog
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import com.google.gson.internal.LinkedTreeMap
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
 import org.jetbrains.anko.toast
@@ -74,13 +72,14 @@ class SignInCompany : AppCompatActivity() {
 
         edtYourCompany.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                if(!s.toString().startsWith("https://")){
-                  //  Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
+                if (!s.toString().startsWith("https://")) {
+                    //  Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
                 }
 
 
             }
-            override  fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
             }
@@ -116,7 +115,7 @@ class SignInCompany : AppCompatActivity() {
             }
             else{
                    var url:String= edtYourCompany.text.toString().trim()
-                    val stringurl=url.substring(0,url.length)
+                    val stringurl=url.substring(0, url.length)
                     LoginPrefs.saveCompanyUrl(this@SignInCompany, stringurl.toString())
                   //  val siteId: String = MainActivity.findSiteId(stringurl)
                    // LoginPrefs.saveSiteId(this@SignInCompany, siteId.toString())
@@ -151,7 +150,7 @@ class SignInCompany : AppCompatActivity() {
         }
     }
 
-    private fun getIdpInfo(url:String) {
+    private fun getIdpInfo(url: String) {
         val BASE_URL: String = (url + "/")
         val apiService = RetrofitClient(this@SignInCompany)
             .getRetrofitInstance(BASE_URL)
@@ -168,29 +167,35 @@ class SignInCompany : AppCompatActivity() {
                     getTenantBaseUrl()
                     getSiteId()
                     Log.i("printer", "response of api==>" + response.isSuccessful)
-                    logger.info("Devnco_Android printer"+ "response of api==>" + response.isSuccessful)
-                    if(edtYourCompany.text.toString().contains("ldap")){
+                    logger.info("Devnco_Android printer" + "response of api==>" + response.isSuccessful)
+                    if (edtYourCompany.text.toString().contains("ldap")) {
                         bundle.putString("buttonName", "LDAP")
                     }
 
                     val list: List<IdpResponse>? = response.body()?.toList()
-                    var size=0
+                    var size = 0
                     if (list != null) {
-                        size =list.size
+                        size = list.size
                     }
                     list?.forEach { idp ->
                         run {
                             bundle.putString("desktopLoginUrl", idp.desktopLoginUrl)
                             bundle.putString("buttonName", idp.name)
-                            bundle.putString("clientId",idp.client_id)
-                            bundle.putString("token_uri",idp.tokenUri)
+                            bundle.putString("clientId", idp.client_id)
+                            bundle.putString("token_uri", idp.tokenUri)
 
                             SignInCompanyPrefs.saveIdpUrl(
                                 this@SignInCompany,
                                 idp.tokenUri.toString()
                             )
-                            LoginPrefs.savegoogleTokenUrl(this@SignInCompany,idp.tokenUri.toString())
-                            SignInCompanyPrefs.saveIdpName(this@SignInCompany, idp.idp_type.toString())
+                            LoginPrefs.savegoogleTokenUrl(
+                                this@SignInCompany,
+                                idp.tokenUri.toString()
+                            )
+                            SignInCompanyPrefs.saveIdpName(
+                                this@SignInCompany,
+                                idp.idp_type.toString()
+                            )
                             SignInCompanyPrefs.saveIdpType(
                                 this@SignInCompany,
                                 idp.authType.toString()
@@ -199,20 +204,20 @@ class SignInCompany : AppCompatActivity() {
                     }
 
 
-                    if(size==0){
-                        if(!url.contains("ldap")) {
-                           // toast("please check url")
+                    if (size == 0) {
+                        if (!url.contains("ldap")) {
+                            // toast("please check url")
                             val intent = Intent(this@SignInCompany, SignInActivity::class.java)
                             bundle.putString("buttonName", "LDAP")
                             intent.putExtras(bundle)
                             startActivity(intent)
                         }
-                        if(url.contains("ldap")){
+                        if (url.contains("ldap")) {
                             val intent = Intent(this@SignInCompany, SignInActivity::class.java)
                             intent.putExtras(bundle)
                             startActivity(intent)
                         }
-                    }else {
+                    } else {
                         toast("Idp response getting Successful")
                         val intent = Intent(this@SignInCompany, SignInActivity::class.java)
                         intent.putExtras(bundle)
@@ -229,14 +234,14 @@ class SignInCompany : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 toast("Idp response ${t.message}")
                 Log.i("printer", "Error response of api==>" + t.message)
-                logger.info("Devnco_Android printer"+ "Error response of api==>" + t.message)
+                logger.info("Devnco_Android printer" + "Error response of api==>" + t.message)
             }
         })
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+      //  super.onBackPressed()
+       // finish()
     }
 
     private fun getTenantBaseUrl() {
@@ -249,31 +254,31 @@ class SignInCompany : AppCompatActivity() {
             .create(ApiService::class.java)
         val call = apiService.getTenantBaseUrlResponse()
 
-        call.enqueue(object : Callback<LinkedTreeMap<String,String>> {
+        call.enqueue(object : Callback<LinkedTreeMap<String, String>> {
             override fun onResponse(
-                call: Call<LinkedTreeMap<String,String>>,
-                response: Response<LinkedTreeMap<String,String>>
+                call: Call<LinkedTreeMap<String, String>>,
+                response: Response<LinkedTreeMap<String, String>>
             ) {
 
-                    ProgressDialog.cancelLoading()
-                    Log.d("TenantBaseUrl", "response of api==>" + response.body())
-                    logger.info("Devnco_Android TenantBaseUrl"+ "response of api==>" + response.isSuccessful)
-                val map : LinkedTreeMap<String, String>? =response.body()
+                ProgressDialog.cancelLoading()
+                Log.d("TenantBaseUrl", "response of api==>" + response.body())
+                logger.info("Devnco_Android TenantBaseUrl" + "response of api==>" + response.isSuccessful)
+                val map: LinkedTreeMap<String, String>? = response.body()
                 if (map != null) {
                     Log.d("TenantBaseUrl:", map.getValue("tenantBaseUrl"))
                     val tenantBaseUrl = map.getValue("tenantBaseUrl")
                     val findTenantBaseUrl: String = MainActivity.findTenantBaseUrl(tenantBaseUrl)
                     LoginPrefs.saveTenantUrl(this@SignInCompany, findTenantBaseUrl.toString())
                 }
-                    ProgressDialog.cancelLoading()
+                ProgressDialog.cancelLoading()
 
             }
 
-            override fun onFailure(call: Call<LinkedTreeMap<String,String>>, t: Throwable) {
+            override fun onFailure(call: Call<LinkedTreeMap<String, String>>, t: Throwable) {
                 ProgressDialog.cancelLoading()
                 toast("Idp response ${t.message}")
                 Log.i("printer", "Error response of api==>" + t.message)
-                logger.info("Devnco_Android printer"+ "Error response of api==>" + t.message)
+                logger.info("Devnco_Android printer" + "Error response of api==>" + t.message)
             }
         })
     }
@@ -297,14 +302,14 @@ class SignInCompany : AppCompatActivity() {
             ) {
 
                 ProgressDialog.cancelLoading()
-                Log.d("siteId", "response of api==>" + (response.body() ))
+                Log.d("siteId", "response of api==>" + (response.body()))
                 logger.info("Devnco_Android response for siteId ==>" + response.body())
                 val jsonObject: JsonObject? = response.body()?.getAsJsonObject("meta")
                 if (jsonObject != null) {
-                    Log.d("siteId", "siteId ==>" +jsonObject.get("site-id").toString())
-                    logger.info("Devnco_Android siteId ==>" +jsonObject.get("site-id").toString())
-                    val siteId:String =jsonObject.get("site-id").toString().replace("\"", "")
-                    LoginPrefs.saveSiteId(this@SignInCompany,siteId)
+                    Log.d("siteId", "siteId ==>" + jsonObject.get("site-id").toString())
+                    logger.info("Devnco_Android siteId ==>" + jsonObject.get("site-id").toString())
+                    val siteId: String = jsonObject.get("site-id").toString().replace("\"", "")
+                    LoginPrefs.saveSiteId(this@SignInCompany, siteId)
                 }
                 ProgressDialog.cancelLoading()
 
@@ -314,7 +319,7 @@ class SignInCompany : AppCompatActivity() {
                 ProgressDialog.cancelLoading()
                 toast("Idp response ${t.message}")
                 Log.i("printer", "Error response of api==>" + t.message)
-                logger.info("Devnco_Android printer"+ "Error response of api==>" + t.message)
+                logger.info("Devnco_Android printer" + "Error response of api==>" + t.message)
             }
         })
     }
