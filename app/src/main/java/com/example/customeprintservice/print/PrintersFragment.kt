@@ -22,6 +22,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
+import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapter
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
@@ -186,6 +187,26 @@ class PrintersFragment : Fragment() {
             "printerTab"
         )
         recyclerViewPrinterLst?.adapter = adapter
+
+
+        val alphabetsList:ArrayList<String> =  ArrayList<String>(
+            Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"));
+
+       // val alphabetsList:ArrayList<String> = {"A","B"}
+        val recyclerViewAlphabetsList = view?.findViewById<RecyclerView>(R.id.alphabetsRecyclerView)
+        recyclerViewAlphabetsList?.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayout.VERTICAL,
+            false
+        )
+        val alphabetsAdapter = FragmentPrinterAlphabetsListAdapter(
+            context,
+            alphabetsList
+        )
+        recyclerViewAlphabetsList?.adapter = alphabetsAdapter
+
+
+
     }
 
 
@@ -794,6 +815,7 @@ class PrintersFragment : Fragment() {
     }
 
     var mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.N)
         override fun onReceive(context: Context, intent: Intent) {
             updateUi(PrinterList().printerList, context)
         }

@@ -40,6 +40,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
+import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapter;
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrinterList;
@@ -63,6 +64,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -324,6 +326,14 @@ public class ServerPrintRelaseFragment extends Fragment {
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,list,"selectPrinter"));
         printerRecyclerView.setItemViewCacheSize(50);
+
+          ArrayList<String> alphabetsList = new ArrayList<String>(
+                Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"));
+
+        RecyclerView recyclerViewAlphabetsList = dialog.findViewById(R.id.alphabetsRecyclerView);
+        recyclerViewAlphabetsList.setLayoutManager(new LinearLayoutManager(context));
+        recyclerViewAlphabetsList.setAdapter(new FragmentPrinterAlphabetsListAdapter(context,alphabetsList));
+
 
         TextWatcher watcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
