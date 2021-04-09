@@ -79,6 +79,9 @@ class PrintersFragment : Fragment() {
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(mMessageReceiver, IntentFilter("callUpdateUIMethod"))
 
+        LocalBroadcastManager.getInstance(requireContext())
+            .registerReceiver(mMessageReceiver1, IntentFilter("moveRecyclerView"))
+
     }
 
     override fun onCreateView(
@@ -96,7 +99,7 @@ class PrintersFragment : Fragment() {
         setHasOptionsMenu(true)
         search.visibility=View.GONE
         clear.visibility=View.GONE
-        updateUi(PrinterList().printerList, requireContext())
+        updateUi(PrinterList().printerList, requireContext(),"")
      //   PrinterList().printerList.clear()
     //    getPrinterList(requireContext(), decodeJWT())
        // Log.i("printer", "Login token" + LoginPrefs.getOCTAToken(requireContext()))
@@ -142,7 +145,7 @@ class PrintersFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("WrongConstant")
-     fun updateUi(list: java.util.ArrayList<PrinterModel>, context: Context) {
+     fun updateUi(list: java.util.ArrayList<PrinterModel>, context: Context,char:String) {
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
@@ -181,6 +184,27 @@ class PrintersFragment : Fragment() {
             LinearLayout.VERTICAL,
             false
         )
+
+        if (recyclerViewPrinterLst != null) {
+            recyclerViewPrinterLst.setItemViewCacheSize(100)
+        }
+
+
+
+        if(char != ""){
+            var position=0;
+            for(item in sortedList){
+                if(item.serviceName.startsWith(char.toLowerCase(),true)){
+                   if (recyclerViewPrinterLst != null) {
+                     //  recyclerViewPrinterLst.scrollToPosition(position)
+                       recyclerViewPrinterLst.smoothScrollToPosition(position)
+                     //  break;
+                   }
+               }
+                position++;
+            }
+        }
+
         val adapter = FragmentPrinterListAdapter(
             context,
             sortedList,
@@ -189,8 +213,37 @@ class PrintersFragment : Fragment() {
         recyclerViewPrinterLst?.adapter = adapter
 
 
+
         val alphabetsList:ArrayList<String> =  ArrayList<String>(
-            Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"));
+            Arrays.asList(
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "I",
+                "J",
+                "K",
+                "L",
+                "M",
+                "N",
+                "O",
+                "P",
+                "Q",
+                "R",
+                "S",
+                "T",
+                "U",
+                "V",
+                "W",
+                "X",
+                "Y",
+                "Z"
+            )
+        );
 
        // val alphabetsList:ArrayList<String> = {"A","B"}
         val recyclerViewAlphabetsList = view?.findViewById<RecyclerView>(R.id.alphabetsRecyclerView)
@@ -407,7 +460,7 @@ class PrintersFragment : Fragment() {
 
 
                         Handler().postDelayed({
-                            updateUi(PrinterList().printerList, context)
+                            updateUi(PrinterList().printerList, context,"")
                             if (swipeContainer != null) {
                                 swipeContainer.isRefreshing = false
                             }
@@ -783,7 +836,7 @@ class PrintersFragment : Fragment() {
                 }
             }
 
-            updateUi(filterList, requireContext())
+            updateUi(filterList, requireContext(),"")
         }
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -817,7 +870,15 @@ class PrintersFragment : Fragment() {
     var mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun onReceive(context: Context, intent: Intent) {
-            updateUi(PrinterList().printerList, context)
+            updateUi(PrinterList().printerList, context,"")
+        }
+    }
+
+    var mMessageReceiver1: BroadcastReceiver = object : BroadcastReceiver() {
+        @RequiresApi(Build.VERSION_CODES.N)
+        override fun onReceive(context: Context, intent: Intent) {
+            val char: String = intent.getStringExtra("Character").toString()
+            updateUi(PrinterList().printerList, context,char)
         }
     }
 }

@@ -63,6 +63,10 @@ class FragmentPrinterAlphabetsListAdapter (
             if (list[position] != null) {
            Log.d("alphabets:",list[position])
             }
+
+            val intent = Intent("moveRecyclerView")
+            intent.putExtra("Character",list[position] )
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
         }
 
     }
