@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.*
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -12,10 +14,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.widget.AbsListView
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -189,28 +188,36 @@ class PrintersFragment : Fragment() {
             recyclerViewPrinterLst.setItemViewCacheSize(100)
         }
 
-
-
-        if(char != ""){
-            var position=0;
-            for(item in sortedList){
-                if(item.serviceName.startsWith(char.toLowerCase(),true)){
-                   if (recyclerViewPrinterLst != null) {
-                     //  recyclerViewPrinterLst.scrollToPosition(position)
-                       recyclerViewPrinterLst.smoothScrollToPosition(position)
-                     //  break;
-                   }
-               }
-                position++;
-            }
-        }
-
         val adapter = FragmentPrinterListAdapter(
             context,
             sortedList,
             "printerTab"
         )
         recyclerViewPrinterLst?.adapter = adapter
+
+
+
+        if(char != ""){
+            var position=0;
+            var isAvailable :Boolean= false
+            for(item in sortedList){
+                if(item.serviceName.startsWith(char.toLowerCase(),true)){
+                   if (recyclerViewPrinterLst != null) {
+                      // recyclerViewPrinterLst. scrollToPosition(position)
+                       isAvailable=true
+                       recyclerViewPrinterLst.smoothScrollToPosition(position)
+                     // break;
+                   }
+               }
+
+                position++;
+            }
+
+            if(isAvailable== false){
+                Toast.makeText(context,"Printer Not Available" , Toast.LENGTH_LONG).show()
+            }
+        }
+
 
 
 
@@ -241,7 +248,8 @@ class PrintersFragment : Fragment() {
                 "W",
                 "X",
                 "Y",
-                "Z"
+                "Z",
+                "#"
             )
         );
 
@@ -254,10 +262,10 @@ class PrintersFragment : Fragment() {
         )
         val alphabetsAdapter = FragmentPrinterAlphabetsListAdapter(
             context,
-            alphabetsList
+            alphabetsList,
+            "printerTab"
         )
         recyclerViewAlphabetsList?.adapter = alphabetsAdapter
-
 
 
     }
@@ -878,7 +886,11 @@ class PrintersFragment : Fragment() {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun onReceive(context: Context, intent: Intent) {
             val char: String = intent.getStringExtra("Character").toString()
-            updateUi(PrinterList().printerList, context,char)
+            val  location:String = intent.getStringExtra("location").toString()
+            if(location.equals("printerTab")) {
+                updateUi(PrinterList().printerList, context, char)
+            }
         }
     }
+
 }

@@ -10,10 +10,7 @@ import android.os.Build
 import android.preference.PreferenceManager
 import android.util.Log
 import android.view.*
-import android.widget.AbsListView
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -37,7 +34,8 @@ import com.google.gson.reflect.TypeToken
 
 class FragmentPrinterAlphabetsListAdapter (
     val context: Context,
-    val list: ArrayList<String>
+    val list: ArrayList<String>,
+    val location:String
 
 ) : RecyclerView.Adapter<FragmentPrinterAlphabetsListAdapter.ViewHolder>() {
     val holders = ArrayList<ViewHolder>()
@@ -62,11 +60,14 @@ class FragmentPrinterAlphabetsListAdapter (
         holder.getAlphabetsName().setOnClickListener {
             if (list[position] != null) {
            Log.d("alphabets:",list[position])
+                Toast.makeText(context,"   "+list[position].toString() , Toast.LENGTH_LONG).show()
             }
 
-            val intent = Intent("moveRecyclerView")
-            intent.putExtra("Character",list[position] )
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+                val intent = Intent("moveRecyclerView")
+                intent.putExtra("Character", list[position])
+                intent.putExtra("location",location)
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+
         }
 
     }

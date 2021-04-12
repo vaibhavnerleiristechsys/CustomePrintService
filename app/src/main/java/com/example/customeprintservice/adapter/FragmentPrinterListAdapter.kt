@@ -1,7 +1,9 @@
 package com.example.customeprintservice.adapter
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -16,6 +18,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.FragmentActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.customeprintservice.R
@@ -24,6 +27,7 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
+import com.example.customeprintservice.print.BottomNavigationActivity
 import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.print.PrintersFragment
 import com.example.customeprintservice.print.ServerPrintRelaseFragment
@@ -186,7 +190,9 @@ class FragmentPrinterListAdapter(
 
                 try {
                     if (it.serviceName.equals(holder.getPrinterName().text.toString())) {
-                        dialogDeletePrinter(context, it)
+                        Log.d("delete dialog open","delete dialog open")
+                        dialogDeletePrinter( it)
+                        Log.d("after delete dialog","after delete dialog")
                     }
                 }catch (e: Exception){
                     Log.d("excpetion", e.message.toString())
@@ -249,9 +255,44 @@ class FragmentPrinterListAdapter(
     }
 
 
+
+    fun addRecentPrintersToPref(printerModel: PrinterModel){
+        var recentUsedPrinters = java.util.ArrayList<PrinterModel>()
+        val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson1 = Gson()
+        val json2 = prefs1.getString("recentUsedPrinters", null)
+        val type1 = object :
+            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
+        if (json2 != null) {
+            recentUsedPrinters = gson1.fromJson<java.util.ArrayList<PrinterModel>>(
+                json2,
+                type1
+            )
+            if(recentUsedPrinters.size<4) {
+                recentUsedPrinters.add(0, printerModel)
+            }else{
+                recentUsedPrinters.removeAt(3)
+                recentUsedPrinters.add(0, printerModel)
+            }
+            val editor = prefs1.edit()
+            val json1 = gson1.toJson(recentUsedPrinters)
+            editor.putString("recentUsedPrinters", json1)
+            editor.apply()
+
+        }else{
+            recentUsedPrinters.add(0, printerModel)
+            val editor = prefs1.edit()
+            val json1 = gson1.toJson(recentUsedPrinters)
+            editor.putString("recentUsedPrinters", json1)
+            editor.apply()
+        }
+    }
+
+
+
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
-    fun dialogDeletePrinter(context: Context, printerModel: PrinterModel){
+    fun dialogDeletePrinter(printerModel: PrinterModel){
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_confirmation_delete_printer)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
@@ -293,7 +334,7 @@ class FragmentPrinterListAdapter(
             }
 
             dialog.cancel()
-          //  notifyDataSetChanged()
+            //  notifyDataSetChanged()
             val intent = Intent("callUpdateUIMethod")
             LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
@@ -371,38 +412,6 @@ class FragmentPrinterListAdapter(
             //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
         }
 
-    }
-
-    fun addRecentPrintersToPref(printerModel: PrinterModel){
-        var recentUsedPrinters = java.util.ArrayList<PrinterModel>()
-        val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
-        val gson1 = Gson()
-        val json2 = prefs1.getString("recentUsedPrinters", null)
-        val type1 = object :
-            TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
-        if (json2 != null) {
-            recentUsedPrinters = gson1.fromJson<java.util.ArrayList<PrinterModel>>(
-                json2,
-                type1
-            )
-            if(recentUsedPrinters.size<4) {
-                recentUsedPrinters.add(0, printerModel)
-            }else{
-                recentUsedPrinters.removeAt(3)
-                recentUsedPrinters.add(0, printerModel)
-            }
-            val editor = prefs1.edit()
-            val json1 = gson1.toJson(recentUsedPrinters)
-            editor.putString("recentUsedPrinters", json1)
-            editor.apply()
-
-        }else{
-            recentUsedPrinters.add(0, printerModel)
-            val editor = prefs1.edit()
-            val json1 = gson1.toJson(recentUsedPrinters)
-            editor.putString("recentUsedPrinters", json1)
-            editor.apply()
-        }
     }
 }
 

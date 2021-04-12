@@ -78,6 +78,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     private int mColumnCount = 1;
     Context context;
     Dialog dialog;
+    RecyclerView printerRecyclerView;
     View v = null;
     FloatingActionButton floatingActionButton;
     public static String localPrinturl;
@@ -91,6 +92,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     private ConstraintLayout noDataMessage;
     public  List<Printer> listOfPrinters=new ArrayList<Printer>();
     Logger logger = LoggerFactory.getLogger(ServerPrintRelaseFragment.class);
+    public static ArrayList<PrinterModel> printerList=new ArrayList<PrinterModel>();
 
     public ServerPrintRelaseFragment() {
     }
@@ -170,6 +172,9 @@ public class ServerPrintRelaseFragment extends Fragment {
 
             LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver,
                     new IntentFilter("message_subject_intent"));
+
+            LocalBroadcastManager.getInstance(requireContext())
+                .registerReceiver(mMessageReceiver3,new IntentFilter("moveRecyclerView"));
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -304,6 +309,9 @@ public class ServerPrintRelaseFragment extends Fragment {
 
     private void selectePrinterDialog(ArrayList<PrinterModel> list) {
         dialog = new Dialog(context);
+        printerList.clear();
+        printerList.addAll(list);
+
         v = LayoutInflater.from(context).inflate(R.layout.dialog_select_printer, null);
         dialog.setContentView(v);
         dialog.setCancelable(false);
@@ -317,7 +325,10 @@ public class ServerPrintRelaseFragment extends Fragment {
        window.setDimAmount(0.5f);
         window.setAttributes(wlp);
 
-        RecyclerView printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
+
+
+
+        printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
         ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
         floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
         floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.paleGray));
@@ -328,11 +339,11 @@ public class ServerPrintRelaseFragment extends Fragment {
         printerRecyclerView.setItemViewCacheSize(50);
 
           ArrayList<String> alphabetsList = new ArrayList<String>(
-                Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"));
+                Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","#"));
 
         RecyclerView recyclerViewAlphabetsList = dialog.findViewById(R.id.alphabetsRecyclerView);
         recyclerViewAlphabetsList.setLayoutManager(new LinearLayoutManager(context));
-        recyclerViewAlphabetsList.setAdapter(new FragmentPrinterAlphabetsListAdapter(context,alphabetsList));
+        recyclerViewAlphabetsList.setAdapter(new FragmentPrinterAlphabetsListAdapter(context,alphabetsList,"selectPrinter"));
 
 
         TextWatcher watcher = new TextWatcher() {
@@ -594,6 +605,31 @@ public class ServerPrintRelaseFragment extends Fragment {
         }
     };
 
+    public BroadcastReceiver mMessageReceiver3 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+           String character  = intent.getStringExtra("Character");
+
+                if (character != "") {
+                    int position = 0;
+                    for (int i = 0; i < printerList.size(); i++) {
+                        PrinterModel printer = printerList.get(i);
+                        if (printer.getServiceName().toLowerCase().startsWith(character.toLowerCase())) {
+                            if (printerRecyclerView != null) {
+                                //  recyclerViewPrinterLst.scrollToPosition(position)
+                                printerRecyclerView.smoothScrollToPosition(position);
+                                break;
+                            }
+                        }
+                        position++;
+                    }
+
+                }
+
+            //printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,printerList,"selectPrinter"));
+            //printerRecyclerView.setItemViewCacheSize(50);
+        }
+    };
 
 
     private void deleteConfirmationDialog(SelectedFile selectedFile){

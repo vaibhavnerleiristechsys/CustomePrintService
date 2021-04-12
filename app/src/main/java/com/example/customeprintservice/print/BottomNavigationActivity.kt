@@ -1,19 +1,32 @@
 package com.example.customeprintservice.print
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Parcelable
+import android.preference.PreferenceManager
 import android.util.Base64
 import android.util.Log
+import android.view.Gravity
+import android.view.WindowManager
+import android.widget.AbsListView
+import android.widget.Button
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.customeprintservice.R
 import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrintUtils
+import com.example.customeprintservice.jipp.PrinterList
+import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.model.TokenResponse
 import com.example.customeprintservice.prefs.LoginPrefs
@@ -26,6 +39,8 @@ import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_bottom_navigation.*
 import org.jetbrains.anko.intentFor
 import org.jetbrains.anko.noHistory
@@ -37,6 +52,7 @@ import retrofit2.Response
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.function.Consumer
 import kotlin.collections.ArrayList
 
 class BottomNavigationActivity : AppCompatActivity() {
