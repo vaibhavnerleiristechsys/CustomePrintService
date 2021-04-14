@@ -46,6 +46,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_printers.*
 import okhttp3.ResponseBody
+import org.apache.commons.codec.binary.Base64
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
 import org.slf4j.LoggerFactory
@@ -53,6 +54,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
+import java.net.URLEncoder
 import java.util.*
 import java.util.function.Consumer
 import kotlin.collections.ArrayList
@@ -77,9 +79,6 @@ class PrintersFragment : Fragment() {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(mMessageReceiver, IntentFilter("callUpdateUIMethod"))
-
-        LocalBroadcastManager.getInstance(requireContext())
-            .registerReceiver(mMessageReceiver1, IntentFilter("moveRecyclerView"))
 
     }
 
@@ -197,61 +196,6 @@ class PrintersFragment : Fragment() {
 
 
 
-        if(char != ""){
-            var position=0;
-            var isAvailable :Boolean= false
-            for(item in sortedList){
-                if(item.serviceName.startsWith(char.toLowerCase(),true)){
-                   if (recyclerViewPrinterLst != null) {
-                      // recyclerViewPrinterLst. scrollToPosition(position)
-                       isAvailable=true
-                       recyclerViewPrinterLst.smoothScrollToPosition(position)
-                     // break;
-                   }
-               }
-
-                position++;
-            }
-
-            if(isAvailable== false){
-                Toast.makeText(context,"Printer Not Available" , Toast.LENGTH_LONG).show()
-            }
-        }
-
-
-
-
-        val alphabetsList:ArrayList<String> =  ArrayList<String>(
-            Arrays.asList(
-                "A",
-                "B",
-                "C",
-                "D",
-                "E",
-                "F",
-                "G",
-                "H",
-                "I",
-                "J",
-                "K",
-                "L",
-                "M",
-                "N",
-                "O",
-                "P",
-                "Q",
-                "R",
-                "S",
-                "T",
-                "U",
-                "V",
-                "W",
-                "X",
-                "Y",
-                "Z",
-                "#"
-            )
-        );
 
        // val alphabetsList:ArrayList<String> = {"A","B"}
         val recyclerViewAlphabetsList = view?.findViewById<RecyclerView>(R.id.alphabetsRecyclerView)
@@ -260,15 +204,7 @@ class PrintersFragment : Fragment() {
             LinearLayout.VERTICAL,
             false
         )
-        val alphabetsAdapter = FragmentPrinterAlphabetsListAdapter(
-            context,
-            alphabetsList,
-            "printerTab"
-        )
-        recyclerViewAlphabetsList?.adapter = alphabetsAdapter
-
-
-    }
+          }
 
 
     fun getPrinterList(context: Context, username: String){
@@ -331,6 +267,12 @@ class PrintersFragment : Fragment() {
                     context
                 ) + " username: " + username
             )
+            val idpInfo ="\"os\":"+"\"chromebook\""+",\"idpName\":"+"\""+xIdpName+"\",\"username\":"+"\""+username+"\",\"isLoggedIn\":"+"\""+true+"\",\"type\":"+"\""+xIdpType+"\",\"token\":"+"\""+LoginPrefs.getOCTAToken(
+                context)+"\"";
+           // val bytesEncoded: ByteArray = Base64.encodeBase64(idpInfo.toByteArray())
+            //val encodedIdpInfo =String(bytesEncoded)
+           // Log.d("bytesEncoded: ", bytesEncoded.toString())
+            Log.d("encodedIdpInfo: ",URLEncoder.encode(idpInfo))
             apiService.getPrinterListForGoogle(
                 siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
@@ -347,11 +289,7 @@ class PrintersFragment : Fragment() {
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
-                        "    {\"idpName\": \"" + xIdpName + "\",\n" +
-                        "      \"username\":\"" + username + "\",\n" +
-                        "      \"isLoggedIn\": \"true\",\n" +
-                        "      \"type\": \"auth-type\",\n" +
-                        "      \"token\":\"" + LoginPrefs.getOCTAToken(context) + "\"}\n" +
+                       "{"+URLEncoder.encode(idpInfo)  +"}"+
                         "  </idp>\n" +
                         "  <memberships>\n" +
                         "    <computer />\n" +
@@ -879,17 +817,6 @@ class PrintersFragment : Fragment() {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun onReceive(context: Context, intent: Intent) {
             updateUi(PrinterList().printerList, context,"")
-        }
-    }
-
-    var mMessageReceiver1: BroadcastReceiver = object : BroadcastReceiver() {
-        @RequiresApi(Build.VERSION_CODES.N)
-        override fun onReceive(context: Context, intent: Intent) {
-            val char: String = intent.getStringExtra("Character").toString()
-            val  location:String = intent.getStringExtra("location").toString()
-            if(location.equals("printerTab")) {
-                updateUi(PrinterList().printerList, context, char)
-            }
         }
     }
 

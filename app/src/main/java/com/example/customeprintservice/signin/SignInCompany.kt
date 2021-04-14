@@ -151,6 +151,7 @@ class SignInCompany : AppCompatActivity() {
     }
 
     private fun getIdpInfo(url: String) {
+        logger.info("Devnco_Android logging url" +url)
         val BASE_URL: String = (url + "/")
         val apiService = RetrofitClient(this@SignInCompany)
             .getRetrofitInstance(BASE_URL)

@@ -34,9 +34,7 @@ import com.google.gson.reflect.TypeToken
 
 class FragmentPrinterAlphabetsListAdapter (
     val context: Context,
-    val list: ArrayList<String>,
-    val location:String
-
+    val list: ArrayList<String>
 ) : RecyclerView.Adapter<FragmentPrinterAlphabetsListAdapter.ViewHolder>() {
     val holders = ArrayList<ViewHolder>()
     private var selectedPosition = -1
@@ -65,7 +63,6 @@ class FragmentPrinterAlphabetsListAdapter (
 
                 val intent = Intent("moveRecyclerView")
                 intent.putExtra("Character", list[position])
-                intent.putExtra("location",location)
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
         }

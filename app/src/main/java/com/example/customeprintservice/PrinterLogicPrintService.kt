@@ -113,6 +113,7 @@ class PrinterLogicPrintService : PrintService() {
             printJob.start()
         }
         val printerId = printJob.info.printerId
+       val colorMode = printJob.info.attributes.colorMode
         val printerHashmap = PrinterHashmap()
         var finalUrl = "http" + "://" + printerHashmap.hashMap[printerId]!!
             .printerHost + ":" + printerHashmap.hashMap[printerId]!!.printerPort + "/ipp/print"
@@ -147,7 +148,8 @@ class PrinterLogicPrintService : PrintService() {
                 file,
                 finalUrl,
                 this@PrinterLogicPrintService,
-                printerHashmap.hashMap[printerId]!!.printerHost.toString()
+                printerHashmap.hashMap[printerId]!!.printerHost.toString(),
+                colorMode
             )
 
             printJob.complete()
@@ -236,8 +238,8 @@ internal class PrinterDiscoverySession(
                                 true
                             )
                             .setColorModes(
-                                PrintAttributes.COLOR_MODE_MONOCHROME,
-                                PrintAttributes.COLOR_MODE_MONOCHROME
+                                PrintAttributes.COLOR_MODE_COLOR,
+                                PrintAttributes.COLOR_MODE_COLOR
                             )
                             .build()
                     }

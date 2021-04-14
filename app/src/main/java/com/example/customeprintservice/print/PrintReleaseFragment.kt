@@ -408,7 +408,7 @@ class PrintReleaseFragment : Fragment() {
                     if (activity != null) {
 
                     }
-                    sendMetaData(context,pageCount)
+                 //   sendMetaData(context,pageCount)
                   //  sendMetaData(context,1)
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
@@ -922,7 +922,7 @@ class PrintReleaseFragment : Fragment() {
 
 
 //************************************************************
-fun sendMetaData(context: Context,TotalPageCount:Int){
+fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
     var username =decodeJWT(context)
     var printerName:String=""
     var selectedPrinteripAddress:String=""
@@ -978,7 +978,7 @@ fun sendMetaData(context: Context,TotalPageCount:Int){
                     "</commonnames>\n" +
                     "</machine>\n" +
                     "<jobs>\n" +
-                    "<job iscolor=\"0\" istcpip=\"1\">\n" +
+                    "<job iscolor=\""+colorMode+"\" istcpip=\"1\">\n" +
                     " <printer id=\"" + printerId + "\">\n" +
                     "<name>" + printerName + "</name>\n" +
                     "<share />\n" +
@@ -1020,7 +1020,7 @@ fun sendMetaData(context: Context,TotalPageCount:Int){
                     "</commonnames>\n" +
                     "</machine>\n" +
                     "<jobs>\n" +
-                    "<job iscolor=\"0\" istcpip=\"1\">\n" +
+                    "<job iscolor=\""+colorMode+"\" istcpip=\"1\">\n" +
                     " <printer id=\"" + printerId + "\">\n" +
                     "<name>" + printerName + "</name>\n" +
                     "<share />\n" +

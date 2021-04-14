@@ -318,7 +318,7 @@ class FragmentPrinterListAdapter(
                 PrinterList().printerList.forEach{
 
                     try {
-                        if (it.printerHost.equals(printerModel.printerHost)) {
+                        if (it.serviceName.equals(printerModel.serviceName)) {
                             printer= it
                         }
                     }catch (e: Exception){

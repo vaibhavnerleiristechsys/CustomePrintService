@@ -40,7 +40,7 @@ import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
 public class PrintRenderUtils {
     Logger logger = LoggerFactory.getLogger(PrintUtils.class);
 
-    public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress) {
+    public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress,int colorMode) {
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -186,7 +186,7 @@ public class PrintRenderUtils {
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     PrintReleaseFragment printReleaseFrament = new PrintReleaseFragment();
-                    printReleaseFrament.sendMetaData(context,pageCount);
+                    printReleaseFrament.sendMetaData(context,pageCount,colorMode);
                 }
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
@@ -455,7 +455,13 @@ public class PrintRenderUtils {
                     //    logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     }
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
-                        printReleaseFrament.sendMetaData(context,TotalPageCount);
+                    int colorMode=0;
+                    if(isColor ==true){
+                        colorMode =1;
+                    }else{
+                        colorMode=0;
+                    }
+                        printReleaseFrament.sendMetaData(context,TotalPageCount,colorMode);
                 }else{
                         new Handler(Looper.getMainLooper()).post(
                                 new Runnable() {
@@ -595,8 +601,14 @@ public class PrintRenderUtils {
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
                     }
+                        int colorMode=0;
+                        if(isColor ==true){
+                            colorMode =1;
+                        }else{
+                            colorMode=0;
+                        }
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
-                        printReleaseFrament.sendMetaData(context,1);
+                        printReleaseFrament.sendMetaData(context,1,colorMode);
                 }else{
                         new Handler(Looper.getMainLooper()).post(
                                 new Runnable() {

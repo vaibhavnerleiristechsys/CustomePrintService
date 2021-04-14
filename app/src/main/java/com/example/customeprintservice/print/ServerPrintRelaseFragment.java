@@ -343,7 +343,7 @@ public class ServerPrintRelaseFragment extends Fragment {
 
         RecyclerView recyclerViewAlphabetsList = dialog.findViewById(R.id.alphabetsRecyclerView);
         recyclerViewAlphabetsList.setLayoutManager(new LinearLayoutManager(context));
-        recyclerViewAlphabetsList.setAdapter(new FragmentPrinterAlphabetsListAdapter(context,alphabetsList,"selectPrinter"));
+        recyclerViewAlphabetsList.setAdapter(new FragmentPrinterAlphabetsListAdapter(context,alphabetsList));
 
 
         TextWatcher watcher = new TextWatcher() {
@@ -523,8 +523,11 @@ public class ServerPrintRelaseFragment extends Fragment {
         call.enqueue(new Callback<GetJobStatusesResponse>() {
             public void onResponse(Call<GetJobStatusesResponse> call, Response<GetJobStatusesResponse> response) {
                 if(response.isSuccessful()){
+                    logger.info("Devnco_Android Geeting held job response ** : "+response.body().toString()+" **====>");
+                    logger.info("Devnco_Android Geeting held job response: "+response.body().getPrintQueueJobStatus().toString()+"====>");
                 List<PrintQueueJobStatusItem> getJobStatusesResponse = response.body().getPrintQueueJobStatus();
                     PrintReleaseFragment.Companion.getGetdocumentList().clear();
+                    logger.info("Devnco_Android Geeting held job size: "+getJobStatusesResponse.size()+"====>");
                 for (int i = 0; i < getJobStatusesResponse.size(); i++) {
                     PrintQueueJobStatusItem PrintQueueJobStatusItem = getJobStatusesResponse.get(i);
                     SelectedFile selectedFile = new SelectedFile();
@@ -541,13 +544,21 @@ public class ServerPrintRelaseFragment extends Fragment {
                     String fileSize=sizeInKb.toString()+"KB";
                     selectedFile.setJobSize(fileSize);
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
+                    logger.info("Devnco_Android Geeting held job :"+i+" : Title: "+PrintQueueJobStatusItem.getDocumentTitle()
+                            +"username: "+PrintQueueJobStatusItem.getUserName()+"====>");
+
                     if(PrintQueueJobStatusItem.getPrinterDeviceQueue() !=null) {
                         if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters() != null) {
                             if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size() > 0) {
                                 selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
+                                logger.info("Devnco_Android Geeting held job :"+i+" : Title: "+PrintQueueJobStatusItem.getDocumentTitle()
+                                        +"printer id: "+PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId()+"====>");
                             }
                         }
                     }
+
+
+
 
                     PrintReleaseFragment.Companion.getGetdocumentList().add(selectedFile);
                 }
@@ -578,12 +589,16 @@ public class ServerPrintRelaseFragment extends Fragment {
             }else{
                     ProgressDialog.Companion.cancelLoading();
                     swipeContainer.setRefreshing(false);
+                    logger.info("Devnco_Android Geeting held job response message** : "+response.raw().toString()+" **====>");
+                    logger.info("Devnco_Android Geeting held job response error code** : "+response.code()+" **====>");
                 }
         }
 
             @Override
             public void onFailure(Call<GetJobStatusesResponse> call, Throwable t) {
                 ProgressDialog.Companion.cancelLoading();
+                logger.info("Devnco_Android Geeting held job failure message** : "+t.getLocalizedMessage()+" **====>");
+                logger.info("Devnco_Android Geeting held job failure error body message** : "+t.getMessage().toString()+" **====>");
                 swipeContainer.setRefreshing(false);
                 call.cancel();
             }
@@ -611,17 +626,29 @@ public class ServerPrintRelaseFragment extends Fragment {
            String character  = intent.getStringExtra("Character");
 
                 if (character != "") {
+                    boolean isAvailable = false;
                     int position = 0;
                     for (int i = 0; i < printerList.size(); i++) {
                         PrinterModel printer = printerList.get(i);
                         if (printer.getServiceName().toLowerCase().startsWith(character.toLowerCase())) {
                             if (printerRecyclerView != null) {
                                 //  recyclerViewPrinterLst.scrollToPosition(position)
+                                isAvailable= true;
                                 printerRecyclerView.smoothScrollToPosition(position);
-                                break;
+
                             }
                         }
+                        if(character.equals("#")){
+                            isAvailable= true;
+                            printerRecyclerView.smoothScrollToPosition(1);
+                            break;
+                        }
                         position++;
+                    }
+                    if(isAvailable == true){
+
+                    }else{
+                        Toast.makeText(context, "Printer is Not available", Toast.LENGTH_LONG).show();
                     }
 
                 }
