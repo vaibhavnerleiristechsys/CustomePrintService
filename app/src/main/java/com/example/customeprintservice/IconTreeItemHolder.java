@@ -41,9 +41,24 @@ public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItem
 
         if (node.isLeaf()) {
             arrowView.setVisibility(View.INVISIBLE);
-            iconView.setIconText(context.getResources().getString(R.string.ic_print));
-            iconView.setIconColor(R.color.battleshipGrey);
-            view.findViewById(R.id.btn_addFolder).setVisibility(View.VISIBLE);
+            for(int i=0;i<GalleryFragment.listOfPrinters.size();i++) {
+                Printer printer = GalleryFragment.listOfPrinters.get(i);
+                if (printer.getNode_title().equals(value.text.toString())) {
+                    if(printer.getObject_sort_order()==0){
+                        iconView.setIconText(context.getResources().getString(R.string.ic_folder));
+                        iconView.setIconColor(R.color.foldericon);
+                        view.findViewById(R.id.btn_addFolder).setVisibility(View.GONE);
+                    }else if(printer.getObject_sort_order()==1000){
+                        iconView.setIconText(context.getResources().getString(R.string.ic_print));
+                        iconView.setIconColor(R.color.battleshipGrey);
+                        view.findViewById(R.id.btn_addFolder).setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
+
+
+
         }
 
 

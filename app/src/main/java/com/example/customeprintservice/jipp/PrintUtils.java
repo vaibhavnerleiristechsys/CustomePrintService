@@ -23,6 +23,7 @@ import com.hp.jipp.encoding.OtherString;
 import com.hp.jipp.encoding.OutOfBandTag;
 import com.hp.jipp.encoding.ValueTag;
 import com.hp.jipp.model.Operation;
+import com.hp.jipp.model.Orientation;
 import com.hp.jipp.model.Status;
 import com.hp.jipp.trans.IppClientTransport;
 import com.hp.jipp.trans.IppPacketData;

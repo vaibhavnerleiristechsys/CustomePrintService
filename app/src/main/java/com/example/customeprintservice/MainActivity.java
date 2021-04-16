@@ -12,27 +12,23 @@ import android.os.Bundle;
 import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.jipp.QRCodeScanActivity;
-import com.example.customeprintservice.model.TokenResponse;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
 import com.example.customeprintservice.print.PrintPreview;
 import com.example.customeprintservice.print.PrintersFragment;
-import com.example.customeprintservice.rest.ApiService;
-import com.example.customeprintservice.rest.RetrofitClient;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
 import com.example.customeprintservice.utils.GoogleAPI;
 import com.example.customeprintservice.utils.PermissionHelper;
+import com.example.customeprintservice.utils.SampleApplication;
+import com.example.customeprintservice.utils.SampleApplication1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.GravityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -47,9 +43,8 @@ import com.google.gson.reflect.TypeToken;
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.Toast;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+import com.datadog.android.log.Logger;
 
 import java.io.File;
 import java.lang.reflect.Type;
@@ -57,9 +52,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -75,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
     public PrintService app;
-
+    private Logger mLogger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +78,21 @@ public class MainActivity extends AppCompatActivity {
         print=findViewById(R.id.print);
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
+       // mLogger = SampleApplication1.fromContext(getApplicationContext()).getLogger();
+     /*   Logger logger = new Logger.Builder()
+                .setNetworkInfoEnabled(true)
+                .setLogcatLogsEnabled(true)
+                .setDatadogLogsEnabled(true)
+                .setBundleWithTraceEnabled(true)
+                .setLoggerName("<LOGGER_NAME>")
+                .build();
+
+        logger.d("A debug message.");
+        logger.i("Some relevant information ?");
+        logger.w("An important warning…");
+        logger.e("An error was met!");
+        logger.wtf("What a Terrible Failure!");
+*/
        // BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
      //   PrintersFragment printersFragment1 = new PrintersFragment();
       //  printersFragment1.getPrinterList(this, bottomNavigationActivity1.decodeJWT(this));

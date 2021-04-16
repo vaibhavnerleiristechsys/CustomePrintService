@@ -57,6 +57,7 @@ android {
 repositories {
     mavenCentral()
     maven { url "https://repository.aspose.com/repo/" }
+    maven { url "https://dl.bintray.com/datadog/datadog-maven" }
 }
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
@@ -158,6 +159,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
     implementation 'org.apache.commons:commons-lang3:3.6'
+
+    implementation "com.datadoghq:dd-sdk-android:1.8.0"
+
 
     // Android treeview
     implementation 'com.github.bmelnychuk:atv:1.2.+'
