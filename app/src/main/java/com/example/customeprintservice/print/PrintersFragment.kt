@@ -271,7 +271,7 @@ class PrintersFragment : Fragment() {
                     context
                 ) + " username: " + username
             )
-            val idpInfo ="\"os\":"+"\"chromebook\""+",\"idpName\":"+"\""+xIdpName+"\",\"username\":"+"\""+username+"\",\"isLoggedIn\":"+"\""+true+"\",\"type\":"+"\""+xIdpType+"\",\"token\":"+"\""+LoginPrefs.getOCTAToken(
+            val idpInfo ="\"clientType\":"+"\"serverId\""+",\"idpName\":"+"\""+xIdpName+"\",\"username\":"+"\""+username+"\",\"isLoggedIn\":"+"\""+true+"\",\"type\":"+"\""+xIdpType+"\",\"token\":"+"\""+LoginPrefs.getOCTAToken(
                 context)+"\"";
            // val bytesEncoded: ByteArray = Base64.encodeBase64(idpInfo.toByteArray())
             //val encodedIdpInfo =String(bytesEncoded)
