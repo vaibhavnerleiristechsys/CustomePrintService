@@ -12,6 +12,7 @@ import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -46,8 +47,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,7 +85,7 @@ public class PrintPreview extends AppCompatActivity {
     public boolean isColor=false;
     private NumberPicker picker1,picker2;
     private String[] pickerVals,pickerVals2;
-    Logger logger = LoggerFactory.getLogger(PrintPreview.class);
+    //Logger logger = LoggerFactory.getLogger(PrintPreview.class);
 
 
     @Override
@@ -124,7 +125,7 @@ public class PrintPreview extends AppCompatActivity {
         String strDate = dateFormat.format(date);
         selectedFile.setFileSelectedDate(strDate);
         Log.d("file name",file.getName());
-        logger.info("Devnco_Android file name"+file.getName());
+        DataDogLogger.getLogger().i("Devnco_Android file name"+file.getName());
         if(file.getName().contains(".pdf")) {
             try {
                 renderPageUsingDefaultPdfRendererFile(file);

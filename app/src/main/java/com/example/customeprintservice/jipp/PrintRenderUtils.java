@@ -17,12 +17,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.customeprintservice.print.PrintReleaseFragment;
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPageTree;
 import com.tom_roush.pdfbox.rendering.PDFRenderer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -38,7 +39,7 @@ import java.util.Map;
 import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
 
 public class PrintRenderUtils {
-    Logger logger = LoggerFactory.getLogger(PrintUtils.class);
+   // Logger logger = LoggerFactory.getLogger(PrintUtils.class);
 
     public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress,int colorMode) {
         new Thread() {
@@ -113,7 +114,7 @@ public class PrintRenderUtils {
                         FileOutputStream out = new FileOutputStream(renderFile);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                         Log.v("Saved Image - ", renderFile.getAbsolutePath());
-                        logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
+                        DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
                         out.flush();
                         out.close();
 
@@ -134,7 +135,7 @@ public class PrintRenderUtils {
                             Map map = printUtils.print(finalUri, renderFile, context, "", versionNumber);
 
                             String print ="print status:"+map.get("status").toString();
-                            logger.info("Devnco_Android print status:"+map.get("status").toString());
+                            DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
                             new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
@@ -173,7 +174,7 @@ public class PrintRenderUtils {
                                             });
 
                                     Log.i("printer", expMessage);
-                                    logger.info("Devnco_Android printer:"+ expMessage);
+                                    DataDogLogger.getLogger().e("Devnco_Android printer:"+ expMessage);
                                     break;
                                 }
                             } else {
@@ -184,7 +185,7 @@ public class PrintRenderUtils {
                     }
 
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
-                    logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
+                        DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     PrintReleaseFragment printReleaseFrament = new PrintReleaseFragment();
                     printReleaseFrament.sendMetaData(context,pageCount,colorMode);
                 }
@@ -200,7 +201,7 @@ public class PrintRenderUtils {
 
 
                     Log.v("Saved Image - ", exp.toString());
-                    logger.info("Devnco_Android Saved Image - "+ exp.toString());
+                    DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ exp.toString());
                     exp.printStackTrace();
                 }
 
@@ -289,7 +290,7 @@ public class PrintRenderUtils {
                     Bitmap pageImage = null;
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
                     String attributeStatus ="attrribute status:"+resultMap.get("status");
-                    logger.info("Devnco_Android attrribute status:"+ attributeStatus);
+                    DataDogLogger.getLogger().i("Devnco_Android attrribute status:"+ attributeStatus);
 
                    /* new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
@@ -380,7 +381,7 @@ public class PrintRenderUtils {
                                */
                                     Map map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
                                     String print ="print status:"+map.get("status").toString();
-                                    logger.info("Devnco_Android print status:"+map.get("status").toString());
+                                    DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
                                     new Handler(Looper.getMainLooper()).post(
                                             new Runnable() {
                                                 @Override
@@ -437,7 +438,7 @@ public class PrintRenderUtils {
                                                     });
 
                                             Log.i("printer", expMessage);
-                                            logger.info("Devnco_Android printer:"+ expMessage);
+                                            DataDogLogger.getLogger().e("Devnco_Android printer:"+ expMessage);
                                             break;
                                         }
                                     } else {
@@ -474,7 +475,7 @@ public class PrintRenderUtils {
 
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
-                    logger.info("Devnco_Android Exception - "+expMessage);
+                    DataDogLogger.getLogger().e("Devnco_Android Exception - "+expMessage);
                     // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
@@ -508,7 +509,7 @@ public class PrintRenderUtils {
                  Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
 
                     String attributeStatus ="attribute status:"+resultMap.get("status");
-                    logger.info("Devnco_Android attribute status:"+ attributeStatus);
+                    DataDogLogger.getLogger().i("Devnco_Android attribute status:"+ attributeStatus);
                   /*  new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -557,7 +558,7 @@ public class PrintRenderUtils {
                                 map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber);
                             }
                             String print ="print status:"+map.get("status").toString();
-                            logger.info("Devnco_Android print status:"+map.get("status").toString());
+                            DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
                             new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
@@ -622,7 +623,7 @@ public class PrintRenderUtils {
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                     // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                    logger.info("Devnco_Android Exception - "+expMessage);
+                    DataDogLogger.getLogger().e("Devnco_Android Exception - "+expMessage);
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override

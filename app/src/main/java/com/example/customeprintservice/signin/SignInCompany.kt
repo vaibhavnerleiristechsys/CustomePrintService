@@ -11,6 +11,10 @@ import android.text.TextWatcher
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
+import com.datadog.android.Datadog
+import com.datadog.android.core.configuration.Configuration
+import com.datadog.android.core.configuration.Credentials
+import com.datadog.android.privacy.TrackingConsent
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.model.IdpResponse
@@ -40,6 +44,12 @@ class SignInCompany : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val configuration = Configuration.Builder(true,true,true,true).build()
+        val credentials = Credentials("pube211f0482bac89ed37305673b5e0928e","VasionPrint","admin","com.example.customeprintservice")
+        Datadog.initialize(this@SignInCompany, credentials, configuration, TrackingConsent.GRANTED)
+
+        Datadog.setVerbosity(Log.INFO)
+
         if (LoginPrefs.getOCTAToken(this@SignInCompany) != null) {
                 val serverPrintRelaseFragment = ServerPrintRelaseFragment()
                 serverPrintRelaseFragment.serverCallForGettingAllPrinters(this@SignInCompany)

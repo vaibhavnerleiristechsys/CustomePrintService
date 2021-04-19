@@ -14,6 +14,11 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
+import com.datadog.android.Datadog
+import com.datadog.android.core.configuration.Configuration
+import com.datadog.android.core.configuration.Credentials
+import com.datadog.android.log.Logger
+import com.datadog.android.privacy.TrackingConsent
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.prefs.LoginPrefs
@@ -38,6 +43,20 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
         try {
+
+
+
+            val logger = Logger.Builder()
+                .setNetworkInfoEnabled(true)
+                .setServiceName("MobilePrint")
+                .setLogcatLogsEnabled(true)
+                .setDatadogLogsEnabled(true)
+                .setLoggerName("name")
+                .build();
+            logger.i("Activity loaded")
+
+
+
             bundle = intent.extras!!
             btnSignInWithOkta.visibility= View.VISIBLE
             txtOr.visibility= View.VISIBLE

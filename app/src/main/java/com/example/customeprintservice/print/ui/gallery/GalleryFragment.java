@@ -29,13 +29,14 @@ import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
 
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.example.customeprintservice.utils.ProgressDialog;
 import com.google.gson.Gson;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,7 +58,7 @@ public class GalleryFragment extends Fragment {
     Context context;
     public static List<Printer> listOfPrinters=new ArrayList<Printer>();
     private SwipeRefreshLayout swipeContainer;
-    Logger logger = LoggerFactory.getLogger(GalleryFragment.class);
+    //Logger logger = LoggerFactory.getLogger(GalleryFragment.class);
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -144,7 +145,7 @@ public class GalleryFragment extends Fragment {
                     LdapPassword.toString()
             );
         }else if(siteId.contains("google")){
-            logger.info("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(requireContext())+" username: "+prf.decodeJWT(requireContext()));
+            DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(requireContext())+" username: "+prf.decodeJWT(requireContext()));
             call = apiService.getPrintersListForGoogle(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
                     prf.decodeJWT(requireContext()),
@@ -154,7 +155,7 @@ public class GalleryFragment extends Fragment {
             );
     }
         else {
-            logger.info("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(requireContext())+" username: "+prf.decodeJWT(requireContext()));
+            DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(requireContext())+" username: "+prf.decodeJWT(requireContext()));
             call = apiService.getPrintersList(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
                     prf.decodeJWT(requireContext()),

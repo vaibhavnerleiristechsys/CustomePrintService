@@ -15,6 +15,7 @@ import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.print.PrintPreview;
 import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.example.customeprintservice.print.ServerPrintRelaseFragment;
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.hp.jipp.encoding.Attribute;
 import com.hp.jipp.encoding.AttributeGroup;
 import com.hp.jipp.encoding.AttributeType;
@@ -31,8 +32,8 @@ import com.hp.jipp.util.PrettyPrinter;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -76,7 +77,7 @@ public class PrintUtils {
     private final static IppClientTransport transport = new HttpIppClientTransport();
     private final static String CMD_NAME = "jprint";
     private Context context = null;
-    Logger logger = LoggerFactory.getLogger(PrintUtils.class);
+    //Logger logger = LoggerFactory.getLogger(PrintUtils.class);
 
     public void setContextAndInitializeJMDNS(Context context) {
         this.context = context;
@@ -296,13 +297,13 @@ public class PrintUtils {
                             .build();
                 }
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
-                logger.info("Devnco_Android printer in print : "+ "printRequest->" + printRequest.toString());
+                DataDogLogger.getLogger().i("Devnco_Android printer in print : "+ "printRequest->" + printRequest.toString());
                 Log.i("printer", "In print utils method");
            //     logger.info("Devnco_Android printer"+ "In print utils method");
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
              //   logger.info("Devnco_Android IppPacketData request in print :"+request.toString());
                 IppPacketData printResponse = transport.sendData(uri, request);
-                logger.info("Devnco_Android IppPacketData printResponse in print :"+printResponse.toString());
+                DataDogLogger.getLogger().i("Devnco_Android IppPacketData printResponse in print :"+printResponse.toString());
                 resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();
                 resultMap.putAll(getResponseDetails(ippPacket));
@@ -330,7 +331,7 @@ public class PrintUtils {
             return resultMap;
         } catch (Exception e) {
             resultMap.put("Exception", e.getMessage());
-            logger.info("Devnco_Android Exception in print : "+ e.getMessage());
+            DataDogLogger.getLogger().i("Devnco_Android Exception in print : "+ e.getMessage());
             Intent intent =
                     new Intent("com.example.PRINT_RESPONSE")
                             .putExtra("getPrintResponse", e.toString());
@@ -349,7 +350,7 @@ public class PrintUtils {
            IppPacket attributeRequest =
                     IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x200)
                             .build();
-           logger.info("Devnco_Android attributeRequest for 0x200==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
+            DataDogLogger.getLogger().i("Devnco_Android attributeRequest for 0x200==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
           /* String attr ="attributeRequest:"+attributeRequest.toString();
             new Handler(Looper.getMainLooper()).post(
                     new Runnable() {
@@ -374,7 +375,7 @@ public class PrintUtils {
             IppPacketData response;
             try{
                 response = transport.sendData(specificUri, request);
-                logger.info("Devnco_Android IppPacketData response for 0x200==> Uri:"+specificUri+" ==> "+response.toString());
+                DataDogLogger.getLogger().i("Devnco_Android IppPacketData response for 0x200==> Uri:"+specificUri+" ==> "+response.toString());
              /*     String response1 ="response:"+response.toString();
               new Handler(Looper.getMainLooper()).post(
                         new Runnable() {
@@ -394,7 +395,7 @@ public class PrintUtils {
 
                      attributeRequest = IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x100)
                                     .build();
-                    logger.info("Devnco_Android attributeRequest for version 0x100 ==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
+                    DataDogLogger.getLogger().i("Devnco_Android attributeRequest for version 0x100 ==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
               /*       String attributeRequest1 ="attributeRequest for 1:"+attributeRequest.toString();
                    new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
@@ -408,7 +409,7 @@ public class PrintUtils {
                 //    logger.info("Devnco_Android IppPacketData request for version 0x100 ==> Uri:"+specificUri+" ==> "+request.toString());
 
                     response = transport.sendData(specificUri, request);
-                    logger.info("Devnco_Android IppPacketData response for version  0x100 ==> Uri:"+specificUri+" ==> "+response.toString());
+                    DataDogLogger.getLogger().i("Devnco_Android IppPacketData response for version  0x100 ==> Uri:"+specificUri+" ==> "+response.toString());
                  /*   String response2 ="response for 0x100:"+response.toString();
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
@@ -443,7 +444,7 @@ public class PrintUtils {
                     resultMap.put("uri-"+count,specificUri.toString());
                     resultMap.put("result-"+count,resultMap.get("status"));
                     String result ="result-"+count+" uri-"+specificUri.toString()+" status-"+resultMap.get("status");
-                    logger.info("Devnco_Android status of getAttributeCall ==> Uri:"+specificUri+" ==> "+resultMap.get("status"));
+                    DataDogLogger.getLogger().i("Devnco_Android status of getAttributeCall ==> Uri:"+specificUri+" ==> "+resultMap.get("status"));
                /*     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -456,7 +457,7 @@ public class PrintUtils {
             }
             catch (Exception e){
                // Log.i("printer", "print status===>" + status + "\nprint status String===>" + statusString);
-                logger.info("Devnco_Android Exception in getAttributeCall ==> Uri:"+specificUri+" ==> "+e.toString()+" <==");
+                DataDogLogger.getLogger().e("Devnco_Android Exception in getAttributeCall ==> Uri:"+specificUri+" ==> "+e.toString()+" <==");
                 resultMap.put("uri-"+count,specificUri.toString());
                 resultMap.put("result-"+count,e.getMessage());
                 String result ="exception result-"+count+" uri-"+specificUri.toString()+" exception-"+e.getMessage();
@@ -493,7 +494,7 @@ public class PrintUtils {
                     resultMap.put(attribute.getName(), attribute.toString());
                 }catch (Exception e){
                     Log.d("exception in getResponseDetails ",e.getMessage());
-                    logger.info("Devnco_Android exception in getResponseDetails "+e.getMessage());
+                    DataDogLogger.getLogger().e("Devnco_Android exception in getResponseDetails "+e.getMessage());
                     String result ="exception in getResponseDetails:"+e.getMessage();
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
@@ -543,7 +544,7 @@ public class PrintUtils {
 
             String attributeRequestStringified  = attributeRequest.toString();
             Log.d("attributeRequest",attributeRequestStringified);
-            logger.info("Devnco_Android attributeRequest"+attributeRequestStringified);
+            DataDogLogger.getLogger().i("Devnco_Android attributeRequest"+attributeRequestStringified);
 
            IppPacketData request = new IppPacketData(attributeRequest);
             IppPacketData response = transport.sendData(uri, request);
@@ -561,7 +562,7 @@ public class PrintUtils {
             for (AttributeGroup attributeGroup : attributeGroupList) {
                 if (attributeGroup.get("document-format-supported") != null) {
                     Log.i("printer", "attribute groups-->" + attributeGroup.get("document-format-supported"));
-                    logger.info("Devnco_Android printer"+ "attribute groups-->" + attributeGroup.get("document-format-supported"));
+                    DataDogLogger.getLogger().i("Devnco_Android printer"+ "attribute groups-->" + attributeGroup.get("document-format-supported"));
 
                     Attribute attribute = attributeGroup.get("document-format-supported");
                     for (int i = 0; i < attribute.size(); i++) {
@@ -574,13 +575,13 @@ public class PrintUtils {
                             attributeList.add(tagValue);
                         }
                         Log.i("printer", "Format: " + i + " " + att);
-                        logger.info("Devnco_Android printer"+ "Format: " + i + " " + att);
+                        DataDogLogger.getLogger().i("Devnco_Android printer"+ "Format: " + i + " " + att);
                     }
                 }
             }
 
             Log.i("printer", "attribute list in print utils->>" + attributeList);
-            logger.info("Devnco_Android printer"+ "attribute list in print utils->>" + attributeList);
+            DataDogLogger.getLogger().i("Devnco_Android printer"+ "attribute list in print utils->>" + attributeList);
             Intent printerSupportedFormatsIntent =
                     new Intent("com.example.PRINT_RESPONSE")
                             .putExtra("printerSupportedFormats", attributeList.toString());

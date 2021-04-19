@@ -18,6 +18,7 @@ import com.example.customeprintservice.print.PrintPreview;
 import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.SignInCompany;
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.example.customeprintservice.utils.GoogleAPI;
 import com.example.customeprintservice.utils.PermissionHelper;
 import com.example.customeprintservice.utils.SampleApplication;
@@ -79,15 +80,8 @@ public class MainActivity extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
        // mLogger = SampleApplication1.fromContext(getApplicationContext()).getLogger();
-     /*   Logger logger = new Logger.Builder()
-                .setNetworkInfoEnabled(true)
-                .setLogcatLogsEnabled(true)
-                .setDatadogLogsEnabled(true)
-                .setBundleWithTraceEnabled(true)
-                .setLoggerName("<LOGGER_NAME>")
-                .build();
 
-        logger.d("A debug message.");
+       /* logger.d("A debug message.");
         logger.i("Some relevant information ?");
         logger.w("An important warning…");
         logger.e("An error was met!");

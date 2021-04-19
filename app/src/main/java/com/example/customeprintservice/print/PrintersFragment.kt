@@ -20,6 +20,11 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.datadog.android.Datadog
+import com.datadog.android.core.configuration.Configuration
+import com.datadog.android.core.configuration.Credentials
+import com.datadog.android.log.Logger
+import com.datadog.android.privacy.TrackingConsent
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapter
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
@@ -33,10 +38,7 @@ import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
-import com.example.customeprintservice.utils.IpAddress
-import com.example.customeprintservice.utils.JwtDecode
-import com.example.customeprintservice.utils.PrinterListComparator
-import com.example.customeprintservice.utils.ProgressDialog
+import com.example.customeprintservice.utils.*
 import com.example.customeprintservice.utils.ProgressDialog.Companion.cancelLoading
 import com.example.customeprintservice.utils.ProgressDialog.Companion.showLoadingDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -49,7 +51,7 @@ import okhttp3.ResponseBody
 import org.apache.commons.codec.binary.Base64
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
-import org.slf4j.LoggerFactory
+//import org.slf4j.LoggerFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -63,7 +65,7 @@ import kotlin.collections.HashMap
 class PrintersFragment : Fragment() {
 
     val printerList = ArrayList<PrinterModel>()
-    var logger = LoggerFactory.getLogger(PrintersFragment::class.java)
+   // var logger = LoggerFactory.getLogger(PrintersFragment::class.java)
 
     companion object {
          val discoveredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
@@ -79,6 +81,8 @@ class PrintersFragment : Fragment() {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(requireContext())
             .registerReceiver(mMessageReceiver, IntentFilter("callUpdateUIMethod"))
+
+
 
     }
 
@@ -215,7 +219,7 @@ class PrintersFragment : Fragment() {
         val ipAddress =IpAddress.getLocalIpAddress();
         if(ipAddress!=null) {
             Log.d("ipAddress of device:", ipAddress);
-            logger.info("Devnco_Android ipAddress of device:" + ipAddress);
+            DataDogLogger.getLogger().i("Devnco_Android ipAddress of device:" + ipAddress);
         }
         showLoadingDialog(context, "please wait")
         val IsLdap = sh.getString("IsLdap", "")
@@ -262,7 +266,7 @@ class PrintersFragment : Fragment() {
                         "</system>"
             )
         }else if(siteId.toString().contains("google")){
-            logger.info(
+            DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
                 ) + " username: " + username
@@ -301,7 +305,7 @@ class PrintersFragment : Fragment() {
 
             )
         }else{
-            logger.info(
+            DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
                 ) + " username: " + username
@@ -358,7 +362,7 @@ class PrintersFragment : Fragment() {
 
                         nodeId.forEach {
                             Log.i("printer", "it==>${it.attr("node_id")}")
-                            logger.info("Devnco_Android printer" + "it==>${it.attr("node_id")}")
+                            DataDogLogger.getLogger().i("Devnco_Android printer" + "it==>${it.attr("node_id")}")
                         }
                         PrintersFragment.serverPrinterListWithDetails.clear()
                         PrintersFragment.serverPullPrinterListWithDetails.clear()
@@ -376,7 +380,7 @@ class PrintersFragment : Fragment() {
                             printerModel.fromServer = true
                             printerModel.nodeId = it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
-                            logger.info("Devnco_Android printer" + "html res=>${it.text()}")
+                            DataDogLogger.getLogger().i("Devnco_Android printer" + "html res=>${it.text()}")
                             //   PrinterList().addPrinterModel(printerModel)
 
                             val thread = Thread(Runnable {
@@ -419,7 +423,7 @@ class PrintersFragment : Fragment() {
 
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
-                        logger.info("Devnco_Android printer" + "e=>${e.message.toString()}")
+                        DataDogLogger.getLogger().e("Devnco_Android printer" + "e=>${e.message.toString()}")
                     }
                 } else {
                     ProgressDialog.cancelLoading()
@@ -436,7 +440,7 @@ class PrintersFragment : Fragment() {
                 }
 
                 Log.i("printer", "Error html response==>${t.message.toString()}")
-                logger.info("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
+                DataDogLogger.getLogger().i("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
             }
         })
     }
@@ -524,7 +528,7 @@ class PrintersFragment : Fragment() {
             }
         } catch (ex: Exception) {
             Log.d("exception", ex.toString())
-            logger.info("Devnco_Android exception" + ex.toString())
+            DataDogLogger.getLogger().e("Devnco_Android exception" + ex.toString())
         }
         return userName.toString()
     }
@@ -551,7 +555,7 @@ class PrintersFragment : Fragment() {
             LdapPassword.toString()
         )
         }else if(siteId.toString().contains("google")){
-            logger.info(
+            DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
                 ).toString() + " username: " + decodeJWT(context)
@@ -565,7 +569,7 @@ class PrintersFragment : Fragment() {
                 )
         }
         else{
-            logger.info(
+            DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
                 ).toString() + " username: " + decodeJWT(context)
@@ -589,7 +593,7 @@ class PrintersFragment : Fragment() {
                 if (response.isSuccessful) {
 
                     Log.d("response of printerId:", response.body().toString())
-                    logger.info(
+                    DataDogLogger.getLogger().i(
                         "Devnco_Android response of printerId:" + response.body().toString()
                     )
                     var s = response.body().toString()
@@ -625,11 +629,11 @@ class PrintersFragment : Fragment() {
                     val location: String = hashMap.getOrDefault("location", "")
                     val id = hashMap.get("id")
                     Log.d("title", title.toString())
-                    logger.info("Devnco_Android title:" + title.toString())
+                    DataDogLogger.getLogger().i("Devnco_Android title:" + title.toString())
                     Log.d("hostAddress", hostAddress.toString())
-                    logger.info("Devnco_Android hostAddress:" + hostAddress.toString())
+                    DataDogLogger.getLogger().i("Devnco_Android hostAddress:" + hostAddress.toString())
                     Log.d("isPullPrinter", isPullPrinter.toString())
-                    logger.info("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
+                    DataDogLogger.getLogger().i("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
                     ServerPrintRelaseFragment.selectedPrinterId = id
                     ServerPrintRelaseFragment.selectedPrinterToken = printerToken
                     val printer: PrinterModel = PrinterModel()
@@ -771,7 +775,7 @@ class PrintersFragment : Fragment() {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun afterTextChanged(s: Editable) {
             Log.d("text:", s.toString())
-            logger.info("Devnco_Android text:" + s.toString())
+            DataDogLogger.getLogger().i("Devnco_Android text:" + s.toString())
             val filterList = java.util.ArrayList<PrinterModel>()
             for (i in PrinterList().printerList.indices) {
                 val printerModel: PrinterModel = PrinterList().printerList.get(i)

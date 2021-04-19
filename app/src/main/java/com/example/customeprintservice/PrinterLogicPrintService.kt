@@ -22,9 +22,10 @@ import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
 import com.example.customeprintservice.print.PrintersFragment
 import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.utils.DataDogLogger
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.slf4j.LoggerFactory
+//import org.slf4j.LoggerFactory
 import java.io.*
 import java.util.*
 import java.util.function.Consumer
@@ -33,7 +34,7 @@ import kotlin.collections.ArrayList
 
 class PrinterLogicPrintService : PrintService() {
     private val builder: PrinterInfo? = null
-    var logger = LoggerFactory.getLogger(PrinterLogicPrintService::class.java)
+  //  var logger = LoggerFactory.getLogger(PrinterLogicPrintService::class.java)
 
 
     companion object {
@@ -43,7 +44,7 @@ class PrinterLogicPrintService : PrintService() {
 
     override fun onConnected() {
         Log.i(TAG, "#onConnected()")
-        logger.info("Devnco_Android " + TAG + "#onConnected()")
+        DataDogLogger.getLogger().i("Devnco_Android " + TAG + "#onConnected()")
 
         val permissionWrite = ContextCompat.checkSelfPermission(
             this,
@@ -59,7 +60,7 @@ class PrinterLogicPrintService : PrintService() {
             || permissionRead != PackageManager.PERMISSION_GRANTED
         ) {
             Log.i(TAG, "Permission to record denied")
-            logger.info("Devnco_Android " + TAG + "Permission to record denied")
+           DataDogLogger.getLogger().i("Devnco_Android " + TAG + "Permission to record denied")
             Toast.makeText(this, "Please login to Printerlogic app", Toast.LENGTH_LONG).show()
         }
 
@@ -68,7 +69,7 @@ class PrinterLogicPrintService : PrintService() {
     override fun onDisconnected() {
         super.onDisconnected()
         Log.i(TAG, "#onDisConnected()")
-        logger.info("Devnco_Android " + TAG + "#onDisConnected()")
+        DataDogLogger.getLogger().i("Devnco_Android " + TAG + "#onDisConnected()")
         stopSelf()
     }
 
@@ -79,13 +80,13 @@ class PrinterLogicPrintService : PrintService() {
     override fun onRequestCancelPrintJob(printJob: PrintJob) {
         printJob.cancel()
         Log.i(TAG, "#onRequestCancelPrintJob() printJobId: " + printJob.id)
-        logger.info("Devnco_Android " + TAG + "#onRequestCancelPrintJob() printJobId: " + printJob.id)
+        DataDogLogger.getLogger().i("Devnco_Android " + TAG + "#onRequestCancelPrintJob() printJobId: " + printJob.id)
 
     }
 
     override fun onPrintJobQueued(printJob: PrintJob) {
         Log.i(TAG, "override on Print Job Queued ")
-        logger.info("Devnco_Android " + TAG + "override on Print Job Queued ")
+        DataDogLogger.getLogger().i("Devnco_Android " + TAG + "override on Print Job Queued ")
 
         val permissionWrite = ContextCompat.checkSelfPermission(
             this,
@@ -108,7 +109,7 @@ class PrinterLogicPrintService : PrintService() {
 
 
         Log.i(TAG, "Handle Queued Print Job")
-        logger.info("Devnco_Android " + TAG + "Handle Queued Print Job")
+        DataDogLogger.getLogger().i("Devnco_Android " + TAG + "Handle Queued Print Job")
         if (printJob.isQueued) {
             printJob.start()
         }
@@ -170,13 +171,13 @@ internal class PrinterDiscoverySession(
     private var appContext: Context? = null
      var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
      var deployedSecurePrinterListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
-    var logger = LoggerFactory.getLogger(PrinterDiscoverySession::class.java)
+   // var logger = LoggerFactory.getLogger(PrinterDiscoverySession::class.java)
 
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
     override fun onStartPrinterDiscovery(priorityList: List<PrinterId>) {
         Log.d("customprintservices", "onStartPrinterDiscovery")
-        logger.info("Devnco_Android customprintservices" + "onStartPrinterDiscovery")
+        DataDogLogger.getLogger().i("Devnco_Android customprintservices" + "onStartPrinterDiscovery")
 
 
         PrintersFragment.discoveredPrinterListWithDetails.clear()
@@ -224,7 +225,7 @@ internal class PrinterDiscoverySession(
                 Log.d("service name", p.serviceName.toString())
                 if (p.printerHost != null) {
                     Log.d("host ", p.printerHost.toString())
-                    logger.info("Devnco_Android host " + p.printerHost.toString())
+                    DataDogLogger.getLogger().i("Devnco_Android host " + p.printerHost.toString())
                     printerId.add(printService.generatePrinterId(p.printerHost.toString()))
                     val builder = PrinterInfo.Builder(
                         printService.generatePrinterId(p.printerHost.toString()),

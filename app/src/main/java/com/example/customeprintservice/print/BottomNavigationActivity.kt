@@ -35,6 +35,7 @@ import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.signin.SignInActivity
 import com.example.customeprintservice.signin.SignInCompany
+import com.example.customeprintservice.utils.DataDogLogger
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -60,7 +61,7 @@ class BottomNavigationActivity : AppCompatActivity() {
     private var list = ArrayList<SelectedFile>()
     private var bundle = Bundle()
     val printReleaseFragment = PrintReleaseFragment()
-    var logger = LoggerFactory.getLogger(BottomNavigationActivity::class.java)
+   // var logger = LoggerFactory.getLogger(BottomNavigationActivity::class.java)
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -192,13 +193,13 @@ class BottomNavigationActivity : AppCompatActivity() {
         call.enqueue(object : Callback<TokenResponse> {
             override fun onResponse(call: Call<TokenResponse>, response: Response<TokenResponse>) {
                 Log.i("printer", "token url->" + call.request().url())
-                logger.info("Devnco_Android printer"+ "token url->" + call.request().url())
+                DataDogLogger.getLogger().i("Devnco_Android printer"+ "token url->" + call.request().url())
 
                 if (response.isSuccessful) {
                     val token = response.body()?.token
                     LoginPrefs.saveOctaToken(context, token.toString())
                     Log.i("printer", "tok==>$token")
-                    logger.info("Devnco_Android printer"+ "tok==>$token")
+                    DataDogLogger.getLogger().i("Devnco_Android printer"+ "tok==>$token")
                //     ProgressDialog.cancelLoading()
                     printReleaseFragment.arguments = bundle
 
@@ -212,9 +213,9 @@ class BottomNavigationActivity : AppCompatActivity() {
             override fun onFailure(call: Call<TokenResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
                 Log.i("printer", "token url->" + call.request().url())
-                logger.info("Devnco_Android printer"+ "token url->" + call.request().url())
+                DataDogLogger.getLogger().i("Devnco_Android printer"+ "token url->" + call.request().url())
                 Log.i("printer", "Token error response-->" + t.message)
-                logger.info("Devnco_Android printer"+ "Token error response-->" + t.message)
+                DataDogLogger.getLogger().i("Devnco_Android printer"+ "Token error response-->" + t.message)
             }
         })
     }

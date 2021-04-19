@@ -53,14 +53,15 @@ import com.example.customeprintservice.printjobstatus.model.printerlist.Printer;
 import com.example.customeprintservice.rest.ApiService;
 import com.example.customeprintservice.rest.RetrofitClient;
 import com.example.customeprintservice.room.SelectedFile;
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.example.customeprintservice.utils.ProgressDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.unnamed.b.atv.model.TreeNode;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     private RecyclerView recyclerViewList;
     private ConstraintLayout noDataMessage;
     public  List<Printer> listOfPrinters=new ArrayList<Printer>();
-    Logger logger = LoggerFactory.getLogger(ServerPrintRelaseFragment.class);
+    //Logger logger = LoggerFactory.getLogger(ServerPrintRelaseFragment.class);
     public static ArrayList<PrinterModel> printerList=new ArrayList<PrinterModel>();
 
     public ServerPrintRelaseFragment() {
@@ -349,7 +350,8 @@ public class ServerPrintRelaseFragment extends Fragment {
         TextWatcher watcher = new TextWatcher() {
             public void afterTextChanged(Editable s) {
                Log.d("text:",s.toString());
-                logger.info("Devnco_Android text:"+s.toString());
+                DataDogLogger.getLogger().i("Devnco_Android text:"+s.toString());
+
                 ArrayList<PrinterModel> filterList =new ArrayList<PrinterModel>();
                for(int i=0;i<list.size();i++){
                    PrinterModel printerModel=list.get(i);
@@ -480,7 +482,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         String LdapUsername= prefs.getString("LdapUsername", "");
         String LdapPassword= prefs.getString("LdapPassword", "");
         Log.d("IsLdap:", IsLdap);
-        logger.info("Devnco_Android IsLdap:"+ IsLdap);
+        DataDogLogger.getLogger().i("Devnco_Android IsLdap:"+ IsLdap);
         ProgressDialog.Companion.showLoadingDialog(context, "Loading");
         PrintReleaseFragment printReleaseFragment=new PrintReleaseFragment();
         PrintReleaseFragment.Companion.getGetdocumentList().clear();
@@ -497,7 +499,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     LdapPassword.toString()
             );
         }else if(siteId.contains("google")){
-            logger.info("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
+            DataDogLogger.getLogger().i("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
             call = apiService.getPrintJobStatusesForGoogle(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                     printReleaseFragment.decodeJWT(context),
@@ -510,7 +512,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         }
         else {
 
-            logger.info("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
+            DataDogLogger.getLogger().i("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
              call = apiService.getPrintJobStatuses(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                      printReleaseFragment.decodeJWT(context),
@@ -523,11 +525,11 @@ public class ServerPrintRelaseFragment extends Fragment {
         call.enqueue(new Callback<GetJobStatusesResponse>() {
             public void onResponse(Call<GetJobStatusesResponse> call, Response<GetJobStatusesResponse> response) {
                 if(response.isSuccessful()){
-                    logger.info("Devnco_Android Geeting held job response ** : "+response.body().toString()+" **====>");
-                    logger.info("Devnco_Android Geeting held job response: "+response.body().getPrintQueueJobStatus().toString()+"====>");
+                    DataDogLogger.getLogger().i("Devnco_Android Geeting held job response ** : "+response.body().toString()+" **====>");
+                    DataDogLogger.getLogger().i("Devnco_Android Geeting held job response: "+response.body().getPrintQueueJobStatus().toString()+"====>");
                 List<PrintQueueJobStatusItem> getJobStatusesResponse = response.body().getPrintQueueJobStatus();
                     PrintReleaseFragment.Companion.getGetdocumentList().clear();
-                    logger.info("Devnco_Android Geeting held job size: "+getJobStatusesResponse.size()+"====>");
+                    DataDogLogger.getLogger().i("Devnco_Android Geeting held job size: "+getJobStatusesResponse.size()+"====>");
                 for (int i = 0; i < getJobStatusesResponse.size(); i++) {
                     PrintQueueJobStatusItem PrintQueueJobStatusItem = getJobStatusesResponse.get(i);
                     SelectedFile selectedFile = new SelectedFile();
@@ -544,14 +546,14 @@ public class ServerPrintRelaseFragment extends Fragment {
                     String fileSize=sizeInKb.toString()+"KB";
                     selectedFile.setJobSize(fileSize);
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
-                    logger.info("Devnco_Android Geeting held job :"+i+" : Title: "+PrintQueueJobStatusItem.getDocumentTitle()
+                    DataDogLogger.getLogger().i("Devnco_Android Geeting held job :"+i+" : Title: "+PrintQueueJobStatusItem.getDocumentTitle()
                             +"username: "+PrintQueueJobStatusItem.getUserName()+"====>");
 
                     if(PrintQueueJobStatusItem.getPrinterDeviceQueue() !=null) {
                         if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters() != null) {
                             if (PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().size() > 0) {
                                 selectedFile.setPrinterId(PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId());
-                                logger.info("Devnco_Android Geeting held job :"+i+" : Title: "+PrintQueueJobStatusItem.getDocumentTitle()
+                                DataDogLogger.getLogger().i("Devnco_Android Geeting held job :"+i+" : Title: "+PrintQueueJobStatusItem.getDocumentTitle()
                                         +"printer id: "+PrintQueueJobStatusItem.getPrinterDeviceQueue().getPrinters().get(0).getId()+"====>");
                             }
                         }
@@ -589,16 +591,16 @@ public class ServerPrintRelaseFragment extends Fragment {
             }else{
                     ProgressDialog.Companion.cancelLoading();
                     swipeContainer.setRefreshing(false);
-                    logger.info("Devnco_Android Geeting held job response message** : "+response.raw().toString()+" **====>");
-                    logger.info("Devnco_Android Geeting held job response error code** : "+response.code()+" **====>");
+                    DataDogLogger.getLogger().i("Devnco_Android Geeting held job response message** : "+response.raw().toString()+" **====>");
+                    DataDogLogger.getLogger().i("Devnco_Android Geeting held job response error code** : "+response.code()+" **====>");
                 }
         }
 
             @Override
             public void onFailure(Call<GetJobStatusesResponse> call, Throwable t) {
                 ProgressDialog.Companion.cancelLoading();
-                logger.info("Devnco_Android Geeting held job failure message** : "+t.getLocalizedMessage()+" **====>");
-                logger.info("Devnco_Android Geeting held job failure error body message** : "+t.getMessage().toString()+" **====>");
+                DataDogLogger.getLogger().i("Devnco_Android Geeting held job failure message** : "+t.getLocalizedMessage()+" **====>");
+                DataDogLogger.getLogger().i("Devnco_Android Geeting held job failure error body message** : "+t.getMessage().toString()+" **====>");
                 swipeContainer.setRefreshing(false);
                 call.cancel();
             }
@@ -730,7 +732,7 @@ public class ServerPrintRelaseFragment extends Fragment {
             );
         }else if(siteId.contains("google")){
 
-            logger.info("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+prf.decodeJWT(context));
+            DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+prf.decodeJWT(context));
             call = apiService.getPrintersListForGoogle(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                     prf.decodeJWT(context),
@@ -740,7 +742,7 @@ public class ServerPrintRelaseFragment extends Fragment {
             );
         }
         else {
-            logger.info("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+prf.decodeJWT(context));
+            DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+prf.decodeJWT(context));
             call = apiService.getPrintersList(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
                     prf.decodeJWT(context),

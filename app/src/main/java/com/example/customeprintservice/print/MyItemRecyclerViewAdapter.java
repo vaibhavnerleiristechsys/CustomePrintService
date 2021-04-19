@@ -16,10 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.GoogleLoginActivity;
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.example.customeprintservice.utils.ProgressDialog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
         mValues = items;
     }
-    Logger logger = LoggerFactory.getLogger(MyItemRecyclerViewAdapter.class);
+    //Logger logger = LoggerFactory.getLogger(MyItemRecyclerViewAdapter.class);
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -67,7 +68,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
-                logger.info("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
+                DataDogLogger.getLogger().i("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 Intent intent1 = new Intent("qrcodefloatingbutton");
@@ -127,7 +128,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 }
             }catch(Exception e){
                      Log.e("File SelectionException",e.getMessage());
-                     logger.info("Devnco_Android File SelectionException"+e.getMessage());
+                     DataDogLogger.getLogger().i("Devnco_Android File SelectionException"+e.getMessage());
                  }
             }
 
@@ -136,7 +137,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             @Override
             public void onClick(View view) {
                 Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
-                logger.info("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
+                DataDogLogger.getLogger().i("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
                 Intent intent = new Intent("menuFunctionlityDisplay");
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 Intent intent1 = new Intent("qrcodefloatingbutton");
@@ -195,7 +196,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 }
             }catch(Exception e){
                 Log.e("File SelectionException",e.getMessage());
-                logger.info("Devnco_Android File SelectionException"+e.getMessage());
+                    DataDogLogger.getLogger().e("Devnco_Android File SelectionException"+e.getMessage());
             }
             }
 
