@@ -147,6 +147,7 @@ public class PrintUtils {
         new Thread(() -> {
 
             try {
+
                 IppPacket cancelJobRequestPacket = IppPacket.cancelJob(uri, jobId).build();
                 IppPacketData cancelJobRequestPacketData = new IppPacketData(cancelJobRequestPacket);
                 IppPacketData cancelJobResponsePacketData = transport.sendData(uri, cancelJobRequestPacketData);
@@ -176,6 +177,7 @@ public class PrintUtils {
                 IppPacket getJobsRequestPacket = IppPacket.getJobs(uri).build();
                 IppPacketData getJobsRequestPacketData = new IppPacketData(getJobsRequestPacket);
                 IppPacketData getJobsResponsePacketData = transport.sendData(uri, getJobsRequestPacketData);
+                Log.i("get jobs repsonse:",getJobsResponsePacketData.toString());
                 IppPacket getJobsResponsePacket = getJobsResponsePacketData.getPacket();
 
                 getResponseDetails(getJobsResponsePacket);
@@ -192,6 +194,48 @@ public class PrintUtils {
             }
         }).start();
     }
+
+    public void getJobsStatus(URI uri, Context context,int jobId) throws IOException {
+           Log.d("jobId", String.valueOf(jobId));
+        new Thread(() -> {
+
+            try {
+                IppPacket getJobsRequestPacket = IppPacket. getJobAttributes(uri,jobId).build();
+                IppPacketData getJobsRequestPacketData = new IppPacketData(getJobsRequestPacket);
+                IppPacketData getJobsResponsePacketData = transport.sendData(uri, getJobsRequestPacketData);
+                Log.i("jobs status repsonse:",getJobsResponsePacketData.toString());
+                IppPacket getJobsResponsePacket = getJobsResponsePacketData.getPacket();
+
+                Map<String, String> map= getResponseDetails(getJobsResponsePacket);
+                String status =map.get("job-state");
+                String statusReasons =map.get("job-state-reasons");
+                String[] jobState = status.split("=");
+                String[] jobStatusReasons =statusReasons.split("=");
+
+                if(jobState.length>0){
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "job Status: "+jobState[1], Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
+
+                Intent getJobsIntent =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("getJobsIntent", getJobsResponsePacket.toString());
+                context.sendBroadcast(getJobsIntent);
+            } catch (Exception ex) {
+                Intent intent =
+                        new Intent("com.example.PRINT_RESPONSE")
+                                .putExtra("getJobsIntent", ex.toString());
+                context.sendBroadcast(intent);
+            }
+        }).start();
+    }
+
+
 
     public void getJobAttributes(URI uri, int jobId, Context context) throws IOException {
 
@@ -230,10 +274,6 @@ public class PrintUtils {
          }
         try {
             resultMap.put("uri",uri.toString()) ;
-          /*  Intent intent =
-                    new Intent("com.example.PRINT_RESPONSE")
-                            .putExtra("finalUri", uri.toString());
-            context.sendBroadcast(intent);*/
 
 
             File inputFile = new File(file.getAbsolutePath());
@@ -250,36 +290,7 @@ public class PrintUtils {
                 Log.i("printer", "format--->" + format.toLowerCase().trim());
            //     logger.info("Devnco_Android printer"+ "format--->" + format.toLowerCase().trim());
             }
-           /*
-            List<String> att=new ArrayList<String>();
-            List<String> attributes=new ArrayList<String>();
-            try {
-                att = getPrinterSupportedFormats(uri, context);
-                resultMap.put("getPrinterSupportedFormatsatt", att.toString());
-            }catch(Exception e){
-                resultMap.put("Exception",e.getMessage());
-                return resultMap;
-            }*/
 
-            /*try {
-                attributes = getPrinterSupportedVersion(uri, context);
-                resultMap.put("getPrinterSupportedVersionsatt", attributes.toString());
-            }catch(Exception e){
-                resultMap.put("Exception",e.getMessage());
-                return resultMap;
-            }
-
-
-            if(att.isEmpty())
-            {
-                resultMap.put("status","getAttributefailed") ;
-                return resultMap;
-
-            }*/
-
-
-
-          //  if (format != null && att.contains(format.toLowerCase().trim())) {
             if (format != null) {
 
                 IppPacket printRequest;
@@ -306,22 +317,32 @@ public class PrintUtils {
                 DataDogLogger.getLogger().i("Devnco_Android IppPacketData printResponse in print :"+printResponse.toString());
                 resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();
+
                 resultMap.putAll(getResponseDetails(ippPacket));
+                Log.i("get jobs","before get job:");
+
+                //int jobId =Integer.parseInt(resultMap.get("job-id"));
+                try{
+                    String jobIds = resultMap.get("job-id");
+                    Log.d("jobId ::", jobIds);
+                    if (jobIds != null) {
+                        String[] jobs = jobIds.split("=");
+                        resultMap.put("jobId", jobs[1]);
+                    }
+                }catch(Exception e){
+                   Log.e("exception in getjobs",e.getMessage());
+                }
+              //  int jobId =Integer.parseInt(jobs[1]);
+
+              //  getJobsStatus(uri,context,jobId);
+              //  getJobs(uri,context);
 
                 ServerPrintRelaseFragment serverPrintRelaseFragment=new ServerPrintRelaseFragment();
                 serverPrintRelaseFragment.removeDocumentFromSharedPreferences(context);
 
 
 
-/*
-                Intent printResponseIntent =
-                        new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("printResponse", printResponse.toString());
-                context.sendBroadcast(printResponseIntent);
-
- */
                 Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
-               // logger.info("Devnco_Android printer"+ "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
             } else {
                 Intent fileNotSupported =
                         new Intent("com.example.PRINT_RESPONSE")

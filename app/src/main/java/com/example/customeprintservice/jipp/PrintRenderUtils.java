@@ -10,6 +10,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.pdf.PdfRenderer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.customeprintservice.print.PrintReleaseFragment;
+import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.utils.DataDogLogger;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPageTree;
@@ -551,7 +553,7 @@ public class PrintRenderUtils {
                                         }
                                     });
                             */
-                            Map map;
+                            Map<String, String> map;
                             if(isColor == true) {
                                 map = printUtils.print(finalUri, file, context, "", versionNumber);
                             }else{
@@ -559,13 +561,15 @@ public class PrintRenderUtils {
                             }
                             String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
-                            new Handler(Looper.getMainLooper()).post(
+                          /*  new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, print, Toast.LENGTH_LONG).show();
                                         }
                                     });
+
+                           */
                             String exception = (String) map.get("Exception");
                           /*  new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
@@ -598,9 +602,29 @@ public class PrintRenderUtils {
                                 totalTimeThreadSleep = 0;
                             }
 
+                            String jobIdString =map.get("jobId");
+                            URI uri =finalUri;
+                            if(jobIdString != null) {
+                                final Handler handler =  new Handler(Looper.getMainLooper());
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            int jobId = Integer.parseInt(jobIdString);
+                                            printUtils.getJobsStatus(uri, context, jobId);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, 15000);
 
+
+
+                            }
+                            //getJobs(uri,context);
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
+
                     }
                         int colorMode=0;
                         if(isColor ==true){
@@ -608,6 +632,7 @@ public class PrintRenderUtils {
                         }else{
                             colorMode=0;
                         }
+
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
                         printReleaseFrament.sendMetaData(context,1,colorMode);
                 }else{
