@@ -17,6 +17,7 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.customeprintservice.model.JobsModel;
 import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.utils.DataDogLogger;
@@ -44,6 +45,7 @@ public class PrintRenderUtils {
    // Logger logger = LoggerFactory.getLogger(PrintUtils.class);
 
     public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress,int colorMode) {
+       
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -102,6 +104,7 @@ public class PrintRenderUtils {
                     int totalTimeThreadSleep = 0;
 
                     while (pagePrintCounter < pageCount) {
+                        Map<String, String> map = null;
                         String path = "/storage/self/primary/sample" + pagePrintCounter + ".jpg";
                         File renderFile = new File(path);
 
@@ -134,34 +137,18 @@ public class PrintRenderUtils {
                             break;
                         } else {
 
-                            Map map = printUtils.print(finalUri, renderFile, context, "", versionNumber);
+                             map = printUtils.print(finalUri, renderFile, context, "", versionNumber);
 
-                            String print ="print status:"+map.get("status").toString();
+                         //   String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
-                            new Handler(Looper.getMainLooper()).post(
+                         /*   new Handler(Looper.getMainLooper()).post(
                                     new Runnable() {
                                         @Override
                                         public void run() {
                                             Toast.makeText(context, print, Toast.LENGTH_LONG).show();
                                         }
                                     });
-
-/*
-                            if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
-                                String expMessage = "The get attributes call failed ";
-                                new Handler(Looper.getMainLooper()).post(
-                                        new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-
-                                Log.i("printer", expMessage);
-                                logger.info("Devnco_Android printer"+ expMessage);
-                                break;
-                            }
-*/
+                         */
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
                                 totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
@@ -184,6 +171,24 @@ public class PrintRenderUtils {
                                 totalTimeThreadSleep = 0;
                             }
                         }
+
+                        String jobIdString =map.get("jobId");
+                        URI uri =finalUri;
+                        int pageCountNo=pagePrintCounter;
+                        if(jobIdString != null) {
+                            final Handler handler = new Handler(Looper.getMainLooper());
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        int jobId = Integer.parseInt(jobIdString);
+                                        printUtils.getJobsStatus(uri, context, jobId, pageCountNo);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, 15000);
+                        }
                     }
 
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
@@ -193,7 +198,7 @@ public class PrintRenderUtils {
                 }
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
-                   // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -272,6 +277,8 @@ public class PrintRenderUtils {
 
 
     public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount,boolean isColor) {
+      ArrayList<JobsModel> jobIdList=new ArrayList<>();
+        String usedUri;
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -280,9 +287,7 @@ public class PrintRenderUtils {
                 try {
 
                     Log.d("startIndex", String.valueOf(startIndex));
-              //      logger.info("Devnco_Android startIndex"+ String.valueOf(startIndex));
                     Log.d("endIndex", String.valueOf(endIndex));
-                //    logger.info("Devnco_Android endIndex:"+ String.valueOf(endIndex));
 
                     ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
                     PdfRenderer renderer = new PdfRenderer(fileDescriptor);
@@ -294,15 +299,6 @@ public class PrintRenderUtils {
                     String attributeStatus ="attrribute status:"+resultMap.get("status");
                     DataDogLogger.getLogger().i("Devnco_Android attrribute status:"+ attributeStatus);
 
-                   /* new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, attributeStatus, Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-*/
 
                     if (!resultMap.containsKey("status")) {
                         // show error
@@ -318,7 +314,6 @@ public class PrintRenderUtils {
                     } else
                         if(resultMap.get("status").equals("successful-ok")) {
 
-                //        logger.info("Devnco_Android status successful-ok");
                         finalUri = URI.create(resultMap.get("finalUri"));
                         String versionNumber =resultMap.get("versionNumber");
                     for (int i = 0; i < noOfCopies; i++) {
@@ -330,11 +325,12 @@ public class PrintRenderUtils {
                         int endIndexOfPage = endIndex - 1;
                         int counter = 0;
                         while (pagePrintCounter < pageCount) {
+                            Map<String, String> map = null;
                             if (startIndexOfPage <= pagePrintCounter && endIndexOfPage >= pagePrintCounter) {
 
                                 String path = "/storage/self/primary/sample" + pagePrintCounter + ".jpg";
                                 File renderFile = new File(path);
-
+                                
                                 PdfRenderer.Page page = renderer.openPage(pagePrintCounter);
                                 Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
                                 Canvas canvas = new Canvas(bitmap);
@@ -354,7 +350,6 @@ public class PrintRenderUtils {
                                 FileOutputStream out = new FileOutputStream(renderFile);
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                 Log.v("Saved Image - ", renderFile.getAbsolutePath());
-                          //      logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
                                 out.flush();
                                 out.close();
 
@@ -372,28 +367,20 @@ public class PrintRenderUtils {
                                     break;
                                 } else {
                                     String ippUriFinal = finalUri.toString();
-                               /*     new Handler(Looper.getMainLooper()).post(
-                                            new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(context, ippUriFinal, Toast.LENGTH_LONG).show();
-                                                }
-                                            });
 
-                               */
-                                    Map map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
-                                    String print ="print status:"+map.get("status").toString();
+                                     map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
+                               //     String print ="print status:"+map.get("status").toString();
                                     DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
-                                    new Handler(Looper.getMainLooper()).post(
+                                 /*   new Handler(Looper.getMainLooper()).post(
                                             new Runnable() {
                                                 @Override
                                                 public void run() {
                                                     Toast.makeText(context, print, Toast.LENGTH_LONG).show();
                                                 }
                                             });
+                                   */
 
-
-                                    String exception = (String) map.get("Exception");
+                                 /*   String exception = (String) map.get("Exception");
                                     new Handler(Looper.getMainLooper()).post(
                                             new Runnable() {
                                                 @Override
@@ -401,30 +388,7 @@ public class PrintRenderUtils {
                                                     Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
                                                 }
                                             });
-
-                                  /*  if (map.get("status") == null || map.get("status").equals("getAttributefailed")) {
-                                        String expMessage = "The get attributes call failed ";
-                                        new Handler(Looper.getMainLooper()).post(
-                                                new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                    }
-                                                });
-
-                                        Log.i("printer", expMessage);
-                                        logger.info("printer:"+ expMessage);
-
-                                      /*  if (counter < 15) {
-                                            finalUri = ippUri.get(counter);
-                                            counter++;
-                                            continue;
-                                        } else {
-                                            counter = 0;
-                                            break;
-                                        }
-
-                                    }*/
+                                 */
 
                                     if (map.get("status").equals("server-error-busy")) {
                                         Thread.sleep(threadSleepInMilliSecs);
@@ -453,9 +417,39 @@ public class PrintRenderUtils {
                                 pagePrintCounter++;
                                 totalTimeThreadSleep = 0;
                             }
+
+                            
+                            String jobIdString =map.get("jobId");
+                            URI uri =finalUri;
+                            int pageCountNo=pagePrintCounter;
+                            JobsModel jobModel =new JobsModel();
+
+                            if(jobIdString != null) {
+
+                                final Handler handler =  new Handler(Looper.getMainLooper());
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            int jobId = Integer.parseInt(jobIdString);
+                                    //   String jobStatus= printUtils.getJobsStatus(uri, context, jobId,pageCountNo);
+                                            printUtils.getJobsStatus(uri, context, jobId,pageCountNo);
+                                            jobModel.setJobId(Integer.parseInt(jobIdString));
+                                            jobModel.setUsedUri(uri);
+                                            jobModel.setPageNo(pageCountNo);
+                                           // jobModel.setJobStatus(jobStatus);
+                                            jobIdList.add(jobModel);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, 60000);
+
+
+
+                            }
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
-                    //    logger.info("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     }
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
                     int colorMode=0;
@@ -491,12 +485,58 @@ public class PrintRenderUtils {
 
                     exp.printStackTrace();
                 }
+                Log.d("print done ", "print all pages done ");
+                final Handler handler =  new Handler(Looper.getMainLooper());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                           for(int i=0;i<PrintUtils.jobsModelList.size();i++){
+                              JobsModel jobModel =PrintUtils.jobsModelList.get(i);
+                              String msg = "Page Index No:"+jobModel.getPageNo()+" JobId:"+jobModel.getJobId()+" Status:"+jobModel.getJobStatus();
+                               Log.d("print Status done ",msg);
 
+                           }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, 60000);
+
+                new Handler(Looper.getMainLooper()).post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, "print ended ", Toast.LENGTH_LONG).show();
+                            }
+                        });
             }
 
+
+
         }.start();
+/*
+        final Handler handler =  new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PrintUtils printUtils = new PrintUtils();
+                    for(int i=0;i<jobIdList.size();i++){
+                        URI uri = jobIdList.get(i).getUsedUri();
+                        int jobId=jobIdList.get(i).getJobId();
+                        int pageCountNo =jobIdList.get(i).getPageNo();
+                        printUtils.getJobsStatus(uri, context, jobId,pageCountNo);
+                        Thread.sleep(10000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 180000);
 
 
+ */
     }
 
 
@@ -512,15 +552,7 @@ public class PrintRenderUtils {
 
                     String attributeStatus ="attribute status:"+resultMap.get("status");
                     DataDogLogger.getLogger().i("Devnco_Android attribute status:"+ attributeStatus);
-                  /*  new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, attributeStatus, Toast.LENGTH_LONG).show();
-                                }
-                            });
 
-                     */
                     if (!resultMap.containsKey("status")) {
                         // show error
                         new Handler(Looper.getMainLooper()).post(
@@ -545,14 +577,6 @@ public class PrintRenderUtils {
                         while (pagePrintCounter < 1) {
                             String ippUriFinal = finalUri.toString();
 
-                        /*    new Handler(Looper.getMainLooper()).post(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, ippUriFinal, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                            */
                             Map<String, String> map;
                             if(isColor == true) {
                                 map = printUtils.print(finalUri, file, context, "", versionNumber);
@@ -561,25 +585,6 @@ public class PrintRenderUtils {
                             }
                             String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
-                          /*  new Handler(Looper.getMainLooper()).post(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, print, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-
-                           */
-                            String exception = (String) map.get("Exception");
-                          /*  new Handler(Looper.getMainLooper()).post(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
-                                        }
-
-                                    });*/
-
 
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
@@ -611,17 +616,16 @@ public class PrintRenderUtils {
                                     public void run() {
                                         try {
                                             int jobId = Integer.parseInt(jobIdString);
-                                            printUtils.getJobsStatus(uri, context, jobId);
+                                            printUtils.getJobsStatus(uri, context, jobId,1);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
                                     }
-                                }, 15000);
+                                }, 60000);
 
 
 
                             }
-                            //getJobs(uri,context);
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
 

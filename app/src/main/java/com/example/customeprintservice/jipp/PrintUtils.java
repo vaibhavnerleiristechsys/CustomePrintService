@@ -10,8 +10,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.customeprintservice.MainActivity;
+import com.example.customeprintservice.model.JobsModel;
 import com.example.customeprintservice.print.PrintPreview;
 import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.example.customeprintservice.print.ServerPrintRelaseFragment;
@@ -78,6 +80,7 @@ public class PrintUtils {
     private final static String CMD_NAME = "jprint";
     private Context context = null;
     //Logger logger = LoggerFactory.getLogger(PrintUtils.class);
+     public static ArrayList<JobsModel> jobsModelList =new ArrayList<>();
 
     public void setContextAndInitializeJMDNS(Context context) {
         this.context = context;
@@ -195,17 +198,16 @@ public class PrintUtils {
         }).start();
     }
 
-    public void getJobsStatus(URI uri, Context context,int jobId) throws IOException {
-           Log.d("jobId", String.valueOf(jobId));
+    public void getJobsStatus(URI uri, Context context,int jobId,int pageCountNo) throws IOException {
         new Thread(() -> {
-
+        Log.d("jobId", String.valueOf(jobId));
+        String jobStateString = "JobId:"+jobId+" Status:";
             try {
                 IppPacket getJobsRequestPacket = IppPacket. getJobAttributes(uri,jobId).build();
                 IppPacketData getJobsRequestPacketData = new IppPacketData(getJobsRequestPacket);
                 IppPacketData getJobsResponsePacketData = transport.sendData(uri, getJobsRequestPacketData);
                 Log.i("jobs status repsonse:",getJobsResponsePacketData.toString());
                 IppPacket getJobsResponsePacket = getJobsResponsePacketData.getPacket();
-
                 Map<String, String> map= getResponseDetails(getJobsResponsePacket);
                 String status =map.get("job-state");
                 String statusReasons =map.get("job-state-reasons");
@@ -213,25 +215,35 @@ public class PrintUtils {
                 String[] jobStatusReasons =statusReasons.split("=");
 
                 if(jobState.length>0){
+                    jobStateString=jobStateString+jobState[1];
+                    JobsModel jobModel =new JobsModel();
+                    jobModel.setJobId(jobId);
+                    jobModel.setUsedUri(uri);
+                    jobModel.setPageNo(pageCountNo);
+                    jobModel.setJobStatus(jobStateString);
+                    jobsModelList.add(jobModel);
+
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, "job Status: "+jobState[1], Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, "Page Index No: "+pageCountNo+"job Status: "+jobState[1], Toast.LENGTH_LONG).show();
                                 }
                             });
+
                 }
 
-                Intent getJobsIntent =
-                        new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("getJobsIntent", getJobsResponsePacket.toString());
-                context.sendBroadcast(getJobsIntent);
             } catch (Exception ex) {
-                Intent intent =
-                        new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("getJobsIntent", ex.toString());
-                context.sendBroadcast(intent);
+                new Handler(Looper.getMainLooper()).post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, "Exception in get job Status:"+ex.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
             }
+
+      //  return jobStateString;
         }).start();
     }
 
@@ -332,10 +344,7 @@ public class PrintUtils {
                 }catch(Exception e){
                    Log.e("exception in getjobs",e.getMessage());
                 }
-              //  int jobId =Integer.parseInt(jobs[1]);
 
-              //  getJobsStatus(uri,context,jobId);
-              //  getJobs(uri,context);
 
                 ServerPrintRelaseFragment serverPrintRelaseFragment=new ServerPrintRelaseFragment();
                 serverPrintRelaseFragment.removeDocumentFromSharedPreferences(context);
@@ -517,13 +526,15 @@ public class PrintUtils {
                     Log.d("exception in getResponseDetails ",e.getMessage());
                     DataDogLogger.getLogger().e("Devnco_Android exception in getResponseDetails "+e.getMessage());
                     String result ="exception in getResponseDetails:"+e.getMessage();
-                    new Handler(Looper.getMainLooper()).post(
+                  /*  new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(context, result, Toast.LENGTH_LONG).show();
                                 }
                             });
+
+                   */
                     continue;
                 }
             }
