@@ -37,6 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
 
 import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
@@ -45,7 +47,7 @@ public class PrintRenderUtils {
    // Logger logger = LoggerFactory.getLogger(PrintUtils.class);
 
     public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress,int colorMode) {
-       
+        ArrayList<JobsModel> jobIdList=new ArrayList<>();
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -138,17 +140,7 @@ public class PrintRenderUtils {
                         } else {
 
                              map = printUtils.print(finalUri, renderFile, context, "", versionNumber);
-
-                         //   String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
-                         /*   new Handler(Looper.getMainLooper()).post(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(context, print, Toast.LENGTH_LONG).show();
-                                        }
-                                    });
-                         */
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
                                 totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
@@ -176,23 +168,18 @@ public class PrintRenderUtils {
                         URI uri =finalUri;
                         int pageCountNo=pagePrintCounter;
                         if(jobIdString != null) {
+                            JobsModel jobModel =new JobsModel();
                             final Handler handler = new Handler(Looper.getMainLooper());
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
                                         int jobId = Integer.parseInt(jobIdString);
-                                        printUtils.getJobsStatus(uri, context, jobId, pageCountNo);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, 15000);
+                                        jobModel.setJobId(jobId);
+                                        jobModel.setUsedUri(uri);
+                                        jobModel.setPageNo(pageCountNo);
+                                        jobIdList.add(jobModel);
                         }
                     }
 
                     Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
-                        DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
+                    DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ "page print counter: " + pagePrintCounter);
                     PrintReleaseFragment printReleaseFrament = new PrintReleaseFragment();
                     printReleaseFrament.sendMetaData(context,pageCount,colorMode);
                 }
@@ -212,6 +199,39 @@ public class PrintRenderUtils {
                     exp.printStackTrace();
                 }
 
+                final Handler handler =  new Handler(Looper.getMainLooper());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Collections.sort(jobIdList, new Comparator<JobsModel>() {
+                                @Override
+                                public int compare(JobsModel item, JobsModel t1) {
+                                    return Integer.compare(item.getJobId(), t1.getJobId());
+                                }
+
+                            });
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        for(int i=0;i<jobIdList.size();i++){
+                                            JobsModel jobModel = jobIdList.get(i);
+                                            PrintUtils printUtils = new PrintUtils();
+                                            printUtils.getJobsStatus(jobModel.getUsedUri(), context, jobModel.getJobId(), jobModel.getPageNo());
+                                            Log.d("print Status done ", "print Status done");
+                                            Thread.sleep(5000);
+                                        }
+                                    } catch (InterruptedException | IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }, 10000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, 60000);
             }
 
         }.start();
@@ -227,9 +247,6 @@ public class PrintRenderUtils {
             {
 
                 try {
-
-
-
                     URI finalUri = URI.create(printerString);
                     InputStream pdfInputStream =
                             new BufferedInputStream(new FileInputStream(file));
@@ -278,14 +295,11 @@ public class PrintRenderUtils {
 
     public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount,boolean isColor) {
       ArrayList<JobsModel> jobIdList=new ArrayList<>();
-        String usedUri;
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
             {
-
                 try {
-
                     Log.d("startIndex", String.valueOf(startIndex));
                     Log.d("endIndex", String.valueOf(endIndex));
 
@@ -298,7 +312,6 @@ public class PrintRenderUtils {
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
                     String attributeStatus ="attrribute status:"+resultMap.get("status");
                     DataDogLogger.getLogger().i("Devnco_Android attrribute status:"+ attributeStatus);
-
 
                     if (!resultMap.containsKey("status")) {
                         // show error
@@ -313,7 +326,6 @@ public class PrintRenderUtils {
                         // show toast
                     } else
                         if(resultMap.get("status").equals("successful-ok")) {
-
                         finalUri = URI.create(resultMap.get("finalUri"));
                         String versionNumber =resultMap.get("versionNumber");
                     for (int i = 0; i < noOfCopies; i++) {
@@ -330,7 +342,6 @@ public class PrintRenderUtils {
 
                                 String path = "/storage/self/primary/sample" + pagePrintCounter + ".jpg";
                                 File renderFile = new File(path);
-                                
                                 PdfRenderer.Page page = renderer.openPage(pagePrintCounter);
                                 Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
                                 Canvas canvas = new Canvas(bitmap);
@@ -369,26 +380,7 @@ public class PrintRenderUtils {
                                     String ippUriFinal = finalUri.toString();
 
                                      map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
-                               //     String print ="print status:"+map.get("status").toString();
                                     DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
-                                 /*   new Handler(Looper.getMainLooper()).post(
-                                            new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(context, print, Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-                                   */
-
-                                 /*   String exception = (String) map.get("Exception");
-                                    new Handler(Looper.getMainLooper()).post(
-                                            new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-                                 */
 
                                     if (map.get("status").equals("server-error-busy")) {
                                         Thread.sleep(threadSleepInMilliSecs);
@@ -425,28 +417,11 @@ public class PrintRenderUtils {
                             JobsModel jobModel =new JobsModel();
 
                             if(jobIdString != null) {
-
-                                final Handler handler =  new Handler(Looper.getMainLooper());
-                                handler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
                                             int jobId = Integer.parseInt(jobIdString);
-                                    //   String jobStatus= printUtils.getJobsStatus(uri, context, jobId,pageCountNo);
-                                            printUtils.getJobsStatus(uri, context, jobId,pageCountNo);
-                                            jobModel.setJobId(Integer.parseInt(jobIdString));
+                                            jobModel.setJobId(jobId);
                                             jobModel.setUsedUri(uri);
                                             jobModel.setPageNo(pageCountNo);
-                                           // jobModel.setJobStatus(jobStatus);
                                             jobIdList.add(jobModel);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }, 60000);
-
-
-
                             }
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);
@@ -472,7 +447,6 @@ public class PrintRenderUtils {
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                     DataDogLogger.getLogger().e("Devnco_Android Exception - "+expMessage);
-                    // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
@@ -486,57 +460,43 @@ public class PrintRenderUtils {
                     exp.printStackTrace();
                 }
                 Log.d("print done ", "print all pages done ");
-                final Handler handler =  new Handler(Looper.getMainLooper());
+              final Handler handler =  new Handler(Looper.getMainLooper());
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         try {
-                           for(int i=0;i<PrintUtils.jobsModelList.size();i++){
-                              JobsModel jobModel =PrintUtils.jobsModelList.get(i);
-                              String msg = "Page Index No:"+jobModel.getPageNo()+" JobId:"+jobModel.getJobId()+" Status:"+jobModel.getJobStatus();
-                               Log.d("print Status done ",msg);
+                            Collections.sort(jobIdList, new Comparator<JobsModel>() {
+                                @Override
+                                public int compare(JobsModel item, JobsModel t1) {
+                                    return Integer.compare(item.getJobId(), t1.getJobId());
+                                }
 
-                           }
+                            });
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            for(int i=0;i<jobIdList.size();i++){
+                                            JobsModel jobModel = jobIdList.get(i);
+                                            PrintUtils printUtils = new PrintUtils();
+                                            printUtils.getJobsStatus(jobModel.getUsedUri(), context, jobModel.getJobId(), jobModel.getPageNo());
+                                            Log.d("print Status done ", "print Status done");
+                                            Thread.sleep(5000);
+                                        }
+                                        } catch (InterruptedException | IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, 10000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }, 60000);
 
-                new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, "print ended ", Toast.LENGTH_LONG).show();
-                            }
-                        });
             }
-
-
-
         }.start();
-/*
-        final Handler handler =  new Handler(Looper.getMainLooper());
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    PrintUtils printUtils = new PrintUtils();
-                    for(int i=0;i<jobIdList.size();i++){
-                        URI uri = jobIdList.get(i).getUsedUri();
-                        int jobId=jobIdList.get(i).getJobId();
-                        int pageCountNo =jobIdList.get(i).getPageNo();
-                        printUtils.getJobsStatus(uri, context, jobId,pageCountNo);
-                        Thread.sleep(10000);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 180000);
 
-
- */
     }
 
 
@@ -565,8 +525,6 @@ public class PrintRenderUtils {
 
                         // show toast
                          } else if(resultMap.get("status").equals("successful-ok")) {
-
-                      //  logger.info("Devnco_Android status successful-ok");
                         finalUri = URI.create(resultMap.get("finalUri"));
                        String versionNumber =resultMap.get("versionNumber");
                     for (int i = 0; i < noOfCopies; i++) {
@@ -622,9 +580,6 @@ public class PrintRenderUtils {
                                         }
                                     }
                                 }, 60000);
-
-
-
                             }
                         }
                         Log.v("Saved Image - ", "page print counter: " + pagePrintCounter);

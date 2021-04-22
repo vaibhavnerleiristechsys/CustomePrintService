@@ -80,7 +80,6 @@ public class PrintUtils {
     private final static String CMD_NAME = "jprint";
     private Context context = null;
     //Logger logger = LoggerFactory.getLogger(PrintUtils.class);
-     public static ArrayList<JobsModel> jobsModelList =new ArrayList<>();
 
     public void setContextAndInitializeJMDNS(Context context) {
         this.context = context;
@@ -201,7 +200,6 @@ public class PrintUtils {
     public void getJobsStatus(URI uri, Context context,int jobId,int pageCountNo) throws IOException {
         new Thread(() -> {
         Log.d("jobId", String.valueOf(jobId));
-        String jobStateString = "JobId:"+jobId+" Status:";
             try {
                 IppPacket getJobsRequestPacket = IppPacket. getJobAttributes(uri,jobId).build();
                 IppPacketData getJobsRequestPacketData = new IppPacketData(getJobsRequestPacket);
@@ -215,22 +213,13 @@ public class PrintUtils {
                 String[] jobStatusReasons =statusReasons.split("=");
 
                 if(jobState.length>0){
-                    jobStateString=jobStateString+jobState[1];
-                    JobsModel jobModel =new JobsModel();
-                    jobModel.setJobId(jobId);
-                    jobModel.setUsedUri(uri);
-                    jobModel.setPageNo(pageCountNo);
-                    jobModel.setJobStatus(jobStateString);
-                    jobsModelList.add(jobModel);
-
                     new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, "Page Index No: "+pageCountNo+"job Status: "+jobState[1], Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, "Page No: "+pageCountNo+" Print Status: "+jobState[1], Toast.LENGTH_LONG).show();
                                 }
                             });
-
                 }
 
             } catch (Exception ex) {
@@ -243,38 +232,8 @@ public class PrintUtils {
                         });
             }
 
-      //  return jobStateString;
         }).start();
     }
-
-
-
-    public void getJobAttributes(URI uri, int jobId, Context context) throws IOException {
-
-        new Thread(() -> {
-
-            try {
-                IppPacket getJobAttributesRequestPacket = IppPacket.getJobAttributes(uri, jobId).build();
-                IppPacketData getJobAttributesRequestPacketData = new IppPacketData(getJobAttributesRequestPacket);
-                IppPacketData getJobAttributesResponsePacketData = transport.sendData(uri, getJobAttributesRequestPacketData);
-                IppPacket getJobAttributesResponsePacket = getJobAttributesResponsePacketData.getPacket();
-
-                getResponseDetails(getJobAttributesResponsePacket);
-
-                Intent getJobAttributesIntent =
-                        new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("getJobAttributesIntent", getJobAttributesResponsePacket.toString());
-                context.sendBroadcast(getJobAttributesIntent);
-            } catch (Exception ex) {
-                Intent intent =
-                        new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("getJobAttributesIntent", ex.toString());
-                context.sendBroadcast(intent);
-            }
-        }).start();
-
-    }
-
 
     public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber) {
         Map<String, String> resultMap = new HashMap<>();
