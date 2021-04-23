@@ -27,6 +27,7 @@ import com.hp.jipp.encoding.OutOfBandTag;
 import com.hp.jipp.encoding.ValueTag;
 import com.hp.jipp.model.Operation;
 import com.hp.jipp.model.Orientation;
+import com.hp.jipp.model.Sides;
 import com.hp.jipp.model.Status;
 import com.hp.jipp.trans.IppClientTransport;
 import com.hp.jipp.trans.IppPacketData;
@@ -53,9 +54,13 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static com.hp.jipp.model.Types.documentFormat;
+import static com.hp.jipp.model.Types.feedOrientation;
 import static com.hp.jipp.model.Types.ippAttributeFidelity;
+import static com.hp.jipp.model.Types.orientationRequested;
+import static com.hp.jipp.model.Types.printColorMode;
 import static com.hp.jipp.model.Types.requestedAttributes;
 import static com.hp.jipp.model.Types.requestingUserName;
+import static com.hp.jipp.model.Types.sides;
 
 public class PrintUtils {
 
@@ -80,6 +85,7 @@ public class PrintUtils {
     private final static String CMD_NAME = "jprint";
     private Context context = null;
     //Logger logger = LoggerFactory.getLogger(PrintUtils.class);
+    public static ArrayList<JobsModel> jobstatusList=new ArrayList<>();
 
     public void setContextAndInitializeJMDNS(Context context) {
         this.context = context;
@@ -213,13 +219,21 @@ public class PrintUtils {
                 String[] jobStatusReasons =statusReasons.split("=");
 
                 if(jobState.length>0){
-                    new Handler(Looper.getMainLooper()).post(
+                    JobsModel jobModel = new JobsModel();
+                    jobModel.setJobStatus(jobState[1]);
+                    jobModel.setPageNo(pageCountNo);
+                    jobModel.setJobId(jobId);
+                    jobstatusList.add(jobModel);
+
+                 /*   new Handler(Looper.getMainLooper()).post(
                             new Runnable() {
                                 @Override
                                 public void run() {
                                     Toast.makeText(context, "Page No: "+pageCountNo+" Print Status: "+jobState[1], Toast.LENGTH_LONG).show();
                                 }
                             });
+
+                  */
                 }
 
             } catch (Exception ex) {
@@ -245,25 +259,19 @@ public class PrintUtils {
          }
         try {
             resultMap.put("uri",uri.toString()) ;
-
-
             File inputFile = new File(file.getAbsolutePath());
             boolean exists = inputFile.exists();
             Log.i("printer", String.valueOf(exists));
-          //  logger.info("Devnco_Android printer:"+ String.valueOf(exists));
             Log.i("printer", "input File-->" + inputFile);
-          //  logger.info("Devnco_Android printer"+ "input File-->" + inputFile);
             String fileName = inputFile.getName();
             String format = inputFile.getName();
             resultMap.put("fileName",fileName.toString()) ;
             if (fileName.contains(".")) {
                 format = extensionTypes.get(fileName.substring(fileName.lastIndexOf(".") + 1));
                 Log.i("printer", "format--->" + format.toLowerCase().trim());
-           //     logger.info("Devnco_Android printer"+ "format--->" + format.toLowerCase().trim());
             }
 
             if (format != null) {
-
                 IppPacket printRequest;
                 if(versionNo==0x100) {
                      printRequest = IppPacket.printJob(uri)
@@ -280,19 +288,13 @@ public class PrintUtils {
                 }
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
                 DataDogLogger.getLogger().i("Devnco_Android printer in print : "+ "printRequest->" + printRequest.toString());
-                Log.i("printer", "In print utils method");
-           //     logger.info("Devnco_Android printer"+ "In print utils method");
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
-             //   logger.info("Devnco_Android IppPacketData request in print :"+request.toString());
                 IppPacketData printResponse = transport.sendData(uri, request);
                 DataDogLogger.getLogger().i("Devnco_Android IppPacketData printResponse in print :"+printResponse.toString());
                 resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();
-
                 resultMap.putAll(getResponseDetails(ippPacket));
-                Log.i("get jobs","before get job:");
 
-                //int jobId =Integer.parseInt(resultMap.get("job-id"));
                 try{
                     String jobIds = resultMap.get("job-id");
                     Log.d("jobId ::", jobIds);
@@ -307,9 +309,6 @@ public class PrintUtils {
 
                 ServerPrintRelaseFragment serverPrintRelaseFragment=new ServerPrintRelaseFragment();
                 serverPrintRelaseFragment.removeDocumentFromSharedPreferences(context);
-
-
-
                 Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
             } else {
                 Intent fileNotSupported =

@@ -48,10 +48,12 @@ public class PrintRenderUtils {
 
     public void renderPageUsingDefaultPdfRenderer(File file, String printerString, Context context,String hostAddress,int colorMode) {
         ArrayList<JobsModel> jobIdList=new ArrayList<>();
+        PrintUtils.jobstatusList.clear();
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
             {
+                int totalPageCount = 0;
 
                 try {
 
@@ -99,7 +101,7 @@ public class PrintRenderUtils {
                     ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
                     PdfRenderer renderer = new PdfRenderer(fileDescriptor);
                     final int pageCount = renderer.getPageCount();
-
+                    totalPageCount=renderer.getPageCount();
                     int pagePrintCounter = 0;
                     int threadSleepInMilliSecs = 3000;
                     int timeThreshold = threadSleepInMilliSecs * 40;
@@ -199,6 +201,7 @@ public class PrintRenderUtils {
                     exp.printStackTrace();
                 }
 
+                int finalTotalPageCount =totalPageCount;
                 final Handler handler =  new Handler(Looper.getMainLooper());
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -211,6 +214,7 @@ public class PrintRenderUtils {
                                 }
 
                             });
+
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -222,6 +226,39 @@ public class PrintRenderUtils {
                                             Log.d("print Status done ", "print Status done");
                                             Thread.sleep(5000);
                                         }
+
+                                        int CompletedPageCounter =0;
+                                        String errorPageString ="Printing error in page no. ";
+                                        for(int i=0;i<PrintUtils.jobstatusList.size();i++){
+                                            JobsModel jobmodel = PrintUtils.jobstatusList.get(i);
+                                            if(jobmodel.getJobStatus().toLowerCase().contains("completed")){
+                                                CompletedPageCounter++;
+                                            }else{
+
+                                                errorPageString=errorPageString+jobmodel.getPageNo()+",";
+                                            }
+                                        }
+
+                                        if(finalTotalPageCount==CompletedPageCounter){
+                                            new Handler(Looper.getMainLooper()).post(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                        }else{
+                                            String errorString=errorPageString;
+                                            new Handler(Looper.getMainLooper()).post(
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                        }
+
+
                                     } catch (InterruptedException | IOException e) {
                                         e.printStackTrace();
                                     }
@@ -295,6 +332,7 @@ public class PrintRenderUtils {
 
     public void renderPageUsingDefaultPdfRendererForSelectedPages(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount,boolean isColor) {
       ArrayList<JobsModel> jobIdList=new ArrayList<>();
+        PrintUtils.jobstatusList.clear();
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -483,6 +521,40 @@ public class PrintRenderUtils {
                                             Log.d("print Status done ", "print Status done");
                                             Thread.sleep(5000);
                                         }
+
+
+                                            int CompletedPageCounter =0;
+                                            String errorPageString ="Printing error in page no. ";
+                                            for(int i=0;i<PrintUtils.jobstatusList.size();i++){
+                                                JobsModel jobmodel = PrintUtils.jobstatusList.get(i);
+                                                if(jobmodel.getJobStatus().toLowerCase().contains("completed")){
+                                                    CompletedPageCounter++;
+                                                }else{
+
+                                                    errorPageString=errorPageString+jobmodel.getPageNo()+",";
+                                                }
+                                            }
+
+                                            if(TotalPageCount==CompletedPageCounter){
+                                                new Handler(Looper.getMainLooper()).post(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
+                                                            }
+                                                        });
+                                            }else{
+                                                String errorString=errorPageString;
+                                                new Handler(Looper.getMainLooper()).post(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
+                                                            }
+                                                        });
+                                            }
+
+
                                         } catch (InterruptedException | IOException e) {
                                             e.printStackTrace();
                                         }
@@ -494,6 +566,9 @@ public class PrintRenderUtils {
                     }
                 }, 60000);
 
+
+
+
             }
         }.start();
 
@@ -501,6 +576,7 @@ public class PrintRenderUtils {
 
 
     public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor) {
+        PrintUtils.jobstatusList.clear();
         new Thread() {
 
             public void run()    //Anonymous class overriding run() method of Thread class
@@ -619,6 +695,55 @@ public class PrintRenderUtils {
                     Log.v("Saved Image - ", exp.toString());
                     exp.printStackTrace();
                 }
+
+
+
+
+                final Handler handler =  new Handler(Looper.getMainLooper());
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                int CompletedPageCounter =0;
+                String errorPageString ="Printing error in page no. ";
+                for(int i=0;i<PrintUtils.jobstatusList.size();i++){
+                    JobsModel jobmodel = PrintUtils.jobstatusList.get(i);
+                    if(jobmodel.getJobStatus().toLowerCase().contains("completed")){
+                        CompletedPageCounter++;
+                    }else{
+
+                        errorPageString=errorPageString+jobmodel.getPageNo()+",";
+                    }
+                }
+
+                if(noOfCopies==CompletedPageCounter){
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }else{
+                    String errorString=errorPageString;
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }, 70000);
+
+
+
+
 
             }
 

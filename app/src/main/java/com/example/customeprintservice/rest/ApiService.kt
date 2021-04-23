@@ -259,6 +259,8 @@ interface ApiService {
         @Field("configuration") configuration: String
     ): Call<ResponseBody>
 
+
+    @POST(".")
     fun jobStatusCancelForLdap(
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
