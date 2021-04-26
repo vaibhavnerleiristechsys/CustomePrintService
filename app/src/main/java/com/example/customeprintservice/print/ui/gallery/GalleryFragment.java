@@ -31,6 +31,7 @@ import com.example.customeprintservice.rest.RetrofitClient;
 
 import com.example.customeprintservice.utils.DataDogLogger;
 import com.example.customeprintservice.utils.ProgressDialog;
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.unnamed.b.atv.model.TreeNode;
 import com.unnamed.b.atv.view.AndroidTreeView;
@@ -39,6 +40,7 @@ import com.unnamed.b.atv.view.AndroidTreeView;
 //import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -128,6 +130,7 @@ public class GalleryFragment extends Fragment {
         PrintReleaseFragment prf = new PrintReleaseFragment();
 
         String siteId=LoginPrefs.Companion.getSiteId(requireContext());
+        //String siteId="saleslab";
         String tanentUrl =LoginPrefs.Companion.getTenantUrl(context);
         String url = ""+tanentUrl+"/"+siteId+"/tree/api/node/";
        // String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
@@ -156,12 +159,20 @@ public class GalleryFragment extends Fragment {
     }
         else {
             DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(requireContext())+" username: "+prf.decodeJWT(requireContext()));
-            call = apiService.getPrintersList(
+          call = apiService.getPrintersList(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),
                     prf.decodeJWT(requireContext()),
                     SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
                     SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString()
             );
+
+           /*   call = apiService.getPrintersList(
+                    "Bearer " + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiI5ODk3Nzg5Zi03ZDhkLTQ5OTItYjhiMS1mZWY5YjcyNjdhYTIiLCJpZHAiOiJPa3RhIiwic2l0ZSI6InNhbGVzbGFiIiwidXNlciI6Im1hdHRoZXcubWFqZXdza2lAcHJpbnRlcmxvZ2ljLmNvbSIsInNlc3Npb24iOiJiZjA1NTg3My1mMGFhLTRkZjEtOWNhZC1hNDRiYmNiOTliNWYiLCJleHAiOjE2NDk4NjczMDIsImlhdCI6MTYxODMzMTMwMiwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.bDF8wf1cj1io2z4Wxuc1aLufUNEVmnWc-gdyA3nCNaUOxl30FN-FQTPfDuk3r03_AeQvuiHLwpTBU8mfyLlwfiUkmy2SVBxRFYVg76xBtETue9EJ5X3PBucYc7DdtAQp603ddDpl6AdXtW4PF68cSmUKsZBpdIyFpTeSx9znjwscH5_rtzpkHZ3-y10i0S_ZaTeQsc7zr8P8ou-zXl77qVFv6x59WAeDeoCiON-M7Svkx-3aoErEYSSz3VFn60qxtTK4iosbqjXGSI5SFnqA-xr1A9AxPmNgOS8advGnD5scTyY5T_YToWnPvY9e9owP75YugeNpo-MA78Hkp-lgDg",
+                    "matthew.majewski@printerlogic.com",
+                    SignInCompanyPrefs.Companion.getIdpType(requireContext()).toString(),
+                    SignInCompanyPrefs.Companion.getIdpName(requireContext()).toString()
+            );*/
+
         }
 
         call.enqueue(new Callback<List<Printer>>() {
@@ -170,7 +181,9 @@ public class GalleryFragment extends Fragment {
                 {
                     Map<Printer,TreeNode> mapPrinter2TreeNode = new HashMap<>();
 
-                    listOfPrinters = response.body();
+                   listOfPrinters = response.body();
+
+
                     Collections.sort(listOfPrinters, new Comparator<Printer>() {
                         @Override
                         public int compare(Printer item, Printer t1) {
@@ -237,16 +250,26 @@ public class GalleryFragment extends Fragment {
     private List<TreeNode> findChildren(Integer printerId, List<Printer> listOfPrinters,Map<Printer,TreeNode> mapPrinter2TreeNode)
     {
         List<TreeNode> children = new ArrayList<>();
-        for(Printer printer: listOfPrinters)
+      /*  for(Printer printer: listOfPrinters)
         {
-            if(printer.getParent_id()== printerId)
+            if(printer.getParent_id() == printerId)
             {
                 if(printer.getObject_sort_order() !=900) {
                     children.add(mapPrinter2TreeNode.get(printer));
                 }
 
             }
+        }*/
+
+        for(int i=0;i<listOfPrinters.size();i++){
+            Printer printer = listOfPrinters.get(i);
+            if(printer.getParent_id().toString().equals(printerId.toString())){
+                if(printer.getObject_sort_order() !=900) {
+                    children.add(mapPrinter2TreeNode.get(printer));
+                }
+            }
         }
+
 
         return children;
     }
@@ -267,5 +290,8 @@ public class GalleryFragment extends Fragment {
             return true;
         }
     };
+
+
+
 
 }

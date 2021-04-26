@@ -636,8 +636,8 @@ class PrintReleaseFragment : Fragment() {
 
 
     override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.clear()
+       // super.onDestroy()
+      //  compositeDisposable.clear()
     }
 
 
