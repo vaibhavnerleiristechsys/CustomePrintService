@@ -8,6 +8,7 @@ import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
 import com.example.customeprintservice.jipp.PrintRenderUtils;
+import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.room.SelectedFile;
@@ -27,6 +28,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -59,7 +62,10 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
 
@@ -181,6 +187,7 @@ public class PrintPreview extends AppCompatActivity {
                     PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                      if(printerModel.getServiceName().toString().equals(parent.getItemAtPosition(position).toString())){
                        selectedPrinterModel=printerModel;
+                         getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
                       }
 
                 }
@@ -567,4 +574,146 @@ public class PrintPreview extends AppCompatActivity {
     }
 */
 
+    public void getAttributeResponse(String hostAddress) {
+        new Thread() {
+
+            public void run()    //Anonymous class overriding run() method of Thread class
+            {
+                try {
+                    ArrayList<URI> ippUri = new ArrayList<URI>();
+
+                    if (hostAddress != null) {
+                        String printerHost = hostAddress;
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/print"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/printer"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/lp"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/printer"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/ipp"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/printer"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + "/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/printers/lp1"));
+                        ippUri.add(URI.create("https:/" + printerHost));
+                        ippUri.add(URI.create("https:/" + printerHost + ":443/ipp/print"));
+                        ippUri.add(URI.create("ipps:/" + printerHost + ":443/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/lp"));
+                    }
+                    PrintUtils printUtils = new PrintUtils();
+                    Map<String, String> resultMap = printUtils.getAttributesCall(ippUri, context);
+                    if (!resultMap.containsKey("status")) {
+                        new Handler(Looper.getMainLooper()).post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                    if(resultMap.get("status").equals("successful-ok")){
+                          String orientation =resultMap.get("orientation-requested-supported");
+                          String sides =resultMap.get("sides-supported");
+                          String color =resultMap.get("print-color-mode-supported");
+                          String media=resultMap.get("media-supported");
+                          String[] orientationSupported = orientation.split("=");
+                          String[] sidesSupported = sides.split("=");
+                          String[] colorSupported = color.split("=");
+                          String[] mediaSupported = media.split("=");
+                        String orientationStrigified="";
+                        String sidesStrigified="";
+                        String colorStrigified="";
+                        String mediaStrigified="";
+                        List<String> orientationSupportList =new ArrayList();
+                        List<String> sidesSupportList =new ArrayList();
+                        List<String> colorSupportList =new ArrayList();
+                        List<String> mediaSupportList =new ArrayList();
+                          if(orientationSupported.length>1){
+                              orientationStrigified  =orientationSupported[1];
+                              if(orientationStrigified.contains(",")){
+                                  String removeSplChar =orientationStrigified.replaceAll("\\[", "");
+                                  String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                  String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                  String[] orientationSupportedArray  = removeSplChar2.split(",");
+                                  orientationSupportList = Arrays.asList(orientationSupportedArray);
+                              }else{
+                                  orientationSupportList.add(orientationStrigified);
+                              }
+
+                          }if(sidesSupported.length>1){
+                             sidesStrigified =sidesSupported[1];
+                             if(sidesStrigified.contains(",")){
+                                 String removeSplChar =sidesStrigified.replaceAll("\\[", "");
+                                 String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                 String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                 String[]  sidesSupportedArray  = removeSplChar2.split(",");
+                                 sidesSupportList = Arrays.asList(sidesSupportedArray);
+                             }else{
+                                 sidesSupportList.add(sidesStrigified);
+                             }
+                          }
+                          if(colorSupported.length>1){
+                             colorStrigified =colorSupported[1];
+                              if(colorStrigified.contains(",")){
+                                  String removeSplChar =colorStrigified.replaceAll("\\[", "");
+                                  String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                  String removeSplChar2=removeSplChar1.replaceAll(" ","");
+                                  String[] colorSupportedArray  = removeSplChar2.split(",");
+                                  colorSupportList = Arrays.asList(colorSupportedArray);
+                              }else{
+                                  colorSupportList.add(colorStrigified);
+                              }
+                           }
+                          if(mediaSupported.length>1){
+                             mediaStrigified =mediaSupported[1];
+                              if(mediaStrigified.contains(",")){
+                                  String removeSplChar =mediaStrigified.replaceAll("\\[", "");
+                                  String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                  String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                  String[] mediaSupportedArray  = removeSplChar2.split(",");
+                                  mediaSupportList = Arrays.asList(mediaSupportedArray);
+                              }else{
+                                  mediaSupportList.add(mediaStrigified);
+
+                              }
+                           }
+
+                          Log.d("orientationSupported:",orientationStrigified);
+                          Log.d("sidesSupported:",sidesStrigified);
+                          Log.d("colorSupported:",colorStrigified);
+                          Log.d("mediaSupported:",mediaStrigified);
+
+
+                          for(int i=0;i<orientationSupportList.size();i++){
+                            Log.d("orientationSupported:",orientationSupportList.get(i));
+                          }
+                          for(int i=0;i<sidesSupportList.size();i++){
+                            Log.d("sidesSupported:",sidesSupportList.get(i));
+                          }
+                          for(int i=0;i<colorSupportList.size();i++){
+                            Log.d("colorSupported:",colorSupportList.get(i));
+                          }
+                          for(int i=0;i<mediaSupportList.size();i++){
+                            Log.d("mediaSupported:",mediaSupportList.get(i));
+                          }
+
+
+                    }
+
+                } catch (Exception exp) {
+                    DataDogLogger.getLogger().e("Devnco_Android Exception - " + exp.getMessage());
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, exp.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
+            }
+        }.start();
+
+    }
 }
