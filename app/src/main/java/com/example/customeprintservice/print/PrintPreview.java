@@ -89,8 +89,10 @@ public class PrintPreview extends AppCompatActivity {
     Dialog dialog;
     View v = null;
     public boolean isColor=false;
+    public String  orientationValue="portrait";
     private NumberPicker picker1,picker2;
     private String[] pickerVals,pickerVals2;
+    public Spinner orientationSpinner;
     //Logger logger = LoggerFactory.getLogger(PrintPreview.class);
 
 
@@ -149,6 +151,7 @@ public class PrintPreview extends AppCompatActivity {
             jpgOrPngImagePreview(file);
         }
         Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
+         orientationSpinner = (Spinner) findViewById(R.id.orientation_spinner);
         ArrayList<String> items = new ArrayList<String>();
         items.add("select printer");
         SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
@@ -177,6 +180,7 @@ public class PrintPreview extends AppCompatActivity {
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);
         dynamicSpinner.setAdapter(adapter);
+
 
 
         dynamicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -240,6 +244,25 @@ public class PrintPreview extends AppCompatActivity {
                 }
                 if(printType.contains("Monochrome")){
                     isColor=false;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        orientationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+                String orientationType = parent.getItemAtPosition(position).toString();
+                Log.d("orientationType=",orientationType);
+                if(orientationType.contains("landscape")){
+                    orientationValue="landscape";
+                }else{
+                    orientationValue="portrait";
                 }
             }
 
@@ -490,7 +513,7 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor);
+                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor,orientationValue);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
@@ -626,7 +649,7 @@ public class PrintPreview extends AppCompatActivity {
                         String sidesStrigified="";
                         String colorStrigified="";
                         String mediaStrigified="";
-                        List<String> orientationSupportList =new ArrayList();
+                        List<String> orientationSupportList =new ArrayList<String>();
                         List<String> sidesSupportList =new ArrayList();
                         List<String> colorSupportList =new ArrayList();
                         List<String> mediaSupportList =new ArrayList();
@@ -684,10 +707,11 @@ public class PrintPreview extends AppCompatActivity {
                           Log.d("sidesSupported:",sidesStrigified);
                           Log.d("colorSupported:",colorStrigified);
                           Log.d("mediaSupported:",mediaStrigified);
-
+                        ArrayList<String> items = new ArrayList<String>();
 
                           for(int i=0;i<orientationSupportList.size();i++){
                             Log.d("orientationSupported:",orientationSupportList.get(i));
+                            items.add(orientationSupportList.get(i));
                           }
                           for(int i=0;i<sidesSupportList.size();i++){
                             Log.d("sidesSupported:",sidesSupportList.get(i));
@@ -698,6 +722,15 @@ public class PrintPreview extends AppCompatActivity {
                           for(int i=0;i<mediaSupportList.size();i++){
                             Log.d("mediaSupported:",mediaSupportList.get(i));
                           }
+                          items.add("landscape");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, items);
+                                orientationSpinner.setAdapter(adapter);
+                            }
+                        });
+
 
 
                     }

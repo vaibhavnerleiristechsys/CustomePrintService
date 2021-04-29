@@ -141,7 +141,7 @@ public class PrintRenderUtils {
                             break;
                         } else {
 
-                             map = printUtils.print(finalUri, renderFile, context, "", versionNumber);
+                             map = printUtils.print(finalUri, renderFile, context, "", versionNumber,"");
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
@@ -310,7 +310,7 @@ public class PrintRenderUtils {
                             fileOut.close();
                         }
 
-                        Map map = printUtils.print(finalUri, renderFile, context, "","0x200");
+                        Map map = printUtils.print(finalUri, renderFile, context, "","0x200","");
 
                         if (map.get("status") == "server-error-busy") {
                             Thread.sleep(5000);
@@ -417,7 +417,7 @@ public class PrintRenderUtils {
                                 } else {
                                     String ippUriFinal = finalUri.toString();
 
-                                     map = printUtils.print(finalUri, renderFile, context, "",versionNumber);
+                                     map = printUtils.print(finalUri, renderFile, context, "",versionNumber,"");
                                     DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
 
                                     if (map.get("status").equals("server-error-busy")) {
@@ -575,7 +575,7 @@ public class PrintRenderUtils {
     }
 
 
-    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor) {
+    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor,String orientationValue) {
         PrintUtils.jobstatusList.clear();
         new Thread() {
 
@@ -613,9 +613,9 @@ public class PrintRenderUtils {
 
                             Map<String, String> map;
                             if(isColor == true) {
-                                map = printUtils.print(finalUri, file, context, "", versionNumber);
+                                map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue);
                             }else{
-                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber);
+                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber,orientationValue);
                             }
                             String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());

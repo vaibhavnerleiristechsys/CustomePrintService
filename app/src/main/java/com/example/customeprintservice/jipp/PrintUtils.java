@@ -253,13 +253,19 @@ public class PrintUtils {
         }).start();
     }
 
-    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber) {
+    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber,String orientationType) {
         Map<String, String> resultMap = new HashMap<>();
+        Orientation orientationTypes = Orientation.portrait;
         int versionNo=0x200;
          if(versionNumber.equalsIgnoreCase("0x200")){
              versionNo=0x200;
          }else if(versionNumber.equalsIgnoreCase("0x100")){
              versionNo=0x100;
+         }
+         if(orientationType.contains("landscape")){
+          orientationTypes = Orientation.landscape;
+         }else{
+             orientationTypes = Orientation.portrait;
          }
         try {
             resultMap.put("uri",uri.toString()) ;
@@ -282,12 +288,18 @@ public class PrintUtils {
                             .putOperationAttributes(
                                     ippAttributeFidelity.of(false),
                                     documentFormat.of("application/octet-stream")).setMajorVersionNumber(versionNo)
+                             .putJobAttributes(
+                                     orientationRequested.of(orientationTypes)
+                             )
                             .build();
                 }else{
                      printRequest = IppPacket.printJob(uri)
                             .putOperationAttributes(
                                     requestingUserName.of(CMD_NAME),
                                     documentFormat.of(format)).setMajorVersionNumber(versionNo)
+                             .putJobAttributes(
+                                     orientationRequested.of(orientationTypes)
+                             )
                             .build();
                 }
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));

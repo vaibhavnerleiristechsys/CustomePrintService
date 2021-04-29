@@ -159,12 +159,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:textSize="17sp"
-                android:textColor="#000000"
                 android:text="Pages"
+                android:textColor="#000000"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/colorMonochrome"
+                app:layout_constraintTop_toBottomOf="@+id/orientation"
                 app:layout_constraintVertical_bias="0.0" />
 
 
@@ -177,7 +177,7 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/static_spinner">
+                app:layout_constraintTop_toBottomOf="@+id/orientation_spinner">
 
                 <RadioButton
                     android:id="@+id/rb_all"
@@ -214,6 +214,31 @@
                 app:layout_constraintTop_toTopOf="@+id/rg"
                 app:layout_constraintVertical_bias="1.0"
                 tools:ignore="MissingConstraints" />
+
+
+            <TextView
+                android:id="@+id/orientation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="Orientation"
+                android:textColor="#000000"
+                android:textSize="17sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/colorMonochrome"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <Spinner
+                android:id="@+id/orientation_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/static_spinner" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
