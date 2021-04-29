@@ -217,6 +217,7 @@ class PrintersFragment : Fragment() {
             Context.MODE_APPEND
         )
         val ipAddress =IpAddress.getLocalIpAddress();
+
         if(ipAddress!=null) {
             Log.d("ipAddress of device:", ipAddress);
             DataDogLogger.getLogger().i("Devnco_Android ipAddress of device:" + ipAddress);
@@ -310,6 +311,10 @@ class PrintersFragment : Fragment() {
                     context
                 ) + " username: " + username
             )
+
+            val idpInfo ="\"clientType\":"+"\"serverId\""+",\"idpName\":"+"\""+xIdpName+"\",\"username\":"+"\""+username+"\",\"isLoggedIn\":"+"\""+true+"\",\"type\":"+"\""+xIdpType+"\",\"token\":"+"\""+LoginPrefs.getOCTAToken(
+                context)+"\"";
+
             apiService.getPrinterList(
                 siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
@@ -325,11 +330,7 @@ class PrintersFragment : Fragment() {
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
-                        "    {\"idpName\": \"" + xIdpName + "\",\n" +
-                        "      \"username\":\"" + username + "\",\n" +
-                        "      \"isLoggedIn\": \"true\",\n" +
-                        "      \"type\": \"auth-type\",\n" +
-                        "      \"token\":\"" + LoginPrefs.getOCTAToken(context) + "\"}\n" +
+                        "{"+URLEncoder.encode(idpInfo)  +"}" +
                         "  </idp>\n" +
                         "  <memberships>\n" +
                         "    <computer />\n" +
@@ -372,9 +373,7 @@ class PrintersFragment : Fragment() {
                             val printerModel: PrinterModel = PrinterModel()
                             printerModel.serviceName = it.text()
                             printerModel.printerHost = InetAddress.getByName(
-                                "192.168.1." + it.attr(
-                                    "node_id"
-                                ).toString()
+                                "192.168.1.10"
                             )
                             printerModel.printerPort = 631
                             printerModel.fromServer = true
@@ -424,6 +423,10 @@ class PrintersFragment : Fragment() {
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
                         DataDogLogger.getLogger().e("Devnco_Android printer" + "e=>${e.message.toString()}")
+                        ProgressDialog.cancelLoading()
+                        if (swipeContainer != null) {
+                            swipeContainer.isRefreshing = false
+                        }
                     }
                 } else {
                     ProgressDialog.cancelLoading()
