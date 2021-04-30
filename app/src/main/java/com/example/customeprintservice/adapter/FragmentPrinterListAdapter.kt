@@ -83,14 +83,14 @@ class FragmentPrinterListAdapter(
             holder.getColorPrinterImageIcon().visibility=View.VISIBLE
         }
 
-    /*   if(location.equals("printerTab")){
+       if(location.equals("printerTab")){
             holder.getPrinterHeaderName().visibility=View.GONE
         }else{
             holder.getPrinterHeaderName().visibility=View.VISIBLE
         }
 
-     */
-       holder.getPrinterHeaderName().visibility=View.VISIBLE
+
+     //  holder.getPrinterHeaderName().visibility=View.VISIBLE
         var isExist= false
 
 
