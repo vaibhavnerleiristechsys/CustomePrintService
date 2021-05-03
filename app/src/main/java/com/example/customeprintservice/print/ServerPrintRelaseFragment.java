@@ -30,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -119,6 +120,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver1, new IntentFilter("menuFunctionlityDisplay"));
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver2, new IntentFilter("menuFunctionlityDisplayhidden"));
 
+
     }
 
     @Override
@@ -129,7 +131,14 @@ public class ServerPrintRelaseFragment extends Fragment {
         recyclerViewList =(RecyclerView) view.findViewById(R.id.list);
         noDataMessage =(ConstraintLayout) view.findViewById(R.id.empty_view);
         context = view.getContext();
+       if(((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.drawericon1);
+        }
+
         BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
+
 
      if(LoginPrefs.Companion.getOCTAToken(context)==null) {
          @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);

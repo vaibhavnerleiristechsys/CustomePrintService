@@ -15,5 +15,7 @@
     <color name="battleshipGrey">#707273</color>
     <color name="darkGrey">#161718</color>
     <color name="foldericon">#FFAB00</color>
+    <color name="black">#000000</color>
+    <color name="companyemtptyurl"> #8B5B8B</color>
 
 </resources>

@@ -12,10 +12,10 @@
     <application
         android:name=".PrintService"
         android:allowBackup="true"
-        android:icon="@drawable/appicon3x"
+        android:icon="@drawable/printerlogicicon1"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@drawable/appicon3x"
+        android:roundIcon="@drawable/printerlogicicon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">

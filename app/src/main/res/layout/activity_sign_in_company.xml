@@ -16,14 +16,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="274dp"
+        android:layout_height="48dp"
         android:layout_marginStart="56dp"
         android:layout_marginTop="156dp"
         android:layout_marginEnd="56dp"
-        android:background="@mipmap/vasion_wordmark"
+        android:background="@drawable/splashscreenicon3x"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

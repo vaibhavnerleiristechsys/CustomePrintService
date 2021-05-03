@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Vasion</string>
+    <string name="app_name">PrinterLogic</string>
     <string name="select_document">Select Document</string>
     <string name="path">Path - </string>
     <string name="next">Next</string>
@@ -28,7 +28,7 @@
     <string name="sign_in_with_google">Sign In With Google</string>
     <string name="print_release">Print Release(W)</string>
     <string name="print_releaseForServer">Print Release</string>
-    <string name="printerForServer">Printer</string>
+    <string name="printerForServer">Printers</string>
     <string name="printer">Printer(W)</string>
     <string name="servicePortal">Add Printer</string>
     <string name="title_activity_login">LoginActivity</string>
@@ -78,7 +78,7 @@
     <string name="ic_keyboard_arrow_down">&#xe0c5;</string>
     <string name="ic_print">&#xe126;</string>
     <string name="ic_add_circle">&#xe009;</string>
-    <string name="yourcompany_vasion_com"><font size="19">yourcompany.vasion.com</font></string>
+    <string name="yourcompany_vasion_com"><font size="18">yourcompany.printercloud.com</font></string>
 
 
 </resources>

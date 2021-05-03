@@ -314,6 +314,10 @@ public class MainActivity extends AppCompatActivity {
         MenuItem storage = menuNav.findItem(R.id.nav_slideshow);
         MenuItem forms = menuNav.findItem(R.id.nav_tools);
 
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.drawericon1);
+
         animateNavigationDrawer();
     }
 

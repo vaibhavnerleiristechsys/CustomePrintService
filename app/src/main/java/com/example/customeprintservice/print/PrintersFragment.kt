@@ -1,11 +1,10 @@
 package com.example.customeprintservice.print
 
+//import org.slf4j.LoggerFactory
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.*
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -16,17 +15,12 @@ import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.datadog.android.Datadog
-import com.datadog.android.core.configuration.Configuration
-import com.datadog.android.core.configuration.Credentials
-import com.datadog.android.log.Logger
-import com.datadog.android.privacy.TrackingConsent
 import com.example.customeprintservice.R
-import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapter
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
 import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
@@ -48,10 +42,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_printers.*
 import okhttp3.ResponseBody
-import org.apache.commons.codec.binary.Base64
 import org.jsoup.Jsoup
 import org.jsoup.parser.Parser
-//import org.slf4j.LoggerFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -98,10 +90,15 @@ class PrintersFragment : Fragment() {
     @SuppressLint("WrongConstant")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+       // setHasOptionsMenu(true)
+
+        (activity as AppCompatActivity).getSupportActionBar()?.setHomeButtonEnabled(true)
+        (activity as AppCompatActivity).getSupportActionBar()?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).getSupportActionBar()?.setHomeAsUpIndicator(R.drawable.drawericon1)
+
         search.visibility=View.GONE
         clear.visibility=View.GONE
-        updateUi(PrinterList().printerList, requireContext(),"")
+        updateUi(PrinterList().printerList, requireContext(), "")
      //   PrinterList().printerList.clear()
     //    getPrinterList(requireContext(), decodeJWT())
        // Log.i("printer", "Login token" + LoginPrefs.getOCTAToken(requireContext()))
@@ -128,7 +125,7 @@ class PrintersFragment : Fragment() {
         search.addTextChangedListener(watcher)
     }
 
-
+/*
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search, menu)
     }
@@ -143,11 +140,11 @@ class PrintersFragment : Fragment() {
         }
         return super.onOptionsItemSelected(item)
     }
-
+*/
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("WrongConstant")
-     fun updateUi(list: java.util.ArrayList<PrinterModel>, context: Context,char:String) {
+     fun updateUi(list: java.util.ArrayList<PrinterModel>, context: Context, char: String) {
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
@@ -273,11 +270,12 @@ class PrintersFragment : Fragment() {
                 ) + " username: " + username
             )
             val idpInfo ="\"clientType\":"+"\"serverId\""+",\"idpName\":"+"\""+xIdpName+"\",\"username\":"+"\""+username+"\",\"isLoggedIn\":"+"\""+true+"\",\"type\":"+"\""+xIdpType+"\",\"token\":"+"\""+LoginPrefs.getOCTAToken(
-                context)+"\"";
+                context
+            )+"\"";
            // val bytesEncoded: ByteArray = Base64.encodeBase64(idpInfo.toByteArray())
             //val encodedIdpInfo =String(bytesEncoded)
            // Log.d("bytesEncoded: ", bytesEncoded.toString())
-            Log.d("encodedIdpInfo: ",URLEncoder.encode(idpInfo))
+            Log.d("encodedIdpInfo: ", URLEncoder.encode(idpInfo))
             apiService.getPrinterListForGoogle(
                 siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
@@ -294,7 +292,7 @@ class PrintersFragment : Fragment() {
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
-                       "{"+URLEncoder.encode(idpInfo)  +"}"+
+                        "{" + URLEncoder.encode(idpInfo) + "}" +
                         "  </idp>\n" +
                         "  <memberships>\n" +
                         "    <computer />\n" +
@@ -313,7 +311,8 @@ class PrintersFragment : Fragment() {
             )
 
             val idpInfo ="\"clientType\":"+"\"serverId\""+",\"idpName\":"+"\""+xIdpName+"\",\"username\":"+"\""+username+"\",\"isLoggedIn\":"+"\""+true+"\",\"type\":"+"\""+xIdpType+"\",\"token\":"+"\""+LoginPrefs.getOCTAToken(
-                context)+"\"";
+                context
+            )+"\"";
 
             apiService.getPrinterList(
                 siteId.toString(),
@@ -330,7 +329,7 @@ class PrintersFragment : Fragment() {
                         "    </ips>\n" +
                         "  </machine>\n" +
                         "  <idp>\n" +
-                        "{"+URLEncoder.encode(idpInfo)  +"}" +
+                        "{" + URLEncoder.encode(idpInfo) + "}" +
                         "  </idp>\n" +
                         "  <memberships>\n" +
                         "    <computer />\n" +
@@ -363,7 +362,8 @@ class PrintersFragment : Fragment() {
 
                         nodeId.forEach {
                             Log.i("printer", "it==>${it.attr("node_id")}")
-                            DataDogLogger.getLogger().i("Devnco_Android printer" + "it==>${it.attr("node_id")}")
+                            DataDogLogger.getLogger()
+                                .i("Devnco_Android printer" + "it==>${it.attr("node_id")}")
                         }
                         PrintersFragment.serverPrinterListWithDetails.clear()
                         PrintersFragment.serverPullPrinterListWithDetails.clear()
@@ -379,7 +379,8 @@ class PrintersFragment : Fragment() {
                             printerModel.fromServer = true
                             printerModel.nodeId = it.attr("node_id").toString()
                             Log.i("printer", "html res=>${it.text()}")
-                            DataDogLogger.getLogger().i("Devnco_Android printer" + "html res=>${it.text()}")
+                            DataDogLogger.getLogger()
+                                .i("Devnco_Android printer" + "html res=>${it.text()}")
                             //   PrinterList().addPrinterModel(printerModel)
 
                             val thread = Thread(Runnable {
@@ -409,7 +410,7 @@ class PrintersFragment : Fragment() {
 
 
                         Handler().postDelayed({
-                            updateUi(PrinterList().printerList, context,"")
+                            updateUi(PrinterList().printerList, context, "")
                             if (swipeContainer != null) {
                                 swipeContainer.isRefreshing = false
                             }
@@ -422,7 +423,8 @@ class PrintersFragment : Fragment() {
 
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
-                        DataDogLogger.getLogger().e("Devnco_Android printer" + "e=>${e.message.toString()}")
+                        DataDogLogger.getLogger()
+                            .e("Devnco_Android printer" + "e=>${e.message.toString()}")
                         ProgressDialog.cancelLoading()
                         if (swipeContainer != null) {
                             swipeContainer.isRefreshing = false
@@ -443,7 +445,8 @@ class PrintersFragment : Fragment() {
                 }
 
                 Log.i("printer", "Error html response==>${t.message.toString()}")
-                DataDogLogger.getLogger().i("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
             }
         })
     }
@@ -634,9 +637,11 @@ class PrintersFragment : Fragment() {
                     Log.d("title", title.toString())
                     DataDogLogger.getLogger().i("Devnco_Android title:" + title.toString())
                     Log.d("hostAddress", hostAddress.toString())
-                    DataDogLogger.getLogger().i("Devnco_Android hostAddress:" + hostAddress.toString())
+                    DataDogLogger.getLogger()
+                        .i("Devnco_Android hostAddress:" + hostAddress.toString())
                     Log.d("isPullPrinter", isPullPrinter.toString())
-                    DataDogLogger.getLogger().i("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
+                    DataDogLogger.getLogger()
+                        .i("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
                     ServerPrintRelaseFragment.selectedPrinterId = id
                     ServerPrintRelaseFragment.selectedPrinterToken = printerToken
                     val printer: PrinterModel = PrinterModel()
@@ -789,7 +794,7 @@ class PrintersFragment : Fragment() {
                 }
             }
 
-            updateUi(filterList, requireContext(),"")
+            updateUi(filterList, requireContext(), "")
         }
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -823,7 +828,7 @@ class PrintersFragment : Fragment() {
     var mMessageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @RequiresApi(Build.VERSION_CODES.N)
         override fun onReceive(context: Context, intent: Intent) {
-            updateUi(PrinterList().printerList, context,"")
+            updateUi(PrinterList().printerList, context, "")
         }
     }
 
