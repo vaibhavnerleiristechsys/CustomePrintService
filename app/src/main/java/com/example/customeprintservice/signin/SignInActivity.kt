@@ -75,7 +75,7 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.text ="    Sign In With Okta"
                 btnSignInWithOkta.setTextColor(getResources().getColor(R.color.black))
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_okta)
-                val drawable = baseContext.resources.getDrawable(R.drawable.oktaicon)
+                val drawable = baseContext.resources.getDrawable(R.drawable.okta2x)
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable,
                     null,
@@ -92,7 +92,7 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.text = "    Sign In With Azure AD"
                 btnSignInWithOkta.setTextColor(getResources().getColor(R.color.black))
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_azure)
-                val drawable = baseContext.resources.getDrawable(R.drawable.azuread1x)
+                val drawable = baseContext.resources.getDrawable(R.drawable.azuread2x)
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable,
                     null,
@@ -108,7 +108,7 @@ class SignInActivity : AppCompatActivity() {
                 btnSignInWithOkta.text = "    Sign In With Google"
                 btnSignInWithOkta.setTextColor(getResources().getColor(R.color.black))
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_google)
-                val drawable = baseContext.resources.getDrawable(R.drawable.googleicon1x)
+                val drawable = baseContext.resources.getDrawable(R.drawable.google2x)
                 btnSignInWithOkta.setCompoundDrawablesWithIntrinsicBounds(
                     drawable,
                     null,
