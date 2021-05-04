@@ -321,6 +321,8 @@ public class ServerPrintRelaseFragment extends Fragment {
         dialog = new Dialog(context);
         printerList.clear();
         printerList.addAll(list);
+        SwipeRefreshLayout swipeContainer;
+
 
         v = LayoutInflater.from(context).inflate(R.layout.dialog_select_printer, null);
         dialog.setContentView(v);
@@ -343,6 +345,59 @@ public class ServerPrintRelaseFragment extends Fragment {
         floatingActionButton = dialog.findViewById(R.id.dialogSelectPrinterFloatingButton);
         floatingActionButton.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.paleGray));
         EditText searchPrinter=dialog.findViewById(R.id.searchPrinter);
+
+        swipeContainer = (SwipeRefreshLayout) dialog.findViewById(R.id.swipeContainer);
+
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                SelectedFile selectedFile=new SelectedFile();
+                if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+                    selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                }
+                if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")) {
+                    serverCallForGettingAllPrinters(context);
+                }
+
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("refresh:","refresh printer list");
+                        swipeContainer.setRefreshing(false);
+                        SelectedFile selectedFile=new SelectedFile();
+                        if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
+                            selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                        }
+                        if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")) {
+                            Collections.sort(PrintersFragment.Companion.getAllPrintersForPullHeldJob(), new Comparator<PrinterModel>() {
+                                @Override
+                                public int compare(PrinterModel item, PrinterModel t1) {
+                                    String s1 = item.getServiceName();
+                                    String s2 = t1.getServiceName();
+                                    return s1.compareToIgnoreCase(s2);
+                                }
+
+                            });
+                            ArrayList<PrinterModel> RecentPrinterAddedList =  addRecentPrintersToDisplay(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
+                            printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                            printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,RecentPrinterAddedList,"selectPrinter"));
+                            printerRecyclerView.setItemViewCacheSize(50);
+                        }
+                        else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
+
+                            printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+                            printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context, PrintersFragment.Companion.getServerSecurePrinterForHeldJob(),"selectPrinter"));
+                            printerRecyclerView.setItemViewCacheSize(50);
+                        }
+
+                    }
+                }, 30000);
+
+            }
+        });
+
+
 
         printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,list,"selectPrinter"));
