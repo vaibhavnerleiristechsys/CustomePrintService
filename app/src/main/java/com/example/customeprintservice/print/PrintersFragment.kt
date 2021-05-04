@@ -54,6 +54,7 @@ import java.util.function.Consumer
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
+
 class PrintersFragment : Fragment() {
 
     val printerList = ArrayList<PrinterModel>()
@@ -808,7 +809,9 @@ class PrintersFragment : Fragment() {
            val editor = prefs1.edit()
            val json1 = gson1.toJson(emptyList)
            editor.putString("prefServerSecurePrinterListWithDetails", json1)
-           editor.apply()
+       editor.putString("prefaddedPrinterListWithDetails", json1)
+       editor.commit()
+
 
 
    }
