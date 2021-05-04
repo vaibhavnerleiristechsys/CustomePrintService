@@ -150,7 +150,7 @@ public class PrintPreview extends AppCompatActivity {
             radioBtnForPage.setVisibility(View.INVISIBLE);
             jpgOrPngImagePreview(file);
         }
-        Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
+     //   Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
          orientationSpinner = (Spinner) findViewById(R.id.orientation_spinner);
         ArrayList<String> items = new ArrayList<String>();
         items.add("select printer");
@@ -178,11 +178,11 @@ public class PrintPreview extends AppCompatActivity {
             items.add(printerModel.getServiceName());
         }
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);
-        dynamicSpinner.setAdapter(adapter);
+      //  ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);
+      //  dynamicSpinner.setAdapter(adapter);
 
 
-
+/*
         dynamicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -204,7 +204,7 @@ public class PrintPreview extends AppCompatActivity {
         });
 
 
-
+*/
 
 
         addCopy.setOnClickListener(new View.OnClickListener() {

@@ -80,7 +80,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Spinner
+          <!--  <Spinner
                 android:id="@+id/dynamic_spinner"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
@@ -88,7 +88,40 @@
                 android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+-->
+            <TextView
+                android:id="@+id/selectPrinter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Select Printer"
+                android:textColor="#5E5F61"
+                android:textSize="15sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintStart_toEndOf="@+id/printer"
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/selectprinterarrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/selectprinterarrow"
+                app:layout_constraintBottom_toBottomOf="@+id/selectPrinter"
+                app:layout_constraintStart_toEndOf="@+id/selectPrinter"
+                app:layout_constraintTop_toTopOf="@+id/selectPrinter" />
+
+            <ImageView
+                android:id="@+id/copiesbutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+
+                android:background="@drawable/copiesbutton"
+                app:layout_constraintStart_toStartOf="@+id/selectPrinter"
+                app:layout_constraintTop_toBottomOf="@+id/selectPrinter" />
 
             <TextView
                 android:id="@+id/copies"
@@ -113,21 +146,22 @@
                 android:layout_height="32dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="26dp"
-                android:text="+"
                 android:textSize="10dp"
+                android:background="@android:color/transparent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/dynamic_spinner" />
+                app:layout_constraintTop_toBottomOf="@+id/selectPrinter" />
 
             <Button
                 android:id="@+id/minus"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginTop="8dp"
-                android:text="-"
                 android:textAlignment="center"
                 android:textSize="10dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="@+id/plus"
                 app:layout_constraintEnd_toStartOf="@+id/plus"
-                app:layout_constraintTop_toBottomOf="@+id/dynamic_spinner" />
+                app:layout_constraintHorizontal_bias="0.8"
+                app:layout_constraintStart_toStartOf="@+id/selectPrinter" />
 
             <TextView
                 android:id="@+id/colorMonochrome"
@@ -148,10 +182,9 @@
                 android:id="@+id/static_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/plus" />
+                app:layout_constraintBottom_toBottomOf="@+id/colorMonochrome"
+                app:layout_constraintStart_toStartOf="@+id/copiesbutton"
+                app:layout_constraintTop_toTopOf="@+id/colorMonochrome" />
 
             <TextView
                 android:id="@+id/pages"
@@ -172,12 +205,11 @@
                 android:id="@+id/rg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="68dp"
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/orientation_spinner">
+                app:layout_constraintStart_toStartOf="@+id/orientation_spinner"
+                app:layout_constraintTop_toBottomOf="@+id/orientation_spinner"
+                app:layout_constraintTop_toTopOf="@+id/pages">
 
                 <RadioButton
                     android:id="@+id/rb_all"
@@ -198,8 +230,8 @@
 
             <EditText
                 android:id="@+id/pagesCount"
-                android:layout_width="55dp"
-                android:layout_height="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:alpha="0.42"
                 android:hint="1-4"
@@ -209,10 +241,10 @@
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@+id/rg"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.06"
                 app:layout_constraintStart_toEndOf="@+id/rg"
                 app:layout_constraintTop_toTopOf="@+id/rg"
-                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintVertical_bias="0.96"
                 tools:ignore="MissingConstraints" />
 
 
@@ -234,10 +266,12 @@
                 android:id="@+id/orientation_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/orientation"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/static_spinner" />
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/static_spinner"
+                app:layout_constraintTop_toTopOf="@+id/orientation" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
