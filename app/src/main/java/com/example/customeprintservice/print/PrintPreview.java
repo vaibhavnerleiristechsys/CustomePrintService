@@ -1,12 +1,19 @@
 package com.example.customeprintservice.print;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.example.customeprintservice.MainActivity;
 import com.example.customeprintservice.R;
+import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapter;
+import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
+import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrintRenderUtils;
 import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterModel;
@@ -20,8 +27,10 @@ import com.google.gson.reflect.TypeToken;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -32,6 +41,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -43,6 +54,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -63,6 +75,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +108,9 @@ public class PrintPreview extends AppCompatActivity {
     private String[] pickerVals,pickerVals2;
     public Spinner orientationSpinner;
     //Logger logger = LoggerFactory.getLogger(PrintPreview.class);
-
+    RecyclerView printerRecyclerView;
+    TextView selectPrinterText;
+    ImageView selectprinterarrow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +137,9 @@ public class PrintPreview extends AppCompatActivity {
                 startActivity(intent1);
             }
         }
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("selected print preview printer"));
 
         filePath = bundle.getString("filePath", "");
         File file = new File(filePath);
@@ -278,6 +297,8 @@ public class PrintPreview extends AppCompatActivity {
         RadioButton radioBtnPage =(RadioButton) findViewById(R.id.rb_page);
         radioGroup.check(radioBtn.getId());
         TextView cancel =(TextView) findViewById(R.id.cancel);
+         selectPrinterText =(TextView) findViewById(R.id.selectPrinterText);
+        selectprinterarrow =(ImageView) findViewById(R.id.selectprinterarrow);
 
 /*
         radioBtnForPage.setOnClickListener(new View.OnClickListener() {
@@ -344,7 +365,27 @@ public class PrintPreview extends AppCompatActivity {
 
             }
         });
-    }
+
+
+     selectPrinterText.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Collections.sort(serverSecurePrinterListWithDetailsSharedPreflist, new Comparator<PrinterModel>() {
+                @Override
+                public int compare(PrinterModel item, PrinterModel t1) {
+                    String s1 = item.getServiceName();
+                    String s2 = t1.getServiceName();
+                    return s1.compareToIgnoreCase(s2);
+                }
+
+            });
+
+            selectePrinterDialog(serverSecurePrinterListWithDetailsSharedPreflist);
+        }
+    });
+}
+
+
 
     public void renderPageUsingDefaultPdfRendererFile(File file) throws IOException {
         ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
@@ -749,4 +790,56 @@ public class PrintPreview extends AppCompatActivity {
         }.start();
 
     }
+
+
+
+
+    private void selectePrinterDialog(ArrayList<PrinterModel> list) {
+        dialog = new Dialog(context);
+        v = LayoutInflater.from(context).inflate(R.layout.dialog_printpreview_select_printer, null);
+        dialog.setContentView(v);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        Window window = dialog.getWindow();
+        assert window != null;
+        window.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT);
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.BOTTOM;
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setAttributes(wlp);
+
+
+
+
+        printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
+        ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
+        printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,list,"printpreview"));
+        printerRecyclerView.setItemViewCacheSize(50);
+
+        imgCancel.setOnClickListener(v ->
+                dialog.cancel()
+        );
+
+        dialog.show();
+    }
+
+    public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            dialog.cancel();
+            String printerName  = intent.getStringExtra("printer name");
+            selectPrinter=printerName;
+            selectPrinterText.setText(printerName);
+            selectprinterarrow.setVisibility(View.GONE);
+            for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
+                PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
+                if(printerModel.getServiceName().toString().equals(printerName.toString())){
+                    selectedPrinterModel=printerModel;
+                    getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                }
+
+            }
+        }
+    };
 }

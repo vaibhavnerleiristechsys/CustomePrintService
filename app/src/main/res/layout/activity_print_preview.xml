@@ -74,13 +74,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:textSize="17sp"
-                android:textColor="#000000"
                 android:text="Printer"
+                android:textColor="#000000"
+                android:textSize="17sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-          <!--  <Spinner
+            <!--  <Spinner
                 android:id="@+id/dynamic_spinner"
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
@@ -90,18 +90,19 @@
                 app:layout_constraintTop_toTopOf="parent" />
 -->
             <TextView
-                android:id="@+id/selectPrinter"
+                android:id="@+id/selectPrinterText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:text="Select Printer"
                 android:textColor="#5E5F61"
                 android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/copies"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintHorizontal_bias="0.75"
                 app:layout_constraintStart_toEndOf="@+id/printer"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@+id/printer"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageView
                 android:id="@+id/selectprinterarrow"
@@ -109,19 +110,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:background="@drawable/selectprinterarrow"
-                app:layout_constraintBottom_toBottomOf="@+id/selectPrinter"
-                app:layout_constraintStart_toEndOf="@+id/selectPrinter"
-                app:layout_constraintTop_toTopOf="@+id/selectPrinter" />
+                app:layout_constraintBottom_toBottomOf="@+id/selectPrinterText"
+                app:layout_constraintStart_toEndOf="@+id/selectPrinterText"
+                app:layout_constraintTop_toTopOf="@+id/selectPrinterText" />
 
             <ImageView
                 android:id="@+id/copiesbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
 
+                android:layout_marginTop="8dp"
                 android:background="@drawable/copiesbutton"
-                app:layout_constraintStart_toStartOf="@+id/selectPrinter"
-                app:layout_constraintTop_toBottomOf="@+id/selectPrinter" />
+                app:layout_constraintBottom_toBottomOf="@+id/copies"
+                app:layout_constraintStart_toStartOf="@+id/selectPrinterText"
+                app:layout_constraintTop_toTopOf="@+id/copies" />
 
             <TextView
                 android:id="@+id/copies"
@@ -129,39 +131,40 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:textSize="17sp"
                 android:textColor="#000000"
-                tools:text="Copies:"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/printer"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.0"
+                tools:text="Copies:" />
 
 
             <Button
                 android:id="@+id/plus"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="26dp"
-                android:textSize="10dp"
                 android:background="@android:color/transparent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/selectPrinter" />
+                android:textSize="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/copiesbutton"
+                app:layout_constraintHorizontal_bias="0.87"
+                app:layout_constraintStart_toStartOf="@+id/copiesbutton"
+                app:layout_constraintTop_toTopOf="@+id/copiesbutton" />
 
             <Button
                 android:id="@+id/minus"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
+                android:background="@android:color/transparent"
                 android:textAlignment="center"
                 android:textSize="10dp"
-                android:background="@android:color/transparent"
                 app:layout_constraintBottom_toBottomOf="@+id/plus"
-                app:layout_constraintEnd_toStartOf="@+id/plus"
-                app:layout_constraintHorizontal_bias="0.8"
-                app:layout_constraintStart_toStartOf="@+id/selectPrinter" />
+                app:layout_constraintEnd_toEndOf="@+id/copiesbutton"
+                app:layout_constraintHorizontal_bias="0.13"
+                app:layout_constraintStart_toStartOf="@+id/copiesbutton"
+                app:layout_constraintTop_toTopOf="@+id/copiesbutton" />
 
             <TextView
                 android:id="@+id/colorMonochrome"
@@ -169,9 +172,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
-                android:textSize="17sp"
-                android:textColor="#000000"
                 android:text="Color/Monochrome"
+                android:textColor="#000000"
+                android:textSize="17sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/copies"
@@ -182,7 +185,10 @@
                 android:id="@+id/static_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/colorMonochrome"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/copiesbutton"
                 app:layout_constraintTop_toTopOf="@+id/colorMonochrome" />
 
@@ -266,7 +272,7 @@
                 android:id="@+id/orientation_spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="16dp"
                 app:layout_constraintBottom_toBottomOf="@+id/orientation"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

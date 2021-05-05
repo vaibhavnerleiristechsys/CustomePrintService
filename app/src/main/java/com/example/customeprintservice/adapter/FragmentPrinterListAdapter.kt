@@ -83,7 +83,7 @@ class FragmentPrinterListAdapter(
             holder.getColorPrinterImageIcon().visibility=View.VISIBLE
         }
 
-       if(location.equals("printerTab")){
+       if(location.equals("printerTab") || location.equals("printpreview")){
             holder.getPrinterHeaderName().visibility=View.GONE
         }else{
             holder.getPrinterHeaderName().visibility=View.VISIBLE
@@ -126,58 +126,72 @@ class FragmentPrinterListAdapter(
 
         holders.add(holder)
         this.selectedPosition = position
-        if(location.equals("selectPrinter")) {
+        if(location.equals("selectPrinter") || location.equals("printpreview")) {
+
         holder.getCardview().setOnClickListener {
-            if (list[position].printerHost != null) {
-                if(list[position].recentUsed != true) {
-                    addRecentPrintersToPref(list[position])
-                }
-                Log.d("selected printerdetails", list[position].serviceName.toString())
-                Log.d("selected printerdetails", list[position].printerHost.toString())
-                BottomNavigationActivityForServerPrint.selectedPrinter.serviceName=list[position].serviceName.toString()
-                BottomNavigationActivityForServerPrint.selectedPrinter.printerHost=list[position].printerHost
-                BottomNavigationActivityForServerPrint.selectedPrinter.id=list[position].id
+            if(location.equals("printpreview")) {
+                if (list[position].printerHost != null) {
+                    val intent = Intent("selected print preview printer")
+                    intent.putExtra("printer name", list[position].serviceName);
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
-                if (list[position].id != null) {
-                    PrintersFragment().getPrinterListByPrinterId(
-                        context,
-                        list[position].id.toString(),
-                        "getprinterToken"
-                    )
                 }
 
-                if (list[position].manual == true) {
-                    var finalLocalurl = "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"
-                    ServerPrintRelaseFragment.localPrinturl = finalLocalurl
-                } else {
+            } else {
+                if (list[position].printerHost != null) {
+                    if (list[position].recentUsed != true) {
+                        addRecentPrintersToPref(list[position])
+                    }
+                    Log.d("selected printerdetails", list[position].serviceName.toString())
+                    Log.d("selected printerdetails", list[position].printerHost.toString())
+                    BottomNavigationActivityForServerPrint.selectedPrinter.serviceName =
+                        list[position].serviceName.toString()
+                    BottomNavigationActivityForServerPrint.selectedPrinter.printerHost =
+                        list[position].printerHost
+                    BottomNavigationActivityForServerPrint.selectedPrinter.id = list[position].id
 
-                    ProgressDialog.showLoadingDialog(context, "Getting Printer Details")
-
-                    if (list[position].nodeId != null) {
-                        PrinterListService().getPrinterDetails(
+                    if (list[position].id != null) {
+                        PrintersFragment().getPrinterListByPrinterId(
                             context,
-                            LoginPrefs.getOCTAToken(context).toString(),
-                            decodeJWT(),
-                            SignInCompanyPrefs.getIdpType(context).toString(),
-                            SignInCompanyPrefs.getIdpName(context).toString(),
-                            list[position].nodeId.toString(),
-                            false
+                            list[position].id.toString(),
+                            "getprinterToken"
                         )
                     }
-                }
-            }
-            val intent = Intent("message_subject_intent")
-            intent.putExtra("name", "message")
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
-            for (i in holders.indices) {
-                val holder = holders[i]
-                if (i == position) {
-                    if (location.equals("selectPrinter")) {
-                        holder.getCardview().setCardBackgroundColor(Color.GRAY)
+                    if (list[position].manual == true) {
+                        var finalLocalurl =
+                            "http" + "://" + list[position].printerHost.toString() + ":631/ipp/print"
+                        ServerPrintRelaseFragment.localPrinturl = finalLocalurl
+                    } else {
+
+                        ProgressDialog.showLoadingDialog(context, "Getting Printer Details")
+
+                        if (list[position].nodeId != null) {
+                            PrinterListService().getPrinterDetails(
+                                context,
+                                LoginPrefs.getOCTAToken(context).toString(),
+                                decodeJWT(),
+                                SignInCompanyPrefs.getIdpType(context).toString(),
+                                SignInCompanyPrefs.getIdpName(context).toString(),
+                                list[position].nodeId.toString(),
+                                false
+                            )
+                        }
                     }
-                } else {
-                    holder.getCardview().setCardBackgroundColor(Color.WHITE)
+                }
+                val intent = Intent("message_subject_intent")
+                intent.putExtra("name", "message")
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+
+                for (i in holders.indices) {
+                    val holder = holders[i]
+                    if (i == position) {
+                        if (location.equals("selectPrinter")) {
+                            holder.getCardview().setCardBackgroundColor(Color.GRAY)
+                        }
+                    } else {
+                        holder.getCardview().setCardBackgroundColor(Color.WHITE)
+                    }
                 }
             }
         }
