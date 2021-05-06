@@ -55,7 +55,7 @@ class QRCodeScanActivity : AppCompatActivity() {
          val getdocumentListFromQrCode = java.util.ArrayList<SelectedFile>()
     }
 
-    private var floatButton: FloatingActionButton? = null
+    var floatButton: FloatingActionButton? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,11 +79,15 @@ class QRCodeScanActivity : AppCompatActivity() {
 
             codeScanner.decodeCallback = DecodeCallback {
                 runOnUiThread {
-                    Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
+                   // Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
                     var string = it.text
                     var printerId = string.filter { it.isDigit() }
-                    getJobListByPrinterId(this,printerId)
-                    PrintersFragment().getPrinterListByPrinterId(this, printerId.toString(),"getprinterToken")
+                    getJobListByPrinterId(this, printerId)
+                    PrintersFragment().getPrinterListByPrinterId(
+                        this,
+                        printerId.toString(),
+                        "getprinterToken"
+                    )
 
                 }
             }
@@ -139,9 +143,12 @@ class QRCodeScanActivity : AppCompatActivity() {
 
 
 
-    fun getJobListByPrinterId(context: Context,printerId:String) {
+    fun getJobListByPrinterId(context: Context, printerId: String) {
 
-        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND)
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -166,8 +173,9 @@ class QRCodeScanActivity : AppCompatActivity() {
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
-                SignInCompanyPrefs.getIdpName(context).toString(),printerId,
-                decodeJWT(context))
+                SignInCompanyPrefs.getIdpName(context).toString(), printerId,
+                decodeJWT(context)
+            )
         }
 
         call.enqueue(object : Callback<GetJobStatusesResponse> {
@@ -205,6 +213,10 @@ class QRCodeScanActivity : AppCompatActivity() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFile.pages = it?.pages
+                            val sizeInKb :Int? =it?.jobSize
+                            val size = sizeInKb?.div(1024)
+                            val fileSize:String=size.toString()+"KB";
+                            selectedFile.jobSize=fileSize
                             selectedFileList.add(selectedFile)
                             getdocumentListFromQrCode.add(selectedFile)
                         }
@@ -252,7 +264,7 @@ class QRCodeScanActivity : AppCompatActivity() {
     }
 
     @SuppressLint("WrongConstant")
-    fun dialogSelectPrinter(context:Context) {
+    fun dialogSelectPrinter(context: Context) {
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_select_document)
         dialog.setCancelable(false)
@@ -270,6 +282,12 @@ class QRCodeScanActivity : AppCompatActivity() {
          printerRecyclerView = dialog.findViewById<RecyclerView>(R.id.dialogSelectDocumentRecyclerView)
          val imgCancel = dialog.findViewById<TextView>(R.id.imgDialogSelectPrinterCancel)
          floatButton  =dialog.findViewById<FloatingActionButton>(R.id.dialogSelectPrinterFloatingButton)
+        floatButton?.setBackgroundTintList(
+            ContextCompat.getColorStateList(
+                context,
+                R.color.paleGray
+            )
+        )
          emptyviewForQrCode=dialog.findViewById<ConstraintLayout>(R.id.empty_viewForQrCode)
 
         printerRecyclerView?.layoutManager =

@@ -52,7 +52,7 @@
       android:layout_height="wrap_content"
       android:layout_marginStart="8dp"
       android:layout_marginTop="8dp"
-      android:maxLength="25"
+      android:maxLength="20"
       android:textSize="17sp"
       app:layout_constraintStart_toEndOf="@+id/checkboxanddocument"
       app:layout_constraintTop_toTopOf="parent" />
