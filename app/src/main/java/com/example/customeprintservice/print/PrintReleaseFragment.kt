@@ -48,6 +48,8 @@ import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.utils.*
+import com.example.customeprintservice.utils.ProgressDialog.Companion.cancelLoading
+import com.example.customeprintservice.utils.ProgressDialog.Companion.showLoadingDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.gson.Gson
@@ -636,7 +638,7 @@ class PrintReleaseFragment : Fragment() {
 
 
     override fun onDestroy() {
-       // super.onDestroy()
+        super.onDestroy()
       //  compositeDisposable.clear()
     }
 
@@ -1075,6 +1077,135 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
         }
     })
 }
+
+
+
+
+    fun sendHeldJob(context: Context, username: String){
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
+        val ipAddress =IpAddress.getLocalIpAddress();
+
+        if(ipAddress!=null) {
+            Log.d("ipAddress of device:", ipAddress);
+            DataDogLogger.getLogger().i("Devnco_Android ipAddress of device for send held job:" + ipAddress);
+        }
+        showLoadingDialog(context, "please wait")
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+        var BASE_URL =""
+        val companyUrl = LoginPrefs.getCompanyUrl(context)
+        val siteId= LoginPrefs.getSiteId(context)
+        val xIdpType =SignInCompanyPrefs.getIdpType(context)
+        val xIdpName =SignInCompanyPrefs.getIdpName(context)
+
+        BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
+        val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
+
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.sendHeldJobForLdap(
+                siteId.toString(),
+                LdapUsername.toString(),
+                LdapPassword.toString(),
+                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                        "<data mac=\"10.0.0.4\" w=\"\" >\n" +
+                        "<register dns=\"\" ip4=\"10.0.75.2\" nb=\"Mobile6\">\n" +
+                        "<full guid=\"1kb9kui2l\">\n" +
+                        "<queue pid=\"42\" ptype=\"0\" >\n" +
+                        "<job a=\"a\" wjid=\"2\" un=\"pranav.patil@devnco.co\" mn=\"Mobile\" sub=\"2021-05-07 13:38:20\" dt=\"my title20\" sd= \"279216\" p=\"2\" t=\"1\">\n" +
+                        "</queue>\n" +
+                        "</full>\n" +
+                        "</data>"
+            )
+        }else if(siteId.toString().contains("google")){
+            DataDogLogger.getLogger().i(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ) + " username: " + username
+            )
+
+            apiService.sendHeldJobForGoogle(
+                siteId.toString(),
+                "Bearer ${LoginPrefs.getOCTAToken(context)}",
+                username,
+                xIdpType.toString(),
+                xIdpName.toString(),
+                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                        "<data mac=\"10.0.0.4\" w=\"\" >\n" +
+                        "<register dns=\"\" ip4=\"10.0.75.2\" nb=\"Mobile7\">\n" +
+                        "<full guid=\"1kb9kui2l\">\n" +
+                        "<queue pid=\"42\" ptype=\"0\" >\n" +
+                        "<job a=\"a\" wjid=\"3\" un=\"pranav.patil@devnco.co\" mn=\"Mobile\" sub=\"2021-05-08 13:38:20\" dt=\"my title22\" sd= \"279216\" p=\"2\" t=\"1\">\n" +
+                        "</queue>\n" +
+                        "</full>\n" +
+                        "</data>"
+
+            )
+        }else{
+            DataDogLogger.getLogger().i(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ) + " username: " + username
+            )
+
+            apiService.sendHeldJobForOtherIdp(
+                siteId.toString(),
+                "Bearer ${LoginPrefs.getOCTAToken(context)}",
+                username,
+                xIdpType.toString(),
+                xIdpName.toString(),
+                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                        "<data mac=\"10.0.0.4\" w=\"\" >\n" +
+                        "<register dns=\"\" ip4=\"10.0.75.2\" nb=\"Mobile6\"/>\n" +
+                        "<full guid=\"1kb9kui2l\">\n" +
+                        "<queue pid=\"42\" ptype=\"0\" >\n" +
+                        "<job a=\"a\" wjid=\"2\" un=\"pranav.patil@devnco.co\" mn=\"Mobile\" sub=\"2021-05-08 13:38:20\" dt=\"my title22\" sd=\"Held\" sz= \"279216\" p=\"2\" t=\"1\"/>\n" +
+                        "</queue>\n" +
+                        "</full>\n" +
+                        "</data>"
+
+            )
+        }
+
+        call.enqueue(object : Callback<ResponseBody> {
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                //   ProgressDialog.cancelLoading()
+                if (response.isSuccessful) {
+                    try {
+                        cancelLoading()
+
+                    } catch (e: Exception) {
+                        Log.i("printer", "e=>${e.message.toString()}")
+                        DataDogLogger.getLogger()
+                            .e("Devnco_Android printer" + "e=>${e.message.toString()}")
+                        cancelLoading()
+                    }
+                } else {
+                    cancelLoading()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                if (swipeContainer != null) {
+                    swipeContainer.isRefreshing = false
+                }
+
+                Log.i("printer", "Error html response==>${t.message.toString()}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
+            }
+        })
+    }
+
 
 
 }

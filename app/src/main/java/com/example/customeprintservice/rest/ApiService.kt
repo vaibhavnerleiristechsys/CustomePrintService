@@ -89,6 +89,18 @@ interface ApiService {
         @Field("configuration") configuration: String
     ): Call<ResponseBody>
 
+
+    @FormUrlEncoded
+    @POST(".")
+    fun sendHeldJobForOtherIdp(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") XUserName: String,
+        @Header("X-IdP-Type") XIdPType: String,
+        @Header("X-IdP-Name") XIdPName: String,
+        @Field("data") data: String
+    ): Call<ResponseBody>
+
     @FormUrlEncoded
     @POST(".")
     fun getPrinterListForGoogle(
@@ -100,6 +112,17 @@ interface ApiService {
         @Header("X-Idp-Client-Type") XIdpClientType: String,
         @Field("checkin") checkin: String,
         @Field("configuration") configuration: String
+    ): Call<ResponseBody>
+
+    @FormUrlEncoded
+    @POST(".")
+    fun sendHeldJobForGoogle(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("Authorization") Authorization: String,
+        @Header("X-User-Name") XUserName: String,
+        @Header("X-IdP-Type") XIdPType: String,
+        @Header("X-IdP-Name") XIdPName: String,
+        @Field("data") data: String
     ): Call<ResponseBody>
 
 
@@ -259,6 +282,14 @@ interface ApiService {
         @Field("configuration") configuration: String
     ): Call<ResponseBody>
 
+    @FormUrlEncoded
+    @POST(".")
+    fun sendHeldJobForLdap(
+        @Header("X-Site-Id") XSiteId: String,
+        @Header("X-PrinterLogic-User-Name") userName: String,
+        @Header("X-PrinterLogic-Password") password: String,
+        @Field("data") data: String
+    ): Call<ResponseBody>
 
     @POST(".")
     fun jobStatusCancelForLdap(

@@ -455,7 +455,7 @@ public class PrintPreview extends AppCompatActivity {
         hold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                list.clear();
+         /*       list.clear();
                 SelectedFile selectedFile = new SelectedFile();
                 File file = new File(filePath);
                 selectedFile.setFileName(file.getName());
@@ -486,7 +486,14 @@ public class PrintPreview extends AppCompatActivity {
                 dialog1.cancel();
                 Intent myIntent = new Intent(context, MainActivity.class);
                 startActivity(myIntent);
+
+          */
+
+                PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
+                printReleaseFragment.sendHeldJob(context,"pranav.patil@devnco.co");
             }
+
+
         });
 
         release.setOnClickListener(new View.OnClickListener() {
@@ -842,4 +849,5 @@ public class PrintPreview extends AppCompatActivity {
             }
         }
     };
+
 }
