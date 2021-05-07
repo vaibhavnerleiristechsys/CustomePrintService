@@ -104,7 +104,7 @@ class SignInActivity : AppCompatActivity() {
                 btnSignIn.visibility= View.GONE
                 txtOr.visibility= View.GONE
                 imgShowPassword.visibility= View.GONE
-            }else if(bundle.getString("buttonName")=="Google"){
+            }else if(bundle.getString("buttonName").toString().contains("Google")){
                 btnSignInWithOkta.text = "    Sign In With Google"
                 btnSignInWithOkta.setTextColor(getResources().getColor(R.color.black))
                 btnSignInWithOkta.setBackgroundResource(R.drawable.button_sign_in_google)

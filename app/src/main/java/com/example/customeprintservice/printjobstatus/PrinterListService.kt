@@ -211,6 +211,8 @@ class PrinterListService {
                         printerModel.location=response.body()?.data?.attributes?.location.toString()
                         printerModel.isColor=response.body()?.data?.attributes?.is_color
                         printerModel.id=response.body()?.data?.attributes?.id.toString()
+                        printerModel.secure_release=response.body()?.data?.attributes?.secure_release.toString()
+                        printerModel.isPullPrinter=response.body()?.data?.attributes?.is_pull_printer.toString()
                         PrinterList().addPrinterModel(printerModel)
                        // PrintersFragment().updateUi(PrinterList().printerList,context)
                         PrintersFragment.serverPrinterListWithDetails.add(printerModel)

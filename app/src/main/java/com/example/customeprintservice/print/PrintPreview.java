@@ -98,7 +98,7 @@ public class PrintPreview extends AppCompatActivity {
     public String selectPrinter=null;
     int startPageIndex=0;
     int endPageIndex=0;
-    int totalPageCount=0;
+    int totalPageCount=1;
     int noOfCopies=1;
     Dialog dialog;
     View v = null;
@@ -488,9 +488,17 @@ public class PrintPreview extends AppCompatActivity {
                 startActivity(myIntent);
 
           */
-
+                File file = new File(filePath);
+                String FileName =file.getName().toString();
+               Long fileSize= file.length();
                 PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
-                printReleaseFragment.sendHeldJob(context,"pranav.patil@devnco.co");
+                String  pageCount =String.valueOf(totalPageCount);
+                if(selectedPrinterModel != null && selectedPrinterModel.getPrinterHost() != null) {
+                   String printerId=selectedPrinterModel.getId();
+                   String isPullPrinter=selectedPrinterModel.getIsPullPrinter().toString();
+                   Log.d("isPullPrinter :",isPullPrinter);
+                    printReleaseFragment.sendHeldJob(context, "pranav.patil@devnco.co", FileName, fileSize.toString(), pageCount,printerId,isPullPrinter);
+                }
             }
 
 

@@ -28,6 +28,16 @@ public class PrinterModel {
 
     private Integer isColor;
 
+    private String secure_release;
+
+
+    public String getSecure_release() {
+        return secure_release;
+    }
+
+    public void setSecure_release(String secure_release) {
+        this.secure_release = secure_release;
+    }
 
     public String getNodeId() {
         return nodeId;

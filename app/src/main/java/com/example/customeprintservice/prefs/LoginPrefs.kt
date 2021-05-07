@@ -2,12 +2,15 @@ package com.example.customeprintservice.prefs
 
 import android.content.Context
 import com.example.customeprintservice.utils.Constants.ClientSecret
+import com.example.customeprintservice.utils.Constants.Guids
 import com.example.customeprintservice.utils.Constants.OCTA_TOKEN
 import com.example.customeprintservice.utils.Constants.TenantUrl
 import com.example.customeprintservice.utils.Constants.client_id
 import com.example.customeprintservice.utils.Constants.company_url
 import com.example.customeprintservice.utils.Constants.googleToken_url
+import com.example.customeprintservice.utils.Constants.jobIds
 import com.example.customeprintservice.utils.Constants.site_Id
+import com.example.customeprintservice.utils.Constants.workStation
 
 class LoginPrefs {
     companion object {
@@ -18,6 +21,9 @@ class LoginPrefs {
         private val clientID = "clientId"
         private val TenantURL="TenantURL"
         private val ClientSecret= "ClientSecret"
+        private val WORKSTATIONID ="workStationId"
+        private val JOBID ="JOBID"
+        private val GUID ="GUID"
 
         fun saveOctaToken(context: Context, token: String) {
             val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
@@ -98,6 +104,40 @@ class LoginPrefs {
         fun getTenantUrl(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(TenantUrl, Context.MODE_PRIVATE)
             return sharedPreferences.getString(TenantURL, null)
+        }
+
+
+        fun saveworkSatationId(context: Context, workStationId: String) {
+            val sharedPreferences = context.getSharedPreferences(workStation, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(WORKSTATIONID, workStationId).apply()
+        }
+
+        fun getworkSatationId(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(workStation, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(WORKSTATIONID, null)
+        }
+
+        fun saveJobId(context: Context, jobId: String) {
+            val sharedPreferences = context.getSharedPreferences(jobIds, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(JOBID, jobId).apply()
+        }
+
+        fun getLastJobId(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(jobIds, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(JOBID, null)
+        }
+
+        fun saveGuId(context: Context, GuId: String) {
+            val sharedPreferences = context.getSharedPreferences(Guids, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(GUID, GuId).apply()
+        }
+
+        fun getGuId(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(Guids, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(GUID, null)
         }
 
 

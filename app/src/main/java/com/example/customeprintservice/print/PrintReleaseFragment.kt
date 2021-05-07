@@ -1,5 +1,6 @@
 package com.example.customeprintservice.print
 
+//import org.slf4j.LoggerFactory
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -62,7 +63,8 @@ import kotlinx.android.synthetic.main.fragment_print_release.*
 import okhttp3.ResponseBody
 import org.apache.commons.codec.binary.Base64
 import org.jetbrains.anko.doAsync
-//import org.slf4j.LoggerFactory
+import org.jsoup.Jsoup
+import org.jsoup.parser.Parser
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -72,7 +74,6 @@ import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
-
 
 class PrintReleaseFragment : Fragment() {
 
@@ -271,7 +272,8 @@ class PrintReleaseFragment : Fragment() {
                     BottomNavigationActivityForServerPrint.selectedServerFile.clear()
                     val resp = response.body().toString()
                     Log.i("printer", "response cancel job==>${resp}")
-                    DataDogLogger.getLogger().i("Devnco_Android printer" + "response cancel job==>${resp}")
+                    DataDogLogger.getLogger()
+                        .i("Devnco_Android printer" + "response cancel job==>${resp}")
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         context,
@@ -287,7 +289,8 @@ class PrintReleaseFragment : Fragment() {
                 ProgressDialog.cancelLoading()
                 Toast.makeText(context, "Validation Failed", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response cancel job==>${t.message}")
-                DataDogLogger.getLogger().i("Devnco_Android printer" + "Error response cancel job==>${t.message}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "Error response cancel job==>${t.message}")
             }
         })
     }
@@ -404,14 +407,15 @@ class PrintReleaseFragment : Fragment() {
                 if (response.code() == 200) {
                     val response = response.body().toString()
                     Log.i("printer", "response release job==>${response}")
-                    DataDogLogger.getLogger().i("Devnco_Android printer" + "response release job==>${response}")
+                    DataDogLogger.getLogger()
+                        .i("Devnco_Android printer" + "response release job==>${response}")
                     //BottomNavigationActivityForServerPrint.selectedServerFile.clear()
                     val activity: Activity? = activity
                     if (activity != null) {
 
                     }
-                 //   sendMetaData(context,pageCount)
-                  //  sendMetaData(context,1)
+                    //   sendMetaData(context,pageCount)
+                    //  sendMetaData(context,1)
                     ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
                     getJobStatuses(
                         context,
@@ -430,7 +434,8 @@ class PrintReleaseFragment : Fragment() {
                 ProgressDialog.cancelLoading()
                 Toast.makeText(context, "Validation Failed", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response release job==>${t.message}")
-                DataDogLogger.getLogger().i("Devnco_Android printer" + "Error response release job==>${t.message}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "Error response release job==>${t.message}")
             }
 
         })
@@ -549,7 +554,8 @@ class PrintReleaseFragment : Fragment() {
                             },
                             {
                                 Log.i("printer", "Error=>${it.message}")
-                                DataDogLogger.getLogger().i("Devnco_Android printer" + "Error=>${it.message}")
+                                DataDogLogger.getLogger()
+                                    .i("Devnco_Android printer" + "Error=>${it.message}")
                             }
                         )
                     compositeDisposable.add(disposable4)
@@ -626,7 +632,8 @@ class PrintReleaseFragment : Fragment() {
                     },
                     {
                         Log.i("printer", "Error=>${it.message}")
-                        DataDogLogger.getLogger().i("Devnco_Android printer" + "Error=>${it.message}")
+                        DataDogLogger.getLogger()
+                            .i("Devnco_Android printer" + "Error=>${it.message}")
                     }
                 )
             compositeDisposable.add(disposable3)
@@ -700,14 +707,17 @@ class PrintReleaseFragment : Fragment() {
             override fun onResponse(call: Call<Any>, response: Response<Any>) {
                 if (response.code() == 204)
                     Log.i("printer", "response validate token=>${response.isSuccessful}")
-                DataDogLogger.getLogger().i("Devnco_Android printer" + "response validate token=>${response.isSuccessful}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "response validate token=>${response.isSuccessful}")
                 Log.i("printer", "response validate token=>${response}")
-                DataDogLogger.getLogger().i("Devnco_Android printer" + "response validate token=>${response}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "response validate token=>${response}")
             }
 
             override fun onFailure(call: Call<Any>, t: Throwable) {
                 Log.i("printer", "response validate token Error=>${t.message}")
-                DataDogLogger.getLogger().i("Devnco_Android printer" + "response validate token Error=>${t.message}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "response validate token Error=>${t.message}")
             }
         })
     }
@@ -866,7 +876,8 @@ class PrintReleaseFragment : Fragment() {
                             },
                             {
                                 Log.i("printer", "Error=>${it.message}")
-                                DataDogLogger.getLogger().i("Devnco_Android printer" + "Error=>${it.message}")
+                                DataDogLogger.getLogger()
+                                    .i("Devnco_Android printer" + "Error=>${it.message}")
                             }
                         )
                     compositeDisposable.add(disposable4)
@@ -924,7 +935,7 @@ class PrintReleaseFragment : Fragment() {
 
 
 //************************************************************
-fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
+fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
     var username =decodeJWT(context)
     var printerName:String=""
     var selectedPrinteripAddress:String=""
@@ -980,7 +991,7 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                     "</commonnames>\n" +
                     "</machine>\n" +
                     "<jobs>\n" +
-                    "<job iscolor=\""+colorMode+"\" istcpip=\"1\">\n" +
+                    "<job iscolor=\"" + colorMode + "\" istcpip=\"1\">\n" +
                     " <printer id=\"" + printerId + "\">\n" +
                     "<name>" + printerName + "</name>\n" +
                     "<share />\n" +
@@ -996,9 +1007,9 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                     " <jt />\n" +
                     "<aun>" + URLEncoder.encode(idpInfo) + "</aun>\n" +
                     "</source>\n" +
-                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\""+TotalPageCount+"\">\n" +
-                    "<submitted>"+dateTime+"</submitted>\n" +
-                    "<completed>"+dateTime+"</completed>\n" +
+                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\"" + TotalPageCount + "\">\n" +
+                    "<submitted>" + dateTime + "</submitted>\n" +
+                    "<completed>" + dateTime + "</completed>\n" +
                     "<title>" + fileName + "</title>\n" +
                     " </document>\n" +
                     "</job>\n" +
@@ -1022,7 +1033,7 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                     "</commonnames>\n" +
                     "</machine>\n" +
                     "<jobs>\n" +
-                    "<job iscolor=\""+colorMode+"\" istcpip=\"1\">\n" +
+                    "<job iscolor=\"" + colorMode + "\" istcpip=\"1\">\n" +
                     " <printer id=\"" + printerId + "\">\n" +
                     "<name>" + printerName + "</name>\n" +
                     "<share />\n" +
@@ -1038,9 +1049,9 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                     " <jt />\n" +
                     "<aun>" + URLEncoder.encode(idpInfo) + "</aun>\n" +
                     "</source>\n" +
-                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\""+TotalPageCount+"\">\n" +
-                    "<submitted>"+dateTime+"</submitted>\n" +
-                    "<completed>"+dateTime+"</completed>\n" +
+                    "<document pl=\"2794\" pw=\"2159\" duplex=\"2\" length=\"" + TotalPageCount + "\">\n" +
+                    "<submitted>" + dateTime + "</submitted>\n" +
+                    "<completed>" + dateTime + "</completed>\n" +
                     "<title>" + fileName + "</title>\n" +
                     " </document>\n" +
                     "</job>\n" +
@@ -1061,7 +1072,8 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                 try {
                 } catch (e: Exception) {
                     Log.i("printer", "e=>${e.message.toString()}")
-                    DataDogLogger.getLogger().e("Devnco_Android printer" + "e=>${e.message.toString()}")
+                    DataDogLogger.getLogger()
+                        .e("Devnco_Android printer" + "e=>${e.message.toString()}")
                 }
             } else {
                 ProgressDialog.cancelLoading()
@@ -1073,7 +1085,8 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
             ProgressDialog.cancelLoading()
 
             Log.i("printer", "Error html response==>${t.message.toString()}")
-            DataDogLogger.getLogger().i("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
+            DataDogLogger.getLogger()
+                .i("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
         }
     })
 }
@@ -1081,7 +1094,7 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
 
 
 
-    fun sendHeldJob(context: Context, username: String){
+    fun sendHeldJob(context: Context, username: String, fileName: String,fileSize:String,totalPageCount:String,printerId:String,isPullPrinter:String){
         @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
             "MySharedPref",
             Context.MODE_APPEND
@@ -1092,6 +1105,12 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
             Log.d("ipAddress of device:", ipAddress);
             DataDogLogger.getLogger().i("Devnco_Android ipAddress of device for send held job:" + ipAddress);
         }
+        var printType="1"
+        if(isPullPrinter.equals("0")){
+            printType="1"
+        }else{
+            printType="2"
+        }
         showLoadingDialog(context, "please wait")
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
@@ -1101,6 +1120,54 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
         val siteId= LoginPrefs.getSiteId(context)
         val xIdpType =SignInCompanyPrefs.getIdpType(context)
         val xIdpName =SignInCompanyPrefs.getIdpName(context)
+        val uuid = UUID.randomUUID()
+        val randomUUIDString = uuid.toString()
+        val guid=randomUUIDString
+        val oldGuid = LoginPrefs.getGuId(context)
+        val jobId="1"
+        var usernName=""
+        if(IsLdap.equals("LDAP")){
+            if (LdapUsername != null) {
+                usernName=LdapUsername
+            }
+        }
+         usernName=decodeJWT(context)
+        val dateTime:String =DateTimeConversion.currentDateTime();
+        val documentTitle=fileName
+
+        val workStationId: String? =LoginPrefs.getworkSatationId(context)
+        Log.d("workStationId pref: ", workStationId.toString())
+        var data =""
+        if(workStationId == null) {
+            LoginPrefs.saveJobId(context, jobId)
+            LoginPrefs.saveGuId(context,guid)
+            Log.d("held data:", "workstationId not Present")
+            data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<data mac=\"10.0.0.4\" w=\"\" >\n" +
+                    "<register dns=\"\" ip4=\""+ipAddress+"\" nb=\"Mobile99\"/>\n" +
+                    "<full guid=\"" + guid + "\">\n" +
+                    "<queue pid=\"" + printerId + "\" ptype=\"0\" >\n" +
+                    "<job a=\"a\" wjid=\"" + jobId + "\" un=\"" + usernName + "\" mn=\"Mobile\" sub=\"" + dateTime + "\" dt=\"" + documentTitle + "\" sd=\"Held\" sz= \"" + fileSize + "\" p=\"" + totalPageCount + "\" t=\"" + printType + "\"/>\n" +
+                    "</queue>\n" +
+                    "</full>\n" +
+                    "</data>"
+        }else{
+            Log.d("delta data:", "delta data send")
+            var jobId : String? = LoginPrefs.getLastJobId(context);
+            LoginPrefs.saveGuId(context,guid)
+            val jobIds= jobId?.toInt();
+            val jobIdentity = jobIds?.plus(1)
+            LoginPrefs.saveJobId(context, jobIdentity.toString())
+            val documentTitle=fileName
+            data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
+                    "<delta basedon=\""+oldGuid+"\" guid=\""+guid+"\">\n" +
+                    "<queue pid=\"" + printerId + "\" ptype=\"0\" >\n" +
+                    "<job a=\"a\" wjid=\"" + jobIdentity + "\" un=\"" + usernName + "\" mn=\"Mobile\" sub=\"" + dateTime + "\" dt=\"" + documentTitle + "\" sd=\"Held\" sz= \"" + fileSize + "\" p=\"" + totalPageCount + "\" t=\"" + printType + "\"/>\n" +
+                    "</queue>\n" +
+                    "</delta>\n" +
+                    "</data>"
+        }
 
         BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
@@ -1110,15 +1177,7 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
-                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                        "<data mac=\"10.0.0.4\" w=\"\" >\n" +
-                        "<register dns=\"\" ip4=\"10.0.75.2\" nb=\"Mobile6\">\n" +
-                        "<full guid=\"1kb9kui2l\">\n" +
-                        "<queue pid=\"42\" ptype=\"0\" >\n" +
-                        "<job a=\"a\" wjid=\"2\" un=\"pranav.patil@devnco.co\" mn=\"Mobile\" sub=\"2021-05-07 13:38:20\" dt=\"my title20\" sd= \"279216\" p=\"2\" t=\"1\">\n" +
-                        "</queue>\n" +
-                        "</full>\n" +
-                        "</data>"
+                data
             )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(
@@ -1133,15 +1192,7 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                 username,
                 xIdpType.toString(),
                 xIdpName.toString(),
-                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                        "<data mac=\"10.0.0.4\" w=\"\" >\n" +
-                        "<register dns=\"\" ip4=\"10.0.75.2\" nb=\"Mobile7\">\n" +
-                        "<full guid=\"1kb9kui2l\">\n" +
-                        "<queue pid=\"42\" ptype=\"0\" >\n" +
-                        "<job a=\"a\" wjid=\"3\" un=\"pranav.patil@devnco.co\" mn=\"Mobile\" sub=\"2021-05-08 13:38:20\" dt=\"my title22\" sd= \"279216\" p=\"2\" t=\"1\">\n" +
-                        "</queue>\n" +
-                        "</full>\n" +
-                        "</data>"
+                data
 
             )
         }else{
@@ -1157,15 +1208,8 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                 username,
                 xIdpType.toString(),
                 xIdpName.toString(),
-                "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                        "<data mac=\"10.0.0.4\" w=\"\" >\n" +
-                        "<register dns=\"\" ip4=\"10.0.75.2\" nb=\"Mobile6\"/>\n" +
-                        "<full guid=\"1kb9kui2l\">\n" +
-                        "<queue pid=\"42\" ptype=\"0\" >\n" +
-                        "<job a=\"a\" wjid=\"2\" un=\"pranav.patil@devnco.co\" mn=\"Mobile\" sub=\"2021-05-08 13:38:20\" dt=\"my title22\" sd=\"Held\" sz= \"279216\" p=\"2\" t=\"1\"/>\n" +
-                        "</queue>\n" +
-                        "</full>\n" +
-                        "</data>"
+                data
+
 
             )
         }
@@ -1180,12 +1224,21 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
                 //   ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
                     try {
+
+                        val html = response.body()?.string()
+                        val document = Jsoup.parse(html, "", Parser.xmlParser())
+                        val element = document.select("workstation")
+                        Log.d("workstationId:", element.text())
+                        val workStationId = element.text()
+                        if(workStationId != null && workStationId !="") {
+                            LoginPrefs.saveworkSatationId(context, workStationId)
+                        }
                         cancelLoading()
 
                     } catch (e: Exception) {
                         Log.i("printer", "e=>${e.message.toString()}")
                         DataDogLogger.getLogger()
-                            .e("Devnco_Android printer" + "e=>${e.message.toString()}")
+                            .e("Devnco_Android held print job" + "e=>${e.message.toString()}")
                         cancelLoading()
                     }
                 } else {
@@ -1195,13 +1248,9 @@ fun sendMetaData(context: Context,TotalPageCount:Int,colorMode:Int){
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                if (swipeContainer != null) {
-                    swipeContainer.isRefreshing = false
-                }
-
                 Log.i("printer", "Error html response==>${t.message.toString()}")
                 DataDogLogger.getLogger()
-                    .i("Devnco_Android printer" + "Error html response==>${t.message.toString()}")
+                    .i("Devnco_Android hold print job: " + "Error html response==>${t.message.toString()}")
             }
         })
     }

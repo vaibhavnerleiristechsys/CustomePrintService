@@ -195,6 +195,10 @@ class SignInCompany : AppCompatActivity() {
                             bundle.putString("clientId", idp.client_id)
                             bundle.putString("token_uri", idp.tokenUri)
 
+                            if(idp.name.toString().toLowerCase().contains("google")) {
+                                GoogleAPI.getGoogleData(this@SignInCompany)
+                            }
+
                             SignInCompanyPrefs.saveIdpUrl(
                                 this@SignInCompany,
                                 idp.tokenUri.toString()

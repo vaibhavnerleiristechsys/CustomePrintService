@@ -12,5 +12,9 @@ object Constants {
     const val client_id="ClientId"
     const val TenantUrl="TenantUrl"
     const val ClientSecret="ClientSecret"
+    const val workStation="workStation"
+    const val jobIds="jobIds"
+    const val Guids="Guids"
+
 
 }
