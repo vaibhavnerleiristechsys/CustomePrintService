@@ -455,7 +455,7 @@ public class PrintPreview extends AppCompatActivity {
         hold.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-         /*       list.clear();
+                list.clear();
                 SelectedFile selectedFile = new SelectedFile();
                 File file = new File(filePath);
                 selectedFile.setFileName(file.getName());
@@ -470,7 +470,7 @@ public class PrintPreview extends AppCompatActivity {
 
                 SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
                 Gson gson1 = new Gson();
-                String json2 = prefs1.getString("localdocumentlist", null);
+                String json2 = prefs1.getString("holdlocaldocumentlist", null);
                 Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
                 }.getType();
                 localDocumentSharedPreflist = gson1.fromJson(json2, type1);
@@ -480,15 +480,13 @@ public class PrintPreview extends AppCompatActivity {
                 SharedPreferences.Editor editor1 = prefs1.edit();
 
                 String convertedJson = gson1.toJson(list);
-                editor1.putString("localdocumentlist", convertedJson);
+                editor1.putString("holdlocaldocumentlist", convertedJson);
                 editor1.apply();
                 Toast.makeText(context, "file added", Toast.LENGTH_LONG).show();
                 dialog1.cancel();
                 Intent myIntent = new Intent(context, MainActivity.class);
                 startActivity(myIntent);
 
-          */
-                File file = new File(filePath);
                 String FileName =file.getName().toString();
                Long fileSize= file.length();
                 PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();

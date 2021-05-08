@@ -122,6 +122,7 @@ interface ApiService {
         @Header("X-User-Name") XUserName: String,
         @Header("X-IdP-Type") XIdPType: String,
         @Header("X-IdP-Name") XIdPName: String,
+        @Header("X-Idp-Client-Type") XIdpClientType: String,
         @Field("data") data: String
     ): Call<ResponseBody>
 

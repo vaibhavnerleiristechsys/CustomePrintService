@@ -9,8 +9,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -44,6 +46,7 @@ import com.example.customeprintservice.R;
 import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapter;
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.jipp.PrintActivity;
+import com.example.customeprintservice.jipp.PrintRenderUtils;
 import com.example.customeprintservice.jipp.PrinterList;
 import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.prefs.LoginPrefs;
@@ -64,7 +67,12 @@ import com.unnamed.b.atv.model.TreeNode;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.InetAddress;
+import java.net.URI;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -73,6 +81,8 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.os.ParcelFileDescriptor.MODE_READ_ONLY;
 
 public class ServerPrintRelaseFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -86,6 +96,8 @@ public class ServerPrintRelaseFragment extends Fragment {
     public static String localPrinturl;
     public static String selectedPrinterId;
     public static String selectedPrinterToken;
+    public static String selectedPrinterHost;
+    public static String selectedPrinterServiceName;
     public static int secure_release;
     public  ArrayList<SelectedFile> localdocumentFromsharedPrefences =new ArrayList<>();
     RecyclerView recyclerView;
@@ -459,6 +471,9 @@ public class ServerPrintRelaseFragment extends Fragment {
             if(BottomNavigationActivityForServerPrint.selectedServerFile.size()>0) {
                  selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
             }
+
+
+
            if(selectedFile.isFromApi()==true){
                if(selectedFile.getJobType().equals("pull_print")){
                    String release_t="";
@@ -503,6 +518,43 @@ public class ServerPrintRelaseFragment extends Fragment {
                }
 
             }
+
+           //**********************
+                        if(selectedFile.getSourceMachine().equals("Mobile")){
+                ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
+                String FileName=selectedFile.getFileName();
+                String filePath="";
+                SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+                Gson gson1 = new Gson();
+                String json2 = prefs1.getString("holdlocaldocumentlist", null);
+                Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
+                }.getType();
+                localDocumentSharedPreflist = gson1.fromJson(json2, type1);
+                if(localDocumentSharedPreflist != null) {
+                    for (int i = 0; i < localDocumentSharedPreflist.size(); i++) {
+                        SelectedFile selectedPrefFile = localDocumentSharedPreflist.get(i);
+                        if (selectedPrefFile.getFileName().contains(FileName)) {
+                            File file = new File(selectedPrefFile.getFilePath());
+                            Log.d("File::", file.getName() + "" + file.getAbsolutePath());
+                            filePath =file.getAbsolutePath();
+
+                        }
+                    }
+                }
+
+                try {
+                    sendLocalPrintHoldJob(filePath ,selectedPrinterHost,selectedPrinterServiceName,selectedPrinterId);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            //*******************
+
+
+
+
 
         });
         dialog.show();
@@ -609,6 +661,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     Integer sizeInKb =PrintQueueJobStatusItem.getJobSize() /1024;
                     String fileSize=sizeInKb.toString()+"KB";
                     selectedFile.setJobSize(fileSize);
+                    selectedFile.setSourceMachine(PrintQueueJobStatusItem.getSourceMachine());
                     selectedFile.setWorkStationId(PrintQueueJobStatusItem.getWorkstationId());
                     DataDogLogger.getLogger().i("Devnco_Android Geeting held job :"+i+" : Title: "+PrintQueueJobStatusItem.getDocumentTitle()
                             +"username: "+PrintQueueJobStatusItem.getUserName()+"====>");
@@ -889,5 +942,73 @@ public ArrayList<PrinterModel> addRecentPrintersToDisplay(ArrayList<PrinterModel
         }
     }
     return originalList;
+}
+
+public void sendLocalPrintHoldJob(String filePath ,String hostAddress,String PrinterName,String PrinterId) throws IOException {
+    {
+        File file = new File(filePath);
+        ArrayList<URI> ippUri =new ArrayList<URI>();
+        if( hostAddress != null){
+            String printerHost = hostAddress.toString();
+            ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/print"));
+            ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/printer"));
+            ippUri.add(URI.create("ipp:/"+printerHost+":631/ipp/lp"));
+            ippUri.add(URI.create("ipp:/"+printerHost+"/printer"));
+            ippUri.add(URI.create("ipp:/"+printerHost+"/ipp"));
+            ippUri.add(URI.create("ipp:/"+printerHost+"/ipp/print"));
+            ippUri.add(URI.create("http:/"+printerHost+":631/ipp"));
+            ippUri.add(URI.create("http:/"+printerHost+":631/ipp/print"));
+            ippUri.add(URI.create("http:/"+printerHost+":631/ipp/printer"));
+            ippUri.add(URI.create("http:/"+printerHost+":631/print"));
+            ippUri.add(URI.create("http:/"+printerHost+"/ipp/print"));
+            ippUri.add(URI.create("http:/"+printerHost));
+            ippUri.add(URI.create("http:/"+printerHost+":631/printers/lp1"));
+            ippUri.add(URI.create("https:/"+printerHost));
+            ippUri.add(URI.create("https:/"+printerHost+":443/ipp/print"));
+            ippUri.add(URI.create("ipps:/"+printerHost+":443/ipp/print"));
+            ippUri.add(URI.create("http:/"+printerHost+":631/ipp/lp"));
+        }
+
+        if( filePath != null && hostAddress != null){
+            BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+            SelectedFile selectedFile=new SelectedFile();
+            selectedFile.setFileName(file.getName());
+            selectedFile.setFilePath(file.getAbsolutePath());
+            BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile);
+
+            BottomNavigationActivityForServerPrint.selectedPrinter.setPrinterHost(InetAddress.getByName(hostAddress));
+            BottomNavigationActivityForServerPrint.selectedPrinter.setServiceName(PrinterName);
+            BottomNavigationActivityForServerPrint.selectedPrinter.setId(PrinterId);
+        }
+
+
+
+        if(file.getName().contains(".pdf")) {
+            if ( hostAddress != null && filePath != null ) {
+                String finalLocalurl = "http" + ":/" + hostAddress.toString() + ":631/ipp/print";
+                PrintRenderUtils printRenderUtils = new PrintRenderUtils();
+                ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
+                PdfRenderer renderer = new PdfRenderer(fileDescriptor);
+                final int pageCount = renderer.getPageCount();
+
+                printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, pageCount, 1,ippUri,pageCount,true);
+                Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+            }
+
+        }else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
+
+        }else{
+            if(hostAddress !=null && filePath !=null ) {
+
+                String finalLocalurl = "http" + ":/" + hostAddress.toString() + ":631/ipp/print";
+                PrintRenderUtils printRenderUtils = new PrintRenderUtils();
+                printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, 1,ippUri,true,"portrait");
+                Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+
+            }
+        }
+
+
+    }
 }
 }

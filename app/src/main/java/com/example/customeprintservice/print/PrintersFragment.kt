@@ -645,6 +645,8 @@ class PrintersFragment : Fragment() {
                         .i("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
                     ServerPrintRelaseFragment.selectedPrinterId = id
                     ServerPrintRelaseFragment.selectedPrinterToken = printerToken
+                    ServerPrintRelaseFragment.selectedPrinterHost =hostAddress.toString()
+                    ServerPrintRelaseFragment.selectedPrinterServiceName=title.toString()
                     val printer: PrinterModel = PrinterModel()
                     printer.id = id
                     val thread = Thread(Runnable {

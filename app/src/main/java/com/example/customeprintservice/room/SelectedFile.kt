@@ -42,7 +42,11 @@ data class SelectedFile(
     var jobSize: String? = null,
 
     @ColumnInfo(name = "pages")
-    var pages: Int? = null
+    var pages: Int? = null,
+
+    @ColumnInfo(name = "sourceMachine")
+    var sourceMachine: String? = null
+
 
 ) : Serializable {
     @PrimaryKey(autoGenerate = true)

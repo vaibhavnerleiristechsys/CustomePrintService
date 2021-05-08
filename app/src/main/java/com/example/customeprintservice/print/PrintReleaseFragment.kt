@@ -1127,18 +1127,17 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         val jobId="1"
         var usernName=""
         if(IsLdap.equals("LDAP")){
-            if (LdapUsername != null) {
-                usernName=LdapUsername
-            }
+                usernName=LdapUsername.toString()
+        }else {
+            usernName = decodeJWT(context)
         }
-         usernName=decodeJWT(context)
         val dateTime:String =DateTimeConversion.currentDateTime();
         val documentTitle=fileName
 
         val workStationId: String? =LoginPrefs.getworkSatationId(context)
         Log.d("workStationId pref: ", workStationId.toString())
         var data =""
-        if(workStationId == null) {
+        if(workStationId == null || workStationId =="") {
             LoginPrefs.saveJobId(context, jobId)
             LoginPrefs.saveGuId(context,guid)
             Log.d("held data:", "workstationId not Present")
@@ -1189,9 +1188,10 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
             apiService.sendHeldJobForGoogle(
                 siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
-                username,
+                usernName,
                 xIdpType.toString(),
                 xIdpName.toString(),
+                "serverId",
                 data
 
             )
@@ -1226,7 +1226,20 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     try {
 
                         val html = response.body()?.string()
+                        Log.d("response of held job:",html.toString())
+
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
+                        Log.d("parse held job:",document.toString())
+                        val error = document.select("e")
+                        val errormassage:String =error.toString()
+                        Log.d("errormsg in held job:",errormassage.toString())
+                        if(errormassage.contains("There was an error applying the delta information. Full package required") ||
+                            errormassage.contains("The workstation needs to be registered")){
+                            LoginPrefs.saveworkSatationId(context, "");
+                            sendHeldJob(context, username, fileName,fileSize,totalPageCount,printerId,isPullPrinter)
+                        }
+
+
                         val element = document.select("workstation")
                         Log.d("workstationId:", element.text())
                         val workStationId = element.text()
