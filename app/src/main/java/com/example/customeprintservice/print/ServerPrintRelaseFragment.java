@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -78,6 +79,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -150,7 +154,7 @@ public class ServerPrintRelaseFragment extends Fragment {
         }
 
         BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
-
+ String isStartedJobUpdateMethod=LoginPrefs.Companion.getStartJobIdMethod(context);
 
      if(LoginPrefs.Companion.getOCTAToken(context)==null) {
          @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);
@@ -169,15 +173,28 @@ public class ServerPrintRelaseFragment extends Fragment {
                      serverCallForGettingAllPrinters(context);
                      PrintersFragment printersFragment1 = new PrintersFragment();
                      printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
+                /*     if(isStartedJobUpdateMethod==null) {
+                         getJobUpdateCall();
+                     }
+
+                 */
                  }
              }, 5000);
          }
      }else{
          getjobListStatus();
         // serverCallForGettingAllPrinters(requireContext());
+         /*if(isStartedJobUpdateMethod==null) {
+             getJobUpdateCall();
+         }
+
+          */
          PrintersFragment printersFragment1 = new PrintersFragment();
          printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
      }
+
+
+            LoginPrefs.Companion.setStartJobIdMethod(context);
 
 
             if (mColumnCount <= 1) {
@@ -543,7 +560,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }
 
                 try {
-                    sendLocalPrintHoldJob(filePath ,selectedPrinterHost,selectedPrinterServiceName,selectedPrinterId);
+                    sendLocalPrintHoldJob(filePath,context,selectedPrinterHost,selectedPrinterServiceName,selectedPrinterId);
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -944,7 +961,7 @@ public ArrayList<PrinterModel> addRecentPrintersToDisplay(ArrayList<PrinterModel
     return originalList;
 }
 
-public void sendLocalPrintHoldJob(String filePath ,String hostAddress,String PrinterName,String PrinterId) throws IOException {
+public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAddress,String PrinterName,String PrinterId) throws IOException {
     {
         File file = new File(filePath);
         ArrayList<URI> ippUri =new ArrayList<URI>();
@@ -975,8 +992,8 @@ public void sendLocalPrintHoldJob(String filePath ,String hostAddress,String Pri
             selectedFile.setFileName(file.getName());
             selectedFile.setFilePath(file.getAbsolutePath());
             BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile);
-
-            BottomNavigationActivityForServerPrint.selectedPrinter.setPrinterHost(InetAddress.getByName(hostAddress));
+            String host =hostAddress.replaceAll("/","");
+            BottomNavigationActivityForServerPrint.selectedPrinter.setPrinterHost(InetAddress.getByName(host));
             BottomNavigationActivityForServerPrint.selectedPrinter.setServiceName(PrinterName);
             BottomNavigationActivityForServerPrint.selectedPrinter.setId(PrinterId);
         }
@@ -1003,7 +1020,7 @@ public void sendLocalPrintHoldJob(String filePath ,String hostAddress,String Pri
                 String finalLocalurl = "http" + ":/" + hostAddress.toString() + ":631/ipp/print";
                 PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                 printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, 1,ippUri,true,"portrait");
-                Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+              //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
 
             }
         }
@@ -1011,4 +1028,88 @@ public void sendLocalPrintHoldJob(String filePath ,String hostAddress,String Pri
 
     }
 }
+
+
+public static void getJobUpdateCall(Context context){
+   /* new Timer().scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+            PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
+            new Handler(Looper.getMainLooper()).post(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            printReleaseFragment.gettingHeldJobStatus(context);
+                            handler.postDelayed(this, 30000);
+                        }
+                    });
+
+
+        }
+    }, 30000, 30000);*/
+    PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
+     Handler handler = new Handler();
+     new Handler(Looper.getMainLooper()).post(
+            new Runnable() {
+                @Override
+                public void run() {
+                    printReleaseFragment.gettingHeldJobStatus(context);
+                    handler.postDelayed(this, 30000);
+                }
+            });
+
+
 }
+public static void getjobFromSharedPreferences(Context context,String jobId,String printerId) throws IOException {
+    SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+    ArrayList<SelectedFile> documentSharedPreflist = new ArrayList<SelectedFile>();
+    Gson gson1 = new Gson();
+    String json2 = prefs1.getString("holdlocaldocumentlist", null);
+    Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
+    }.getType();
+    documentSharedPreflist = gson1.fromJson(json2, type1);
+    if(documentSharedPreflist != null) {
+        PrinterList list =new PrinterList();
+        String filePath="";
+        ArrayList<PrinterModel> printerList = list.getPrinterList();
+        for (int i = 0; i < documentSharedPreflist.size(); i++) {
+            SelectedFile selectedPrefFile = documentSharedPreflist.get(i);
+            if (selectedPrefFile.getJobId().equals(jobId)) {
+                Log.d("job Id:",jobId);
+                        Log.d("document name:",selectedPrefFile.getFileName());
+                                Log.d("filter jobs for print","*************");
+                filePath =selectedPrefFile.getFilePath();
+
+                  for(int j=0;j<printerList.size();j++){
+                    PrinterModel printerModel =  printerList.get(j);
+                    if(printerModel.getId().equals(printerId)){
+                        Log.d("printer Id:",printerModel.getId().toString());
+                        Log.d("printer name:",printerModel.getServiceName().toString());
+
+                        ServerPrintRelaseFragment serverPrintRelaseFragment =new ServerPrintRelaseFragment();
+                        String filePaths =filePath;
+                        Thread thread = new Thread(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                try  {
+                                    serverPrintRelaseFragment.sendLocalPrintHoldJob(filePaths,context,printerModel.getPrinterHost().toString(),printerModel.getServiceName(),printerModel.getId());
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                        thread.start();
+
+
+                    }
+                  }
+            break;
+            }
+        }
+    }
+}
+
+}
+

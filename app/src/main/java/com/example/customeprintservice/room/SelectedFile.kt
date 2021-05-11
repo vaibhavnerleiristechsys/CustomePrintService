@@ -45,7 +45,10 @@ data class SelectedFile(
     var pages: Int? = null,
 
     @ColumnInfo(name = "sourceMachine")
-    var sourceMachine: String? = null
+    var sourceMachine: String? = null,
+
+    @ColumnInfo(name = "jobId")
+    var jobId: String? = null
 
 
 ) : Serializable {

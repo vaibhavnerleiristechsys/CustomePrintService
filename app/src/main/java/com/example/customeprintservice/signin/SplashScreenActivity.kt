@@ -5,12 +5,15 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
 import com.example.customeprintservice.R
+import com.example.customeprintservice.print.ServerPrintRelaseFragment
 
 class SplashScreenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
+
+        ServerPrintRelaseFragment.getJobUpdateCall(applicationContext)
         Handler().postDelayed({
             val mainIntent = Intent(this@SplashScreenActivity, SignInCompany::class.java)
             startActivity(mainIntent)

@@ -669,7 +669,11 @@ public class PrintRenderUtils {
                         }
 
                         PrintReleaseFragment printReleaseFrament =new PrintReleaseFragment();
-                        printReleaseFrament.sendMetaData(context,1,colorMode);
+                        try {
+                            printReleaseFrament.sendMetaData(context, 1, colorMode);
+                        }catch (Exception e){
+                            Log.i("printer", "Exception in send MetaData ------>>>" + e.getMessage());
+                        }
                 }else{
                         new Handler(Looper.getMainLooper()).post(
                                 new Runnable() {

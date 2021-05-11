@@ -4,7 +4,9 @@ import android.content.Context
 import com.example.customeprintservice.utils.Constants.ClientSecret
 import com.example.customeprintservice.utils.Constants.Guids
 import com.example.customeprintservice.utils.Constants.OCTA_TOKEN
+import com.example.customeprintservice.utils.Constants.StartJob
 import com.example.customeprintservice.utils.Constants.TenantUrl
+import com.example.customeprintservice.utils.Constants.UpdateGuids
 import com.example.customeprintservice.utils.Constants.client_id
 import com.example.customeprintservice.utils.Constants.company_url
 import com.example.customeprintservice.utils.Constants.googleToken_url
@@ -24,6 +26,8 @@ class LoginPrefs {
         private val WORKSTATIONID ="workStationId"
         private val JOBID ="JOBID"
         private val GUID ="GUID"
+        private val UPDATEGUID="UPDATEGUID"
+        private val STARTJOB = "STARTJOB"
 
         fun saveOctaToken(context: Context, token: String) {
             val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
@@ -138,6 +142,32 @@ class LoginPrefs {
         fun getGuId(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(Guids, Context.MODE_PRIVATE)
             return sharedPreferences.getString(GUID, null)
+        }
+
+        fun saveGuIdForUpdate(context: Context, updateGuId: String) {
+            val sharedPreferences = context.getSharedPreferences(UpdateGuids, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(UPDATEGUID, updateGuId).apply()
+        }
+
+
+
+        fun getGuIdForUpdate(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(UpdateGuids, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(UPDATEGUID, null)
+        }
+
+
+
+        fun setStartJobIdMethod(context: Context) {
+            val sharedPreferences = context.getSharedPreferences(StartJob, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(STARTJOB, "Started").apply()
+        }
+
+        fun getStartJobIdMethod(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(StartJob, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(STARTJOB, null)
         }
 
 

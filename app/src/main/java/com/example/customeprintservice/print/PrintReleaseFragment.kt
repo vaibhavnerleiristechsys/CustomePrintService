@@ -1094,7 +1094,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
 
 
-    fun sendHeldJob(context: Context, username: String, fileName: String,fileSize:String,totalPageCount:String,printerId:String,isPullPrinter:String){
+    fun sendHeldJob(context: Context, fileName: String,fileSize:String,totalPageCount:String,printerId:String,isPullPrinter:String){
         @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
             "MySharedPref",
             Context.MODE_APPEND
@@ -1111,7 +1111,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         }else{
             printType="2"
         }
-        showLoadingDialog(context, "please wait")
+       // showLoadingDialog(context, "please wait")
         val IsLdap = sh.getString("IsLdap", "")
         val LdapUsername= sh.getString("LdapUsername", "")
         val LdapPassword= sh.getString("LdapPassword", "")
@@ -1140,6 +1140,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         if(workStationId == null || workStationId =="") {
             LoginPrefs.saveJobId(context, jobId)
             LoginPrefs.saveGuId(context,guid)
+            PrintPreview.setJobId(context,jobId.toString(),fileName);
             Log.d("held data:", "workstationId not Present")
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\"\" >\n" +
@@ -1152,11 +1153,17 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     "</data>"
         }else{
             Log.d("delta data:", "delta data send")
-            var jobId : String? = LoginPrefs.getLastJobId(context);
+            var jobID : String? = LoginPrefs.getLastJobId(context);
             LoginPrefs.saveGuId(context,guid)
-            val jobIds= jobId?.toInt();
-            val jobIdentity = jobIds?.plus(1)
+            var jobIdentity=0
+            if(jobID==null){
+                jobIdentity=jobId.toInt();
+            }else{
+            val jobIds= jobID?.toInt();
+             jobIdentity = jobIds?.plus(1)
             LoginPrefs.saveJobId(context, jobIdentity.toString())
+            }
+            PrintPreview.setJobId(context,jobIdentity.toString(),fileName);
             val documentTitle=fileName
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
@@ -1167,6 +1174,8 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     "</delta>\n" +
                     "</data>"
         }
+
+
 
         BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
@@ -1182,7 +1191,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
             DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
-                ) + " username: " + username
+                ) + " username: " + usernName
             )
 
             apiService.sendHeldJobForGoogle(
@@ -1199,13 +1208,13 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
             DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
-                ) + " username: " + username
+                ) + " username: " + usernName
             )
 
             apiService.sendHeldJobForOtherIdp(
                 siteId.toString(),
                 "Bearer ${LoginPrefs.getOCTAToken(context)}",
-                username,
+                usernName,
                 xIdpType.toString(),
                 xIdpName.toString(),
                 data
@@ -1236,11 +1245,12 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                         if(errormassage.contains("There was an error applying the delta information. Full package required") ||
                             errormassage.contains("The workstation needs to be registered")){
                             LoginPrefs.saveworkSatationId(context, "");
-                            sendHeldJob(context, username, fileName,fileSize,totalPageCount,printerId,isPullPrinter)
+                            sendHeldJob(context,fileName,fileSize,totalPageCount,printerId,isPullPrinter)
                         }
 
 
                         val element = document.select("workstation")
+
                         Log.d("workstationId:", element.text())
                         val workStationId = element.text()
                         if(workStationId != null && workStationId !="") {
@@ -1268,7 +1278,186 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         })
     }
 
+//****************************************************** every 7 sec call ********************************************
 
+    fun gettingHeldJobStatus(context: Context){
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
+        val ipAddress =IpAddress.getLocalIpAddress();
+
+        if(ipAddress!=null) {
+            Log.d("ipAddress of device:", ipAddress);
+            DataDogLogger.getLogger().i("Devnco_Android ipAddress of device for send held job:" + ipAddress);
+        }
+
+        // showLoadingDialog(context, "please wait")
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+        var BASE_URL =""
+        val companyUrl = LoginPrefs.getCompanyUrl(context)
+        val siteId= LoginPrefs.getSiteId(context)
+        val xIdpType =SignInCompanyPrefs.getIdpType(context)
+        val xIdpName =SignInCompanyPrefs.getIdpName(context)
+        val uuid = UUID.randomUUID()
+        val randomUUIDString = uuid.toString()
+        val guid=randomUUIDString
+        val oldGuid = LoginPrefs.getGuId(context)
+        var usernName=""
+        if(IsLdap.equals("LDAP")){
+            usernName=LdapUsername.toString()
+        }else {
+            usernName = decodeJWT(context)
+        }
+
+        val workStationId: String? =LoginPrefs.getworkSatationId(context)
+        Log.d("workStationId pref: ", workStationId.toString())
+        var data =""
+      /*  if(workStationId == null || workStationId =="") {
+
+            LoginPrefs.saveGuId(context,guid)
+            Log.d("held data:", "workstationId not Present")
+           data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<data mac=\"10.0.0.4\" w=\"\" >\n" +
+                    "<register dns=\"\" ip4=\""+ipAddress+"\" nb=\"Mobile99\"/>\n" +
+                    "<full guid=\"" + guid + "\">\n" +
+                    "</full>\n" +
+                    "</data>"
+        }
+        else {*/
+            LoginPrefs.saveGuId(context,guid)
+            data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
+                    "<delta basedon=\""+oldGuid+"\" guid=\""+guid+"\">\n" +
+                    "</delta>\n" +
+                    "</data>"
+    //    }
+
+        BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
+        val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
+
+        val call = if(IsLdap.equals("LDAP")){
+            apiService.sendHeldJobForLdap(
+                siteId.toString(),
+                LdapUsername.toString(),
+                LdapPassword.toString(),
+                data
+            )
+        }else if(siteId.toString().contains("google")){
+            DataDogLogger.getLogger().i(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ) + " username: " + usernName
+            )
+
+            apiService.sendHeldJobForGoogle(
+                siteId.toString(),
+                "Bearer ${LoginPrefs.getOCTAToken(context)}",
+                usernName,
+                xIdpType.toString(),
+                xIdpName.toString(),
+                "serverId",
+                data
+
+            )
+        }else{
+            DataDogLogger.getLogger().i(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                    context
+                ) + " username: " + usernName
+            )
+
+            apiService.sendHeldJobForOtherIdp(
+                siteId.toString(),
+                "Bearer ${LoginPrefs.getOCTAToken(context)}",
+                usernName,
+                xIdpType.toString(),
+                xIdpName.toString(),
+                data
+
+
+            )
+        }
+
+        call.enqueue(object : Callback<ResponseBody> {
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onResponse(
+                call: Call<ResponseBody>,
+                response: Response<ResponseBody>
+            ) {
+                //   ProgressDialog.cancelLoading()
+                if (response.isSuccessful) {
+                    try {
+
+                        val html = response.body()?.string()
+                        Log.d("response of held job:",html.toString())
+
+                        val document = Jsoup.parse(html, "", Parser.xmlParser())
+                        Log.d("parse held job:",document.toString())
+                        val error = document.select("e")
+                        val errormassage:String =error.toString()
+                        Log.d("errormsg in held job:",errormassage.toString())
+
+                        Log.d("errormsg in held job:",errormassage.toString())
+                  /*      if(errormassage.contains("There was an error applying the delta information. Full package required") ||
+                            errormassage.contains("The workstation needs to be registered")){
+                            LoginPrefs.saveworkSatationId(context, "");
+                            gettingHeldJobStatus(context)
+                        }
+
+                   */
+
+
+
+                        val data = document.select("m")
+
+                        data.forEach {
+                            Log.i("printer", "it data==>${it.attr("data")}")
+                            Log.i("printer", "it ptype==>${it.attr("ptype")}")
+                            Log.i("printer", "it pid==>${it.attr("pid")}")
+                            Log.i("printer", "it m==>${it.attr("m")}")
+
+                        }
+                        if(data.size>0) {
+                            data.forEach {
+                                ServerPrintRelaseFragment.getjobFromSharedPreferences(
+                                    context, it.attr("data"),it.attr("pid")
+                                )
+                            }
+                        }
+
+
+                        val element = document.select("workstation")
+
+                        Log.d("workstationId:", element.text())
+                        val workStationId = element.text()
+                       if(workStationId != null && workStationId !="") {
+                            LoginPrefs.saveworkSatationId(context, workStationId)
+                        }
+                        cancelLoading()
+
+                    } catch (e: Exception) {
+                        Log.i("printer", "e=>${e.message.toString()}")
+                        DataDogLogger.getLogger()
+                            .e("Devnco_Android held print job" + "e=>${e.message.toString()}")
+                        cancelLoading()
+                    }
+                } else {
+                    cancelLoading()
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Log.i("printer", "Error html response==>${t.message.toString()}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android hold print job: " + "Error html response==>${t.message.toString()}")
+            }
+        })
+    }
 
 }
 

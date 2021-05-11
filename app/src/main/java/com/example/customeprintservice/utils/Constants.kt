@@ -15,6 +15,8 @@ object Constants {
     const val workStation="workStation"
     const val jobIds="jobIds"
     const val Guids="Guids"
+    const val UpdateGuids="UpdateGuids"
+    const val StartJob="StartJob"
 
 
 }

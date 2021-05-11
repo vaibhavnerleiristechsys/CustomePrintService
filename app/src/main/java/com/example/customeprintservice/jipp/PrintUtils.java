@@ -324,9 +324,13 @@ public class PrintUtils {
 
 
                 ServerPrintRelaseFragment serverPrintRelaseFragment=new ServerPrintRelaseFragment();
-                serverPrintRelaseFragment.removeDocumentFromSharedPreferences(context);
-                Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
-            } else {
+                try {
+                    serverPrintRelaseFragment.removeDocumentFromSharedPreferences(context);
+                    Log.i("printer", "Received ------>>>" + printResponse.getPacket().prettyPrint(100, "  "));
+                }catch (Exception e){
+                    Log.i("printer", "exception in remove document from shared preferences ------>>>" + e.getMessage());
+                }
+                } else {
                 Intent fileNotSupported =
                         new Intent("com.example.PRINT_RESPONSE")
                                 .putExtra("fileNotSupported", "File Format is not supported");

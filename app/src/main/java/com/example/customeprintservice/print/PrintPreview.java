@@ -495,7 +495,7 @@ public class PrintPreview extends AppCompatActivity {
                    String printerId=selectedPrinterModel.getId();
                    String isPullPrinter=selectedPrinterModel.getIsPullPrinter().toString();
                    Log.d("isPullPrinter :",isPullPrinter);
-                    printReleaseFragment.sendHeldJob(context, "pranav.patil@devnco.co", FileName, fileSize.toString(), pageCount,printerId,isPullPrinter);
+                    printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), pageCount,printerId,isPullPrinter);
                 }
             }
 
@@ -849,11 +849,37 @@ public class PrintPreview extends AppCompatActivity {
                 PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                 if(printerModel.getServiceName().toString().equals(printerName.toString())){
                     selectedPrinterModel=printerModel;
-                    getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                    if(selectedPrinterModel.getPrinterHost() !=null) {
+                        getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                    }
                 }
 
             }
         }
     };
+
+
+    public  static void setJobId(Context context,String JobId,String fileName){
+        SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+        ArrayList<SelectedFile> documentSharedPreflist = new ArrayList<SelectedFile>();
+        Gson gson1 = new Gson();
+        String json2 = prefs1.getString("holdlocaldocumentlist", null);
+        Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
+        }.getType();
+        documentSharedPreflist = gson1.fromJson(json2, type1);
+        if(documentSharedPreflist != null) {
+            for (int i = 0; i < documentSharedPreflist.size(); i++) {
+                SelectedFile selectedPrefFile = documentSharedPreflist.get(i);
+                if (selectedPrefFile.getFileName().contains(fileName)) {
+                    selectedPrefFile.setJobId(JobId);
+                }
+            }
+        }
+
+        SharedPreferences.Editor editor1 = prefs1.edit();
+        String convertedJson = gson1.toJson(documentSharedPreflist);
+        editor1.putString("holdlocaldocumentlist", convertedJson);
+        editor1.apply();
+    }
 
 }
