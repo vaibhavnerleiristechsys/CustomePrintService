@@ -44,8 +44,13 @@ class SignInCompany : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val configuration = Configuration.Builder(true,true,true,true).build()
-        val credentials = Credentials("pube211f0482bac89ed37305673b5e0928e","VasionPrint","admin","com.example.customeprintservice")
+        val configuration = Configuration.Builder(true, true, true, true).build()
+        val credentials = Credentials(
+            "pube211f0482bac89ed37305673b5e0928e",
+            "VasionPrint",
+            "admin",
+            "com.example.customeprintservice"
+        )
         Datadog.initialize(this@SignInCompany, credentials, configuration, TrackingConsent.GRANTED)
 
         Datadog.setVerbosity(Log.INFO)
@@ -161,7 +166,7 @@ class SignInCompany : AppCompatActivity() {
     }
 
     private fun getIdpInfo(url: String) {
-        logger.info("Devnco_Android logging url" +url)
+        logger.info("Devnco_Android logging url" + url)
         val BASE_URL: String = (url + "/")
         val apiService = RetrofitClient(this@SignInCompany)
             .getRetrofitInstance(BASE_URL)
@@ -195,7 +200,7 @@ class SignInCompany : AppCompatActivity() {
                             bundle.putString("clientId", idp.client_id)
                             bundle.putString("token_uri", idp.tokenUri)
 
-                            if(idp.name.toString().toLowerCase().contains("google")) {
+                            if (idp.name.toString().toLowerCase().contains("google")) {
                                 GoogleAPI.getGoogleData(this@SignInCompany)
                             }
 
@@ -254,9 +259,13 @@ class SignInCompany : AppCompatActivity() {
         })
     }
 
+   
+
     override fun onBackPressed() {
-      //  super.onBackPressed()
-       // finish()
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
 
     private fun getTenantBaseUrl() {

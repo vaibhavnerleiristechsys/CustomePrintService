@@ -178,7 +178,7 @@ public class PrintPreview extends AppCompatActivity {
         Type type1 = new TypeToken<ArrayList<PrinterModel>>() {}.getType();
 
 
-        String json = prefs1.getString("deployedsecurePrinterListWithDetails", null);
+        String json = prefs1.getString("deployedPrintersListForPrintPreivew", null);
         if (json != null) {
             deployedSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json, type1);
         }
@@ -350,10 +350,54 @@ public class PrintPreview extends AppCompatActivity {
                     Toast.makeText(context, "please select printer", Toast.LENGTH_LONG).show();
                 }
                 if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null  && !selectPrinter.toString().equals("select printer")) {
-                    dialogPromptPrinter();
+                    String secure_release = selectedPrinterModel.getSecure_release();
+                    if(selectedPrinterModel.getIsPullPrinter().equals("1")){
+                        dialogPromptPrinter("alwaysHold");
+                    }else{
+                        if(secure_release.equals("0") || secure_release.equals("1") || secure_release.equals("2")){
+
+                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                            dialogPromptPrinter("alwaysPrint");
+
+                        }else if(secure_release.equals("3") || secure_release.equals("4")){
+                            Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
+                            dialogPromptPrinter("alwaysHold");
+
+                        }
+                        else if(secure_release.equals("5") || secure_release.equals("6")){
+
+                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                            dialogPromptPrinter("alwaysPrompt");
+
+
+                        }
+                    }
+                    //dialogPromptPrinter();
                 }
                 else if(radioButton.getText().toString().equals("page") && selectedPrinterModel !=null && filePath !=null  && !selectPrinter.toString().equals("select printer") && PageIndexCorrect==true) {
-                    dialogPromptPrinter();
+                    String secure_release = selectedPrinterModel.getSecure_release();
+                    if(selectedPrinterModel.getIsPullPrinter().equals("1")){
+                        dialogPromptPrinter("alwaysHold");
+                    }else{
+                        if(secure_release.equals("0") || secure_release.equals("1") || secure_release.equals("2")){
+
+                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                            dialogPromptPrinter("alwaysPrint");
+
+                        }else if(secure_release.equals("3") || secure_release.equals("4")){
+                            Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
+                            dialogPromptPrinter("alwaysHold");
+
+                        }
+                        else if(secure_release.equals("5") || secure_release.equals("6")){
+
+                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                            dialogPromptPrinter("alwaysPrompt");
+
+
+                        }
+                    }
+                    //dialogPromptPrinter();
                 }
             }
         });
@@ -434,13 +478,24 @@ public class PrintPreview extends AppCompatActivity {
         }
 
 
-    private void dialogPromptPrinter(){
+    private void dialogPromptPrinter(String state){
         Dialog dialog1 = new Dialog(context);
         View v  = LayoutInflater.from(context).inflate(R.layout.dialog_printer_prompt, null);
         dialog1.setContentView(v);
         dialog1.setCancelable(false);
         Button hold = dialog1.findViewById(R.id.hold);
         Button release= dialog1.findViewById(R.id.release);
+        Button cancel =dialog1.findViewById(R.id.cancel);
+
+        if(state.equals("alwaysHold")){
+            release.setVisibility(View.GONE);
+        }else if(state.equals("alwaysPrint")){
+            hold.setVisibility(View.GONE);
+        }else if(state.equals("alwaysPrompt")){
+
+        }
+
+
         dialog1.setCanceledOnTouchOutside(true);
         Window window = dialog1.getWindow();
         assert window != null;
@@ -451,6 +506,15 @@ public class PrintPreview extends AppCompatActivity {
         window.setDimAmount(0.5f);
         window.setAttributes(wlp);
         dialog1.show();
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            dialog1.cancel();
+            }
+            });
+
+
 
         hold.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -484,8 +548,9 @@ public class PrintPreview extends AppCompatActivity {
                 editor1.apply();
                 Toast.makeText(context, "file added", Toast.LENGTH_LONG).show();
                 dialog1.cancel();
-                Intent myIntent = new Intent(context, MainActivity.class);
-                startActivity(myIntent);
+                moveTaskToBack(true);
+              //  Intent myIntent = new Intent(context, MainActivity.class);
+               // startActivity(myIntent);
 
                 String FileName =file.getName().toString();
                Long fileSize= file.length();
@@ -495,7 +560,7 @@ public class PrintPreview extends AppCompatActivity {
                    String printerId=selectedPrinterModel.getId();
                    String isPullPrinter=selectedPrinterModel.getIsPullPrinter().toString();
                    Log.d("isPullPrinter :",isPullPrinter);
-                    printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), pageCount,printerId,isPullPrinter);
+                    printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), pageCount,printerId,isPullPrinter,"");
                 }
             }
 
@@ -850,7 +915,9 @@ public class PrintPreview extends AppCompatActivity {
                 if(printerModel.getServiceName().toString().equals(printerName.toString())){
                     selectedPrinterModel=printerModel;
                     if(selectedPrinterModel.getPrinterHost() !=null) {
-                        getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                        if(selectedPrinterModel.getIsPullPrinter().equals("0")) {
+                            getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                        }
                     }
                 }
 

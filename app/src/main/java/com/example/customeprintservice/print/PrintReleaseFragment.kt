@@ -1094,7 +1094,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
 
 
-    fun sendHeldJob(context: Context, fileName: String,fileSize:String,totalPageCount:String,printerId:String,isPullPrinter:String){
+    fun sendHeldJob(context: Context, fileName: String,fileSize:String,totalPageCount:String,printerId:String,isPullPrinter:String,purpose:String){
         @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
             "MySharedPref",
             Context.MODE_APPEND
@@ -1151,6 +1151,30 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     "</queue>\n" +
                     "</full>\n" +
                     "</data>"
+        }else if(purpose.equals("fullPackageRequired")){
+            Log.d("delta data:", "delta data send")
+            var jobID : String? = LoginPrefs.getLastJobId(context);
+            LoginPrefs.saveGuId(context,guid)
+            var jobIdentity=0
+            if(jobID==null){
+                jobIdentity=jobId.toInt();
+            }else{
+                val jobIds= jobID?.toInt();
+                jobIdentity = jobIds?.plus(1)
+                LoginPrefs.saveJobId(context, jobIdentity.toString())
+            }
+            PrintPreview.setJobId(context,jobIdentity.toString(),fileName);
+            val documentTitle=fileName
+
+            data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
+                    "<full guid=\"" + guid + "\">\n" +
+                    "<queue pid=\"" + printerId + "\" ptype=\"0\" >\n" +
+                    "<job a=\"a\" wjid=\"" + jobIdentity + "\" un=\"" + usernName + "\" mn=\"Mobile\" sub=\"" + dateTime + "\" dt=\"" + documentTitle + "\" sd=\"Held\" sz= \"" + fileSize + "\" p=\"" + totalPageCount + "\" t=\"" + printType + "\"/>\n" +
+                    "</queue>\n" +
+                    "</full>\n" +
+                    "</data>"
+
         }else{
             Log.d("delta data:", "delta data send")
             var jobID : String? = LoginPrefs.getLastJobId(context);
@@ -1242,10 +1266,14 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                         val error = document.select("e")
                         val errormassage:String =error.toString()
                         Log.d("errormsg in held job:",errormassage.toString())
-                        if(errormassage.contains("There was an error applying the delta information. Full package required") ||
-                            errormassage.contains("The workstation needs to be registered")){
+                        if(errormassage.contains("There was an error applying the delta information. Full package required")){
+                          //  LoginPrefs.saveworkSatationId(context, "");
+                            sendHeldJob(context,fileName,fileSize,totalPageCount,printerId,isPullPrinter,"fullPackageRequired")
+                        }
+
+                        if(errormassage.contains("The workstation needs to be registered")){
                             LoginPrefs.saveworkSatationId(context, "");
-                            sendHeldJob(context,fileName,fileSize,totalPageCount,printerId,isPullPrinter)
+                            sendHeldJob(context,fileName,fileSize,totalPageCount,printerId,isPullPrinter,"")
                         }
 
 

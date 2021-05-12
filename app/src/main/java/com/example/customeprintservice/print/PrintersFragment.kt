@@ -67,6 +67,7 @@ class PrintersFragment : Fragment() {
          val serverSecurePrinterListWithDetails = java.util.ArrayList<PrinterModel>()
          val serverSecurePrinterForHeldJob= java.util.ArrayList<PrinterModel>()
          val allPrintersForPullHeldJob= java.util.ArrayList<PrinterModel>()
+        val deployedPrintersListForPrintPreivew =java.util.ArrayList<PrinterModel>()
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -369,6 +370,7 @@ class PrintersFragment : Fragment() {
                         PrintersFragment.serverPrinterListWithDetails.clear()
                         PrintersFragment.serverPullPrinterListWithDetails.clear()
                         PrintersFragment.serverSecurePrinterListWithDetails.clear()
+                        PrintersFragment.deployedPrintersListForPrintPreivew.clear()
 
                         element.forEach {
                             val printerModel: PrinterModel = PrinterModel()

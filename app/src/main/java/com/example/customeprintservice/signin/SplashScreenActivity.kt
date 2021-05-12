@@ -13,7 +13,7 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
-        ServerPrintRelaseFragment.getJobUpdateCall(applicationContext)
+       // ServerPrintRelaseFragment.getJobUpdateCall(applicationContext)
         Handler().postDelayed({
             val mainIntent = Intent(this@SplashScreenActivity, SignInCompany::class.java)
             startActivity(mainIntent)

@@ -225,17 +225,22 @@ class PrinterListService {
                                 PreferenceManager.getDefaultSharedPreferences(context)
                             val gson1 = Gson()
                             val editor = prefs1.edit()
-                            val json1 = gson1.toJson(PrintersFragment.serverSecurePrinterListWithDetails)
-                            editor.putString("deployedsecurePrinterListWithDetails", json1)
+                            val json = gson1.toJson(PrintersFragment.serverSecurePrinterListWithDetails)
+                            editor.putString("deployedsecurePrinterListWithDetails", json)
                             editor.apply()
                         }
-
-
 
                         val prefs1 =
                             PreferenceManager.getDefaultSharedPreferences(context)
                         val gson1 = Gson()
                         val editor = prefs1.edit()
+
+
+                        PrintersFragment.deployedPrintersListForPrintPreivew.add(printerModel)
+                        val json = gson1.toJson(PrintersFragment.deployedPrintersListForPrintPreivew)
+                        editor.putString("deployedPrintersListForPrintPreivew", json)
+
+
                         val json1 = gson1.toJson(PrintersFragment.serverPrinterListWithDetails)
                         editor.putString("printerListWithDetails", json1)
                         editor.apply()
