@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.preference.PreferenceManager
 import android.provider.MediaStore
 import android.util.Log
@@ -1308,7 +1309,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
 //****************************************************** every 7 sec call ********************************************
 
-    fun gettingHeldJobStatus(context: Context){
+    fun gettingHeldJobStatus(context: Context,purpose:String){
         @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
             "MySharedPref",
             Context.MODE_APPEND
@@ -1356,11 +1357,20 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         }
         else {*/
             LoginPrefs.saveGuId(context,guid)
+        if(purpose.equals("FullPackageNeed")){
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
-                    "<delta basedon=\""+oldGuid+"\" guid=\""+guid+"\">\n" +
+                    "<full guid=\"" + guid + "\">\n" +
+                    "</full>\n" +
+                    "</data>"
+
+        }else {
+            data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<data mac=\"10.0.0.4\" w=\"" + workStationId + "\" >\n" +
+                    "<delta basedon=\"" + oldGuid + "\" guid=\"" + guid + "\">\n" +
                     "</delta>\n" +
                     "</data>"
+        }
     //    }
 
         BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
@@ -1428,35 +1438,98 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                         val error = document.select("e")
                         val errormassage:String =error.toString()
                         Log.d("errormsg in held job:",errormassage.toString())
-
-                        Log.d("errormsg in held job:",errormassage.toString())
-                  /*      if(errormassage.contains("There was an error applying the delta information. Full package required") ||
-                            errormassage.contains("The workstation needs to be registered")){
-                            LoginPrefs.saveworkSatationId(context, "");
-                            gettingHeldJobStatus(context)
+                       if(errormassage.contains("There was an error applying the delta information. Full package required")){
+                           // LoginPrefs.saveworkSatationId(context, "");
+                            gettingHeldJobStatus(context,"FullPackageNeed")
                         }
 
-                   */
+
+                     val release =document.select("release")
+                        if(!release.isEmpty()){
+                            val data = document.select("m")
+
+                            Log.i("printer", "release data==>"+release.isEmpty())
 
 
 
-                        val data = document.select("m")
-
-                        data.forEach {
-                            Log.i("printer", "it data==>${it.attr("data")}")
-                            Log.i("printer", "it ptype==>${it.attr("ptype")}")
-                            Log.i("printer", "it pid==>${it.attr("pid")}")
-                            Log.i("printer", "it m==>${it.attr("m")}")
-
-                        }
-                        if(data.size>0) {
                             data.forEach {
-                                ServerPrintRelaseFragment.getjobFromSharedPreferences(
-                                    context, it.attr("data"),it.attr("pid")
-                                )
+                                Log.i("printer", "it data==>${it.attr("data")}")
+                                Log.i("printer", "it m==>${it.attr("m")}")
+                                var jobId=""
+                                var printerId=""
+                                var printerName=""
+                                var printerHost=""
+
+                                jobId =it.attr("data")
+
+                              release.forEach {
+
+                                printerId=it.attr("pid")
+                                printerName=it.attr("title")
+
+                            }
+
+                            val address =document.select("address")
+                            if(address != null) {
+                                address.forEach {
+                                    Log.i("printer", "it host==>${it.attr("host")}")
+                                    printerHost=it.attr("host")
+                                }
+                            }
+                                if(data.size > 1) {
+                                    Handler().postDelayed(
+                                        {
+                                            Log.i("printer", "it multi job Name==>"+printerName)
+                                            Log.i("printer", "it multi job jobId==>"+jobId)
+                                            Log.i("printer", "it multi job printerId==>"+printerId)
+                                            Log.i("printer", "it multi job printerHost==>"+printerHost)
+                                            ServerPrintRelaseFragment.getjobFromSharedPreferencesForPullJobs(context, jobId, printerId, printerName, printerHost)
+                                        },
+                                        10000
+                                    )
+
+                                }else{
+                                    Log.i("printer", "it single job Name==>"+printerName)
+                                    Log.i("printer", "it single job jobId==>"+jobId)
+                                    Log.i("printer", "it single job printerId==>"+printerId)
+                                    Log.i("printer", "it single job printerHost==>"+printerHost)
+                                    ServerPrintRelaseFragment.getjobFromSharedPreferencesForPullJobs(context, jobId, printerId, printerName, printerHost)
+                                }
+                            }
+
+                        }
+                        else {
+
+                            val data = document.select("m")
+
+                            data.forEach {
+                                Log.i("printer", "it data==>${it.attr("data")}")
+                                Log.i("printer", "it ptype==>${it.attr("ptype")}")
+                                Log.i("printer", "it pid==>${it.attr("pid")}")
+                                Log.i("printer", "it m==>${it.attr("m")}")
+
+                            }
+                            if (data.size > 0) {
+                                data.forEach {
+
+                                    if (data.size > 1) {
+                                        Handler().postDelayed(
+                                            {
+                                                ServerPrintRelaseFragment.getjobFromSharedPreferences(
+                                                    context, it.attr("data"), it.attr("pid")
+                                                )
+                                            },
+                                            10000
+                                        )
+                                    } else {
+                                        ServerPrintRelaseFragment.getjobFromSharedPreferences(
+                                            context, it.attr("data"), it.attr("pid")
+                                        )
+                                    }
+
+                                }
                             }
                         }
-
 
                         val element = document.select("workstation")
 

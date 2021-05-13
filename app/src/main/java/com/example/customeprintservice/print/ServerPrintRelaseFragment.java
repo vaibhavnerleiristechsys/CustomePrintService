@@ -537,6 +537,7 @@ public class ServerPrintRelaseFragment extends Fragment {
             }
 
            //**********************
+            /*
                         if(selectedFile.getSourceMachine().equals("Mobile")){
                 ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
                 String FileName=selectedFile.getFileName();
@@ -567,6 +568,8 @@ public class ServerPrintRelaseFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
+
+             */
             //*******************
 
 
@@ -1009,7 +1012,7 @@ public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAd
                 final int pageCount = renderer.getPageCount();
 
                 printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, pageCount, 1,ippUri,pageCount,true);
-                Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+             //   Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
             }
 
         }else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
@@ -1053,8 +1056,8 @@ public static void getJobUpdateCall(Context context){
             new Runnable() {
                 @Override
                 public void run() {
-                    printReleaseFragment.gettingHeldJobStatus(context);
-                    handler.postDelayed(this, 30000);
+                    printReleaseFragment.gettingHeldJobStatus(context,"");
+                    handler.postDelayed(this, 15000);
                 }
             });
 
@@ -1085,6 +1088,7 @@ public static void getjobFromSharedPreferences(Context context,String jobId,Stri
                     if(printerModel.getId().equals(printerId)){
                         Log.d("printer Id:",printerModel.getId().toString());
                         Log.d("printer name:",printerModel.getServiceName().toString());
+                        Log.d("printer host:",printerModel.getPrinterHost().toString());
 
                         ServerPrintRelaseFragment serverPrintRelaseFragment =new ServerPrintRelaseFragment();
                         String filePaths =filePath;
@@ -1110,6 +1114,58 @@ public static void getjobFromSharedPreferences(Context context,String jobId,Stri
         }
     }
 }
+
+
+    public static void getjobFromSharedPreferencesForPullJobs(Context context,String jobId,String printerId,String printerName,String printerHost) throws IOException {
+        SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+        ArrayList<SelectedFile> documentSharedPreflist = new ArrayList<SelectedFile>();
+        Gson gson1 = new Gson();
+        String json2 = prefs1.getString("holdlocaldocumentlist", null);
+        Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
+        }.getType();
+        documentSharedPreflist = gson1.fromJson(json2, type1);
+        if(documentSharedPreflist != null) {
+            PrinterList list =new PrinterList();
+            String filePath="";
+            ArrayList<PrinterModel> printerList = list.getPrinterList();
+            for (int i = 0; i < documentSharedPreflist.size(); i++) {
+                SelectedFile selectedPrefFile = documentSharedPreflist.get(i);
+                if (selectedPrefFile.getJobId().equals(jobId)) {
+                    Log.d("job Id:",jobId);
+                    Log.d("document name:",selectedPrefFile.getFileName());
+                    Log.d("filter jobs for print","*************");
+                    filePath =selectedPrefFile.getFilePath();
+
+                            Log.d("printer Id:",printerId);
+                            Log.d("printer name:",printerName);
+                             Log.d("printer host:",printerHost);
+                             String modifyHostName="/"+printerHost;
+                             Log.d("printer modifyHost:",modifyHostName);
+
+
+
+                            ServerPrintRelaseFragment serverPrintRelaseFragment =new ServerPrintRelaseFragment();
+                            String filePaths =filePath;
+                            Thread thread = new Thread(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    try  {
+                                        serverPrintRelaseFragment.sendLocalPrintHoldJob(filePaths,context,modifyHostName,printerName,printerId);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+
+                            thread.start();
+
+                    break;
+                }
+            }
+        }
+    }
+
 
 }
 

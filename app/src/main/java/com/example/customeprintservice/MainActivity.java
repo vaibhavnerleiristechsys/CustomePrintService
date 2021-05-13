@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.jipp.PrinterList;
@@ -391,6 +393,14 @@ public class MainActivity extends AppCompatActivity {
         int i =tenantBaseUrl.indexOf("/",9);
         tenantUrl =tenantBaseUrl.substring(0,i);
         return tenantUrl;
+    }
+
+
+    public static String getMacAddress(Context context){
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wInfo = wifiManager.getConnectionInfo();
+        String macAddress = wInfo.getMacAddress();
+        return macAddress;
     }
 
 }
