@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.pdf.PdfRenderer;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -111,6 +113,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     public  List<Printer> listOfPrinters=new ArrayList<Printer>();
     //Logger logger = LoggerFactory.getLogger(ServerPrintRelaseFragment.class);
     public static ArrayList<PrinterModel> printerList=new ArrayList<PrinterModel>();
+    public static boolean getholdJobAPIStart=false;
 
     public ServerPrintRelaseFragment() {
     }
@@ -136,6 +139,10 @@ public class ServerPrintRelaseFragment extends Fragment {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver1, new IntentFilter("menuFunctionlityDisplay"));
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver2, new IntentFilter("menuFunctionlityDisplayhidden"));
 
+        if(getholdJobAPIStart==false){
+            ServerPrintRelaseFragment.getJobUpdateCall(requireContext());
+            getholdJobAPIStart=true;
+        }
 
     }
 
@@ -161,7 +168,7 @@ public class ServerPrintRelaseFragment extends Fragment {
          String IsLdap = prefs.getString("IsLdap", "");
          if(IsLdap.equals("LDAP")) {
              getjobListStatus();
-         //    serverCallForGettingAllPrinters(requireContext());
+             serverCallForGettingAllPrinters(requireContext());
              PrintersFragment printersFragment1 = new PrintersFragment();
              printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
          }else {
@@ -183,7 +190,7 @@ public class ServerPrintRelaseFragment extends Fragment {
          }
      }else{
          getjobListStatus();
-        // serverCallForGettingAllPrinters(requireContext());
+         serverCallForGettingAllPrinters(requireContext());
          /*if(isStartedJobUpdateMethod==null) {
              getJobUpdateCall();
          }
@@ -1166,6 +1173,12 @@ public static void getjobFromSharedPreferences(Context context,String jobId,Stri
         }
     }
 
+    public static String getMacAddress(Context context){
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo wInfo = wifiManager.getConnectionInfo();
+        String macAddress = wInfo.getMacAddress();
+        return macAddress;
+    }
 
 }
 

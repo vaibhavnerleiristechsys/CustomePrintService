@@ -378,7 +378,7 @@ class FragmentPrinterListAdapter(
         if (sharedPreferencesStoredPrinterListWithDetails != null && sharedPreferencesStoredPrinterListWithDetails.size > 0) {
             var removePrinter: PrinterModel = PrinterModel()
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
-                if (p.printerHost.equals(printerModel.printerHost)) {
+                if (p.serviceName.equals(printerModel.serviceName)) {
                     removePrinter = p
                 }
             })

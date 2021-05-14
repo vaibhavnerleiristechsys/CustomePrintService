@@ -35,6 +35,7 @@ import com.example.customeprintservice.jipp.FileUtils
 import com.example.customeprintservice.jipp.PrinterDiscoveryActivity
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
+import com.example.customeprintservice.model.ServerJobsModel
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -1141,11 +1142,13 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         if(workStationId == null || workStationId =="") {
             LoginPrefs.saveJobId(context, jobId)
             LoginPrefs.saveGuId(context,guid)
+            var macAddress:String=ServerPrintRelaseFragment.getMacAddress(context)
+            Log.d("macAddress:", macAddress)
             PrintPreview.setJobId(context,jobId.toString(),fileName);
             Log.d("held data:", "workstationId not Present")
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\"\" >\n" +
-                    "<register dns=\"\" ip4=\""+ipAddress+"\" nb=\"Mobile99\"/>\n" +
+                    "<register dns=\"\" ip4=\""+ipAddress+"\" nb=\""+macAddress+"\"/>\n" +
                     "<full guid=\"" + guid + "\">\n" +
                     "<queue pid=\"" + printerId + "\" ptype=\"0\" >\n" +
                     "<job a=\"a\" wjid=\"" + jobId + "\" un=\"" + usernName + "\" mn=\"Mobile\" sub=\"" + dateTime + "\" dt=\"" + documentTitle + "\" sd=\"Held\" sz= \"" + fileSize + "\" p=\"" + totalPageCount + "\" t=\"" + printType + "\"/>\n" +
@@ -1448,19 +1451,17 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                         if(!release.isEmpty()){
                             val data = document.select("m")
 
-                            Log.i("printer", "release data==>"+release.isEmpty())
-
-
+                            Log.i("printer", "release data==>"+data.toString())
 
                             data.forEach {
-                                Log.i("printer", "it data==>${it.attr("data")}")
-                                Log.i("printer", "it m==>${it.attr("m")}")
                                 var jobId=""
                                 var printerId=""
                                 var printerName=""
                                 var printerHost=""
+                                var jobstatus =""
 
                                 jobId =it.attr("data")
+                                jobstatus=it.attr("m")
 
                               release.forEach {
 
@@ -1472,28 +1473,55 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                             val address =document.select("address")
                             if(address != null) {
                                 address.forEach {
-                                    Log.i("printer", "it host==>${it.attr("host")}")
                                     printerHost=it.attr("host")
                                 }
                             }
                                 if(data.size > 1) {
-                                    Handler().postDelayed(
-                                        {
-                                            Log.i("printer", "it multi job Name==>"+printerName)
-                                            Log.i("printer", "it multi job jobId==>"+jobId)
-                                            Log.i("printer", "it multi job printerId==>"+printerId)
-                                            Log.i("printer", "it multi job printerHost==>"+printerHost)
-                                            ServerPrintRelaseFragment.getjobFromSharedPreferencesForPullJobs(context, jobId, printerId, printerName, printerHost)
-                                        },
-                                        10000
-                                    )
+                                    if(jobstatus.equals("2")) {
+                                        Handler().postDelayed(
+                                            {
+                                                Log.i(
+                                                    "printer",
+                                                    "it multi job Name==>" + printerName
+                                                )
+                                                Log.i("printer", "it multi job jobId==>" + jobId)
+                                                Log.i(
+                                                    "printer",
+                                                    "it multi job printerId==>" + printerId
+                                                )
+                                                Log.i(
+                                                    "printer",
+                                                    "it multi job printerHost==>" + printerHost
+                                                )
+                                                ServerPrintRelaseFragment.getjobFromSharedPreferencesForPullJobs(
+                                                    context,
+                                                    jobId,
+                                                    printerId,
+                                                    printerName,
+                                                    printerHost
+                                                )
+                                            },
+                                            10000
+                                        )
+                                    }
 
                                 }else{
-                                    Log.i("printer", "it single job Name==>"+printerName)
-                                    Log.i("printer", "it single job jobId==>"+jobId)
-                                    Log.i("printer", "it single job printerId==>"+printerId)
-                                    Log.i("printer", "it single job printerHost==>"+printerHost)
-                                    ServerPrintRelaseFragment.getjobFromSharedPreferencesForPullJobs(context, jobId, printerId, printerName, printerHost)
+                                    if(jobstatus.equals("2")) {
+                                        Log.i("printer", "it single job Name==>" + printerName)
+                                        Log.i("printer", "it single job jobId==>" + jobId)
+                                        Log.i("printer", "it single job printerId==>" + printerId)
+                                        Log.i(
+                                            "printer",
+                                            "it single job printerHost==>" + printerHost
+                                        )
+                                        ServerPrintRelaseFragment.getjobFromSharedPreferencesForPullJobs(
+                                            context,
+                                            jobId,
+                                            printerId,
+                                            printerName,
+                                            printerHost
+                                        )
+                                    }
                                 }
                             }
 
@@ -1513,18 +1541,22 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                 data.forEach {
 
                                     if (data.size > 1) {
-                                        Handler().postDelayed(
-                                            {
-                                                ServerPrintRelaseFragment.getjobFromSharedPreferences(
-                                                    context, it.attr("data"), it.attr("pid")
-                                                )
-                                            },
-                                            10000
-                                        )
+                                        if(it.attr("m").equals("2")) {
+                                            Handler().postDelayed(
+                                                {
+                                                    ServerPrintRelaseFragment.getjobFromSharedPreferences(
+                                                        context, it.attr("data"), it.attr("pid")
+                                                    )
+                                                },
+                                                10000
+                                            )
+                                        }
                                     } else {
-                                        ServerPrintRelaseFragment.getjobFromSharedPreferences(
-                                            context, it.attr("data"), it.attr("pid")
-                                        )
+                                        if(it.attr("m").equals("2")) {
+                                            ServerPrintRelaseFragment.getjobFromSharedPreferences(
+                                                context, it.attr("data"), it.attr("pid")
+                                            )
+                                        }
                                     }
 
                                 }
@@ -1558,6 +1590,23 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     .i("Devnco_Android hold print job: " + "Error html response==>${t.message.toString()}")
             }
         })
+    }
+
+
+    fun addHeldJobs(){
+        val ServerJobsModelList =java.util.ArrayList<ServerJobsModel>()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson = Gson()
+        val json = prefs.getString("prefaddedPrinterListWithDetails", null)
+        val type = object :
+            TypeToken<java.util.ArrayList<ServerJobsModel?>?>() {}.type
+        var sharedPreferencesServerJobsModelList = java.util.ArrayList<ServerJobsModel>()
+        if (json != null) {
+            sharedPreferencesServerJobsModelList = gson.fromJson<java.util.ArrayList<ServerJobsModel>>(
+                json,
+                type
+            )
+        }
     }
 
 }
