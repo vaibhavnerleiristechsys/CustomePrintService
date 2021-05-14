@@ -7,6 +7,8 @@ public class ServerJobsModel {
     private String size;
     private String totalPageCount;
     private String printType;
+    private String printerId;
+    private String userName;
 
     public String getJobId() {
         return jobId;
@@ -54,5 +56,21 @@ public class ServerJobsModel {
 
     public void setPrintType(String printType) {
         this.printType = printType;
+    }
+
+    public String getPrinterId() {
+        return printerId;
+    }
+
+    public void setPrinterId(String printerId) {
+        this.printerId = printerId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

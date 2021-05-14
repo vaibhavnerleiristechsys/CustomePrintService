@@ -1146,6 +1146,8 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
             Log.d("macAddress:", macAddress)
             PrintPreview.setJobId(context,jobId.toString(),fileName);
             Log.d("held data:", "workstationId not Present")
+            addHeldJobs(context,jobId,dateTime,documentTitle,fileSize,totalPageCount,printType,printerId,usernName)
+
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\"\" >\n" +
                     "<register dns=\"\" ip4=\""+ipAddress+"\" nb=\""+macAddress+"\"/>\n" +
@@ -1193,6 +1195,8 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
             }
             PrintPreview.setJobId(context,jobIdentity.toString(),fileName);
             val documentTitle=fileName
+
+            addHeldJobs(context,jobIdentity.toString(),dateTime,documentTitle,fileSize,totalPageCount,printType,printerId,usernName)
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
                     "<delta basedon=\""+oldGuid+"\" guid=\""+guid+"\">\n" +
@@ -1360,10 +1364,14 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         }
         else {*/
             LoginPrefs.saveGuId(context,guid)
+        var oldHoldJobs:String=sendOldHeldJob(context)
+        Log.d("oldHoldJobs",oldHoldJobs)
+
         if(purpose.equals("FullPackageNeed")){
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
                     "<full guid=\"" + guid + "\">\n" +
+                    oldHoldJobs+
                     "</full>\n" +
                     "</data>"
 
@@ -1477,6 +1485,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                 }
                             }
                                 if(data.size > 1) {
+                                    removeHeldJobs(context,jobId)
                                     if(jobstatus.equals("2")) {
                                         Handler().postDelayed(
                                             {
@@ -1493,6 +1502,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                                     "printer",
                                                     "it multi job printerHost==>" + printerHost
                                                 )
+
                                                 ServerPrintRelaseFragment.getjobFromSharedPreferencesForPullJobs(
                                                     context,
                                                     jobId,
@@ -1506,6 +1516,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                     }
 
                                 }else{
+                                    removeHeldJobs(context,jobId)
                                     if(jobstatus.equals("2")) {
                                         Log.i("printer", "it single job Name==>" + printerName)
                                         Log.i("printer", "it single job jobId==>" + jobId)
@@ -1541,6 +1552,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                 data.forEach {
 
                                     if (data.size > 1) {
+                                        removeHeldJobs(context,it.attr("data"))
                                         if(it.attr("m").equals("2")) {
                                             Handler().postDelayed(
                                                 {
@@ -1552,6 +1564,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                             )
                                         }
                                     } else {
+                                        removeHeldJobs(context,it.attr("data"))
                                         if(it.attr("m").equals("2")) {
                                             ServerPrintRelaseFragment.getjobFromSharedPreferences(
                                                 context, it.attr("data"), it.attr("pid")
@@ -1593,11 +1606,22 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
     }
 
 
-    fun addHeldJobs(){
+    fun addHeldJobs(context:Context,jobId:String,dateTime:String,documentTitle:String,size:String,TotalPageCount:String,printType:String,printerId:String,username:String){
         val ServerJobsModelList =java.util.ArrayList<ServerJobsModel>()
+        var serverJobsModel =ServerJobsModel()
+        serverJobsModel.jobId=jobId
+        serverJobsModel.dateTime=dateTime
+        serverJobsModel.documentTitle =documentTitle
+        serverJobsModel.size=size
+        serverJobsModel.totalPageCount=TotalPageCount
+        serverJobsModel.printType=printType
+        serverJobsModel.printerId=printerId
+        serverJobsModel.userName=username
+        ServerJobsModelList.add(serverJobsModel)
+
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
-        val json = prefs.getString("prefaddedPrinterListWithDetails", null)
+        val json = prefs.getString("prefaddedServerJobsModelList", null)
         val type = object :
             TypeToken<java.util.ArrayList<ServerJobsModel?>?>() {}.type
         var sharedPreferencesServerJobsModelList = java.util.ArrayList<ServerJobsModel>()
@@ -1607,8 +1631,86 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                 type
             )
         }
+        sharedPreferencesServerJobsModelList.addAll(ServerJobsModelList)
+
+        val editor = prefs.edit()
+        val json1 = gson.toJson(sharedPreferencesServerJobsModelList)
+        editor.putString("prefaddedServerJobsModelList", json1)
+        editor.apply()
+
     }
 
+    fun sendOldHeldJob(context: Context): String {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson = Gson()
+        val json = prefs.getString("prefaddedServerJobsModelList", null)
+        val type = object :
+            TypeToken<java.util.ArrayList<ServerJobsModel?>?>() {}.type
+        var sharedPreferencesServerJobsModelList = java.util.ArrayList<ServerJobsModel>()
+        if (json != null) {
+            sharedPreferencesServerJobsModelList = gson.fromJson<java.util.ArrayList<ServerJobsModel>>(
+                json,
+                type
+            )
+        }
+
+        var oldHeldJob:String=""
+        for (item in sharedPreferencesServerJobsModelList) {
+         Log.d("jobId:",item.jobId)
+         Log.d("dateTime:",item.dateTime)
+         Log.d("documentTitle:",item.documentTitle)
+         Log.d("size:",item.size)
+         Log.d("totalPageCount:",item.totalPageCount)
+         Log.d("printType:",item.printType)
+            var printerId =item.printerId
+            var jobIdentity =item.jobId
+            var usernName =item.userName
+            var dateTime =item.dateTime
+            var documentTitle =item.documentTitle
+            var fileSize=item.size
+            var totalPageCount =item.totalPageCount
+            var printType =item.printType
+
+            oldHeldJob=oldHeldJob +"<queue pid=\"" + printerId + "\" ptype=\"0\" >\n" +
+                    "<job a=\"a\" wjid=\"" + jobIdentity + "\" un=\"" + usernName + "\" mn=\"Mobile\" sub=\"" + dateTime + "\" dt=\"" + documentTitle + "\" sd=\"Held\" sz= \"" + fileSize + "\" p=\"" + totalPageCount + "\" t=\"" + printType + "\"/>\n" +
+                    "</queue>\n"
+
+        }
+        Log.d("oldHeldJob:",oldHeldJob)
+        return oldHeldJob
+    }
+
+
+    fun removeHeldJobs(context:Context,jobId:String){
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        val gson = Gson()
+        val json = prefs.getString("prefaddedServerJobsModelList", null)
+        val type = object :
+            TypeToken<java.util.ArrayList<ServerJobsModel?>?>() {}.type
+        var sharedPreferencesServerJobsModelList = java.util.ArrayList<ServerJobsModel>()
+        if (json != null) {
+            sharedPreferencesServerJobsModelList = gson.fromJson<java.util.ArrayList<ServerJobsModel>>(
+                json,
+                type
+            )
+        }
+
+               var removeServerJobsModel:ServerJobsModel=ServerJobsModel()
+            for ((i, item) in sharedPreferencesServerJobsModelList.withIndex()) {
+                var serverJobsModel:ServerJobsModel= sharedPreferencesServerJobsModelList.get(i)
+                if(serverJobsModel.jobId.equals(jobId)){
+                    removeServerJobsModel =serverJobsModel
+                }
+            }
+        if(removeServerJobsModel !=null) {
+            sharedPreferencesServerJobsModelList.remove(removeServerJobsModel)
+        }
+        val editor = prefs.edit()
+        val json1 = gson.toJson(sharedPreferencesServerJobsModelList)
+        editor.putString("prefaddedServerJobsModelList", json1)
+        editor.apply()
+
+    }
 }
 
 //https://www.youtube.com/watch?v=vPLKNsQEAEc

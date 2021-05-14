@@ -190,7 +190,7 @@ public class ServerPrintRelaseFragment extends Fragment {
          }
      }else{
          getjobListStatus();
-         serverCallForGettingAllPrinters(requireContext());
+      //   serverCallForGettingAllPrinters(requireContext());
          /*if(isStartedJobUpdateMethod==null) {
              getJobUpdateCall();
          }
