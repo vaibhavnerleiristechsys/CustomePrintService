@@ -905,7 +905,9 @@ public class PrintPreview extends AppCompatActivity {
     public BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            dialog.cancel();
+            if(dialog != null) {
+                dialog.cancel();
+            }
             String printerName  = intent.getStringExtra("printer name");
             selectPrinter=printerName;
             selectPrinterText.setText(printerName);
