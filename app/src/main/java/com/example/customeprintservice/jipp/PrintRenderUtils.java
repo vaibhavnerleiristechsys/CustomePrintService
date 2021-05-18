@@ -575,7 +575,7 @@ public class PrintRenderUtils {
     }
 
 
-    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor,String orientationValue) {
+    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor,String orientationValue,String paperSize) {
         PrintUtils.jobstatusList.clear();
         new Thread() {
 

@@ -78,6 +78,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -104,9 +105,10 @@ public class PrintPreview extends AppCompatActivity {
     View v = null;
     public boolean isColor=false;
     public String  orientationValue="portrait";
+    public String  paperSize="so_a4_210x297mm";
     private NumberPicker picker1,picker2;
     private String[] pickerVals,pickerVals2;
-    public Spinner orientationSpinner;
+    public Spinner orientationSpinner,staticSpinner,paperSizeSpinner;
     //Logger logger = LoggerFactory.getLogger(PrintPreview.class);
     RecyclerView printerRecyclerView;
     TextView selectPrinterText;
@@ -248,10 +250,10 @@ public class PrintPreview extends AppCompatActivity {
             }
         });
 
-        Spinner staticSpinner = (Spinner) findViewById(R.id.static_spinner);
-        String[] printItems = new String[] {"Monochrome", "Color"};
-        ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printItems);
-        staticSpinner.setAdapter(staticAdapter);
+         staticSpinner = (Spinner) findViewById(R.id.static_spinner);
+       // String[] printItems = new String[] {"Monochrome", "Color"};
+        //ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printItems);
+        //staticSpinner.setAdapter(staticAdapter);
 
         staticSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -271,6 +273,24 @@ public class PrintPreview extends AppCompatActivity {
 
             }
         });
+
+        paperSizeSpinner= (Spinner) findViewById(R.id.paperSizeSpinner);
+
+
+        paperSizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+                String paperSized= parent.getItemAtPosition(position).toString();
+                Log.d("paperSize=",paperSized);
+                paperSize=paperSized;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
 
 
         orientationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -320,6 +340,7 @@ public class PrintPreview extends AppCompatActivity {
                 Boolean PageIndexCorrect=true;
                 if(radioButton.getText().toString().equals("page")) {
                     String pagecount =pagesCount.getText().toString();
+                    if(pagecount.contains("-")){
                     String[] pageIndex = pagecount.split("-", 0);
                     if(pageIndex.length==2){
                         startPageIndex= Integer.parseInt(pageIndex[0]);
@@ -327,6 +348,10 @@ public class PrintPreview extends AppCompatActivity {
                     }else{
                         Toast.makeText(context, "please check pages number", Toast.LENGTH_LONG).show();
                         PageIndexCorrect=false;
+                    }
+                   }else{
+                        startPageIndex= Integer.parseInt(pagecount);
+                        endPageIndex= Integer.parseInt(pagecount);
                     }
                      if(startPageIndex>endPageIndex){
                          Toast.makeText(context, "please check pages number", Toast.LENGTH_LONG).show();
@@ -632,7 +657,7 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor,orientationValue);
+                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor,orientationValue,paperSize);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
@@ -827,6 +852,10 @@ public class PrintPreview extends AppCompatActivity {
                           Log.d("colorSupported:",colorStrigified);
                           Log.d("mediaSupported:",mediaStrigified);
                         ArrayList<String> items = new ArrayList<String>();
+                        ArrayList<String>ColorSupportedlist = new ArrayList<String>();
+                        HashSet<String> colorSupportedList =new HashSet<String>();
+                        ArrayList<String>FileSizelist = new ArrayList<String>();
+
 
                           for(int i=0;i<orientationSupportList.size();i++){
                             Log.d("orientationSupported:",orientationSupportList.get(i));
@@ -837,9 +866,19 @@ public class PrintPreview extends AppCompatActivity {
                           }
                           for(int i=0;i<colorSupportList.size();i++){
                             Log.d("colorSupported:",colorSupportList.get(i));
+                            if(colorSupportList.get(i).toLowerCase().equals("monochrome")){
+                                colorSupportedList.add("Monochrome");
+                            }else if(colorSupportList.get(i).toLowerCase().equals("color")){
+                                colorSupportedList.add("Color");
+                            }
+
                           }
-                          for(int i=0;i<mediaSupportList.size();i++){
+                        ArrayList<String>listOfColorSupported = new ArrayList<String>(colorSupportedList);
+
+                        ColorSupportedlist.addAll(listOfColorSupported);
+                        for(int i=0;i<mediaSupportList.size();i++){
                             Log.d("mediaSupported:",mediaSupportList.get(i));
+                            FileSizelist.add(mediaSupportList.get(i));
                           }
                           items.add("landscape");
                         runOnUiThread(new Runnable() {
@@ -847,10 +886,13 @@ public class PrintPreview extends AppCompatActivity {
                             public void run() {
                                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, items);
                                 orientationSpinner.setAdapter(adapter);
+                                ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,ColorSupportedlist);
+                                staticSpinner.setAdapter(staticAdapter);
+                                ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
+                                paperSizeSpinner.setAdapter(fileSizeAdapter);
+
                             }
                         });
-
-
 
                     }
 
@@ -917,6 +959,7 @@ public class PrintPreview extends AppCompatActivity {
                 if(printerModel.getServiceName().toString().equals(printerName.toString())){
                     selectedPrinterModel=printerModel;
                     if(selectedPrinterModel.getPrinterHost() !=null) {
+                        clearAttributeList();
                         if(selectedPrinterModel.getIsPullPrinter().equals("0")) {
                             getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
                         }
@@ -949,6 +992,26 @@ public class PrintPreview extends AppCompatActivity {
         String convertedJson = gson1.toJson(documentSharedPreflist);
         editor1.putString("holdlocaldocumentlist", convertedJson);
         editor1.apply();
+    }
+
+
+    public void clearAttributeList(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<String> items = new ArrayList<String>();
+                ArrayList<String>ColorSupportedlist = new ArrayList<String>();
+                ArrayList<String>FileSizelist = new ArrayList<String>();
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, items);
+                orientationSpinner.setAdapter(adapter);
+                ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,ColorSupportedlist);
+                staticSpinner.setAdapter(staticAdapter);
+                ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
+                paperSizeSpinner.setAdapter(fileSizeAdapter);
+            }
+        });
+
     }
 
 }

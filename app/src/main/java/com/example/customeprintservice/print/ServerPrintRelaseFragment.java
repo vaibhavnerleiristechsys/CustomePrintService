@@ -1029,7 +1029,7 @@ public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAd
 
                 String finalLocalurl = "http" + ":/" + hostAddress.toString() + ":631/ipp/print";
                 PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, 1,ippUri,true,"portrait");
+                printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, 1,ippUri,true,"portrait","");
               //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
 
             }

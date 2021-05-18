@@ -60,6 +60,7 @@ import static com.hp.jipp.model.Types.documentFormat;
 import static com.hp.jipp.model.Types.feedOrientation;
 import static com.hp.jipp.model.Types.ippAttributeFidelity;
 import static com.hp.jipp.model.Types.media;
+import static com.hp.jipp.model.Types.mediaTypeSupported;
 import static com.hp.jipp.model.Types.orientationRequested;
 import static com.hp.jipp.model.Types.printColorMode;
 import static com.hp.jipp.model.Types.requestedAttributes;
@@ -262,6 +263,7 @@ public class PrintUtils {
          }else if(versionNumber.equalsIgnoreCase("0x100")){
              versionNo=0x100;
          }
+
          if(orientationType.contains("landscape")){
           orientationTypes = Orientation.landscape;
          }else{
