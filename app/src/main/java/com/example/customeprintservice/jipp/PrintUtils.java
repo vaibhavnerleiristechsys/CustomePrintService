@@ -254,7 +254,7 @@ public class PrintUtils {
         }).start();
     }
 
-    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber,String orientationType) {
+    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber,String orientationType,String paperSize) {
         Map<String, String> resultMap = new HashMap<>();
         Orientation orientationTypes = Orientation.portrait;
         int versionNo=0x200;
@@ -263,6 +263,15 @@ public class PrintUtils {
          }else if(versionNumber.equalsIgnoreCase("0x100")){
              versionNo=0x100;
          }
+
+         String mediaSize =Media.isoA5;
+
+         if(paperSize == ""){
+             mediaSize =Media.isoA5;
+         }else{
+             mediaSize =paperSize;
+         }
+
 
          if(orientationType.contains("landscape")){
           orientationTypes = Orientation.landscape;
@@ -291,7 +300,9 @@ public class PrintUtils {
                                     ippAttributeFidelity.of(false),
                                     documentFormat.of("application/octet-stream")).setMajorVersionNumber(versionNo)
                              .putJobAttributes(
-                                     orientationRequested.of(orientationTypes)
+                                     orientationRequested.of(orientationTypes),
+                                     media.of(mediaSize)
+
                              )
                             .build();
                 }else{
@@ -300,7 +311,8 @@ public class PrintUtils {
                                     requestingUserName.of(CMD_NAME),
                                     documentFormat.of(format)).setMajorVersionNumber(versionNo)
                              .putJobAttributes(
-                                     orientationRequested.of(orientationTypes)
+                                     orientationRequested.of(orientationTypes),
+                                     media.of(mediaSize)
                              )
                             .build();
                 }

@@ -129,7 +129,7 @@ class PrintActivity : AppCompatActivity() {
                 val url = bundle.getString("finalUrl")
                 val filePath = bundle.getString("filePath")
                 val file = File(filePath)
-                printUtils.print(URI.create(url), file, this@PrintActivity, "","0x200","")
+                printUtils.print(URI.create(url), file, this@PrintActivity, "","0x200","","")
             } else {
                 dialogSelectedFileList()
             }
@@ -380,7 +380,7 @@ class PrintActivity : AppCompatActivity() {
                 Log.i("printer", "in else")
                 val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
                 Thread {
-                   val map =  printUtils.print(finalUri, file, this@PrintActivity, "","0x200","")
+                   val map =  printUtils.print(finalUri, file, this@PrintActivity, "","0x200","","")
                 }.start()
             }
 
@@ -624,7 +624,7 @@ class PrintActivity : AppCompatActivity() {
            var stringMap=""
            Thread {
 
-               val map =  printUtils.print(finalUri, file, context, "","0x200","")
+               val map =  printUtils.print(finalUri, file, context, "","0x200","","")
                runOnUiThread {
 
                   var ExceptionString= map.get("Exception")

@@ -1018,7 +1018,7 @@ public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAd
                 PdfRenderer renderer = new PdfRenderer(fileDescriptor);
                 final int pageCount = renderer.getPageCount();
 
-                printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, pageCount, 1,ippUri,pageCount,true);
+                printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, pageCount, 1,ippUri,pageCount,true,"portrait","");
              //   Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
             }
 
