@@ -636,7 +636,7 @@ public class PrintPreview extends AppCompatActivity {
                     if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null) {
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, totalPageCount, noOfCopies,ippUri,totalPageCount,isColor,orientationValue,paperSize);
+                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 1, totalPageCount, noOfCopies,ippUri,totalPageCount,isColor,orientationValue,paperSize);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
