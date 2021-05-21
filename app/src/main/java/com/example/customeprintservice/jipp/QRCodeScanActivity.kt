@@ -166,7 +166,8 @@ class QRCodeScanActivity : AppCompatActivity() {
             apiService.getPrintJobStatusesForLdap(
                 "devncoldap",
                 LdapUsername.toString(),
-                LdapPassword.toString()
+                LdapPassword.toString(),
+                "printerDeviceQueue.printers"
             )
         }else{
             apiService.getPrintJobStatusesForQrCode(

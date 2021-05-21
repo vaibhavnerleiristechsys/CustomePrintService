@@ -465,7 +465,8 @@ class PrintReleaseFragment : Fragment() {
          apiService.getPrintJobStatusesForLdap(
              siteId.toString(),
              LdapUsername.toString(),
-             LdapPassword.toString()
+             LdapPassword.toString(),
+             "printerDeviceQueue.printers"
          )
         }else if(siteId.toString().contains("google")){
             apiService.getPrintJobStatusesForGoogle(
@@ -772,7 +773,8 @@ class PrintReleaseFragment : Fragment() {
             apiService.getPrintJobStatusesForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
-                LdapPassword.toString()
+                LdapPassword.toString(),
+                "printerDeviceQueue.printers"
             )
         }else if(siteId.toString().contains("google")){
             apiService.getPrintJobStatusesForGoogle(

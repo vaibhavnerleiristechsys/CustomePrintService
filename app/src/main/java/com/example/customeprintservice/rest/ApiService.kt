@@ -251,7 +251,8 @@ interface ApiService {
     fun getPrintJobStatusesForLdap(
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
-        @Header("X-PrinterLogic-Password") password: String
+        @Header("X-PrinterLogic-Password") password: String,
+        @Query("include") include: String
     ): Call<GetJobStatusesResponse>
 
     @POST(".")

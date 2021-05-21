@@ -106,9 +106,10 @@ public class PrintPreview extends AppCompatActivity {
     public boolean isColor=false;
     public String  orientationValue="portrait";
     public String  paperSize="so_a4_210x297mm";
+    public String paperSide="Simplex";
     private NumberPicker picker1,picker2;
     private String[] pickerVals,pickerVals2;
-    public Spinner orientationSpinner,staticSpinner,paperSizeSpinner;
+    public Spinner orientationSpinner,staticSpinner,paperSizeSpinner,paperSidesSpinner;
     //Logger logger = LoggerFactory.getLogger(PrintPreview.class);
     RecyclerView printerRecyclerView;
     TextView selectPrinterText;
@@ -173,6 +174,28 @@ public class PrintPreview extends AppCompatActivity {
         }
      //   Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
          orientationSpinner = (Spinner) findViewById(R.id.orientation_spinner);
+        paperSidesSpinner = (Spinner) findViewById(R.id.paperSidesSpinner);
+        String[] paperSidesItems = new String[] {"Simplex", "Duplex"};
+
+        ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paperSidesItems);
+        paperSidesSpinner.setAdapter(paperSidesAdapter);
+
+        paperSidesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
+                String paperSided= parent.getItemAtPosition(position).toString();
+                Log.d("paperSide=",paperSided);
+                paperSide=paperSided;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+
         ArrayList<String> items = new ArrayList<String>();
         items.add("select printer");
         SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
@@ -290,6 +313,8 @@ public class PrintPreview extends AppCompatActivity {
 
             }
         });
+
+
 
 
 
@@ -636,7 +661,11 @@ public class PrintPreview extends AppCompatActivity {
                     if (radioButton.getText().toString().equals("All") && selectedPrinterModel != null && filePath != null && selectedPrinterModel.getPrinterHost() != null) {
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 1, totalPageCount, noOfCopies,ippUri,totalPageCount,isColor,orientationValue,paperSize);
+                        if(paperSide.equals("Simplex")){
+                            printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 1, totalPageCount, noOfCopies, ippUri, totalPageCount, isColor, orientationValue, paperSize);
+                        }else{
+                            printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPagesForTwoSidedPrint(file, finalLocalurl, context, 1, totalPageCount, noOfCopies, ippUri, totalPageCount, isColor, orientationValue, paperSize);
+                        }
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
@@ -645,7 +674,11 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies,ippUri,totalPageCount,isColor,orientationValue,paperSize);
+                        if(paperSide.equals("Simplex")) {
+                            printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies, ippUri, totalPageCount, isColor, orientationValue, paperSize);
+                        }else{
+                            printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPagesForTwoSidedPrint(file, finalLocalurl, context, startPageIndex, endPageIndex, noOfCopies, ippUri, totalPageCount, isColor, orientationValue, paperSize);
+                        }
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);

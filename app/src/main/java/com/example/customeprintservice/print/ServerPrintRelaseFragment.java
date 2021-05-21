@@ -639,7 +639,8 @@ public class ServerPrintRelaseFragment extends Fragment {
             call = apiService.getPrintJobStatusesForLdap(
                     siteId.toString(),
                     LdapUsername.toString(),
-                    LdapPassword.toString()
+                    LdapPassword.toString(),
+                    "printerDeviceQueue.printers"
             );
         }else if(siteId.contains("google")){
             DataDogLogger.getLogger().i("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
