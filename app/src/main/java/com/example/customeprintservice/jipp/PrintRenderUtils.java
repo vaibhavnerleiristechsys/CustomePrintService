@@ -1012,7 +1012,7 @@ public class PrintRenderUtils {
                                             counter++;
                                             Thread.sleep(30000);
                                             ToneGenerator toneGen1 = new ToneGenerator(AudioManager.STREAM_RING, 100);
-                                            toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,150);
+                                            toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP,550);
                                             Thread.sleep(20000);
                                             pagePrintCounter = 0;
                                         }
@@ -1061,7 +1061,7 @@ public class PrintRenderUtils {
 
                     exp.printStackTrace();
                 }
-                Log.d("print done ", "print all pages done ");
+            /*    Log.d("print done ", "print all pages done ");
                 final Handler handler =  new Handler(Looper.getMainLooper());
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -1131,7 +1131,7 @@ public class PrintRenderUtils {
                 }, 60000);
 
 
-
+*/
 
             }
         }.start();

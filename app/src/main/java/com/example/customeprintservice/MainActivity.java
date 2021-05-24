@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
             BottomNavigationActivity bottomNavigationActivity = new BottomNavigationActivity();
             String decode = bottomNavigationActivity.decode(decodeUrl);
 
-            if(decode.contains("google")) {
+            if(decode.toLowerCase().contains("google")) {
                 String decodeGoogleUrl = decode.replaceAll("\\\\", "");
                 decodeGoogleUrl = decodeGoogleUrl.replaceAll("\"", "").toString();
                 decodeGoogleUrl = decodeGoogleUrl.replaceAll("\\{", "").toString();
