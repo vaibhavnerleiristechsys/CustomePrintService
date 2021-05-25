@@ -247,6 +247,9 @@ class PrinterListService {
                         editor.apply()
                     }
                 }
+                if(response.code()==429){
+                    Toast.makeText(context, "Too Many Requests", Toast.LENGTH_SHORT).show()
+                }
             }
 
             override fun onFailure(call: Call<PrinterDetailsResponse>, t: Throwable) {

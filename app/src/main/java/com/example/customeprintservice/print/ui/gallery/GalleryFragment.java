@@ -237,6 +237,10 @@ public class GalleryFragment extends Fragment {
                         swipeContainer.setRefreshing(false);
 
                 }
+
+                if(response.code()==429){
+                    Toast.makeText(context, "Too Many Requests", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

@@ -317,10 +317,10 @@ public class PrintUtils {
                             .build();
                 }
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
-                DataDogLogger.getLogger().i("Devnco_Android printer in print : "+ "printRequest->" + printRequest.toString());
+                DataDogLogger.getLogger().i("Devnco_Android print method : "+ "printRequest->" + printRequest.toString());
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                 IppPacketData printResponse = transport.sendData(uri, request);
-                DataDogLogger.getLogger().i("Devnco_Android IppPacketData printResponse in print :"+printResponse.toString());
+                DataDogLogger.getLogger().i("Devnco_Android printResponse in print method :"+printResponse.toString());
                 resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();
                 resultMap.putAll(getResponseDetails(ippPacket));

@@ -115,6 +115,7 @@ class PrintersFragment : Fragment() {
 
         swipeContainer.setOnRefreshListener {
             PrinterList().printerList.clear()
+            updateUi(PrinterList().printerList, requireContext(), "")
             getPrinterList(requireContext(), decodeJWT())
 
         }
@@ -419,7 +420,7 @@ class PrintersFragment : Fragment() {
                             }
 
 
-                        }, 5000)
+                        }, 8000)
                         // updateUi(PrinterList().printerList)
                         // swipeContainer.isRefreshing = false
                         cancelLoading()
