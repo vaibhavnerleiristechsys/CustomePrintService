@@ -3,6 +3,7 @@ package com.example.customeprintservice.jipp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,6 +29,7 @@ import com.hp.jipp.encoding.ValueTag;
 import com.hp.jipp.model.Media;
 import com.hp.jipp.model.Operation;
 import com.hp.jipp.model.Orientation;
+import com.hp.jipp.model.PrintColorMode;
 import com.hp.jipp.model.Sides;
 import com.hp.jipp.model.Status;
 import com.hp.jipp.trans.IppClientTransport;
@@ -254,9 +256,10 @@ public class PrintUtils {
         }).start();
     }
 
-    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber,String orientationType,String paperSize) {
+    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber,String orientationType,String paperSize,boolean isColor ) {
         Map<String, String> resultMap = new HashMap<>();
         Orientation orientationTypes = Orientation.portrait;
+
         int versionNo=0x200;
          if(versionNumber.equalsIgnoreCase("0x200")){
              versionNo=0x200;
@@ -272,6 +275,13 @@ public class PrintUtils {
              mediaSize =paperSize;
          }
 
+
+         String color= PrintColorMode.color;
+         if(isColor == true){
+             color= PrintColorMode.color;
+         }else{
+             color=PrintColorMode.monochrome;
+         }
 
          if(orientationType.contains("landscape")){
           orientationTypes = Orientation.landscape;
@@ -301,7 +311,8 @@ public class PrintUtils {
                                     documentFormat.of("application/octet-stream")).setMajorVersionNumber(versionNo)
                              .putJobAttributes(
                                      orientationRequested.of(orientationTypes),
-                                     media.of(mediaSize)
+                                     media.of(mediaSize),
+                                     printColorMode.of(color)
 
                              )
                             .build();
@@ -312,14 +323,17 @@ public class PrintUtils {
                                     documentFormat.of(format)).setMajorVersionNumber(versionNo)
                              .putJobAttributes(
                                      orientationRequested.of(orientationTypes),
-                                     media.of(mediaSize)
+                                     media.of(mediaSize),
+                                     printColorMode.of(color)
                              )
                             .build();
                 }
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
                 DataDogLogger.getLogger().i("Devnco_Android print method : "+ "printRequest->" + printRequest.toString());
+
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                 IppPacketData printResponse = transport.sendData(uri, request);
+                
                 DataDogLogger.getLogger().i("Devnco_Android printResponse in print method :"+printResponse.toString());
                 resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();

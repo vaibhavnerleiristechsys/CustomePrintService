@@ -123,7 +123,7 @@ public class PrintRenderUtils {
                         page.close();
 
                         FileOutputStream out = new FileOutputStream(renderFile);
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 85, out);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
                         Log.v("Saved Image - ", renderFile.getAbsolutePath());
                         DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
                         out.flush();
@@ -143,7 +143,7 @@ public class PrintRenderUtils {
                             break;
                         } else {
 
-                             map = printUtils.print(finalUri, renderFile, context, "", versionNumber,"","");
+                             map = printUtils.print(finalUri, renderFile, context, "", versionNumber,"","",true);
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
@@ -312,7 +312,7 @@ public class PrintRenderUtils {
                             fileOut.close();
                         }
 
-                        Map map = printUtils.print(finalUri, renderFile, context, "","0x200","","");
+                        Map map = printUtils.print(finalUri, renderFile, context, "","0x200","","",true);
 
                         if (map.get("status") == "server-error-busy") {
                             Thread.sleep(5000);
@@ -399,7 +399,7 @@ public class PrintRenderUtils {
                                 page.close();
 
                                 FileOutputStream out = new FileOutputStream(renderFile);
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 85, out);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
                                 Log.v("Saved Image - ", renderFile.getAbsolutePath());
                                 out.flush();
                                 out.close();
@@ -419,7 +419,7 @@ public class PrintRenderUtils {
                                 } else {
                                     String ippUriFinal = finalUri.toString();
 
-                                     map = printUtils.print(finalUri, renderFile, context, "",versionNumber,orientationValue,paperSize);
+                                     map = printUtils.print(finalUri, renderFile, context, "",versionNumber,orientationValue,paperSize,isColor);
                                     DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
 
                                     if (map.get("status").equals("server-error-busy")) {
@@ -616,9 +616,9 @@ public class PrintRenderUtils {
 
                             Map<String, String> map;
                             if(isColor == true) {
-                                map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize);
+                                map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize,isColor);
                             }else{
-                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber,orientationValue,paperSize);
+                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber,orientationValue,paperSize,isColor);
                             }
                             String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
@@ -763,7 +763,7 @@ public class PrintRenderUtils {
 
         String filePath = colorFile.getPath();
         Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-        Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.RGB_565, true);
+        Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
         Canvas canvas = new Canvas(mutableBitmap);
         ColorMatrix colorMatrix = new ColorMatrix();
         colorMatrix.setSaturation(0);
@@ -771,7 +771,7 @@ public class PrintRenderUtils {
         paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
         canvas.drawBitmap(mutableBitmap, 0, 0, paint);
         FileOutputStream out = new FileOutputStream(colorFile);
-        bitmap.compress(Bitmap.CompressFormat.PNG, 85, out);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
         //      logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
         out.flush();
         out.close();
@@ -854,7 +854,7 @@ public class PrintRenderUtils {
                                             page.close();
 
                                             FileOutputStream out = new FileOutputStream(renderFile);
-                                            bitmap.compress(Bitmap.CompressFormat.PNG, 85, out);
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
                                             Log.v("Saved Image - ", renderFile.getAbsolutePath());
                                             out.flush();
                                             out.close();
@@ -874,7 +874,7 @@ public class PrintRenderUtils {
                                             } else {
                                                 String ippUriFinal = finalUri.toString();
 
-                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize);
+                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize,isColor);
                                                 DataDogLogger.getLogger().i("Devnco_Android print status:" + map.get("status").toString());
 
                                                 if (map.get("status").equals("server-error-busy")) {
@@ -938,7 +938,7 @@ public class PrintRenderUtils {
                                             page.close();
 
                                             FileOutputStream out = new FileOutputStream(renderFile);
-                                            bitmap.compress(Bitmap.CompressFormat.PNG, 85, out);
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
                                             Log.v("Saved Image - ", renderFile.getAbsolutePath());
                                             out.flush();
                                             out.close();
@@ -958,7 +958,7 @@ public class PrintRenderUtils {
                                             } else {
                                                 String ippUriFinal = finalUri.toString();
 
-                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize);
+                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize,isColor);
                                                 DataDogLogger.getLogger().i("Devnco_Android print status:" + map.get("status").toString());
 
                                                 if (map.get("status").equals("server-error-busy")) {
