@@ -65,6 +65,7 @@ import com.example.customeprintservice.utils.ProgressDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hp.jipp.model.Sides;
 import com.unnamed.b.atv.model.TreeNode;
 
 //import org.slf4j.Logger;
@@ -1030,7 +1031,7 @@ public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAd
 
                 String finalLocalurl = "http" + ":/" + hostAddress.toString() + ":631/ipp/print";
                 PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, 1,ippUri,true,"portrait","");
+                printRenderUtils.printNoOfCOpiesJpgOrPngAndPdfFiles(file, finalLocalurl, context, 1,ippUri,true,"portrait","", Sides.oneSided);
               //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
 
             }

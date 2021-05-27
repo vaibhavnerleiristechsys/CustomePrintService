@@ -40,6 +40,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
+import com.hp.jipp.model.Sides
 import com.hp.jipp.model.TimeoutPredicate.activity
 import kotlinx.android.synthetic.main.activity_print.*
 import java.io.File
@@ -129,7 +130,8 @@ class PrintActivity : AppCompatActivity() {
                 val url = bundle.getString("finalUrl")
                 val filePath = bundle.getString("filePath")
                 val file = File(filePath)
-                printUtils.print(URI.create(url), file, this@PrintActivity, "","0x200","","",true)
+                printUtils.print(URI.create(url), file, this@PrintActivity, "","0x200","","",true,
+                    Sides.oneSided)
             } else {
                 dialogSelectedFileList()
             }
@@ -380,7 +382,7 @@ class PrintActivity : AppCompatActivity() {
                 Log.i("printer", "in else")
                 val finalUri = URI.create(edtPrinterActivityEditUrl.text.toString())
                 Thread {
-                   val map =  printUtils.print(finalUri, file, this@PrintActivity, "","0x200","","",true)
+                   val map =  printUtils.print(finalUri, file, this@PrintActivity, "","0x200","","",true,Sides.oneSided)
                 }.start()
             }
 
@@ -624,7 +626,7 @@ class PrintActivity : AppCompatActivity() {
            var stringMap=""
            Thread {
 
-               val map =  printUtils.print(finalUri, file, context, "","0x200","","",true)
+               val map =  printUtils.print(finalUri, file, context, "","0x200","","",true,Sides.oneSided)
                runOnUiThread {
 
                   var ExceptionString= map.get("Exception")

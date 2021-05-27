@@ -256,7 +256,7 @@ public class PrintUtils {
         }).start();
     }
 
-    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber,String orientationType,String paperSize,boolean isColor ) {
+    public Map<String, String> print(URI uri, File file, Context context, String fileFormat,String versionNumber,String orientationType,String paperSize,boolean isColor,String sideSupported ) {
         Map<String, String> resultMap = new HashMap<>();
         Orientation orientationTypes = Orientation.portrait;
 
@@ -265,6 +265,13 @@ public class PrintUtils {
              versionNo=0x200;
          }else if(versionNumber.equalsIgnoreCase("0x100")){
              versionNo=0x100;
+         }
+
+         String sided =Sides.oneSided;
+         if(sideSupported ==""){
+             sided =Sides.oneSided;
+         }else{
+             sided=sideSupported;
          }
 
          String mediaSize =Media.isoA5;
@@ -312,7 +319,8 @@ public class PrintUtils {
                              .putJobAttributes(
                                      orientationRequested.of(orientationTypes),
                                      media.of(mediaSize),
-                                     printColorMode.of(color)
+                                     printColorMode.of(color),
+                                     sides.of(sided)
 
                              )
                             .build();
@@ -324,7 +332,8 @@ public class PrintUtils {
                              .putJobAttributes(
                                      orientationRequested.of(orientationTypes),
                                      media.of(mediaSize),
-                                     printColorMode.of(color)
+                                     printColorMode.of(color),
+                                     sides.of(sided)
                              )
                             .build();
                 }
@@ -332,7 +341,22 @@ public class PrintUtils {
                 DataDogLogger.getLogger().i("Devnco_Android print method : "+ "printRequest->" + printRequest.toString());
 
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
+                new Handler(Looper.getMainLooper()).post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, request.toString(), Toast.LENGTH_LONG).show();
+                            }
+                        });
+
                 IppPacketData printResponse = transport.sendData(uri, request);
+                new Handler(Looper.getMainLooper()).post(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(context, printResponse.toString(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                 
                 DataDogLogger.getLogger().i("Devnco_Android printResponse in print method :"+printResponse.toString());
                 resultMap.put("printResponse :",printResponse.toString()) ;

@@ -24,6 +24,7 @@ import com.example.customeprintservice.utils.DataDogLogger;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hp.jipp.model.Sides;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -104,6 +105,7 @@ public class PrintPreview extends AppCompatActivity {
     Dialog dialog;
     View v = null;
     public boolean isColor=false;
+    public boolean isDuplexPrintSupported=false;
     public String  orientationValue="portrait";
     public String  paperSize="so_a4_210x297mm";
     public String paperSide="Simplex";
@@ -175,11 +177,11 @@ public class PrintPreview extends AppCompatActivity {
      //   Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
          orientationSpinner = (Spinner) findViewById(R.id.orientation_spinner);
         paperSidesSpinner = (Spinner) findViewById(R.id.paperSidesSpinner);
-        String[] paperSidesItems = new String[] {"Simplex", "Duplex"};
+      /*  String[] paperSidesItems = new String[] {"Simplex", "Duplex"};
 
         ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paperSidesItems);
         paperSidesSpinner.setAdapter(paperSidesAdapter);
-
+*/
         paperSidesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
@@ -663,9 +665,12 @@ public class PrintPreview extends AppCompatActivity {
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                         if(paperSide.equals("Simplex")){
                             printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 1, totalPageCount, noOfCopies, ippUri, totalPageCount, isColor, orientationValue, paperSize);
-                        }else{
+                        }else if(paperSide.equals("Duplex")){
                             printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPagesForTwoSidedPrint(file, finalLocalurl, context, 1, totalPageCount, noOfCopies, ippUri, totalPageCount, isColor, orientationValue, paperSize);
+                        }else{
+                            printRenderUtils.printNoOfCOpiesJpgOrPngAndPdfFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor,orientationValue,paperSize, paperSide);
                         }
+
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
@@ -690,7 +695,7 @@ public class PrintPreview extends AppCompatActivity {
 
                         String finalLocalurl = "http" + ":/" + selectedPrinterModel.getPrinterHost().toString() + ":631/ipp/print";
                         PrintRenderUtils printRenderUtils = new PrintRenderUtils();
-                        printRenderUtils.printNoOfCOpiesJpgOrPngFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor,orientationValue,paperSize);
+                        printRenderUtils.printNoOfCOpiesJpgOrPngAndPdfFiles(file, finalLocalurl, context, noOfCopies,ippUri,isColor,orientationValue,paperSize, Sides.oneSided);
                         Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                         dialog1.cancel();
                         moveTaskToBack(true);
@@ -818,18 +823,22 @@ public class PrintPreview extends AppCompatActivity {
                           String sides =resultMap.get("sides-supported");
                           String color =resultMap.get("print-color-mode-supported");
                           String media=resultMap.get("media-supported");
+                          String document = resultMap.get("document-format-supported");
                           String[] orientationSupported = orientation.split("=");
                           String[] sidesSupported = sides.split("=");
                           String[] colorSupported = color.split("=");
                           String[] mediaSupported = media.split("=");
+                          String[] documentSupported =document.split("=");
                         String orientationStrigified="";
                         String sidesStrigified="";
                         String colorStrigified="";
                         String mediaStrigified="";
+                        String documentStrigified="";
                         List<String> orientationSupportList =new ArrayList<String>();
                         List<String> sidesSupportList =new ArrayList();
                         List<String> colorSupportList =new ArrayList();
                         List<String> mediaSupportList =new ArrayList();
+                        List<String> documentSupportList =new ArrayList();
                           if(orientationSupported.length>1){
                               orientationStrigified  =orientationSupported[1];
                               if(orientationStrigified.contains(",")){
@@ -842,7 +851,24 @@ public class PrintPreview extends AppCompatActivity {
                                   orientationSupportList.add(orientationStrigified);
                               }
 
-                          }if(sidesSupported.length>1){
+                          }
+
+                        if(documentSupported.length>1){
+                            documentStrigified  =documentSupported[1];
+                            if(documentStrigified.contains(",")){
+                                String removeSplChar =documentStrigified.replaceAll("\\[", "");
+                                String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                String[] documentSupportedArray  = removeSplChar2.split(",");
+                                documentSupportList = Arrays.asList(documentSupportedArray);
+                            }else{
+                                documentSupportList.add(documentStrigified);
+                            }
+
+                        }
+
+
+                          if(sidesSupported.length>1){
                              sidesStrigified =sidesSupported[1];
                              if(sidesStrigified.contains(",")){
                                  String removeSplChar =sidesStrigified.replaceAll("\\[", "");
@@ -888,6 +914,8 @@ public class PrintPreview extends AppCompatActivity {
                         ArrayList<String>ColorSupportedlist = new ArrayList<String>();
                         HashSet<String> colorSupportedList =new HashSet<String>();
                         ArrayList<String>FileSizelist = new ArrayList<String>();
+                        ArrayList<String>documentSupportedlist = new ArrayList<String>();
+                        ArrayList<String>sideSupportedlist = new ArrayList<String>();
 
 
                           for(int i=0;i<orientationSupportList.size();i++){
@@ -896,6 +924,7 @@ public class PrintPreview extends AppCompatActivity {
                           }
                           for(int i=0;i<sidesSupportList.size();i++){
                             Log.d("sidesSupported:",sidesSupportList.get(i));
+                              sideSupportedlist.add(sidesSupportList.get(i));
                           }
                           for(int i=0;i<colorSupportList.size();i++){
                             Log.d("colorSupported:",colorSupportList.get(i));
@@ -913,6 +942,24 @@ public class PrintPreview extends AppCompatActivity {
                             Log.d("mediaSupported:",mediaSupportList.get(i));
                             FileSizelist.add(mediaSupportList.get(i));
                           }
+
+                        for(int i=0;i<documentSupportList.size();i++){
+                            Log.d("documentSupported:",documentSupportList.get(i));
+                            documentSupportedlist.add(documentSupportList.get(i));
+                            if(documentSupportList.get(i).toLowerCase().contains("jpeg")){
+                                isDuplexPrintSupported=true;
+                                sideSupportedlist.add("two-sided-long-edge");
+                                sideSupportedlist.add("two-sided-short-edge");
+                            }
+                        }
+
+                        if(isDuplexPrintSupported==false){
+                            sideSupportedlist.clear();
+                            sideSupportedlist.add("Simplex");
+                            sideSupportedlist.add("Duplex");
+                        }
+
+
                         //  items.add("landscape");
                         runOnUiThread(new Runnable() {
                             @Override
@@ -923,6 +970,8 @@ public class PrintPreview extends AppCompatActivity {
                                 staticSpinner.setAdapter(staticAdapter);
                                 ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
                                 paperSizeSpinner.setAdapter(fileSizeAdapter);
+                                ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, sideSupportedlist);
+                                paperSidesSpinner.setAdapter(paperSidesAdapter);
 
                             }
                         });
@@ -1035,6 +1084,7 @@ public class PrintPreview extends AppCompatActivity {
                 ArrayList<String> items = new ArrayList<String>();
                 ArrayList<String>ColorSupportedlist = new ArrayList<String>();
                 ArrayList<String>FileSizelist = new ArrayList<String>();
+                ArrayList<String>sideSupportedlist = new ArrayList<String>();
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, items);
                 orientationSpinner.setAdapter(adapter);
@@ -1042,6 +1092,9 @@ public class PrintPreview extends AppCompatActivity {
                 staticSpinner.setAdapter(staticAdapter);
                 ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
                 paperSizeSpinner.setAdapter(fileSizeAdapter);
+                ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, sideSupportedlist);
+                paperSidesSpinner.setAdapter(paperSidesAdapter);
+
             }
         });
 

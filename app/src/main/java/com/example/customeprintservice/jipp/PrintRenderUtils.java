@@ -23,6 +23,7 @@ import com.example.customeprintservice.model.JobsModel;
 import com.example.customeprintservice.print.PrintReleaseFragment;
 import com.example.customeprintservice.print.PrintersFragment;
 import com.example.customeprintservice.utils.DataDogLogger;
+import com.hp.jipp.model.Sides;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
 import com.tom_roush.pdfbox.pdmodel.PDPageTree;
 import com.tom_roush.pdfbox.rendering.PDFRenderer;
@@ -143,7 +144,7 @@ public class PrintRenderUtils {
                             break;
                         } else {
 
-                             map = printUtils.print(finalUri, renderFile, context, "", versionNumber,"","",true);
+                             map = printUtils.print(finalUri, renderFile, context, "", versionNumber,"","",true, Sides.oneSided);
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);
@@ -312,7 +313,7 @@ public class PrintRenderUtils {
                             fileOut.close();
                         }
 
-                        Map map = printUtils.print(finalUri, renderFile, context, "","0x200","","",true);
+                        Map map = printUtils.print(finalUri, renderFile, context, "","0x200","","",true,Sides.oneSided);
 
                         if (map.get("status") == "server-error-busy") {
                             Thread.sleep(5000);
@@ -419,7 +420,7 @@ public class PrintRenderUtils {
                                 } else {
                                     String ippUriFinal = finalUri.toString();
 
-                                     map = printUtils.print(finalUri, renderFile, context, "",versionNumber,orientationValue,paperSize,isColor);
+                                     map = printUtils.print(finalUri, renderFile, context, "",versionNumber,orientationValue,paperSize,isColor,Sides.oneSided);
                                     DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
 
                                     if (map.get("status").equals("server-error-busy")) {
@@ -578,7 +579,7 @@ public class PrintRenderUtils {
     }
 
 
-    public void printNoOfCOpiesJpgOrPngFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor,String orientationValue,String paperSize) {
+    public void printNoOfCOpiesJpgOrPngAndPdfFiles(File file, String printerString, Context context, int noOfCopies, ArrayList<URI> ippUri,boolean isColor,String orientationValue,String paperSize,String sideSupported) {
         PrintUtils.jobstatusList.clear();
         new Thread() {
 
@@ -615,11 +616,15 @@ public class PrintRenderUtils {
                             String ippUriFinal = finalUri.toString();
 
                             Map<String, String> map;
+                            map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
+                            /*
                             if(isColor == true) {
-                                map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize,isColor);
+                                map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
                             }else{
-                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber,orientationValue,paperSize,isColor);
+                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
                             }
+                            
+                             */
                             String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
 
@@ -874,7 +879,7 @@ public class PrintRenderUtils {
                                             } else {
                                                 String ippUriFinal = finalUri.toString();
 
-                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize,isColor);
+                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize,isColor,Sides.oneSided);
                                                 DataDogLogger.getLogger().i("Devnco_Android print status:" + map.get("status").toString());
 
                                                 if (map.get("status").equals("server-error-busy")) {
@@ -958,7 +963,7 @@ public class PrintRenderUtils {
                                             } else {
                                                 String ippUriFinal = finalUri.toString();
 
-                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize,isColor);
+                                                map = printUtils.print(finalUri, renderFile, context, "", versionNumber, orientationValue, paperSize,isColor,Sides.oneSided);
                                                 DataDogLogger.getLogger().i("Devnco_Android print status:" + map.get("status").toString());
 
                                                 if (map.get("status").equals("server-error-busy")) {
@@ -1137,4 +1142,5 @@ public class PrintRenderUtils {
         }.start();
 
     }
+
 }
