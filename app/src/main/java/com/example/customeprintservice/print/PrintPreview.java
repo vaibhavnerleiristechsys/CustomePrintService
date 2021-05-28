@@ -946,10 +946,10 @@ public class PrintPreview extends AppCompatActivity {
                         for(int i=0;i<documentSupportList.size();i++){
                             Log.d("documentSupported:",documentSupportList.get(i));
                             documentSupportedlist.add(documentSupportList.get(i));
-                            if(documentSupportList.get(i).toLowerCase().contains("jpeg")){
+                            if(documentSupportList.get(i).toLowerCase().contains("pdf")){
                                 isDuplexPrintSupported=true;
-                                sideSupportedlist.add("two-sided-long-edge");
-                                sideSupportedlist.add("two-sided-short-edge");
+                             //   sideSupportedlist.add("two-sided-long-edge");
+                              //  sideSupportedlist.add("two-sided-short-edge");
                             }
                         }
 

@@ -763,7 +763,7 @@ public class PrintRenderUtils {
 
 
     }
-
+/*
     private File convertColorToMonochrome(File colorFile) throws IOException {
 
         String filePath = colorFile.getPath();
@@ -782,7 +782,7 @@ public class PrintRenderUtils {
         out.close();
         return colorFile;
     }
-
+*/
 
     public void renderPageUsingDefaultPdfRendererForSelectedPagesForTwoSidedPrint(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount,boolean isColor,String orientationValue,String paperSize) {
         ArrayList<JobsModel> jobIdList=new ArrayList<>();
