@@ -5,6 +5,7 @@ import com.example.customeprintservice.model.TokenResponse
 import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobRequest
 import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobResponse
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
+import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapSessionResponse
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.printjobstatus.model.printerlist.Printer
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
@@ -184,6 +185,16 @@ interface ApiService {
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String
     ): Call<ResponseBody>
+
+    @GET(".")
+    fun getSessionForLdapLogin(
+        @Header("Authorization") authorization: String
+    ): Call<LdapSessionResponse>
+
+    @GET(".")
+    fun getUsernameForLdapLogin(
+        @Header("Cookie") cookie: String
+    ): Call<Any>
 
     @GET(".")
     fun getPrinterDetailsByPrinterId(

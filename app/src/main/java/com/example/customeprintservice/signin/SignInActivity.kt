@@ -22,6 +22,8 @@ import com.datadog.android.privacy.TrackingConsent
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapSessionResponse
+import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
@@ -152,7 +154,8 @@ class SignInActivity : AppCompatActivity() {
             LOG.info("username:" + edtUserName.text.toString())
             Log.d("password", edtPassword.text.toString())
             LOG.info("password:" + edtPassword.text.toString())
-            checkLdapLogin(this@SignInActivity, username, password)
+            getSessionIdForLdapLogin(this@SignInActivity, username, password)
+            //checkLdapLogin(this@SignInActivity, username, password)
 
         }
 
@@ -282,6 +285,103 @@ class SignInActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Log.i("printer", "Error html response==>${t.message.toString()}")
+                LOG.info("printer", "Error html response==>${t.message.toString()}")
+                toast("Login Not Successfully Please Try Again")
+            }
+        })
+    }
+
+    fun getSessionIdForLdapLogin(context: Context, username: String, password: String) {
+        showLoadingDialog(context, "Please Wait")
+        val companyUrl = LoginPrefs.getCompanyUrl(context)
+        val usernameAndPassword:String=username+":"+password
+        val base64encodedtoken:String= MainActivity.encodeString(usernameAndPassword);
+        Log.i("encoded String","encoded Ldap String::"+base64encodedtoken.toString())
+        val BASE_URL = "https://"+companyUrl+"/api/portal-session-id/"
+        val apiService = RetrofitClient(context)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val call = apiService.getSessionForLdapLogin(
+            "Basic " +base64encodedtoken
+        )
+
+        call.enqueue(object : Callback<LdapSessionResponse> {
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onResponse(
+                call: Call<LdapSessionResponse>,
+                response: Response<LdapSessionResponse>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.code() == 200) {
+                    Log.i("LDAP  id Response", response.body()?.data?.id.toString())
+                    Log.i("LDAP type Response", response.body()?.data?.type.toString())
+                    val sessionId:String=response.body()?.data?.id.toString()
+                    LoginPrefs.saveSessionIdForLdap(context,sessionId)
+
+                    //   toast("Login Successfully")
+                    val sharedPreferences: SharedPreferences =
+                        getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+                    val myEdit = sharedPreferences.edit()
+                    myEdit.putString("IsLdap", "LDAP");
+                    myEdit.putString("LdapUsername", username);
+                    myEdit.putString("LdapPassword", password);
+                    myEdit.commit()
+
+                    checkValidSessionForLdapLogin(context,sessionId)
+                   // val intent = Intent(this@SignInActivity, MainActivity::class.java)
+                    //startActivity(intent)
+                } else {
+                    toast("Login Not Successfully Please Try Again")
+                }
+
+            }
+
+            override fun onFailure(call: Call<LdapSessionResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Log.i("printer", "Error html response==>${t.message.toString()}")
+                LOG.info("printer", "Error html response==>${t.message.toString()}")
+                toast("Login Not Successfully Please Try Again")
+            }
+        })
+    }
+
+    fun checkValidSessionForLdapLogin(context: Context, sessionId: String) {
+        showLoadingDialog(context, "Please Wait")
+        val companyUrl = LoginPrefs.getCompanyUrl(context)
+
+        val BASE_URL = "https://"+companyUrl+"/api/logged-in-portal/"
+        val apiService = RetrofitClient(context)
+            .getRetrofitInstance(BASE_URL)
+            .create(ApiService::class.java)
+
+        val call = apiService.getUsernameForLdapLogin(
+            "PHPSESSID=" +sessionId
+        )
+
+        call.enqueue(object : Callback<Any> {
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onResponse(
+                call: Call<Any>,
+                response: Response<Any>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.code() == 200) {
+                    Log.i("LDAP valid Response", response.toString())
+                    //   toast("Login Successfully")
+                    val intent = Intent(this@SignInActivity, MainActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    toast("Login Not Successfully Please Try Again")
+                }
+
+            }
+
+            override fun onFailure(call: Call<Any>, t: Throwable) {
                 ProgressDialog.cancelLoading()
                 Log.i("printer", "Error html response==>${t.message.toString()}")
                 LOG.info("printer", "Error html response==>${t.message.toString()}")

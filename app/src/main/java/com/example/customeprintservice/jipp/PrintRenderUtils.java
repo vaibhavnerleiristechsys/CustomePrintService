@@ -124,7 +124,7 @@ public class PrintRenderUtils {
                         page.close();
 
                         FileOutputStream out = new FileOutputStream(renderFile);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                         Log.v("Saved Image - ", renderFile.getAbsolutePath());
                         DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
                         out.flush();
@@ -400,7 +400,7 @@ public class PrintRenderUtils {
                                 page.close();
 
                                 FileOutputStream out = new FileOutputStream(renderFile);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                 Log.v("Saved Image - ", renderFile.getAbsolutePath());
                                 out.flush();
                                 out.close();
@@ -859,7 +859,7 @@ public class PrintRenderUtils {
                                             page.close();
 
                                             FileOutputStream out = new FileOutputStream(renderFile);
-                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                             Log.v("Saved Image - ", renderFile.getAbsolutePath());
                                             out.flush();
                                             out.close();
@@ -943,7 +943,7 @@ public class PrintRenderUtils {
                                             page.close();
 
                                             FileOutputStream out = new FileOutputStream(renderFile);
-                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+                                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                                             Log.v("Saved Image - ", renderFile.getAbsolutePath());
                                             out.flush();
                                             out.close();

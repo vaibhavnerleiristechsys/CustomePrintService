@@ -28,6 +28,7 @@ import com.example.customeprintservice.utils.SampleApplication1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.view.MenuItem;
 import android.view.View;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -50,6 +51,7 @@ import android.widget.Toast;
 import com.datadog.android.log.Logger;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -403,6 +405,21 @@ public class MainActivity extends AppCompatActivity {
         return macAddress;
     }
 
+    public static String encodeString(String s) {
+        byte[] data = new byte[0];
+
+        try {
+            data = s.getBytes("UTF-8");
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            String base64Encoded = Base64.encodeToString(data, Base64.NO_WRAP);
+
+            return base64Encoded;
+
+        }
+    }
 }
 
 

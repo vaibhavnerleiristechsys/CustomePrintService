@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.customeprintservice.utils.Constants.ClientSecret
 import com.example.customeprintservice.utils.Constants.Guids
 import com.example.customeprintservice.utils.Constants.OCTA_TOKEN
+import com.example.customeprintservice.utils.Constants.SessionId
 import com.example.customeprintservice.utils.Constants.StartJob
 import com.example.customeprintservice.utils.Constants.TenantUrl
 import com.example.customeprintservice.utils.Constants.UpdateGuids
@@ -27,6 +28,7 @@ class LoginPrefs {
         private val JOBID ="JOBID"
         private val GUID ="GUID"
         private val UPDATEGUID="UPDATEGUID"
+        private val SESSIONID="SESSIONID"
         private val STARTJOB = "STARTJOB"
 
         fun saveOctaToken(context: Context, token: String) {
@@ -158,6 +160,20 @@ class LoginPrefs {
         }
 
 
+        fun saveSessionIdForLdap(context: Context, sessionId: String) {
+            val sharedPreferences = context.getSharedPreferences(SessionId, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(SESSIONID, sessionId).apply()
+        }
+
+
+
+        fun getSessionIdForLdap(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(SessionId, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(SESSIONID, null)
+        }
+
+
 
         fun setStartJobIdMethod(context: Context) {
             val sharedPreferences = context.getSharedPreferences(StartJob, Context.MODE_PRIVATE)
@@ -169,6 +185,8 @@ class LoginPrefs {
             val sharedPreferences = context.getSharedPreferences(StartJob, Context.MODE_PRIVATE)
             return sharedPreferences.getString(STARTJOB, null)
         }
+
+
 
 
         fun deleteToken(context: Context) {
