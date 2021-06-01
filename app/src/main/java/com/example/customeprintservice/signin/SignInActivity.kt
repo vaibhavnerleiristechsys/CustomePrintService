@@ -23,6 +23,7 @@ import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapSessionResponse
+import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapUserNameResponse
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
@@ -362,26 +363,32 @@ class SignInActivity : AppCompatActivity() {
             "PHPSESSID=" +sessionId
         )
 
-        call.enqueue(object : Callback<Any> {
+        call.enqueue(object : Callback<LdapUserNameResponse> {
 
             @RequiresApi(Build.VERSION_CODES.N)
             override fun onResponse(
-                call: Call<Any>,
-                response: Response<Any>
+                call: Call<LdapUserNameResponse>,
+                response: Response<LdapUserNameResponse>
             ) {
                 ProgressDialog.cancelLoading()
                 if (response.code() == 200) {
-                    Log.i("LDAP valid Response", response.toString())
+                    Log.i("LDAP user Response", "LDAP userName:"+ (response.body()?.meta?.userName.toString()))
+                    Log.i("LDAP user Response", "LDAP isPortal:"+ (response.body()?.meta?.isPortalUser.toString()))
                     //   toast("Login Successfully")
-                    val intent = Intent(this@SignInActivity, MainActivity::class.java)
-                    startActivity(intent)
+                    val userName:String=response.body()?.meta?.userName.toString()
+                    if(userName!="") {
+                        val intent = Intent(this@SignInActivity, MainActivity::class.java)
+                        startActivity(intent)
+                    }else{
+                        toast("Login Not Successfully Please Try Again")
+                    }
                 } else {
                     toast("Login Not Successfully Please Try Again")
                 }
 
             }
 
-            override fun onFailure(call: Call<Any>, t: Throwable) {
+            override fun onFailure(call: Call<LdapUserNameResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
                 Log.i("printer", "Error html response==>${t.message.toString()}")
                 LOG.info("printer", "Error html response==>${t.message.toString()}")

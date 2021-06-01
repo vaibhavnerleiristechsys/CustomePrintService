@@ -6,6 +6,7 @@ import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobR
 import com.example.customeprintservice.printjobstatus.model.canceljob.CancelJobResponse
 import com.example.customeprintservice.printjobstatus.model.getjobstatuses.GetJobStatusesResponse
 import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapSessionResponse
+import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapUserNameResponse
 import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.printjobstatus.model.printerlist.Printer
 import com.example.customeprintservice.printjobstatus.model.printerlist.PrinterListDesc
@@ -194,7 +195,7 @@ interface ApiService {
     @GET(".")
     fun getUsernameForLdapLogin(
         @Header("Cookie") cookie: String
-    ): Call<Any>
+    ): Call<LdapUserNameResponse>
 
     @GET(".")
     fun getPrinterDetailsByPrinterId(
