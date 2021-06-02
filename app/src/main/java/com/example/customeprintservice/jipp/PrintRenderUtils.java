@@ -588,10 +588,20 @@ public class PrintRenderUtils {
                 try {
                     URI finalUri = URI.create(printerString);
                     PrintUtils printUtils = new PrintUtils();
+                    DataDogLogger.getLogger().i("Devnco_Android print jpg or png - fileName: "+ file.getAbsolutePath());
+                    DataDogLogger.getLogger().i("Devnco_Android print jpg or png -host: "+ printerString);
+                    DataDogLogger.getLogger().i("Devnco_Android print jpg or png -No of Copies: "+ noOfCopies);
+                    DataDogLogger.getLogger().i("Devnco_Android print jpg or png -isColor: "+ isColor);
+                    DataDogLogger.getLogger().i("Devnco_Android print jpg or png -orientation: "+ orientationValue);
+                    DataDogLogger.getLogger().i("Devnco_Android print jpg or png -paper size: "+ paperSize);
+                    DataDogLogger.getLogger().i("Devnco_Android print jpg or png -sides: "+ sideSupported);
+
+
+
                  Map<String, String> resultMap = printUtils.getAttributesCall(ippUri,context);
 
                     String attributeStatus ="attribute status:"+resultMap.get("status");
-                    DataDogLogger.getLogger().i("Devnco_Android attribute status:"+ attributeStatus);
+                    DataDogLogger.getLogger().i("Devnco_Android "+ attributeStatus);
 
                     if (!resultMap.containsKey("status")) {
                         // show error
@@ -625,8 +635,9 @@ public class PrintRenderUtils {
                             }
                             
                              */
+
                             String print ="print status:"+map.get("status").toString();
-                            DataDogLogger.getLogger().i("Devnco_Android print status:"+map.get("status").toString());
+                            DataDogLogger.getLogger().i("Devnco_Android "+print);
 
                             if (map.get("status").equals("server-error-busy")) {
                                 Thread.sleep(threadSleepInMilliSecs);

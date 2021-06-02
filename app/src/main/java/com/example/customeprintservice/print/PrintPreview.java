@@ -97,7 +97,7 @@ public class PrintPreview extends AppCompatActivity {
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
     public ArrayList<PrinterModel>serverSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
     public ArrayList<PrinterModel>deployedSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
-    public String selectPrinter=null;
+    public String selectPrinter="select printer";
     int startPageIndex=0;
     int endPageIndex=0;
     int totalPageCount=1;
