@@ -380,30 +380,27 @@ public class PrintRenderUtils {
                         while (pagePrintCounter < pageCount) {
                             Map<String, String> map = null;
                             if (startIndexOfPage <= pagePrintCounter && endIndexOfPage >= pagePrintCounter) {
-
-                                String path = "/storage/self/primary/sample" + pagePrintCounter + ".jpg";
-                                File renderFile = new File(path);
-                                PdfRenderer.Page page = renderer.openPage(pagePrintCounter);
-                                Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
-                                Canvas canvas = new Canvas(bitmap);
-                                if(isColor==true) {
+                                File renderFile;
+                                    String path = "/storage/self/primary/sample" + pagePrintCounter + ".jpg";
+                                     renderFile = new File(path);
+                                    PdfRenderer.Page page = renderer.openPage(pagePrintCounter);
+                                    Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
+                                    Canvas canvas = new Canvas(bitmap);
                                     canvas.drawColor(Color.WHITE);
                                     canvas.drawBitmap(bitmap, 0, 0, null);
-                                }else{
-                                    ColorMatrix colorMatrix = new ColorMatrix();
-                                    colorMatrix.setSaturation(0);
-                                    Paint paint = new Paint();
-                                    paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-                                    canvas.drawBitmap(bitmap, 0, 0, paint);
-                                }
-                                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-                                page.close();
 
-                                FileOutputStream out = new FileOutputStream(renderFile);
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                                Log.v("Saved Image - ", renderFile.getAbsolutePath());
-                                out.flush();
-                                out.close();
+                                    page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+                                    page.close();
+
+                                    FileOutputStream out = new FileOutputStream(renderFile);
+                                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                                    Log.v("Saved Image - ", renderFile.getAbsolutePath());
+                                    out.flush();
+                                    out.close();
+
+                                if(isColor==false){
+                                    renderFile = convertColorToMonochromeForPdf(renderFile);
+                                }
 
 
                                 if (!renderFile.exists()) {
@@ -626,15 +623,15 @@ public class PrintRenderUtils {
                             String ippUriFinal = finalUri.toString();
 
                             Map<String, String> map;
-                            map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
-                            /*
-                            if(isColor == true) {
+                           if(file.getName().contains(".pdf")){
                                 map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
                             }else{
-                                map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
-                            }
-                            
-                             */
+                               if(isColor == true) {
+                                   map = printUtils.print(finalUri, file, context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
+                               }else{
+                                   map = printUtils.print(finalUri, convertColorToMonochrome(file), context, "", versionNumber,orientationValue,paperSize,isColor,sideSupported);
+                               }
+                           }
 
                             String print ="print status:"+map.get("status").toString();
                             DataDogLogger.getLogger().i("Devnco_Android "+print);
@@ -774,26 +771,68 @@ public class PrintRenderUtils {
 
 
     }
-/*
+
     private File convertColorToMonochrome(File colorFile) throws IOException {
 
         String filePath = colorFile.getPath();
         Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-        Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-        Canvas canvas = new Canvas(mutableBitmap);
-        ColorMatrix colorMatrix = new ColorMatrix();
-        colorMatrix.setSaturation(0);
+        int width, height;
+        height = bitmap.getHeight();
+        width = bitmap.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmpGrayscale);
         Paint paint = new Paint();
-        paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-        canvas.drawBitmap(mutableBitmap, 0, 0, paint);
-        FileOutputStream out = new FileOutputStream(colorFile);
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
-        //      logger.info("Devnco_Android Saved Image - "+ renderFile.getAbsolutePath());
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bitmap, 0, 0, paint);
+        //return bmpGrayscale;
+
+        String path = "/storage/self/primary/sample" + " monochrome" + ".jpg";
+        File renderFile = new File(path);
+        FileOutputStream out = new FileOutputStream(renderFile);
+        bmpGrayscale.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+        DataDogLogger.getLogger().i("Devnco_Android monochrome Image - "+ renderFile.getAbsolutePath());
+        Log.i("monochrome Image-", renderFile.getAbsolutePath());
         out.flush();
         out.close();
-        return colorFile;
+        return renderFile;
     }
-*/
+
+
+    private File convertColorToMonochromeForPdf(File colorFile) throws IOException {
+
+        String filePath = colorFile.getPath();
+        Bitmap bitmap = BitmapFactory.decodeFile(filePath);
+        int width, height;
+        height = bitmap.getHeight();
+        width = bitmap.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bitmap, 0, 0, paint);
+        //return bmpGrayscale;
+
+        String path = colorFile.getPath();
+        File renderFile = new File(path);
+        FileOutputStream out = new FileOutputStream(renderFile);
+        bmpGrayscale.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+        DataDogLogger.getLogger().i("Devnco_Android monochrome Image - "+ renderFile.getAbsolutePath());
+        Log.i("monochrome Image-", renderFile.getAbsolutePath());
+        out.flush();
+        out.close();
+        return renderFile;
+    }
+
 
     public void renderPageUsingDefaultPdfRendererForSelectedPagesForTwoSidedPrint(File file, String printerString, Context context,int startIndex,int endIndex,int noOfCopies, ArrayList<URI> ippUri,int TotalPageCount,boolean isColor,String orientationValue,String paperSize) {
         ArrayList<JobsModel> jobIdList=new ArrayList<>();
@@ -856,16 +895,8 @@ public class PrintRenderUtils {
                                             PdfRenderer.Page page = renderer.openPage(pagePrintCounter);
                                             Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
                                             Canvas canvas = new Canvas(bitmap);
-                                            if (isColor == true) {
-                                                canvas.drawColor(Color.WHITE);
-                                                canvas.drawBitmap(bitmap, 0, 0, null);
-                                            } else {
-                                                ColorMatrix colorMatrix = new ColorMatrix();
-                                                colorMatrix.setSaturation(0);
-                                                Paint paint = new Paint();
-                                                paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-                                                canvas.drawBitmap(bitmap, 0, 0, paint);
-                                            }
+                                            canvas.drawColor(Color.WHITE);
+                                            canvas.drawBitmap(bitmap, 0, 0, null);
                                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
                                             page.close();
 
@@ -875,6 +906,9 @@ public class PrintRenderUtils {
                                             out.flush();
                                             out.close();
 
+                                            if(isColor==false){
+                                                renderFile = convertColorToMonochromeForPdf(renderFile);
+                                            }
 
                                             if (!renderFile.exists()) {
                                                 String expMessage = "Exception occurred while rendering: file not created ";
@@ -940,16 +974,8 @@ public class PrintRenderUtils {
                                             PdfRenderer.Page page = renderer.openPage(pagePrintCounter);
                                             Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
                                             Canvas canvas = new Canvas(bitmap);
-                                            if (isColor == true) {
-                                                canvas.drawColor(Color.WHITE);
-                                                canvas.drawBitmap(bitmap, 0, 0, null);
-                                            } else {
-                                                ColorMatrix colorMatrix = new ColorMatrix();
-                                                colorMatrix.setSaturation(0);
-                                                Paint paint = new Paint();
-                                                paint.setColorFilter(new ColorMatrixColorFilter(colorMatrix));
-                                                canvas.drawBitmap(bitmap, 0, 0, paint);
-                                            }
+                                            canvas.drawColor(Color.WHITE);
+                                            canvas.drawBitmap(bitmap, 0, 0, null);
                                             page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
                                             page.close();
 
@@ -958,6 +984,10 @@ public class PrintRenderUtils {
                                             Log.v("Saved Image - ", renderFile.getAbsolutePath());
                                             out.flush();
                                             out.close();
+
+                                            if(isColor==false){
+                                                renderFile = convertColorToMonochromeForPdf(renderFile);
+                                            }
 
 
                                             if (!renderFile.exists()) {

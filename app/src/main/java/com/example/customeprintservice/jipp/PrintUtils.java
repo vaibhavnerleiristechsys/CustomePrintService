@@ -340,19 +340,19 @@ public class PrintUtils {
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
                 DataDogLogger.getLogger().i("Devnco_Android print method : "+ "printRequest->" + printRequest.toString());
 
-             /*   new Handler(Looper.getMainLooper()).post(
+                new Handler(Looper.getMainLooper()).post(
                         new Runnable() {
                             @Override
                             public void run() {
                                 Toast.makeText(context, printRequest.toString(), Toast.LENGTH_LONG).show();
                             }
                         });
-*/
+
 
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                 DataDogLogger.getLogger().i("Devnco_Android print method : "+ "IppPacketData Request->" + request.toString());
 
-              /*  new Handler(Looper.getMainLooper()).post(
+                new Handler(Looper.getMainLooper()).post(
                         new Runnable() {
                             @Override
                             public void run() {
@@ -361,11 +361,10 @@ public class PrintUtils {
                         });
 
 
-               */
                 IppPacketData printResponse = transport.sendData(uri, request);
                 DataDogLogger.getLogger().i("Devnco_Android  print method : "+ "printResponse->"+printResponse.toString());
 
-              /*  new Handler(Looper.getMainLooper()).post(
+                new Handler(Looper.getMainLooper()).post(
                         new Runnable() {
                             @Override
                             public void run() {
@@ -373,7 +372,7 @@ public class PrintUtils {
                             }
                         });
 
-               */
+
 
                 resultMap.put("printResponse :",printResponse.toString()) ;
                 IppPacket ippPacket = printResponse.getPacket();
