@@ -308,7 +308,7 @@ class QRCodeScanActivity : AppCompatActivity() {
         }
 
         val adapter = MyItemRecyclerViewAdapter(
-            getdocumentListFromQrCode
+            getdocumentListFromQrCode,"QrCodeScan"
         )
         printerRecyclerView?.adapter = adapter
         dialog.show()
@@ -319,27 +319,33 @@ class QRCodeScanActivity : AppCompatActivity() {
         }
 
         floatButton?.setOnClickListener {
-          //  Toast.makeText(applicationContext, "Click on float btn", Toast.LENGTH_SHORT).show()
+            //  Toast.makeText(applicationContext, "Click on float btn", Toast.LENGTH_SHORT).show()
             val printReleaseFragment = PrintReleaseFragment()
             var selectedFile: SelectedFile? = SelectedFile()
 
             if (BottomNavigationActivityForServerPrint.selectedServerFile.size > 0) {
-                selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile[0]
-            }
-            if (selectedFile != null) {
-                if (selectedFile.jobType == "pull_print") {
-                    var release_t = ""
-                    if (ServerPrintRelaseFragment.selectedPrinterId != null && ServerPrintRelaseFragment.selectedPrinterToken != null) {
-                        release_t =
-                            ServerPrintRelaseFragment.selectedPrinterId + "," + ServerPrintRelaseFragment.selectedPrinterToken
-                    }
-                    printReleaseFragment.releaseJob(context, release_t)
-                    dialog.cancel()
-                } else {
+                for (selectedFile in BottomNavigationActivityForServerPrint.selectedServerFile){
 
-                    printReleaseFragment.releaseJob(context, "null")
+                //   selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile[0]
+                    BottomNavigationActivityForServerPrint.selectedServerFileForQrCode.clear()
+                    BottomNavigationActivityForServerPrint.selectedServerFileForQrCode.add(0,selectedFile)
+
+                if (selectedFile != null) {
+                    if (selectedFile.jobType == "pull_print") {
+                        var release_t = ""
+                        if (ServerPrintRelaseFragment.selectedPrinterId != null && ServerPrintRelaseFragment.selectedPrinterToken != null) {
+                            release_t =
+                                ServerPrintRelaseFragment.selectedPrinterId + "," + ServerPrintRelaseFragment.selectedPrinterToken
+                        }
+                        printReleaseFragment.releaseJobForQrCode(context, release_t)
+                        dialog.cancel()
+                    } else {
+                        printReleaseFragment.releaseJobForQrCode(context, "null")
+                    }
                 }
             }
+                BottomNavigationActivityForServerPrint.selectedServerFile.clear()
+        }
         }
     }
 

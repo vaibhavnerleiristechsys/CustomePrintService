@@ -29,9 +29,13 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
     private final List<SelectedFile> mValues;
     public Context context;
+    String locationPlaced;
     List<ViewHolder> holders= new ArrayList<ViewHolder>();
-    public MyItemRecyclerViewAdapter(List<SelectedFile> items) {
+  //  Print Release
+   // QrCodeScan
+    public MyItemRecyclerViewAdapter(List<SelectedFile> items,String location) {
         mValues = items;
+        locationPlaced=location;
     }
     //Logger logger = LoggerFactory.getLogger(MyItemRecyclerViewAdapter.class);
     @Override
@@ -64,143 +68,284 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
             }
             });
 
-        holder.documenticon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
-                DataDogLogger.getLogger().i("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
-                Intent intent = new Intent("menuFunctionlityDisplay");
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                Intent intent1 = new Intent("qrcodefloatingbutton");
-                intent1.putExtra("qrCodeScanBtn", "InActive");
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
-                 try{
-                for (int i = 0; i < holders.size(); i++) {
+        if(locationPlaced.equals("Print Release")) {
+            holder.documenticon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
+                    DataDogLogger.getLogger().i("Devnco_Android check value" + String.valueOf(holder.checkBox.isChecked()));
+                    Intent intent = new Intent("menuFunctionlityDisplay");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    Intent intent1 = new Intent("qrcodefloatingbutton");
+                    intent1.putExtra("qrCodeScanBtn", "InActive");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
+                    try {
+                        for (int i = 0; i < holders.size(); i++) {
 
-                    ViewHolder holder = holders.get(i);
-                    if (i == position) {
-                        holder.checkBox.setVisibility(View.VISIBLE);
-                        holder.documenticon.setVisibility(View.GONE);
-                        holder.checkBox.setChecked(true);
-                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
-                        if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
-                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
-                            if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
-                                holder.checkBox.setChecked(false);
+                            ViewHolder holder = holders.get(i);
+                            if (i == position) {
+                                holder.checkBox.setVisibility(View.VISIBLE);
+                                holder.documenticon.setVisibility(View.GONE);
+                                holder.checkBox.setChecked(true);
+                                holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
+                                if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                                    SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                                    if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
+                                        holder.checkBox.setChecked(false);
+                                        holder.documenticon.setVisibility(View.VISIBLE);
+                                        holder.checkBox.setVisibility(View.GONE);
+                                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                        Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
+                                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
+                                        Intent intent3 = new Intent("qrcodefloatingbutton");
+                                        intent3.putExtra("qrCodeScanBtn", "Active");
+                                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
+                                    } else {
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                    }
+
+                                } else {
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                }
+
+                                if (BottomNavigationActivityForServerPrint.selectedServerFile.size() > 0) {
+                                    SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                                    if (selectedFile.isFromApi() == true) {
+                                        if (selectedFile.getPrinterId() != null) {
+                                            PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
+                                            if (selectedFile.getJobType().equals("secure_release")) {
+                                                ProgressDialog.Companion.showLoadingDialog(context, "please wait");
+                                            }
+                                            new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
+                                        }
+                                    }
+                                }
+
+                            } else {
                                 holder.documenticon.setVisibility(View.VISIBLE);
                                 holder.checkBox.setVisibility(View.GONE);
+                                holder.checkBox.setChecked(false);
                                 holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                                Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
-                                Intent intent3 = new Intent("qrcodefloatingbutton");
-                                intent3.putExtra("qrCodeScanBtn", "Active");
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
-                            } else {
-                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                                BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
-                            }
-
-                        } else {
-                            BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                            BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
-                        }
-
-                        if (BottomNavigationActivityForServerPrint.selectedServerFile.size() > 0) {
-                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
-                            if (selectedFile.isFromApi() == true) {
-                                if (selectedFile.getPrinterId() != null) {
-                                    PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
-                                    if (selectedFile.getJobType().equals("secure_release")) {
-                                        ProgressDialog.Companion.showLoadingDialog(context, "please wait");
-                                    }
-                                    new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
-                                }
                             }
                         }
-
-                    } else {
-                        holder.documenticon.setVisibility(View.VISIBLE);
-                        holder.checkBox.setVisibility(View.GONE);
-                        holder.checkBox.setChecked(false);
-                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    } catch (Exception e) {
+                        Log.e("File SelectionException", e.getMessage());
+                        DataDogLogger.getLogger().i("Devnco_Android File SelectionException" + e.getMessage());
                     }
                 }
-            }catch(Exception e){
-                     Log.e("File SelectionException",e.getMessage());
-                     DataDogLogger.getLogger().i("Devnco_Android File SelectionException"+e.getMessage());
-                 }
-            }
 
-        });
-        holder.serverDocument.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
-                DataDogLogger.getLogger().i("Devnco_Android check value"+ String.valueOf(holder.checkBox.isChecked()));
-                Intent intent = new Intent("menuFunctionlityDisplay");
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
-                Intent intent1 = new Intent("qrcodefloatingbutton");
-                intent1.putExtra("qrCodeScanBtn", "InActive");
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
-                try{
-                for (int i = 0; i < holders.size(); i++) {
-                    ViewHolder holder = holders.get(i);
-                    if (i == position) {
-                        holder.checkBox.setVisibility(View.VISIBLE);
-                        holder.documenticon.setVisibility(View.GONE);
-                        holder.checkBox.setChecked(true);
-                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
-                        if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
-                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
-                            if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
-                                holder.checkBox.setChecked(false);
+            });
+            holder.serverDocument.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
+                    DataDogLogger.getLogger().i("Devnco_Android check value" + String.valueOf(holder.checkBox.isChecked()));
+                    Intent intent = new Intent("menuFunctionlityDisplay");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    Intent intent1 = new Intent("qrcodefloatingbutton");
+                    intent1.putExtra("qrCodeScanBtn", "InActive");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
+                    try {
+                        for (int i = 0; i < holders.size(); i++) {
+                            ViewHolder holder = holders.get(i);
+                            if (i == position) {
+                                holder.checkBox.setVisibility(View.VISIBLE);
+                                holder.documenticon.setVisibility(View.GONE);
+                                holder.checkBox.setChecked(true);
+                                holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
+                                if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                                    SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                                    if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
+                                        holder.checkBox.setChecked(false);
+                                        holder.documenticon.setVisibility(View.VISIBLE);
+                                        holder.checkBox.setVisibility(View.GONE);
+                                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                        Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
+                                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
+                                        Intent intent3 = new Intent("qrcodefloatingbutton");
+                                        intent3.putExtra("qrCodeScanBtn", "Active");
+                                        LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
+                                    } else {
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                    }
+
+                                } else {
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                }
+
+                                if (BottomNavigationActivityForServerPrint.selectedServerFile.size() > 0) {
+                                    SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
+                                    if (selectedFile.isFromApi() == true) {
+                                        if (selectedFile.getPrinterId() != null) {
+                                            PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
+                                            if (selectedFile.getJobType().equals("secure_release")) {
+                                                ProgressDialog.Companion.showLoadingDialog(context, "please wait");
+                                            }
+                                            new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
+                                        }
+                                    }
+                                }
+
+                            } else {
                                 holder.documenticon.setVisibility(View.VISIBLE);
                                 holder.checkBox.setVisibility(View.GONE);
+                                holder.checkBox.setChecked(false);
                                 holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                                Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
-                                Intent intent3 = new Intent("qrcodefloatingbutton");
-                                intent3.putExtra("qrCodeScanBtn", "Active");
-                                LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
-                            } else {
-                                BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                                BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
-                            }
-
-                        } else {
-                            BottomNavigationActivityForServerPrint.selectedServerFile.clear();
-                            BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
-                        }
-
-                        if (BottomNavigationActivityForServerPrint.selectedServerFile.size() > 0) {
-                            SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(0);
-                            if (selectedFile.isFromApi() == true) {
-                                if (selectedFile.getPrinterId() != null) {
-                                    PrintersFragment.Companion.getServerSecurePrinterForHeldJob().clear();
-                                    if (selectedFile.getJobType().equals("secure_release")) {
-                                        ProgressDialog.Companion.showLoadingDialog(context, "please wait");
-                                    }
-                                    new PrintersFragment().getPrinterListByPrinterId(context, selectedFile.getPrinterId().toString(), "forSecureRelase");
-                                }
                             }
                         }
-
-                    } else {
-                        holder.documenticon.setVisibility(View.VISIBLE);
-                        holder.checkBox.setVisibility(View.GONE);
-                        holder.checkBox.setChecked(false);
-                        holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    } catch (Exception e) {
+                        Log.e("File SelectionException", e.getMessage());
+                        DataDogLogger.getLogger().e("Devnco_Android File SelectionException" + e.getMessage());
                     }
                 }
-            }catch(Exception e){
-                Log.e("File SelectionException",e.getMessage());
-                    DataDogLogger.getLogger().e("Devnco_Android File SelectionException"+e.getMessage());
-            }
-            }
 
-        });
+            });
+
+        }
+        if(locationPlaced.equals("QrCodeScan")){
+            holder.documenticon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
+                    DataDogLogger.getLogger().i("Devnco_Android check value" + String.valueOf(holder.checkBox.isChecked()));
+                    Intent intent = new Intent("menuFunctionlityDisplay");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    Intent intent1 = new Intent("qrcodefloatingbutton");
+                    intent1.putExtra("qrCodeScanBtn", "InActive");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
+                    try {
+                        for (int i = 0; i < holders.size(); i++) {
+
+                            ViewHolder holder = holders.get(i);
+                            if (i == position) {
+                                holder.checkBox.setVisibility(View.VISIBLE);
+                                holder.documenticon.setVisibility(View.GONE);
+                                holder.checkBox.setChecked(true);
+                                holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
+                                if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                                    SelectedFile selectedFileforRemove = null;
+                                    for(int j=0;i<BottomNavigationActivityForServerPrint.selectedServerFile.size();j++) {
+                                        SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(j);
+                                        if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
+                                            holder.checkBox.setChecked(false);
+                                            holder.documenticon.setVisibility(View.VISIBLE);
+                                            holder.checkBox.setVisibility(View.GONE);
+                                            holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                                            selectedFileforRemove =selectedFile;
+                                            Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
+                                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
+                                            Intent intent3 = new Intent("qrcodefloatingbutton");
+                                            intent3.putExtra("qrCodeScanBtn", "Active");
+                                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
+                                         }
+                                    }
+                                    if(selectedFileforRemove !=null) {
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.remove(selectedFileforRemove);
+                                    }else{
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                    }
+                                } else {
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                }
+
+                            } else {
+                               // holder.documenticon.setVisibility(View.VISIBLE);
+                               // holder.checkBox.setVisibility(View.GONE);
+                              //  holder.checkBox.setChecked(false);
+                              //  holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("File SelectionException", e.getMessage());
+                        DataDogLogger.getLogger().i("Devnco_Android File SelectionException in Qr Code scan :" + e.getMessage());
+                    }
+                    for(int i=0;i<BottomNavigationActivityForServerPrint.selectedServerFile.size();i++){
+                        SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(i);
+                        Log.e("File Name:", selectedFile.getFileName());
+                    }
+                }
+
+            });
+
+            //****************************************************************************************************************************
+
+            holder.serverDocument.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("check value", String.valueOf(holder.checkBox.isChecked()));
+                    DataDogLogger.getLogger().i("Devnco_Android check value" + String.valueOf(holder.checkBox.isChecked()));
+                    Intent intent = new Intent("menuFunctionlityDisplay");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                    Intent intent1 = new Intent("qrcodefloatingbutton");
+                    intent1.putExtra("qrCodeScanBtn", "InActive");
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
+                    try {
+                        for (int i = 0; i < holders.size(); i++) {
+                            ViewHolder holder = holders.get(i);
+                            if (i == position) {
+                                holder.checkBox.setVisibility(View.VISIBLE);
+                                holder.documenticon.setVisibility(View.GONE);
+                                holder.checkBox.setChecked(true);
+                                holder.serverDocument.setBackgroundColor(Color.parseColor("#FFEEE5"));
+                                if (!BottomNavigationActivityForServerPrint.selectedServerFile.isEmpty()) {
+                                    SelectedFile  selectedFileforRemove = null;
+                                    for(int j=0;j<BottomNavigationActivityForServerPrint.selectedServerFile.size();j++){
+                                        SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(j);
+                                        if (selectedFile.getFileName().equals(mValues.get(position).getFileName())) {
+                                            holder.checkBox.setChecked(false);
+                                            holder.documenticon.setVisibility(View.VISIBLE);
+                                            holder.checkBox.setVisibility(View.GONE);
+                                            holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                                            selectedFileforRemove=selectedFile;
+                                            Intent intent2 = new Intent("menuFunctionlityDisplayhidden");
+                                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent2);
+                                            Intent intent3 = new Intent("qrcodefloatingbutton");
+                                            intent3.putExtra("qrCodeScanBtn", "Active");
+                                            LocalBroadcastManager.getInstance(context).sendBroadcast(intent3);
+                                        }
+                                    }
+                                    if(selectedFileforRemove !=null) {
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.remove(selectedFileforRemove);
+                                    }else{
+                                        BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                    }
+
+                                } else {
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.clear();
+                                    BottomNavigationActivityForServerPrint.selectedServerFile.add(mValues.get(position));
+                                }
+
+                            } else {
+                              //  holder.documenticon.setVisibility(View.VISIBLE);
+                               // holder.checkBox.setVisibility(View.GONE);
+                               // holder.checkBox.setChecked(false);
+                               // holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("File SelectionException", e.getMessage());
+                        DataDogLogger.getLogger().e("Devnco_Android File SelectionException" + e.getMessage());
+                    }
+                    for(int i=0;i<BottomNavigationActivityForServerPrint.selectedServerFile.size();i++){
+                        SelectedFile selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile.get(i);
+                        Log.e("File Name:", selectedFile.getFileName());
+                    }
+                }
+
+
+            });
+
+
+
+
+        }
     }
 
     @Override

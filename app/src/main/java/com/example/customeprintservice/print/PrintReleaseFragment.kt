@@ -443,6 +443,158 @@ class PrintReleaseFragment : Fragment() {
         })
     }
 
+    //****************************************release job For qrCode***********************************************************
+    fun releaseJobForQrCode(context: Context, release_t: String){
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+        val LdapPassword= sh.getString("LdapPassword", "")
+        var pageCount:Int=1
+        Log.d("IsLdap:", IsLdap!!)
+        DataDogLogger.getLogger().i("Devnco_Android IsLdap:" + IsLdap!!)
+
+        ProgressDialog.showLoadingDialog(context, "Released Job")
+
+
+            releaseJobCheckedListForServer =
+                BottomNavigationActivityForServerPrint.selectedServerFileForQrCode as ArrayList<SelectedFile>
+
+        val siteId= LoginPrefs.getSiteId(context)
+        val tanentUrl = getTenantUrl(context)
+        var BASE_URL = ""+tanentUrl+"/"+siteId+"/pq/api/job-statuses/release/"
+        //  var BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/pq/api/job-statuses/release/"
+
+        val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
+
+        val releaseJobRequest = ReleaseJobRequest()
+        val releaseJobs = ArrayList<ReleaseJobsItem>()
+        releaseJobCheckedListForServer.forEach {
+            val releaseJobsItem = ReleaseJobsItem()
+            releaseJobsItem.jobNum = it.jobNum
+            Log.d("jobtype", it.jobType.toString())
+            DataDogLogger.getLogger().i("Devnco_Android jobtype" + it.jobType.toString())
+            if(it.jobType.toString().equals("secure_release")) {
+                releaseJobsItem.jobType = "1"
+            }else{
+                releaseJobsItem.jobType = "2"
+            }
+            releaseJobsItem.queueId = it.queueId
+            releaseJobsItem.userName = it.userName
+            releaseJobsItem.workstationId = it.workStationId
+            pageCount= it.pages!!
+            releaseJobs.add(releaseJobsItem)
+        }
+        releaseJobRequest.releaseJobs = releaseJobs
+
+        val call = if(IsLdap.equals("LDAP")){
+            if(!release_t.equals("null")){
+                apiService.releaseJobForPullPrinterLdap(
+                    releaseJobRequest,
+                    siteId.toString(),
+                    LdapUsername.toString(),
+                    LdapPassword.toString(),
+                    "json:api",
+                    release_t
+                )
+            }
+            else{
+                apiService.releaseJobForLdap(
+                    releaseJobRequest,
+                    siteId.toString(),
+                    LdapUsername.toString(),
+                    LdapPassword.toString()
+                )
+            }
+
+        }else if(siteId.toString().contains("google")){
+            if(!release_t.equals("null")) {
+                apiService.releaseJobForPullPrinterForGoogle(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString(),
+                    "json:api",
+                    release_t,
+                    "serverId"
+                )
+            }else{
+                apiService.releaseJobForGoogle(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString(),
+                    "serverId"
+                )
+            }
+        }
+        else{
+            if(!release_t.equals("null")) {
+                apiService.releaseJobForPullPrinter(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString(),
+                    "json:api",
+                    release_t
+                )
+            }else{
+                apiService.releaseJob(
+                    releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
+                    decodeJWT(context),
+                    SignInCompanyPrefs.getIdpType(context).toString(),
+                    SignInCompanyPrefs.getIdpName(context).toString()
+                )
+            }
+        }
+
+
+        call.enqueue(object : Callback<ReleaseJobResponse> {
+            override fun onResponse(
+                call: Call<ReleaseJobResponse>,
+                response: Response<ReleaseJobResponse>
+            ) {
+                ProgressDialog.cancelLoading()
+                if (response.code() == 200) {
+                    val response = response.body().toString()
+                    Log.i("printer", "response release job==>${response}")
+                    DataDogLogger.getLogger()
+                        .i("Devnco_Android printer" + "response release job==>${response}")
+                    //BottomNavigationActivityForServerPrint.selectedServerFile.clear()
+                    val activity: Activity? = activity
+                    if (activity != null) {
+
+                    }
+                    //   sendMetaData(context,pageCount)
+                    //  sendMetaData(context,1)
+                    ProgressDialog.showLoadingDialog(context, "Refreshing Job List")
+                    getJobStatuses(
+                        context,
+                        decodeJWT(context),
+                        SignInCompanyPrefs.getIdpType(context).toString(),
+                        SignInCompanyPrefs.getIdpName(context).toString()
+                    )
+
+                    dialogSuccessfullyPrint(context);
+
+
+                }
+            }
+
+            override fun onFailure(call: Call<ReleaseJobResponse>, t: Throwable) {
+                ProgressDialog.cancelLoading()
+                Toast.makeText(context, "Validation Failed", Toast.LENGTH_SHORT).show()
+                Log.i("printer", "Error response release job==>${t.message}")
+                DataDogLogger.getLogger()
+                    .i("Devnco_Android printer" + "Error response release job==>${t.message}")
+            }
+
+        })
+    }
+    //*******************************************release job for qrCode end*********************************************************
+
 
 
     fun getJobStatuses(context: Context, userName: String, idpType: String, idpName: String) {

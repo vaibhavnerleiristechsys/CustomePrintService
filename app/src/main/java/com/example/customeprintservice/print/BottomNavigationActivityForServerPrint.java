@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public class BottomNavigationActivityForServerPrint extends AppCompatActivity  implements BottomNavigationView.OnNavigationItemSelectedListener{
     public static ArrayList<SelectedFile> selectedServerFile =new ArrayList<SelectedFile>();
+    public static ArrayList<SelectedFile> selectedServerFileForQrCode =new ArrayList<SelectedFile>();
     public static PrinterModel selectedPrinter =new PrinterModel();
 
 

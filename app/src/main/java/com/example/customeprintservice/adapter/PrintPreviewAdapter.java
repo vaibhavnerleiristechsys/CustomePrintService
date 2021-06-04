@@ -16,9 +16,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.customeprintservice.R;
-import com.example.customeprintservice.print.MyItemRecyclerViewAdapter;
-import com.example.customeprintservice.room.SelectedFile;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

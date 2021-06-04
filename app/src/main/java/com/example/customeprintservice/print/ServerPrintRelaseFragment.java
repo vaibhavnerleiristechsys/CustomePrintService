@@ -730,7 +730,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     recyclerViewList.setVisibility(View.GONE);
                     noDataMessage.setVisibility(View.VISIBLE);
                 }
-                recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList()));
+                recyclerView.setAdapter(new MyItemRecyclerViewAdapter(PrintReleaseFragment.Companion.getGetdocumentList(),"Print Release"));
 
                     ProgressDialog.Companion.cancelLoading();
                     swipeContainer.setRefreshing(false);
