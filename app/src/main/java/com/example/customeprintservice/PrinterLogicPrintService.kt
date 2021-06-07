@@ -1,7 +1,9 @@
 package com.example.customeprintservice
 
+//import org.slf4j.LoggerFactory
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -14,18 +16,25 @@ import android.printservice.PrintJob
 import android.printservice.PrintService
 import android.printservice.PrinterDiscoverySession
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.WindowManager
+import android.widget.AbsListView
+import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.example.customeprintservice.jipp.PrintRenderUtils
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint
+import com.example.customeprintservice.print.PrintPreview
 import com.example.customeprintservice.print.PrintersFragment
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.utils.DataDogLogger
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-//import org.slf4j.LoggerFactory
 import java.io.*
 import java.util.*
 import java.util.function.Consumer
@@ -123,8 +132,11 @@ class PrinterLogicPrintService : PrintService() {
         BottomNavigationActivityForServerPrint.selectedPrinter.printerHost=printerHashmap.hashMap[printerId]!!.printerHost
         BottomNavigationActivityForServerPrint.selectedPrinter.serviceName=printerHashmap.hashMap[printerId]!!.serviceName
         BottomNavigationActivityForServerPrint.selectedPrinter.id=printerHashmap.hashMap[printerId]!!.id
+         var isPullPrinter:String =printerHashmap.hashMap[printerId]!!.isPullPrinter
+        var  printerIds:String =printerHashmap.hashMap[printerId]!!.id
         val info = printJob.info
         val file = File(filesDir, info.label + ".pdf")
+        var holdFile =File(filesDir, info.label)
         var `in`: InputStream? = null
         var out: FileOutputStream? = null
         try {
@@ -145,18 +157,33 @@ class PrinterLogicPrintService : PrintService() {
             selectedFile.filePath=file.path
             BottomNavigationActivityForServerPrint.selectedServerFile.add(selectedFile)
 
-            printRenderUtils.renderPageUsingDefaultPdfRenderer(
-                file,
-                finalUrl,
-                this@PrinterLogicPrintService,
-                printerHashmap.hashMap[printerId]!!.printerHost.toString(),
-                colorMode
+        /*  var printPreview: PrintPreview =PrintPreview()
+            dialogPromptPrinterForNavtiePrint(
+                "alwaysPrompt",
+                this@PrinterLogicPrintService
             )
+*/
+            if(isPullPrinter.equals("1")){
+
+                var printPreview: PrintPreview =PrintPreview()
+                printPreview.sendHoldJobFromNativePrint(file.path,printerIds,isPullPrinter,this@PrinterLogicPrintService)
+              //  printPreview.selectePrinterDialoga(baseContext)
+            }else {
+                printRenderUtils.renderPageUsingDefaultPdfRenderer(
+                    file,
+                    finalUrl,
+                    this@PrinterLogicPrintService,
+                    printerHashmap.hashMap[printerId]!!.printerHost.toString(),
+                    colorMode
+                )
+            }
 
             printJob.complete()
         } catch (ioe: IOException) {
         }
     }
+
+
 
 
 }
@@ -199,7 +226,9 @@ internal class PrinterDiscoverySession(
         val type = object :
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
 
-        val deployedPrinterjson = prefs.getString("deployedsecurePrinterListWithDetails", null)
+       // val deployedPrinterjson = prefs.getString("deployedsecurePrinterListWithDetails", null)
+        val deployedPrinterjson = prefs.getString("deployedPrintersListForPrintPreivew", null)
+
         if (deployedPrinterjson != null) {
             deployedSecurePrinterListWithDetailsSharedPreflist = gson.fromJson(
                 deployedPrinterjson,
@@ -216,7 +245,9 @@ internal class PrinterDiscoverySession(
         }
 
         if (deployedSecurePrinterListWithDetailsSharedPreflist != null && deployedSecurePrinterListWithDetailsSharedPreflist.size > 0) {
-            sharedPreferencesStoredPrinterListWithDetails.addAll(deployedSecurePrinterListWithDetailsSharedPreflist)
+            sharedPreferencesStoredPrinterListWithDetails.addAll(
+                deployedSecurePrinterListWithDetailsSharedPreflist
+            )
         }
 
         if (sharedPreferencesStoredPrinterListWithDetails != null) {

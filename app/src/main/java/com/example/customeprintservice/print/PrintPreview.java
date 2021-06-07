@@ -27,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 import com.hp.jipp.model.Sides;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -36,6 +37,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -530,7 +532,7 @@ public class PrintPreview extends AppCompatActivity {
         }
 
 
-    private void dialogPromptPrinter(String state){
+    public void dialogPromptPrinter(String state){
         Dialog dialog1 = new Dialog(context);
         View v  = LayoutInflater.from(context).inflate(R.layout.dialog_printer_prompt, null);
         dialog1.setContentView(v);
@@ -1097,6 +1099,68 @@ public class PrintPreview extends AppCompatActivity {
 
             }
         });
+
+    }
+
+
+    public void sendHoldJobFromNativePrint(String filePath,String printerId,String isPullPrinter,Context context){
+        list.clear();
+        SelectedFile selectedFile = new SelectedFile();
+        File file = new File(filePath);
+        selectedFile.setFileName(file.getName());
+        selectedFile.setFilePath(filePath);
+        selectedFile.setFromApi(false);
+        selectedFile.setJobSize(getFileSizeKiloBytes(file));
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        Date date = new Date();
+        String strDate = dateFormat.format(date);
+        selectedFile.setFileSelectedDate(strDate);
+        list.add(selectedFile);
+
+        SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+        Gson gson1 = new Gson();
+        String json2 = prefs1.getString("holdlocaldocumentlist", null);
+        Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
+        }.getType();
+        localDocumentSharedPreflist = gson1.fromJson(json2, type1);
+        if (localDocumentSharedPreflist != null) {
+            list.addAll(localDocumentSharedPreflist);
+        }
+        SharedPreferences.Editor editor1 = prefs1.edit();
+
+        String convertedJson = gson1.toJson(list);
+        editor1.putString("holdlocaldocumentlist", convertedJson);
+        editor1.apply();
+        Toast.makeText(context, "file added", Toast.LENGTH_LONG).show();
+        moveTaskToBack(true);
+        //  Intent myIntent = new Intent(context, MainActivity.class);
+        // startActivity(myIntent);
+
+        String FileName =file.getName().toString();
+        Long fileSize= file.length();
+        PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
+        String  pageCount =String.valueOf(totalPageCount);
+        if(printerId != null && isPullPrinter != null) {
+            printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), pageCount,printerId,isPullPrinter,"");
+        }
+    }
+
+
+
+    public void selectePrinterDialoga(Context context) {
+          /*  AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View content = inflater.inflate(R.layout.dialog_printer_prompt, null);
+            builder.setView(content);
+            final AlertDialog ad = builder.show();
+           */
+        AlertDialog alertDialog = new AlertDialog.Builder(context)
+                .setTitle("Title")
+                .setMessage("Are you sure?")
+                .create();
+
+        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        alertDialog.show();
 
     }
 

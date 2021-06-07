@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.customeprintservice">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -9,6 +10,8 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
         android:name=".PrintService"
         android:allowBackup="true"
@@ -19,12 +22,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-
-        <activity android:name=".print.PrintPreview"
-            android:screenOrientation="portrait"
-            >
-
+        <activity android:name=".DialogActivity"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            tools:ignore="Instantiatable">
         </activity>
+        <activity
+            android:name=".print.PrintPreview"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -39,31 +44,36 @@
             </intent-filter>
             -->
             <intent-filter>
-                 <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="printerlogicidp" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
         <activity
             android:name=".print.BottomNavigationActivityForServerPrint"
             android:label="@string/title_activity_bottom_navigation_for_server_print" />
-        <activity android:name=".signin.GoogleLoginActivity"></activity>
+        <activity android:name=".signin.GoogleLoginActivity" />
         <activity android:name=".CustomePrintActivity" />
         <activity
             android:name=".print.BottomNavigationActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".signin.SignInActivity"
             android:noHistory="true"
@@ -80,6 +90,7 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -109,7 +120,7 @@
 
         <receiver android:name=".jipp.MyReceiver">
             <intent-filter>
-                <action android:name="com.example.PRINT_RESPONSE"></action>
+                <action android:name="com.example.PRINT_RESPONSE" />
             </intent-filter>
         </receiver>
     </application>
