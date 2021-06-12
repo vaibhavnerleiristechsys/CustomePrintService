@@ -19,6 +19,7 @@ import com.example.customeprintservice.R;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
 import com.example.customeprintservice.print.BottomNavigationActivityForServerPrint;
+import com.example.customeprintservice.utils.DataDogLogger;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -91,7 +92,7 @@ public class GoogleLoginActivity extends AppCompatActivity {
             String idToken=account.getIdToken();
             String username=account.getEmail();
             Log.d("idToken",idToken);
-            Toast.makeText(getApplicationContext(), idToken, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), idToken, Toast.LENGTH_SHORT).show();
             logger.info("Devnco_Android Papertrail idToken log management demo"+idToken);
             SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
             SharedPreferences.Editor myEdit= sharedPreferences.edit();
@@ -105,7 +106,8 @@ public class GoogleLoginActivity extends AppCompatActivity {
             signOut();
         } catch (ApiException e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            DataDogLogger.getLogger().e("Devnco_Android printer:"+ "Exception in handleSignInResult:"+e.getLocalizedMessage());
         }
     }
 

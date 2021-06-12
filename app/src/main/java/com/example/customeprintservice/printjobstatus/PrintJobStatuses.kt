@@ -43,13 +43,13 @@ class PrintJobStatuses {
 //                val printJobStatusResponse = response.body().toString()
                 Log.i("printer", "printJobStatusResponse=====>>${response.body().toString()}")
 
-                Toast.makeText(context, "$response.body().toString()", Toast.LENGTH_LONG).show()
+                //Toast.makeText(context, "$response.body().toString()", Toast.LENGTH_LONG).show()
             }
 
             override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                 Log.i("printer", "Error=>${t.message}")
                 ProgressDialog.cancelLoading()
-                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+             //   Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
 
             }
         })

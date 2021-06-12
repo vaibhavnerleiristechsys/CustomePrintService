@@ -418,17 +418,17 @@ public class PrintPreview extends AppCompatActivity {
                     }else{
                         if(secure_release.equals("0") || secure_release.equals("1") || secure_release.equals("2")){
 
-                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrint");
 
                         }else if(secure_release.equals("3") || secure_release.equals("4")){
-                            Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
+                          //  Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysHold");
 
                         }
                         else if(secure_release.equals("5") || secure_release.equals("6")){
 
-                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrompt");
 
 
@@ -443,17 +443,17 @@ public class PrintPreview extends AppCompatActivity {
                     }else{
                         if(secure_release.equals("0") || secure_release.equals("1") || secure_release.equals("2")){
 
-                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                            //Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrint");
 
                         }else if(secure_release.equals("3") || secure_release.equals("4")){
-                            Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
+                          //  Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysHold");
 
                         }
                         else if(secure_release.equals("5") || secure_release.equals("6")){
 
-                            Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                          //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrompt");
 
 
@@ -981,13 +981,13 @@ public class PrintPreview extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, items);
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.simple_spinner_item1, items);
                                 orientationSpinner.setAdapter(adapter);
-                                ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,ColorSupportedlist);
+                                ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1,ColorSupportedlist);
                                 staticSpinner.setAdapter(staticAdapter);
-                              //  ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
+                              //  ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item1,FileSizelist);
                               //  paperSizeSpinner.setAdapter(fileSizeAdapter);
-                                ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, sideSupportedlist);
+                                ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1, sideSupportedlist);
                                 paperSidesSpinner.setAdapter(paperSidesAdapter);
 
                             }
@@ -997,13 +997,7 @@ public class PrintPreview extends AppCompatActivity {
 
                 } catch (Exception exp) {
                     DataDogLogger.getLogger().e("Devnco_Android Exception - " + exp.getMessage());
-                    new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, exp.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            });
+
                 }
             }
         }.start();
@@ -1145,13 +1139,13 @@ public class PrintPreview extends AppCompatActivity {
                 selectPrinterPaperSize.setText("Select Paper Size");
                 selectprinterPaperSizearrow.setVisibility(View.VISIBLE);
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, items);
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.simple_spinner_item1, items);
                 orientationSpinner.setAdapter(adapter);
-                ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,ColorSupportedlist);
+                ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1,ColorSupportedlist);
                 staticSpinner.setAdapter(staticAdapter);
              //   ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
              //   paperSizeSpinner.setAdapter(fileSizeAdapter);
-                ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, sideSupportedlist);
+                ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1, sideSupportedlist);
                 paperSidesSpinner.setAdapter(paperSidesAdapter);
 
             }
@@ -1160,10 +1154,16 @@ public class PrintPreview extends AppCompatActivity {
     }
 
 
-    public void sendHoldJobFromNativePrint(String filePath,String printerId,String isPullPrinter,Context context){
+    public void sendHoldJobFromNativePrint(String filePath,String printerId,String isPullPrinter,Context context) throws IOException {
         list.clear();
         SelectedFile selectedFile = new SelectedFile();
         File file = new File(filePath);
+        ParcelFileDescriptor fileDescriptor = ParcelFileDescriptor.open(file, MODE_READ_ONLY);
+        PdfRenderer renderer = new PdfRenderer(fileDescriptor);
+        final int pageCount = renderer.getPageCount();
+        String totalPageCount =String.valueOf(pageCount);
+
+
         selectedFile.setFileName(file.getName());
         selectedFile.setFilePath(filePath);
         selectedFile.setFromApi(false);
@@ -1194,11 +1194,15 @@ public class PrintPreview extends AppCompatActivity {
         // startActivity(myIntent);
 
         String FileName =file.getName().toString();
+        if(FileName.contains(".pdf")){
+            FileName= FileName.replace(".pdf","");
+            FileName=FileName +".pdf";
+        }
         Long fileSize= file.length();
         PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
-        String  pageCount =String.valueOf(totalPageCount);
+       // String  pageCount =String.valueOf(totalPageCount);
         if(printerId != null && isPullPrinter != null) {
-            printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), pageCount,printerId,isPullPrinter,"");
+            printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), totalPageCount,printerId,isPullPrinter,"");
         }
     }
 

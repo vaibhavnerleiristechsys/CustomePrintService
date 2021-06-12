@@ -58,7 +58,7 @@ class PrinterListService {
                 ProgressDialog.cancelLoading()
                 if (response.isSuccessful) {
                     Log.i("printer", "lis res=>${response.body()?.desc.toString()}")
-                    Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, "${response.body()}", Toast.LENGTH_LONG).show()
                     getPrinterNodes(
                         context,
                         "PHPSESSID=" + response.body()?.desc.toString(),
@@ -75,7 +75,7 @@ class PrinterListService {
 
             override fun onFailure(call: Call<PrinterListDesc>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response==>${t.message.toString()}")
             }
         })
@@ -112,8 +112,7 @@ class PrinterListService {
                 if (response.isSuccessful) {
                     try {
                         val html = response.body()?.string()
-                        Toast.makeText(context, "HTML RESPONSE =>${html}", Toast.LENGTH_SHORT)
-                            .show()
+                        //Toast.makeText(context, "HTML RESPONSE =>${html}", Toast.LENGTH_SHORT).show()
                         val document = Jsoup.parse(html)
                         val element = document.select("input[name=node_id]")
 
@@ -248,13 +247,13 @@ class PrinterListService {
                     }
                 }
                 if(response.code()==429){
-                    Toast.makeText(context, "Too Many Requests", Toast.LENGTH_SHORT).show()
+                  //  Toast.makeText(context, "Too Many Requests", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<PrinterDetailsResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
                 Log.i("printer", "Error response==>${t.message.toString()}")
             }
         })

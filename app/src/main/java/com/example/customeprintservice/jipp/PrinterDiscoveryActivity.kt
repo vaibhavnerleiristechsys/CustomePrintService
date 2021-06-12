@@ -54,11 +54,13 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
                 intent.putExtras(bundle)
                 startActivity(intent)
             } else {
-                Toast.makeText(
+                /*Toast.makeText(
                     this@PrinterDiscoveryActivity,
                     "Please select Printer",
                     Toast.LENGTH_SHORT
                 ).show()
+
+                 */
             }
         }
 
@@ -119,24 +121,25 @@ class PrinterDiscoveryActivity : AppCompatActivity() {
 
                 if (!flagIsExist) {
                     val boolean = PrinterList().addPrinterModel(printer)
-                    Toast.makeText(
+                  /*  Toast.makeText(
                         this@PrinterDiscoveryActivity,
                         "Printer Added",
                         Toast.LENGTH_SHORT
                     )
                         .show()
+
+                   */
                     dialog.dismiss()
                     Log.i("printer", "flag-->$boolean")
                 } else {
-                    Toast.makeText(
+                  /*  Toast.makeText(
                         this@PrinterDiscoveryActivity,
                         "Unable to add Printer",
                         Toast.LENGTH_SHORT
-                    ).show()
+                    ).show()*/
                 }
             } else {
-                Toast.makeText(this@PrinterDiscoveryActivity, "IP is not valid", Toast.LENGTH_SHORT)
-                    .show()
+               // Toast.makeText(this@PrinterDiscoveryActivity, "IP is not valid", Toast.LENGTH_SHORT).show()
             }
         }
     }

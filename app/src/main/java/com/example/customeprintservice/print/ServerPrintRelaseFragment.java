@@ -505,11 +505,11 @@ public class ServerPrintRelaseFragment extends Fragment {
                    if(selectedPrinterId!=null && selectedPrinterToken!=null) {
                         release_t = selectedPrinterId + "," + selectedPrinterToken;
                    }
-                   Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
+                   //Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
                    printReleaseFragment.releaseJob(context,release_t);
                    dialog.cancel();
                }else{
-                   Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
+                 //  Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
                    printReleaseFragment.releaseJob(context,"null");
                    dialog.cancel();
                }
@@ -520,13 +520,13 @@ public class ServerPrintRelaseFragment extends Fragment {
                     String FilePath =selectedFile.getFilePath();
                     PrintActivity printActivity =new PrintActivity();
                     printActivity.locaPrint(FilePath,localPrinturl,context);
-                    Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                 //   Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                     dialog.cancel();
                     Intent myIntent = new Intent(getActivity(), MainActivity.class);
                     getActivity().startActivity(myIntent);
 
                }else if(secure_release == 3 || secure_release ==4){
-                   Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
+                  // Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
                    dialog.cancel();
                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
                    getActivity().startActivity(myIntent);
@@ -536,7 +536,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                    PrintActivity printActivity =new PrintActivity();
                    printActivity.locaPrint(FilePath,localPrinturl,context);
 
-                   Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
+                 //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                    dialog.cancel();
                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
                    getActivity().startActivity(myIntent);

@@ -137,7 +137,8 @@ public class PrintRenderUtils {
                                     new Runnable() {
                                         @Override
                                         public void run() {
-                                            Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                           // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
+                                            DataDogLogger.getLogger().e("Devnco_Android Exceptom - "+ expMessage);
                                         }
                                     });
 
@@ -151,14 +152,6 @@ public class PrintRenderUtils {
                                 totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
                                 if (totalTimeThreadSleep > timeThreshold) {
                                     String expMessage = "The printer is unresponsive. Aborting ";
-                                    new Handler(Looper.getMainLooper()).post(
-                                            new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-
                                     Log.i("printer", expMessage);
                                     DataDogLogger.getLogger().e("Devnco_Android printer:"+ expMessage);
                                     break;
@@ -190,17 +183,8 @@ public class PrintRenderUtils {
                 }
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
-
-                    new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                }});
-
-
                     Log.v("Saved Image - ", exp.toString());
-                    DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ exp.toString());
+                    DataDogLogger.getLogger().i("Devnco_Android Saved Image - "+ expMessage.toString());
                     exp.printStackTrace();
                 }
 
@@ -252,13 +236,7 @@ public class PrintRenderUtils {
                                                     });
                                         }else{
                                             String errorString=errorPageString;
-                                            new Handler(Looper.getMainLooper()).post(
-                                                    new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
+                                            DataDogLogger.getLogger().e("Devnco_Android printer:"+ "error in renderPageUsingDefaultPdfRenderer:"+errorString);
                                         }
 
 
@@ -405,13 +383,7 @@ public class PrintRenderUtils {
 
                                 if (!renderFile.exists()) {
                                     String expMessage = "Exception occurred while rendering: file not created ";
-                                    new Handler(Looper.getMainLooper()).post(
-                                            new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                }
-                                            });
+                                    DataDogLogger.getLogger().e("Devnco_Android printer:"+ expMessage);
 
                                     break;
                                 } else {
@@ -425,14 +397,6 @@ public class PrintRenderUtils {
                                         totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
                                         if (totalTimeThreadSleep > timeThreshold) {
                                             String expMessage = "The printer is unresponsive. Aborting ";
-                                            new Handler(Looper.getMainLooper()).post(
-                                                    new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
-
                                             Log.i("printer", expMessage);
                                             DataDogLogger.getLogger().e("Devnco_Android printer:"+ expMessage);
                                             break;
@@ -474,26 +438,15 @@ public class PrintRenderUtils {
                     }
                         printReleaseFrament.sendMetaData(context,TotalPageCount,colorMode);
                 }else{
-                        new Handler(Looper.getMainLooper()).post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                       Toast.makeText(context, resultMap.get("status").toString(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
+
+                            DataDogLogger.getLogger().e("Devnco_Android printer:"+ " status in renderPageUsingDefaultPdfRendererForSelectedPages:"+resultMap.get("status").toString());
                     }
 
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                     DataDogLogger.getLogger().e("Devnco_Android Exception - "+expMessage);
-                    new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                }});
 
-
+                    DataDogLogger.getLogger().e("Devnco_Android printer:"+ "Exception in renderPageUsingDefaultPdfRendererForSelectedPages:"+exp.toString());
                     Log.v("Saved Image - ", exp.toString());
 
                     exp.printStackTrace();
@@ -546,13 +499,8 @@ public class PrintRenderUtils {
                                                         });
                                             }else{
                                                 String errorString=errorPageString;
-                                                new Handler(Looper.getMainLooper()).post(
-                                                        new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
-                                                            }
-                                                        });
+
+                                                DataDogLogger.getLogger().e("Devnco_Android printer:"+ "Exception in renderPageUsingDefaultPdfRendererForSelectedPages:"+ errorString);
                                             }
 
 
@@ -641,13 +589,7 @@ public class PrintRenderUtils {
                                 totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
                                 if (totalTimeThreadSleep > timeThreshold) {
                                     String expMessage = "The printer is unresponsive. Aborting ";
-                                    new Handler(Looper.getMainLooper()).post(
-                                            new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                }
-                                            });
+                                    DataDogLogger.getLogger().e("Devnco_Android printer:"+ "Exception in printNoOfCOpiesJpgOrPngAndPdfFiles:"+expMessage);
 
                                     Log.i("printer", expMessage);
                                     break;
@@ -691,27 +633,14 @@ public class PrintRenderUtils {
                             Log.i("printer", "Exception in send MetaData ------>>>" + e.getMessage());
                         }
                 }else{
-                        new Handler(Looper.getMainLooper()).post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, resultMap.get("status").toString(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
+
+                        DataDogLogger.getLogger().e("Devnco_Android printer:"+ " printNoOfCOpiesJpgOrPngAndPdfFiles:"+resultMap.get("status").toString());
 
                     }
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                     // Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
                     DataDogLogger.getLogger().e("Devnco_Android Exception - "+expMessage);
-                    new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                }});
-
-
                     Log.v("Saved Image - ", exp.toString());
                     exp.printStackTrace();
                 }
@@ -746,13 +675,7 @@ public class PrintRenderUtils {
                             });
                 }else{
                     String errorString=errorPageString;
-                    new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
-                                }
-                            });
+                    DataDogLogger.getLogger().e("Devnco_Android printer:" + errorString);
                 }
 
             } catch (Exception e) {
@@ -912,13 +835,7 @@ public class PrintRenderUtils {
 
                                             if (!renderFile.exists()) {
                                                 String expMessage = "Exception occurred while rendering: file not created ";
-                                                new Handler(Looper.getMainLooper()).post(
-                                                        new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                            }
-                                                        });
+                                                DataDogLogger.getLogger().e("Devnco_Android printer:" + expMessage);
 
                                                 break;
                                             } else {
@@ -932,14 +849,6 @@ public class PrintRenderUtils {
                                                     totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
                                                     if (totalTimeThreadSleep > timeThreshold) {
                                                         String expMessage = "The printer is unresponsive. Aborting ";
-                                                        new Handler(Looper.getMainLooper()).post(
-                                                                new Runnable() {
-                                                                    @Override
-                                                                    public void run() {
-                                                                        Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                                    }
-                                                                });
-
                                                         Log.i("printer", expMessage);
                                                         DataDogLogger.getLogger().e("Devnco_Android printer:" + expMessage);
                                                         break;
@@ -992,13 +901,8 @@ public class PrintRenderUtils {
 
                                             if (!renderFile.exists()) {
                                                 String expMessage = "Exception occurred while rendering: file not created ";
-                                                new Handler(Looper.getMainLooper()).post(
-                                                        new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                            }
-                                                        });
+
+                                                DataDogLogger.getLogger().e("Devnco_Android printer:" + expMessage);
 
                                                 break;
                                             } else {
@@ -1012,14 +916,6 @@ public class PrintRenderUtils {
                                                     totalTimeThreadSleep = totalTimeThreadSleep + threadSleepInMilliSecs;
                                                     if (totalTimeThreadSleep > timeThreshold) {
                                                         String expMessage = "The printer is unresponsive. Aborting ";
-                                                        new Handler(Looper.getMainLooper()).post(
-                                                                new Runnable() {
-                                                                    @Override
-                                                                    public void run() {
-                                                                        Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                                                    }
-                                                                });
-
                                                         Log.i("printer", expMessage);
                                                         DataDogLogger.getLogger().e("Devnco_Android printer:" + expMessage);
                                                         break;
@@ -1083,25 +979,13 @@ public class PrintRenderUtils {
                         }
                         printReleaseFrament.sendMetaData(context,TotalPageCount,colorMode);
                     }else{
-                        new Handler(Looper.getMainLooper()).post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(context, resultMap.get("status").toString(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
+
+                        DataDogLogger.getLogger().e("Devnco_Android  - "+resultMap.get("status").toString());
                     }
 
                 } catch (Exception exp) {
                     String expMessage = "Exception occurred while rendering: " + exp.toString();
                     DataDogLogger.getLogger().e("Devnco_Android Exception - "+expMessage);
-                    new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(context, expMessage, Toast.LENGTH_LONG).show();
-                                }});
-
 
                     Log.v("Saved Image - ", exp.toString());
 
@@ -1150,7 +1034,7 @@ public class PrintRenderUtils {
                                                     new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
+                                                            //Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
                                                         }
                                                     });
                                         }else{
@@ -1159,7 +1043,7 @@ public class PrintRenderUtils {
                                                     new Runnable() {
                                                         @Override
                                                         public void run() {
-                                                            Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
+                                                            //Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
                                                         }
                                                     });
                                         }

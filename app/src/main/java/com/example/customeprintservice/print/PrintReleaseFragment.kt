@@ -724,7 +724,7 @@ class PrintReleaseFragment : Fragment() {
 
             override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
+              //  Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
                 Log.i("printer", t.message.toString())
                 DataDogLogger.getLogger().i("Devnco_Android printer" + t.message.toString())
             }
@@ -1047,7 +1047,7 @@ class PrintReleaseFragment : Fragment() {
 
             override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
+                //Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
                 Log.i("printer", t.message.toString())
                 DataDogLogger.getLogger().i("Devnco_Android printer" + t.message.toString())
             }

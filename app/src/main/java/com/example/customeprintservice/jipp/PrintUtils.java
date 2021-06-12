@@ -236,7 +236,7 @@ public class PrintUtils {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, "Page No: "+pageCountNo+" Print Status: "+jobState[1], Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(context, "Page No: "+pageCountNo+" Print Status: "+jobState[1], Toast.LENGTH_LONG).show();
                                 }
                             });
 
@@ -244,13 +244,8 @@ public class PrintUtils {
                 }
 
             } catch (Exception ex) {
-                new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, "Exception in get job Status:"+ex.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
+
+                DataDogLogger.getLogger().e("Devnco_Android printer:"+ "Exception in get job Status:"+ex.getMessage());
             }
 
         }).start();
@@ -340,16 +335,6 @@ public class PrintUtils {
                 Log.i("printer", "Requesting->" + printRequest.prettyPrint(100, "  "));
                 DataDogLogger.getLogger().i("Devnco_Android print method : "+ "printRequest->" + printRequest.toString());
 
-                new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, printRequest.toString(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-
-
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                 DataDogLogger.getLogger().i("Devnco_Android print method : "+ "IppPacketData Request->" + request.toString());
 
@@ -357,7 +342,7 @@ public class PrintUtils {
                         new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(context, request.toString(), Toast.LENGTH_LONG).show();
+                                //Toast.makeText(context, request.toString(), Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -372,7 +357,7 @@ public class PrintUtils {
                         new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(context, printResponse.toString(), Toast.LENGTH_LONG).show();
+                                //Toast.makeText(context, printResponse.toString(), Toast.LENGTH_LONG).show();
                             }
                         });
 
@@ -414,14 +399,8 @@ public class PrintUtils {
             resultMap.put("Exception", e.getMessage());
             DataDogLogger.getLogger().e("Devnco_Android Exception in print method: "+ e.getMessage());
             String exception="Devnco_Android Exception in print method: "+ e.getMessage();
-            new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(context, exception, Toast.LENGTH_LONG).show();
-                        }
-                    });
 
+            DataDogLogger.getLogger().e("Devnco_Android printer:"+ "Exception : "+exception);
 
         }
         return resultMap;
@@ -443,7 +422,7 @@ public class PrintUtils {
                     new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(context, attr, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(context, attr, Toast.LENGTH_LONG).show();
                         }
                     });
 */
@@ -455,7 +434,7 @@ public class PrintUtils {
                     new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(context, request1, Toast.LENGTH_LONG).show();
+                            //Toast.makeText(context, request1, Toast.LENGTH_LONG).show();
                         }
                     });
 
@@ -469,7 +448,7 @@ public class PrintUtils {
                         new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(context, response1, Toast.LENGTH_LONG).show();
+                                //Toast.makeText(context, response1, Toast.LENGTH_LONG).show();
                             }
                         });
 */
@@ -489,7 +468,7 @@ public class PrintUtils {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, attributeRequest1, Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(context, attributeRequest1, Toast.LENGTH_LONG).show();
                                 }
                             });
 */
@@ -504,7 +483,7 @@ public class PrintUtils {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, response2, Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(context, response2, Toast.LENGTH_LONG).show();
                                 }
                             });
 
@@ -538,7 +517,7 @@ public class PrintUtils {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context,result , Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(context,result , Toast.LENGTH_LONG).show();
                                 }
                             });
 */
@@ -550,14 +529,8 @@ public class PrintUtils {
                 resultMap.put("uri-"+count,specificUri.toString());
                 resultMap.put("result-"+count,e.getMessage());
                 String result ="exception result-"+count+" uri-"+specificUri.toString()+" exception-"+e.getMessage();
-                new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-                            }
-                        });
 
+                DataDogLogger.getLogger().e("Devnco_Android printer:"+ result);
 
                 continue;
             }
@@ -589,7 +562,7 @@ public class PrintUtils {
                             new Runnable() {
                                 @Override
                                 public void run() {
-                                    Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
                                 }
                             });
 

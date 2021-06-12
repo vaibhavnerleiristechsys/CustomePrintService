@@ -33,6 +33,7 @@ import com.example.customeprintservice.prefs.SignInCompanyPrefs
 import com.example.customeprintservice.printjobstatus.PrinterListService
 import com.example.customeprintservice.room.SelectedFile
 import com.example.customeprintservice.signin.SignInCompany
+import com.example.customeprintservice.utils.DataDogLogger
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -202,7 +203,7 @@ class PrintActivity : AppCompatActivity() {
                             "printResponse"
                         )
                     )*/
-                    Toast.makeText(context,"Print Response"+printResponse,Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context,"Print Response"+printResponse,Toast.LENGTH_LONG).show()
                 }
 
                 var printerSupportedFormats: String = ""
@@ -223,7 +224,7 @@ class PrintActivity : AppCompatActivity() {
                 if (intent.getStringExtra("getPrinterAttributes") != null) {
                     getPrinterAttributes = intent.getStringExtra("getPrinterAttributes").toString()
                     txtDignosticInfo.text = "Get Attributes - $getPrinterAttributes"
-                    Toast.makeText(context,"Print getPrinterAttributes  Response"+getPrinterAttributes,Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context,"Print getPrinterAttributes  Response"+getPrinterAttributes,Toast.LENGTH_LONG).show()
 //                    firebaseAnalytics.setDefaultEventParameters(debugString(getPrinterAttributes,"attributes"))
 
                 }
@@ -232,19 +233,19 @@ class PrintActivity : AppCompatActivity() {
                 if (intent.getStringExtra("exception") != null) {
                     exception = intent.getStringExtra("exception").toString()
                     txtDignosticInfo.text = "Exception Occured - $exception"
-                    Toast.makeText(context,"Print exception"+exception,Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context,"Print exception"+exception,Toast.LENGTH_LONG).show()
                 }
 
                 var fileNotSupported: String = ""
                 if (intent.getStringExtra("fileNotSupported") != null) {
                     fileNotSupported = intent.getStringExtra("fileNotSupported").toString()
-                    Toast.makeText(this@PrintActivity, fileNotSupported, Toast.LENGTH_LONG).show()
+                    //Toast.makeText(this@PrintActivity, fileNotSupported, Toast.LENGTH_LONG).show()
 
                 }
                 if (intent.getStringExtra("getPrintResponse") != null) {
                     printResponseStatus = intent.getStringExtra("getPrintResponse").toString()
                     Log.i("printer", "printResponseStatus=>$printResponseStatus")
-                    Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show()
+                    //Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 txtDignosticInfo.text = e.toString()
@@ -587,8 +588,7 @@ class PrintActivity : AppCompatActivity() {
 
 
    fun locaPrint(selectedFileString:String,printerString:String,context: Context){
-       Toast.makeText(context, printerString.toString(), Toast.LENGTH_LONG)
-           .show()
+       //Toast.makeText(context, printerString.toString(), Toast.LENGTH_LONG) .show()
        var file = File(selectedFileString)
        if (file.extension.toLowerCase() == "docx" || file.extension.toLowerCase() == "doc") {
            Log.i("printer", "selected doc file")
@@ -630,7 +630,8 @@ class PrintActivity : AppCompatActivity() {
                runOnUiThread {
 
                   var ExceptionString= map.get("Exception")
-                   Toast.makeText(context, ExceptionString.toString(), Toast.LENGTH_LONG).show()
+                   //Toast.makeText(context, ExceptionString.toString(), Toast.LENGTH_LONG).show()
+                   DataDogLogger.getLogger().e("Devnco_Android printer Exception in locaPrint :"+ ExceptionString.toString());
                }
 
            }.start()

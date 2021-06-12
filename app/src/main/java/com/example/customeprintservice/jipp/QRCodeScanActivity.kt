@@ -31,6 +31,7 @@ import com.example.customeprintservice.printjobstatus.model.getjobstatuses.Print
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.room.SelectedFile
+import com.example.customeprintservice.utils.DataDogLogger
 import com.example.customeprintservice.utils.JwtDecode
 import com.example.customeprintservice.utils.ProgressDialog
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -241,7 +242,8 @@ class QRCodeScanActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                Toast.makeText(context, t.message.toString(), Toast.LENGTH_SHORT).show()
+               // Toast.makeText(context, t.message.toString(), Toast.LENGTH_SHORT).show()
+                DataDogLogger.getLogger().e("Devnco_Android printer:"+ " Exception in getJobListByPrinterId:"+ t.message.toString());
                 Log.i("printer", t.message.toString())
             }
         })

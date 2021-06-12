@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getStringExtra("getPrintResponse") != null) {
                 String printResponseStatus = intent.getStringExtra("getPrintResponse").toString();
-                Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show();
             }
 
         }

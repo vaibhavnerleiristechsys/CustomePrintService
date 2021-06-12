@@ -5,6 +5,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.preference.PreferenceManager
@@ -167,6 +168,10 @@ class PrinterLogicPrintService : PrintService() {
 
                 var printPreview: PrintPreview =PrintPreview()
                 printPreview.sendHoldJobFromNativePrint(file.path,printerIds,isPullPrinter,this@PrinterLogicPrintService)
+
+
+                val intent = Intent(this@PrinterLogicPrintService, MainActivity::class.java)
+                startActivity(intent)
               //  printPreview.selectePrinterDialoga(baseContext)
             }else {
                 printRenderUtils.renderPageUsingDefaultPdfRenderer(

@@ -116,7 +116,7 @@ class BottomNavigationActivity : AppCompatActivity() {
                         SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
                     list.add(selectedFile)
                 } else {
-                    Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
+                 //   Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
                         .show()
                 }
                 if (LoginPrefs.getOCTAToken(this@BottomNavigationActivity) == null) {

@@ -76,7 +76,7 @@
                 android:layout_marginTop="16dp"
                 android:text="Printer"
                 android:textColor="#000000"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -93,14 +93,15 @@
                 android:id="@+id/selectPrinterText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="150dp"
                 android:layout_marginEnd="16dp"
                 android:text="Select Printer"
                 android:textColor="#5E5F61"
                 android:textSize="15sp"
                 app:layout_constraintBottom_toTopOf="@+id/copies"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.75"
-                app:layout_constraintStart_toEndOf="@+id/printer"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/printer"
                 app:layout_constraintVertical_bias="0.0" />
 
@@ -132,7 +133,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:textColor="#000000"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -174,7 +175,7 @@
                 android:layout_marginTop="16dp"
                 android:text="Color/Monochrome"
                 android:textColor="#000000"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/copies"
@@ -202,7 +203,7 @@
                 android:layout_marginBottom="49dp"
                 android:text="Pages"
                 android:textColor="#000000"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/paperSides" />
@@ -222,6 +223,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingRight="15dp"
+                    android:textSize="15sp"
                     android:text="All" />
 
                 <RadioButton
@@ -229,6 +231,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingRight="15dp"
+                    android:textSize="15sp"
                     android:text="page" />
 
 
@@ -262,7 +265,7 @@
                 android:layout_marginTop="16dp"
                 android:text="Orientation"
                 android:textColor="#000000"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/colorMonochrome"
@@ -287,7 +290,7 @@
                 android:layout_marginTop="16dp"
                 android:text="Paper Size"
                 android:textColor="#000000"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/orientation"
@@ -308,7 +311,7 @@
                 android:id="@+id/selectPrinterPaperSize"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginEnd="24dp"
                 android:text="Select Paper Size"
                 android:textColor="#000000"
                 android:textSize="15sp"
@@ -336,7 +339,7 @@
                 android:layout_marginTop="16dp"
                 android:text="Paper Sides"
                 android:textColor="#000000"
-                android:textSize="17sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/paperSize"

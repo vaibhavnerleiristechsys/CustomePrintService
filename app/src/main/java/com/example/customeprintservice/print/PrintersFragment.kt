@@ -497,7 +497,7 @@ class PrintersFragment : Fragment() {
         }
 
         floatButton.setOnClickListener {
-            Toast.makeText(requireContext(), "Click on float btn", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(requireContext(), "Click on float btn", Toast.LENGTH_SHORT).show()
         }
     }
 

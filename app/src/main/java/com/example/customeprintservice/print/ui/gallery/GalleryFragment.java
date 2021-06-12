@@ -295,7 +295,7 @@ public class GalleryFragment extends Fragment {
         @Override
         public boolean onLongClick(TreeNode node, Object value) {
             IconTreeItemHolder.IconTreeItem item = (IconTreeItemHolder.IconTreeItem) value;
-            Toast.makeText(getActivity(), "Long click: " + item.text, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "Long click: " + item.text, Toast.LENGTH_SHORT).show();
             return true;
         }
     };
