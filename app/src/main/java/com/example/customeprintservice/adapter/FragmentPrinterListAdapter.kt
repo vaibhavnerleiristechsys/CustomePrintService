@@ -41,7 +41,7 @@ import com.google.gson.reflect.TypeToken
 import java.util.function.Consumer
 
 
-class FragmentPrinterListAdapter(
+class FragmentPrinterListAdapter (
     val context: Context,
     val list: ArrayList<PrinterModel>,
     val location: String

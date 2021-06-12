@@ -293,7 +293,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/orientation"
                 app:layout_constraintVertical_bias="0.0" />
 
-            <Spinner
+          <!--  <Spinner
                 android:id="@+id/paperSizeSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -302,7 +302,31 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/orientation_spinner"
+                app:layout_constraintTop_toTopOf="@+id/paperSize" /> -->
+
+            <TextView
+                android:id="@+id/selectPrinterPaperSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="Select Paper Size"
+                android:textColor="#000000"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@+id/paperSize"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/orientation_spinner"
                 app:layout_constraintTop_toTopOf="@+id/paperSize" />
+
+            <ImageView
+                android:id="@+id/selectprinterPaperSizearrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/selectprinterarrow"
+                app:layout_constraintBottom_toBottomOf="@+id/selectPrinterPaperSize"
+                app:layout_constraintStart_toEndOf="@+id/selectPrinterPaperSize"
+                app:layout_constraintTop_toTopOf="@+id/selectPrinterPaperSize" />
 
             <TextView
                 android:id="@+id/paperSides"
@@ -326,7 +350,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/paperSides"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/paperSizeSpinner"
+                app:layout_constraintStart_toStartOf="@+id/selectPrinterPaperSize"
                 app:layout_constraintTop_toTopOf="@+id/paperSides" />
 
 

@@ -74,7 +74,11 @@ class SignInCompany : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+
+
         setContentView(R.layout.activity_sign_in_company)
+
         Selection.setSelection(edtYourCompany.getText(), edtYourCompany.getText().length);
            val companyUrl =LoginPrefs.getCompanyUrl(this@SignInCompany)
         if(companyUrl !=null){
@@ -83,7 +87,8 @@ class SignInCompany : AppCompatActivity() {
             btnNextSignInCompany.setBackgroundResource(R.drawable.button_change_color)
             btnNextSignInCompany.setTextColor(resources.getColor(R.color.white))
         }
-
+       // edtYourCompany.setText("unicef.printercloud.com")
+       // edtYourCompany.setSelection(edtYourCompany.getText().length)
 
         edtYourCompany.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {

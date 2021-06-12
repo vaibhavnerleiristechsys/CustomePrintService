@@ -13,6 +13,7 @@ import com.example.customeprintservice.R;
 import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapter;
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
+import com.example.customeprintservice.adapter.PrintPreviewPaperSizeAdapter;
 import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrintRenderUtils;
 import com.example.customeprintservice.jipp.PrintUtils;
@@ -113,12 +114,12 @@ public class PrintPreview extends AppCompatActivity {
     public String paperSide="Simplex";
     private NumberPicker picker1,picker2;
     private String[] pickerVals,pickerVals2;
-    public Spinner orientationSpinner,staticSpinner,paperSizeSpinner,paperSidesSpinner;
+    public Spinner orientationSpinner,staticSpinner,paperSidesSpinner;
     //Logger logger = LoggerFactory.getLogger(PrintPreview.class);
     RecyclerView printerRecyclerView;
-    TextView selectPrinterText;
-    ImageView selectprinterarrow;
-
+    TextView selectPrinterText,selectPrinterPaperSize;
+    ImageView selectprinterarrow,selectprinterPaperSizearrow;
+    ArrayList<String>FileSizelist = new ArrayList<String>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +148,11 @@ public class PrintPreview extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
                 new IntentFilter("selected print preview printer"));
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver1,
+                new IntentFilter("selected print preview paper size"));
+
+
 
         filePath = bundle.getString("filePath", "");
         File file = new File(filePath);
@@ -301,9 +307,9 @@ public class PrintPreview extends AppCompatActivity {
             }
         });
 
-        paperSizeSpinner= (Spinner) findViewById(R.id.paperSizeSpinner);
+       // paperSizeSpinner= (Spinner) findViewById(R.id.paperSizeSpinner);
 
-
+/*
         paperSizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
@@ -318,7 +324,7 @@ public class PrintPreview extends AppCompatActivity {
             }
         });
 
-
+*/
 
 
 
@@ -347,7 +353,9 @@ public class PrintPreview extends AppCompatActivity {
         radioGroup.check(radioBtn.getId());
         TextView cancel =(TextView) findViewById(R.id.cancel);
          selectPrinterText =(TextView) findViewById(R.id.selectPrinterText);
+        selectPrinterPaperSize=(TextView) findViewById(R.id.selectPrinterPaperSize);
         selectprinterarrow =(ImageView) findViewById(R.id.selectprinterarrow);
+        selectprinterPaperSizearrow =(ImageView) findViewById(R.id.selectprinterPaperSizearrow);
 
 /*
         radioBtnForPage.setOnClickListener(new View.OnClickListener() {
@@ -481,6 +489,13 @@ public class PrintPreview extends AppCompatActivity {
             selectePrinterDialog(serverSecurePrinterListWithDetailsSharedPreflist);
         }
     });
+
+        selectPrinterPaperSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectePrinterPaperSizeDialog(FileSizelist);
+            }
+        });
 }
 
 
@@ -915,7 +930,7 @@ public class PrintPreview extends AppCompatActivity {
                         ArrayList<String> items = new ArrayList<String>();
                         ArrayList<String>ColorSupportedlist = new ArrayList<String>();
                         HashSet<String> colorSupportedList =new HashSet<String>();
-                        ArrayList<String>FileSizelist = new ArrayList<String>();
+                    //    ArrayList<String>FileSizelist = new ArrayList<String>();
                         ArrayList<String>documentSupportedlist = new ArrayList<String>();
                         ArrayList<String>sideSupportedlist = new ArrayList<String>();
 
@@ -970,8 +985,8 @@ public class PrintPreview extends AppCompatActivity {
                                 orientationSpinner.setAdapter(adapter);
                                 ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,ColorSupportedlist);
                                 staticSpinner.setAdapter(staticAdapter);
-                                ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
-                                paperSizeSpinner.setAdapter(fileSizeAdapter);
+                              //  ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
+                              //  paperSizeSpinner.setAdapter(fileSizeAdapter);
                                 ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, sideSupportedlist);
                                 paperSidesSpinner.setAdapter(paperSidesAdapter);
 
@@ -996,6 +1011,33 @@ public class PrintPreview extends AppCompatActivity {
     }
 
 
+    private void selectePrinterPaperSizeDialog(ArrayList<String> paperSizeList) {
+        dialog = new Dialog(context);
+        v = LayoutInflater.from(context).inflate(R.layout.dialog_printpreview_select_paper_size, null);
+        dialog.setContentView(v);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(true);
+        Window window = dialog.getWindow();
+        assert window != null;
+        window.setLayout(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.MATCH_PARENT);
+        WindowManager.LayoutParams wlp = window.getAttributes();
+        wlp.gravity = Gravity.BOTTOM;
+        window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        window.setAttributes(wlp);
+
+        printerRecyclerView = dialog.findViewById(R.id.dialogSelectPaperSizeRecyclerView);
+        ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
+        printerRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        printerRecyclerView.setAdapter(new PrintPreviewPaperSizeAdapter(context,paperSizeList));
+        printerRecyclerView.setItemViewCacheSize(50);
+
+        imgCancel.setOnClickListener(v ->
+                dialog.cancel()
+        );
+
+        dialog.show();
+    }
+
 
 
     private void selectePrinterDialog(ArrayList<PrinterModel> list) {
@@ -1011,9 +1053,6 @@ public class PrintPreview extends AppCompatActivity {
         wlp.gravity = Gravity.BOTTOM;
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
         window.setAttributes(wlp);
-
-
-
 
         printerRecyclerView = dialog.findViewById(R.id.dialogSelectPrinterRecyclerView);
         ImageView imgCancel = dialog.findViewById(R.id.imgDialogSelectPrinterCancel);
@@ -1044,6 +1083,7 @@ public class PrintPreview extends AppCompatActivity {
                     selectedPrinterModel=printerModel;
                     if(selectedPrinterModel.getPrinterHost() !=null) {
                         clearAttributeList();
+
                         if(selectedPrinterModel.getIsPullPrinter().equals("0")) {
                             getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
                         }
@@ -1051,6 +1091,20 @@ public class PrintPreview extends AppCompatActivity {
                 }
 
             }
+        }
+    };
+
+
+    public BroadcastReceiver mMessageReceiver1 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(dialog != null) {
+                dialog.cancel();
+            }
+            String printerPapersize  = intent.getStringExtra("printer paper size");
+            paperSize=printerPapersize;
+            selectPrinterPaperSize.setText(printerPapersize);
+            selectprinterPaperSizearrow.setVisibility(View.GONE);
         }
     };
 
@@ -1085,15 +1139,18 @@ public class PrintPreview extends AppCompatActivity {
             public void run() {
                 ArrayList<String> items = new ArrayList<String>();
                 ArrayList<String>ColorSupportedlist = new ArrayList<String>();
-                ArrayList<String>FileSizelist = new ArrayList<String>();
+             //   ArrayList<String>FileSizelist = new ArrayList<String>();
                 ArrayList<String>sideSupportedlist = new ArrayList<String>();
+                FileSizelist.clear();
+                selectPrinterPaperSize.setText("Select Paper Size");
+                selectprinterPaperSizearrow.setVisibility(View.VISIBLE);
 
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item, items);
                 orientationSpinner.setAdapter(adapter);
                 ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,ColorSupportedlist);
                 staticSpinner.setAdapter(staticAdapter);
-                ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
-                paperSizeSpinner.setAdapter(fileSizeAdapter);
+             //   ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
+             //   paperSizeSpinner.setAdapter(fileSizeAdapter);
                 ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item, sideSupportedlist);
                 paperSidesSpinner.setAdapter(paperSidesAdapter);
 
