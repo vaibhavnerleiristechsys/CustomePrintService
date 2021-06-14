@@ -7,6 +7,7 @@ import android.app.Dialog
 import android.content.*
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.text.Editable
@@ -58,6 +59,7 @@ import kotlin.collections.HashMap
 class PrintersFragment : Fragment() {
 
     val printerList = ArrayList<PrinterModel>()
+    var isSwipeCompleted:Boolean =true
    // var logger = LoggerFactory.getLogger(PrintersFragment::class.java)
 
     companion object {
@@ -114,9 +116,28 @@ class PrintersFragment : Fragment() {
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
 
         swipeContainer.setOnRefreshListener {
-            PrinterList().printerList.clear()
-            updateUi(PrinterList().printerList, requireContext(), "")
-            getPrinterList(requireContext(), decodeJWT())
+
+            if(isSwipeCompleted==true) {
+                PrinterList().printerList.clear()
+                updateUi(PrinterList().printerList, requireContext(), "")
+                getPrinterList(requireContext(), decodeJWT())
+            }else{
+                if (swipeContainer != null) {
+                    swipeContainer.isRefreshing = false
+                }
+            }
+
+            object : CountDownTimer(120000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                   // textView.setText("seconds remaining: " + millisUntilFinished / 1000)
+                    isSwipeCompleted=false;
+                }
+
+                override fun onFinish() {
+                  //  textView.setText("done!")
+                    isSwipeCompleted =true
+                }
+            }.start()
 
         }
 

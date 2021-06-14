@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +62,7 @@ public class GalleryFragment extends Fragment {
     Context context;
     public static List<Printer> listOfPrinters=new ArrayList<Printer>();
     private SwipeRefreshLayout swipeContainer;
+    Boolean isSwipeCompleted =true;
     //Logger logger = LoggerFactory.getLogger(GalleryFragment.class);
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -96,8 +98,24 @@ public class GalleryFragment extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                containerView.removeAllViews();
-                serverCall(containerView);
+                if(isSwipeCompleted==true) {
+                    containerView.removeAllViews();
+                    serverCall(containerView);
+                }else{
+                    if (swipeContainer != null) {
+                        swipeContainer.setRefreshing(false);
+                    }
+                }
+                new CountDownTimer(120000, 1000) {
+
+                    public void onTick(long millisUntilFinished) {
+                        isSwipeCompleted=false;
+                    }
+
+                    public void onFinish() {
+                        isSwipeCompleted =true;
+                    }
+                }.start();
             }
         });
 
