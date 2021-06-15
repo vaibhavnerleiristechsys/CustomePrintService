@@ -29,6 +29,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import android.preference.PreferenceManager;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -184,36 +185,46 @@ public class MainActivity extends AppCompatActivity {
         }
     Uri intent2 = intent.getData();
         if (intent2 != null) {
-            String decodeUrl = intent2.getEncodedPath().replaceFirst("/", "").toString();
-            BottomNavigationActivity bottomNavigationActivity = new BottomNavigationActivity();
-            String decode = bottomNavigationActivity.decode(decodeUrl);
-
-            if(decode.toLowerCase().contains("google")) {
-                String decodeGoogleUrl = decode.replaceAll("\\\\", "");
-                decodeGoogleUrl = decodeGoogleUrl.replaceAll("\"", "").toString();
-                decodeGoogleUrl = decodeGoogleUrl.replaceAll("\\{", "").toString();
-                decodeGoogleUrl = decodeGoogleUrl.replaceAll("\\}", "").toString();
-
-
-                String[] pairs = decodeGoogleUrl.split(",");
-                String code = "";
-                String requestUri = "";
-                for (int i = 0; i < pairs.length; i++) {
-                    String pair = pairs[i];
-                    if (pair.contains("code")) {
-                        code = pair.substring(5, pair.length());
-                    }
-                    if (pair.contains("requestUri")) {
-                        requestUri = pair.substring(11, pair.length());
+            if(intent2.getScheme().equals("printerlogic")){
+                if (LoginPrefs.Companion.getOCTAToken(this) == null) {
+                    @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+                    String IsLdap = prefs.getString("IsLdap", "");
+                    if(!IsLdap.equals("LDAP")) {
+                        Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                        startActivity(intent1);
                     }
                 }
+            }else {
+                String decodeUrl = intent2.getEncodedPath().replaceFirst("/", "").toString();
+                BottomNavigationActivity bottomNavigationActivity = new BottomNavigationActivity();
+                String decode = bottomNavigationActivity.decode(decodeUrl);
 
-                GoogleAPI googleApi = new GoogleAPI();
-                googleApi.getData(code, requestUri, this);
-            }else{
-                bottomNavigationActivity.getTokenFromMainAcitivity(decode,this);
+                if (decode.toLowerCase().contains("google")) {
+                    String decodeGoogleUrl = decode.replaceAll("\\\\", "");
+                    decodeGoogleUrl = decodeGoogleUrl.replaceAll("\"", "").toString();
+                    decodeGoogleUrl = decodeGoogleUrl.replaceAll("\\{", "").toString();
+                    decodeGoogleUrl = decodeGoogleUrl.replaceAll("\\}", "").toString();
+
+
+                    String[] pairs = decodeGoogleUrl.split(",");
+                    String code = "";
+                    String requestUri = "";
+                    for (int i = 0; i < pairs.length; i++) {
+                        String pair = pairs[i];
+                        if (pair.contains("code")) {
+                            code = pair.substring(5, pair.length());
+                        }
+                        if (pair.contains("requestUri")) {
+                            requestUri = pair.substring(11, pair.length());
+                        }
+                    }
+
+                    GoogleAPI googleApi = new GoogleAPI();
+                    googleApi.getData(code, requestUri, this);
+                } else {
+                    bottomNavigationActivity.getTokenFromMainAcitivity(decode, this);
+                }
             }
-
         }
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("qrcodefloatingbutton"));
 
