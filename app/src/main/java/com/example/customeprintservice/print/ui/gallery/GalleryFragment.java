@@ -101,21 +101,23 @@ public class GalleryFragment extends Fragment {
                 if(isSwipeCompleted==true) {
                     containerView.removeAllViews();
                     serverCall(containerView);
+
+                    new CountDownTimer(120000, 1000) {
+
+                        public void onTick(long millisUntilFinished) {
+                            isSwipeCompleted=false;
+                        }
+
+                        public void onFinish() {
+                            isSwipeCompleted =true;
+                        }
+                    }.start();
                 }else{
                     if (swipeContainer != null) {
                         swipeContainer.setRefreshing(false);
                     }
                 }
-                new CountDownTimer(120000, 1000) {
 
-                    public void onTick(long millisUntilFinished) {
-                        isSwipeCompleted=false;
-                    }
-
-                    public void onFinish() {
-                        isSwipeCompleted =true;
-                    }
-                }.start();
             }
         });
 

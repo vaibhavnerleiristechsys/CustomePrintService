@@ -121,23 +121,26 @@ class PrintersFragment : Fragment() {
                 PrinterList().printerList.clear()
                 updateUi(PrinterList().printerList, requireContext(), "")
                 getPrinterList(requireContext(), decodeJWT())
+                object : CountDownTimer(120000, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+                        // textView.setText("seconds remaining: " + millisUntilFinished / 1000)
+                        isSwipeCompleted=false;
+                    }
+
+                    override fun onFinish() {
+                        //  textView.setText("done!")
+                        isSwipeCompleted =true
+                    }
+                }.start()
+
+
             }else{
                 if (swipeContainer != null) {
                     swipeContainer.isRefreshing = false
                 }
             }
 
-            object : CountDownTimer(120000, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                   // textView.setText("seconds remaining: " + millisUntilFinished / 1000)
-                    isSwipeCompleted=false;
-                }
 
-                override fun onFinish() {
-                  //  textView.setText("done!")
-                    isSwipeCompleted =true
-                }
-            }.start()
 
         }
 
@@ -587,12 +590,12 @@ class PrintersFragment : Fragment() {
         )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(
-                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " +"Bearer "+ LoginPrefs.getOCTAToken(
                     context
                 ).toString() + " username: " + decodeJWT(context)
             )
                 apiService.getPrinterDetailsByPrinterIdForGoogle(
-                    LoginPrefs.getOCTAToken(context).toString(),
+                    "Bearer "+LoginPrefs.getOCTAToken(context).toString(),
                     decodeJWT(context),
                     SignInCompanyPrefs.getIdpType(context).toString(),
                     SignInCompanyPrefs.getIdpName(context).toString(),
@@ -606,7 +609,7 @@ class PrintersFragment : Fragment() {
                 ).toString() + " username: " + decodeJWT(context)
             )
             apiService.getPrinterDetailsByPrinterId(
-                LoginPrefs.getOCTAToken(context).toString(),
+                "Bearer "+LoginPrefs.getOCTAToken(context).toString(),
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
                 SignInCompanyPrefs.getIdpName(context).toString()

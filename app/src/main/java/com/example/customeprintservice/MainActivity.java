@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String action = intent.getAction();
         list.clear();
-
+/*
         if (action != null) {
             switch (action) {
                 case Intent.ACTION_SEND_MULTIPLE:
@@ -183,6 +183,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
+ */
     Uri intent2 = intent.getData();
         if (intent2 != null) {
             if(intent2.getScheme().equals("printerlogic")){

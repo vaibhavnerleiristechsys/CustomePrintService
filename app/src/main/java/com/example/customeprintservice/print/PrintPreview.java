@@ -14,6 +14,7 @@ import com.example.customeprintservice.adapter.FragmentPrinterAlphabetsListAdapt
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter;
 import com.example.customeprintservice.adapter.PrintPreviewAdapter;
 import com.example.customeprintservice.adapter.PrintPreviewPaperSizeAdapter;
+import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.jipp.PrintActivity;
 import com.example.customeprintservice.jipp.PrintRenderUtils;
 import com.example.customeprintservice.jipp.PrintUtils;
@@ -40,6 +41,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.pdf.PdfRenderer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -154,7 +156,124 @@ public class PrintPreview extends AppCompatActivity {
 
 
 
-        filePath = bundle.getString("filePath", "");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //*************************************************
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        list.clear();
+
+        if (action != null) {
+            switch (action) {
+                case Intent.ACTION_SEND_MULTIPLE:
+                    ArrayList<Uri> imageUris = new ArrayList<Uri>();
+                    for (int i = 0; i < intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM).size(); i++) {
+
+                        imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                    }
+                    for (int j = 0; j < imageUris.size(); j++) {
+                        Uri imageUri = imageUris.get(j);
+
+                        if (imageUri != null) {
+                            String realPath = FileUtils.getPath(this, imageUri);
+                            SelectedFile selectedFile = new SelectedFile();
+                            File file = new File(realPath);
+                            selectedFile.setFileName(file.getName());
+                            selectedFile.setFilePath(realPath);
+                            selectedFile.setFromApi(false);
+                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                            Date date = new Date();
+                            String strDate = dateFormat.format(date);
+                            selectedFile.setFileSelectedDate(strDate);
+                            list.add(selectedFile);
+                        }
+                    }
+
+                    SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(this);
+                    Gson gson1 = new Gson();
+                    String json2 = prefs1.getString("localdocumentlist", null);
+                    Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
+                    }.getType();
+                    localDocumentSharedPreflist = gson1.fromJson(json2, type1);
+                    if (localDocumentSharedPreflist != null) {
+                        list.addAll(localDocumentSharedPreflist);
+                    }
+                    SharedPreferences.Editor editor1 = prefs1.edit();
+                    String convertedJson = gson1.toJson(list);
+                    editor1.putString("localdocumentlist", convertedJson);
+                    editor1.apply();
+                    Toast.makeText(this, "file added", Toast.LENGTH_LONG).show();
+
+                    if (LoginPrefs.Companion.getOCTAToken(this) == null) {
+                        Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                        startActivity(intent1);
+                    }
+
+
+                case Intent.ACTION_SEND:
+                    Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+                    if (imageUri != null) {
+                        String realPath = FileUtils.getPath(this, imageUri);
+                        SelectedFile selectedFile = new SelectedFile();
+                        File file = new File(realPath);
+                        selectedFile.setFileName(file.getName());
+                        selectedFile.setFilePath(realPath);
+                        selectedFile.setFromApi(false);
+                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                        Date date = new Date();
+                        String strDate = dateFormat.format(date);
+                        selectedFile.setFileSelectedDate(strDate);
+                        filePath=realPath;
+
+                        //Intent intent1 = new Intent(getApplicationContext(), PrintPreview.class);
+                        //Bundle bundle = new Bundle();
+                        //bundle.putString("filePath", realPath);
+                        //intent1.putExtras(bundle);
+                        //startActivity(intent1);
+
+                    }
+                    if (LoginPrefs.Companion.getOCTAToken(this) == null) {
+                        @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+                        String IsLdap = prefs.getString("IsLdap", "");
+                        if(!IsLdap.equals("LDAP")) {
+                            Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
+                            startActivity(intent1);
+                        }
+                    }
+
+            }
+
+        }
+        // *********************************************************
+
+
+
+      //  filePath = bundle.getString("filePath", "");
         File file = new File(filePath);
         SelectedFile selectedFile = new SelectedFile();
         selectedFile.setFileName(file.getName());
@@ -467,6 +586,7 @@ public class PrintPreview extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+              //  finish();
                onBackPressed();
 
             }
@@ -631,6 +751,7 @@ public class PrintPreview extends AppCompatActivity {
                    Log.d("isPullPrinter :",isPullPrinter);
                     printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), pageCount,printerId,isPullPrinter,"");
                 }
+             //   finish();
             }
 
 
@@ -720,7 +841,7 @@ public class PrintPreview extends AppCompatActivity {
                     }
                 }
 
-
+              //  finish();
             }
 
         });
@@ -729,6 +850,7 @@ public class PrintPreview extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+       // finish();
         moveTaskToBack(true);
     }
 

@@ -29,7 +29,20 @@
         </activity>
         <activity
             android:name=".print.PrintPreview"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -56,25 +69,16 @@
                 <data android:scheme="printerlogic" />
             </intent-filter>
 
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="*/*" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.SEND_MULTIPLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="*/*" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".print.BottomNavigationActivityForServerPrint"
+
             android:label="@string/title_activity_bottom_navigation_for_server_print" />
         <activity android:name=".signin.GoogleLoginActivity" />
         <activity android:name=".CustomePrintActivity" />
         <activity
             android:name=".print.BottomNavigationActivity"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
         <activity
             android:name=".signin.SignInActivity"

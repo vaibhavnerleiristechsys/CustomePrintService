@@ -162,13 +162,13 @@ class PrinterListService {
         }else if(siteId.toString().contains("google")){
             logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +authorization + " username: " + userName)
             apiService.getPrinterDetailsByNodeIdForGoogle(
-                authorization, userName, idpType, idpName,"serverId"
+                "Bearer "+authorization, userName, idpType, idpName,"serverId"
             )
         }
         else {
             logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +authorization + " username: " + userName)
             apiService.getPrinterDetailsByNodeId(
-                authorization, userName, idpType, idpName
+                "Bearer "+authorization , userName, idpType, idpName
             )
         }
         call?.enqueue(object : Callback<PrinterDetailsResponse> {
