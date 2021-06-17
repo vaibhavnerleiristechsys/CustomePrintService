@@ -586,7 +586,7 @@ public class PrintPreview extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              //  finish();
+                finish();
                onBackPressed();
 
             }
@@ -751,7 +751,7 @@ public class PrintPreview extends AppCompatActivity {
                    Log.d("isPullPrinter :",isPullPrinter);
                     printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), pageCount,printerId,isPullPrinter,"");
                 }
-             //   finish();
+                finish();
             }
 
 
@@ -841,7 +841,7 @@ public class PrintPreview extends AppCompatActivity {
                     }
                 }
 
-              //  finish();
+                finish();
             }
 
         });
@@ -850,7 +850,7 @@ public class PrintPreview extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-       // finish();
+        finish();
         moveTaskToBack(true);
     }
 
