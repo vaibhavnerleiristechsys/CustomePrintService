@@ -14,13 +14,17 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.widget.*
+import android.widget.AbsListView
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.adapter.FragmentPrinterListAdapter
 import com.example.customeprintservice.jipp.PrinterList
@@ -50,10 +54,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.net.InetAddress
 import java.net.URLEncoder
-import java.util.*
 import java.util.function.Consumer
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 class PrintersFragment : Fragment() {
@@ -121,6 +122,15 @@ class PrintersFragment : Fragment() {
                 PrinterList().printerList.clear()
                 updateUi(PrinterList().printerList, requireContext(), "")
                 getPrinterList(requireContext(), decodeJWT())
+                val handler = Handler()
+                handler.postDelayed({
+                    val mainActivity = MainActivity()
+                    mainActivity.getAttributeDeatilsForNativePrint(requireContext())
+                }, 7000)
+
+
+
+
                 object : CountDownTimer(120000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         // textView.setText("seconds remaining: " + millisUntilFinished / 1000)
@@ -590,12 +600,12 @@ class PrintersFragment : Fragment() {
         )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(
-                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " +"Bearer "+ LoginPrefs.getOCTAToken(
+                "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + "Bearer " + LoginPrefs.getOCTAToken(
                     context
                 ).toString() + " username: " + decodeJWT(context)
             )
                 apiService.getPrinterDetailsByPrinterIdForGoogle(
-                    "Bearer "+LoginPrefs.getOCTAToken(context).toString(),
+                    "Bearer " + LoginPrefs.getOCTAToken(context).toString(),
                     decodeJWT(context),
                     SignInCompanyPrefs.getIdpType(context).toString(),
                     SignInCompanyPrefs.getIdpName(context).toString(),
@@ -609,7 +619,7 @@ class PrintersFragment : Fragment() {
                 ).toString() + " username: " + decodeJWT(context)
             )
             apiService.getPrinterDetailsByPrinterId(
-                "Bearer "+LoginPrefs.getOCTAToken(context).toString(),
+                "Bearer " + LoginPrefs.getOCTAToken(context).toString(),
                 decodeJWT(context),
                 SignInCompanyPrefs.getIdpType(context).toString(),
                 SignInCompanyPrefs.getIdpName(context).toString()
@@ -672,8 +682,8 @@ class PrintersFragment : Fragment() {
                         .i("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
                     ServerPrintRelaseFragment.selectedPrinterId = id
                     ServerPrintRelaseFragment.selectedPrinterToken = printerToken
-                    ServerPrintRelaseFragment.selectedPrinterHost =hostAddress.toString()
-                    ServerPrintRelaseFragment.selectedPrinterServiceName=title.toString()
+                    ServerPrintRelaseFragment.selectedPrinterHost = hostAddress.toString()
+                    ServerPrintRelaseFragment.selectedPrinterServiceName = title.toString()
                     val printer: PrinterModel = PrinterModel()
                     printer.id = id
                     val thread = Thread(Runnable {

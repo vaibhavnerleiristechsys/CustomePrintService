@@ -12,7 +12,9 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import com.example.customeprintservice.jipp.FileUtils;
+import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterList;
+import com.example.customeprintservice.jipp.PrinterModel;
 import com.example.customeprintservice.jipp.QRCodeScanActivity;
 import com.example.customeprintservice.prefs.LoginPrefs;
 import com.example.customeprintservice.print.BottomNavigationActivity;
@@ -27,6 +29,9 @@ import com.example.customeprintservice.utils.SampleApplication;
 import com.example.customeprintservice.utils.SampleApplication1;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
@@ -43,9 +48,12 @@ import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import com.google.api.client.json.Json;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import android.view.Menu;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 //import org.slf4j.Logger;
@@ -54,10 +62,15 @@ import com.datadog.android.log.Logger;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,8 +85,10 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
     public static ArrayList<SelectedFile> list = new ArrayList<SelectedFile>();
     public ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
+
     public PrintService app;
     private Logger mLogger;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -432,6 +447,286 @@ public class MainActivity extends AppCompatActivity {
             return base64Encoded;
 
         }
+    }
+
+
+
+    public void getAttributeDeatilsForNativePrint(Context context){
+         ArrayList<PrinterModel>deployedSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
+         ArrayList<PrinterModel>serverSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
+        SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+        Gson gson1 = new Gson();
+        Type type1 = new TypeToken<ArrayList<PrinterModel>>() {}.getType();
+
+
+        String json = prefs1.getString("deployedPrintersListForPrintPreivew", null);
+        if (json != null) {
+            deployedSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json, type1);
+        }
+
+        String json2 = prefs1.getString("prefServerSecurePrinterListWithDetails", null);
+        if (json2 != null) {
+            serverSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json2, type1);
+
+        }
+        if(deployedSecurePrinterListWithDetailsSharedPreflist!=null && deployedSecurePrinterListWithDetailsSharedPreflist.size()>0){
+            serverSecurePrinterListWithDetailsSharedPreflist.addAll(deployedSecurePrinterListWithDetailsSharedPreflist);
+        }
+
+        for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
+            PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
+            if(!printerModel.getIsPullPrinter().equals("1")) {
+                getAttributeResponse(printerModel.getPrinterHost().toString(), printerModel.getServiceName(), context);
+            }
+        }
+    }
+
+    public void getAttributeResponse(String hostAddress,String printerName,Context context) {
+        new Thread() {
+
+            public void run()    //Anonymous class overriding run() method of Thread class
+            {
+                try {
+                    ArrayList<URI> ippUri = new ArrayList<URI>();
+
+                    if (hostAddress != null) {
+                        String printerHost = hostAddress;
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/print"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/printer"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + ":631/ipp/lp"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/printer"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/ipp"));
+                        ippUri.add(URI.create("ipp:/" + printerHost + "/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/printer"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + "/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/printers/lp1"));
+                        ippUri.add(URI.create("https:/" + printerHost));
+                        ippUri.add(URI.create("https:/" + printerHost + ":443/ipp/print"));
+                        ippUri.add(URI.create("ipps:/" + printerHost + ":443/ipp/print"));
+                        ippUri.add(URI.create("http:/" + printerHost + ":631/ipp/lp"));
+                    }
+                    PrintUtils printUtils = new PrintUtils();
+                    Map<String, String> resultMap = printUtils.getAttributesCall(ippUri, context);
+                    if (!resultMap.containsKey("status")) {
+                        new Handler(Looper.getMainLooper()).post(
+                                new Runnable() {
+                                    @Override
+                                    public void run() {
+                                    //    Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                    if(resultMap.get("status").equals("successful-ok")){
+                        String orientation =resultMap.get("orientation-requested-supported");
+                        String sides =resultMap.get("sides-supported");
+                        String color =resultMap.get("print-color-mode-supported");
+                        String media=resultMap.get("media-supported");
+                        String document = resultMap.get("document-format-supported");
+                        String[] orientationSupported = orientation.split("=");
+                        String[] sidesSupported = sides.split("=");
+                        String[] colorSupported = color.split("=");
+                        String[] mediaSupported = media.split("=");
+                        String[] documentSupported =document.split("=");
+                        String orientationStrigified="";
+                        String sidesStrigified="";
+                        String colorStrigified="";
+                        String mediaStrigified="";
+                        String documentStrigified="";
+                        List<String> orientationSupportList =new ArrayList<String>();
+                        List<String> sidesSupportList =new ArrayList();
+                        List<String> colorSupportList =new ArrayList();
+                        List<String> mediaSupportList =new ArrayList();
+                        List<String> documentSupportList =new ArrayList();
+                        if(orientationSupported.length>1){
+                            orientationStrigified  =orientationSupported[1];
+                            if(orientationStrigified.contains(",")){
+                                String removeSplChar =orientationStrigified.replaceAll("\\[", "");
+                                String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                String[] orientationSupportedArray  = removeSplChar2.split(",");
+                                orientationSupportList = Arrays.asList(orientationSupportedArray);
+                            }else{
+                                orientationSupportList.add(orientationStrigified);
+                            }
+
+                        }
+
+                        if(documentSupported.length>1){
+                            documentStrigified  =documentSupported[1];
+                            if(documentStrigified.contains(",")){
+                                String removeSplChar =documentStrigified.replaceAll("\\[", "");
+                                String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                String[] documentSupportedArray  = removeSplChar2.split(",");
+                                documentSupportList = Arrays.asList(documentSupportedArray);
+                            }else{
+                                documentSupportList.add(documentStrigified);
+                            }
+
+                        }
+
+
+                        if(sidesSupported.length>1){
+                            sidesStrigified =sidesSupported[1];
+                            if(sidesStrigified.contains(",")){
+                                String removeSplChar =sidesStrigified.replaceAll("\\[", "");
+                                String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                String[]  sidesSupportedArray  = removeSplChar2.split(",");
+                                sidesSupportList = Arrays.asList(sidesSupportedArray);
+                            }else{
+                                sidesSupportList.add(sidesStrigified);
+                            }
+                        }
+                        if(colorSupported.length>1){
+                            colorStrigified =colorSupported[1];
+                            if(colorStrigified.contains(",")){
+                                String removeSplChar =colorStrigified.replaceAll("\\[", "");
+                                String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                String removeSplChar2=removeSplChar1.replaceAll(" ","");
+                                String[] colorSupportedArray  = removeSplChar2.split(",");
+                                colorSupportList = Arrays.asList(colorSupportedArray);
+                            }else{
+                                colorSupportList.add(colorStrigified);
+                            }
+                        }
+                        if(mediaSupported.length>1){
+                            mediaStrigified =mediaSupported[1];
+                            if(mediaStrigified.contains(",")){
+                                String removeSplChar =mediaStrigified.replaceAll("\\[", "");
+                                String removeSplChar1 =removeSplChar.replaceAll("\\]", "");
+                                String removeSplChar2 =removeSplChar1.replaceAll(" ","");
+                                String[] mediaSupportedArray  = removeSplChar2.split(",");
+                                mediaSupportList = Arrays.asList(mediaSupportedArray);
+                            }else{
+                                mediaSupportList.add(mediaStrigified);
+
+                            }
+                        }
+
+                        Log.d("orientationSupported:",orientationStrigified);
+                        Log.d("sidesSupported:",sidesStrigified);
+                        Log.d("colorSupported:",colorStrigified);
+                        Log.d("mediaSupported:",mediaStrigified);
+                        ArrayList<String> items = new ArrayList<String>();
+                        ArrayList<String>ColorSupportedlist = new ArrayList<String>();
+                        HashSet<String> colorSupportedList =new HashSet<String>();
+                        //    ArrayList<String>FileSizelist = new ArrayList<String>();
+                        ArrayList<String>documentSupportedlist = new ArrayList<String>();
+                        ArrayList<String>sideSupportedlist = new ArrayList<String>();
+
+
+                        for(int i=0;i<orientationSupportList.size();i++){
+                            Log.d("orientationSupported:",orientationSupportList.get(i));
+                            items.add(orientationSupportList.get(i));
+                        }
+                        for(int i=0;i<sidesSupportList.size();i++){
+                            Log.d("sidesSupported:",sidesSupportList.get(i));
+                            sideSupportedlist.add(sidesSupportList.get(i));
+                        }
+                        for(int i=0;i<colorSupportList.size();i++){
+                            Log.d("colorSupported:",colorSupportList.get(i));
+                            if(colorSupportList.get(i).toLowerCase().equals("monochrome")){
+                                colorSupportedList.add("Monochrome");
+                            }else if(colorSupportList.get(i).toLowerCase().equals("color")){
+                                colorSupportedList.add("Color");
+                            }
+
+                        }
+                        ArrayList<String>listOfColorSupported = new ArrayList<String>(colorSupportedList);
+
+                        ColorSupportedlist.addAll(listOfColorSupported);
+                        for(int i=0;i<mediaSupportList.size();i++){
+                            Log.d("mediaSupported:",mediaSupportList.get(i));
+                          //  FileSizelist.add(mediaSupportList.get(i));
+                        }
+
+                        for(int i=0;i<documentSupportList.size();i++){
+                            Log.d("documentSupported:",documentSupportList.get(i));
+                            documentSupportedlist.add(documentSupportList.get(i));
+                            if(documentSupportList.get(i).toLowerCase().contains("pdf")){
+                               // isDuplexPrintSupported=true;
+                                //   sideSupportedlist.add("two-sided-long-edge");
+                                //  sideSupportedlist.add("two-sided-short-edge");
+                            }
+                        }
+
+
+                        updatePrinterSupportedData(printerName,orientationSupportList,sidesSupportList,colorSupportList,mediaSupportList,documentSupportList,context);
+                    }
+
+                } catch (Exception exp) {
+                    DataDogLogger.getLogger().e("Devnco_Android Exception - " + exp.getMessage());
+
+                }
+            }
+        }.start();
+
+    }
+
+
+    public void updatePrinterSupportedData(String printerName,List<String> orientationSupportList,List<String> sidesSupportList,List<String> colorSupportList,List<String> mediaSupportList,List<String> documentSupportList,Context context){
+         ArrayList<PrinterModel>deployedSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
+         ArrayList<PrinterModel>serverSecurePrinterListWithDetailsSharedPreflist= new ArrayList<PrinterModel>();
+
+        SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
+        Gson gson1 = new Gson();
+        Type type1 = new TypeToken<ArrayList<PrinterModel>>() {}.getType();
+
+
+        String json = prefs1.getString("deployedPrintersListForPrintPreivew", null);
+        if (json != null) {
+            deployedSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json, type1);
+        }
+
+        String json2 = prefs1.getString("prefServerSecurePrinterListWithDetails", null);
+        if (json2 != null) {
+            serverSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson(json2, type1);
+
+        }
+
+        for(int i=0;i<deployedSecurePrinterListWithDetailsSharedPreflist.size();i++){
+            PrinterModel printerModel =deployedSecurePrinterListWithDetailsSharedPreflist.get(i);
+            if(printerName.equals(printerModel.getServiceName())){
+                printerModel.setOrientationSupportList(orientationSupportList);
+                printerModel.setSidesSupportList(sidesSupportList);
+                printerModel.setColorSupportList(colorSupportList);
+                printerModel.setMediaSupportList(mediaSupportList);
+                printerModel.setDocumentSupportList(documentSupportList);
+                deployedSecurePrinterListWithDetailsSharedPreflist.add(printerModel);
+                break;
+            }
+        }
+        for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
+            PrinterModel printerModel =serverSecurePrinterListWithDetailsSharedPreflist.get(i);
+            if(printerName.equals(printerModel.getServiceName())){
+                printerModel.setOrientationSupportList(orientationSupportList);
+                printerModel.setSidesSupportList(sidesSupportList);
+                printerModel.setColorSupportList(colorSupportList);
+                printerModel.setMediaSupportList(mediaSupportList);
+                printerModel.setDocumentSupportList(documentSupportList);
+                serverSecurePrinterListWithDetailsSharedPreflist.add(printerModel);
+                break;
+            }
+        }
+
+
+
+
+        SharedPreferences.Editor editor = prefs1.edit();
+
+        String json3 = gson1.toJson(deployedSecurePrinterListWithDetailsSharedPreflist);
+        editor.putString("deployedPrintersListForPrintPreivew", json3);
+
+
+        String json4 = gson1.toJson(serverSecurePrinterListWithDetailsSharedPreflist);
+        editor.putString("prefServerSecurePrinterListWithDetails", json4);
+        editor.apply();
+
     }
 }
 

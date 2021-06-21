@@ -1,6 +1,7 @@
 package com.example.customeprintservice.jipp;
 
 import java.net.InetAddress;
+import java.util.List;
 
 public class PrinterModel {
 
@@ -29,6 +30,17 @@ public class PrinterModel {
     private Integer isColor;
 
     private String secure_release;
+
+    private List<String> orientationSupportList;
+
+    private List<String> sidesSupportList;
+
+    private List<String> colorSupportList;
+
+    private List<String> mediaSupportList;
+
+    private List<String> documentSupportList;
+
 
 
     public String getSecure_release() {
@@ -133,6 +145,46 @@ public class PrinterModel {
 
     public void setIsColor(Integer isColor) {
         this.isColor = isColor;
+    }
+
+    public List<String> getOrientationSupportList() {
+        return orientationSupportList;
+    }
+
+    public void setOrientationSupportList(List<String> orientationSupportList) {
+        this.orientationSupportList = orientationSupportList;
+    }
+
+    public List<String> getSidesSupportList() {
+        return sidesSupportList;
+    }
+
+    public void setSidesSupportList(List<String> sidesSupportList) {
+        this.sidesSupportList = sidesSupportList;
+    }
+
+    public List<String> getColorSupportList() {
+        return colorSupportList;
+    }
+
+    public void setColorSupportList(List<String> colorSupportList) {
+        this.colorSupportList = colorSupportList;
+    }
+
+    public List<String> getMediaSupportList() {
+        return mediaSupportList;
+    }
+
+    public void setMediaSupportList(List<String> mediaSupportList) {
+        this.mediaSupportList = mediaSupportList;
+    }
+
+    public List<String> getDocumentSupportList() {
+        return documentSupportList;
+    }
+
+    public void setDocumentSupportList(List<String> documentSupportList) {
+        this.documentSupportList = documentSupportList;
     }
 }
 

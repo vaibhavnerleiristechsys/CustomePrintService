@@ -145,6 +145,17 @@ public class ServerPrintRelaseFragment extends Fragment {
             getholdJobAPIStart=true;
         }
 
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity mainActivity=new MainActivity();
+                mainActivity.getAttributeDeatilsForNativePrint(requireContext());
+            }
+        }, 7000);
+
+
     }
 
     @Override

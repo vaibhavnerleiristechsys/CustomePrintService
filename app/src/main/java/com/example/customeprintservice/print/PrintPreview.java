@@ -953,7 +953,7 @@ public class PrintPreview extends AppCompatActivity {
                                 new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
+                                    //    Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
                                     }
                                 });
                     }
