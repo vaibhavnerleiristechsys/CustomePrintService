@@ -20,6 +20,7 @@ class SignInCompanyPrefs {
             val sharedPreferences =
                 context.getSharedPreferences(Constants.IDP_URL, Context.MODE_PRIVATE)
             return sharedPreferences.getString(Constants.IDP_URL, null)
+           // return "AzureAD"
         }
 
         fun saveIdpType(context: Context, idpType: String) {
@@ -33,6 +34,8 @@ class SignInCompanyPrefs {
             val sharedPreferences =
                 context.getSharedPreferences(Constants.IDP_TYPE, Context.MODE_PRIVATE)
             return sharedPreferences.getString(Constants.IDP_TYPE, null)
+           //return "saml2"
+
         }
 
         fun saveIdpName(context: Context, idpType: String) {
@@ -46,6 +49,7 @@ class SignInCompanyPrefs {
             val sharedPreferences =
                 context.getSharedPreferences(Constants.IDP_NAME, Context.MODE_PRIVATE)
             return sharedPreferences.getString(Constants.IDP_NAME, null)
+            //return "AzureAD"
         }
 
 

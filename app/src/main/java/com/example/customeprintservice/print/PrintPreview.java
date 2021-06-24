@@ -1202,6 +1202,60 @@ public class PrintPreview extends AppCompatActivity {
 
                         if(selectedPrinterModel.getIsPullPrinter().equals("0")) {
                             getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                        }else{
+                            ArrayList<String> items = new ArrayList<String>();
+                            ArrayList<String>ColorSupportedlist = new ArrayList<String>();
+                            HashSet<String> colorSupportedList =new HashSet<String>();
+                           // ArrayList<String>FileSizelist = new ArrayList<String>();
+                            ArrayList<String>documentSupportedlist = new ArrayList<String>();
+                            ArrayList<String>sideSupportedlist = new ArrayList<String>();
+                            items.add("portrait");
+                            items.add("landscape");
+                            ColorSupportedlist.add("Color");
+                            ColorSupportedlist.add("Monochrome");
+
+                            sideSupportedlist.add("Simplex");
+                            sideSupportedlist.add("Duplex");
+
+                            FileSizelist.add("na_executive_7.25x10.5in");
+                            FileSizelist.add("na_letter_8.5x11in");
+                            FileSizelist.add("na_legal_8.5x14in");
+                            FileSizelist.add("na_govt-letter_8x10in");
+                            FileSizelist.add("na_invoice_5.5x8.5in");
+                            FileSizelist.add("iso_a5_148x210mm");
+                            FileSizelist.add("iso_a4_210x297mm");
+                            FileSizelist.add("jis_b5_182x257mm");
+                            FileSizelist.add("jpn_hagaki_100x148mm");
+                            FileSizelist.add("iso_a6_105x148mm");
+                            FileSizelist.add("na_index-4x6_4x6in");
+                            FileSizelist.add("na_index-5x8_5x8in");
+                            FileSizelist.add("na_index-3x5_3x5in");
+                            FileSizelist.add("na_monarch_3.875x7.5in");
+                            FileSizelist.add("na_number-10_4.125x9.5in");
+                            FileSizelist.add("iso_dl_110x220mm");
+                            FileSizelist.add("iso_c5_162x229mm");
+                            FileSizelist.add("iso_c6_114x162mm");
+                            FileSizelist.add("na_a2_4.375x5.75in");
+                            FileSizelist.add("jpn_chou3_120x235mm");
+                            FileSizelist.add("jpn_chou4_90x205mm");
+                            FileSizelist.add("oe_photo-l_3.5x5in");
+                            FileSizelist.add("na_5x7_5x7in");
+                            FileSizelist.add("na_personal_3.625x6.5in");
+                            FileSizelist.add("iso_b5_176x250mm");
+                            FileSizelist.add("om_small-photo_100x150mm");
+                            FileSizelist.add("na_foolscap_8.5x13in");
+                            FileSizelist.add("custom_min_3x5in");
+                            FileSizelist.add("custom_max_8.5x14in");
+
+
+                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.simple_spinner_item1, items);
+                            orientationSpinner.setAdapter(adapter);
+                            ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1,ColorSupportedlist);
+                            staticSpinner.setAdapter(staticAdapter);
+                            //  ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item1,FileSizelist);
+                            //  paperSizeSpinner.setAdapter(fileSizeAdapter);
+                            ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1, sideSupportedlist);
+                            paperSidesSpinner.setAdapter(paperSidesAdapter);
                         }
                     }
                 }

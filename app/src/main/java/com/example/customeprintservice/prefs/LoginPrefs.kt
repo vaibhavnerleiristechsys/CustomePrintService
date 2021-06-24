@@ -40,6 +40,7 @@ class LoginPrefs {
         fun getOCTAToken(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
             return sharedPreferences.getString(TOKEN, null)
+           // return "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIxMmI4MDJmOS1mMzUwLTQ5YmUtYWFmNi01NWQxZmE3MzQ2ZmQiLCJpZHAiOiJBenVyZUFEIiwic2l0ZSI6Im1pa2VtYXJzaGFsbC1kZW1vIiwidXNlciI6Im1pa2VAbWlrZW1hcnNoYWxsLm1lIiwic2Vzc2lvbiI6ImI3Mjg4OTFlLTY3YmUtNDE4Ny05N2M0LTg2ZTMzYzQwNmIxNiIsImV4cCI6MTY1NTkwOTczNSwiaWF0IjoxNjI0MzczNzM1LCJpc3MiOiJjb20ucHJpbnRlcmxvZ2ljLnNlcnZpY2VzLmF1dGhuIiwiYXVkIjoiY29tLnByaW50ZXJsb2dpYy5jbGllbnRzLmRlc2t0b3AuaWRwIn0.g6HX2dXwRRkGfnDInw1rqSazH0qt-HyiNrCcaa24Lhc3NP-_Dkj9_YXFrSyDBCsjvYvSBCPJfTh2RYhssGrj8KKM8d-3Llg_ZsECXmq6XuMH74e1MoVInqb_g2K9qUdnZoo2lcfCF-O1Vk4okCE3KLRM8Rqd0tO8UAKnzvwxDx1hUM2Ak9LVFC6feoKcOQmvk4c3OmkMYlkd_VaQQ1852eUjxWMOAW4tGG2WLWEwlXcQeFbs_8SkSrUjaHPCQ5thtm1kX8rzapjhFOY-nnz9ngTWTYGMlWxsDaZQ5pPNzSQHpf3whYqevO2gxB6BUo2q42IWYNtuBqGlaoqzi9_-Ug"
         }
 
         fun saveSiteId(context: Context, siteId: String) {
@@ -51,6 +52,7 @@ class LoginPrefs {
         fun getSiteId(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(site_Id, Context.MODE_PRIVATE)
             return sharedPreferences.getString(SITEID, null)
+          //  return "mikemarshall-demo"
         }
 
         fun saveCompanyUrl(context: Context, companyUrl: String) {
@@ -62,6 +64,7 @@ class LoginPrefs {
         fun getCompanyUrl(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(company_url, Context.MODE_PRIVATE)
             return sharedPreferences.getString(COMPANYURL, null)
+           // return "mikemarshall-demo.printercloud.com"
         }
 
 

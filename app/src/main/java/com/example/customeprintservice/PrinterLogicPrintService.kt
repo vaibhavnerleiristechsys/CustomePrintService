@@ -885,7 +885,40 @@ internal class PrinterDiscoverySession(
 
                             }
                         } else {
-                            capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
+                            if(p.isPullPrinter.equals("1")){
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A0, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A1, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A10, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A2, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A3, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A6, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A4, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A7, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A8, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A9, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_B0, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_B1, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_B10, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_B2, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_B4, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_B5, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_C1, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_C4, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_C9, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.JIS_B0, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.JIS_B6, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.JIS_EXEC, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.JPN_HAGAKI, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.NA_JUNIOR_LEGAL, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.NA_LEDGER, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.PRC_1, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.PRC_8, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.PRC_3, false)
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ROC_16K, false)
+                            }else {
+                                capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
+                            }
                         }
 
                         capBuilder
@@ -900,10 +933,17 @@ internal class PrinterDiscoverySession(
                                     PrintAttributes.COLOR_MODE_COLOR
                                 )
                             } else {
-                                capBuilder.setColorModes(
-                                    PrintAttributes.COLOR_MODE_COLOR,
-                                    PrintAttributes.COLOR_MODE_COLOR
-                                )
+                                if(p.isPullPrinter.equals("1")){
+                                    capBuilder.setColorModes(
+                                        PrintAttributes.COLOR_MODE_COLOR + PrintAttributes.COLOR_MODE_MONOCHROME,
+                                        PrintAttributes.COLOR_MODE_COLOR
+                                    )
+                                }else {
+                                    capBuilder.setColorModes(
+                                        PrintAttributes.COLOR_MODE_COLOR,
+                                        PrintAttributes.COLOR_MODE_COLOR
+                                    )
+                                }
                             }
                         }
 
