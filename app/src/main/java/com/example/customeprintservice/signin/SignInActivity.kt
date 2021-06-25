@@ -5,6 +5,7 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
@@ -14,17 +15,12 @@ import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
-import com.datadog.android.Datadog
-import com.datadog.android.core.configuration.Configuration
-import com.datadog.android.core.configuration.Credentials
 import com.datadog.android.log.Logger
-import com.datadog.android.privacy.TrackingConsent
 import com.example.customeprintservice.MainActivity
 import com.example.customeprintservice.R
 import com.example.customeprintservice.prefs.LoginPrefs
 import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapSessionResponse
 import com.example.customeprintservice.printjobstatus.model.ldapResponse.LdapUserNameResponse
-import com.example.customeprintservice.printjobstatus.model.printerdetails.PrinterDetailsResponse
 import com.example.customeprintservice.rest.ApiService
 import com.example.customeprintservice.rest.RetrofitClient
 import com.example.customeprintservice.utils.ProgressDialog
@@ -170,7 +166,8 @@ class SignInActivity : AppCompatActivity() {
         LOG.info("printer", "desktopUrl--->${desktopUrl}")
         btnSignInWithOkta.setOnClickListener {
             if (bundle.getString("buttonName") == "Okta") {
-                searchWeb(desktopUrl)
+                //searchWeb(desktopUrl)
+                searchWebForOkta(desktopUrl)
             }
             else if(bundle.getString("buttonName")=="Google"){
 
@@ -184,6 +181,12 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
+    private fun searchWebForOkta(query: String?){
+        val i = Intent(Intent.ACTION_VIEW)
+        i.data = Uri.parse(query)
+        startActivity(i)
+    }
+
     private fun searchWeb(query: String?) {
         val intent = Intent(Intent.ACTION_WEB_SEARCH).apply {
             putExtra(SearchManager.QUERY, query)
@@ -192,6 +195,8 @@ class SignInActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+
 
 
     @SuppressLint("SetTextI18n")
@@ -269,7 +274,7 @@ class SignInActivity : AppCompatActivity() {
                 if (response.code() == 204) {
                     Log.i("LDAP printers Response", response.toString())
                     LOG.info("LDAP printers Response" + response.toString())
-                 //   toast("Login Successfully")
+                    //   toast("Login Successfully")
                     val sharedPreferences: SharedPreferences =
                         getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
                     val myEdit = sharedPreferences.edit()
@@ -299,14 +304,14 @@ class SignInActivity : AppCompatActivity() {
         val companyUrl = LoginPrefs.getCompanyUrl(context)
         val usernameAndPassword:String=username+":"+password
         val base64encodedtoken:String= MainActivity.encodeString(usernameAndPassword);
-        Log.i("encoded String","encoded Ldap String::"+base64encodedtoken.toString())
+        Log.i("encoded String", "encoded Ldap String::" + base64encodedtoken.toString())
         val BASE_URL = "https://"+companyUrl+"/api/portal-session-id/"
         val apiService = RetrofitClient(context)
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
 
         val call = apiService.getSessionForLdapLogin(
-            "Basic " +base64encodedtoken
+            "Basic " + base64encodedtoken
         )
 
         call.enqueue(object : Callback<LdapSessionResponse> {
@@ -320,8 +325,8 @@ class SignInActivity : AppCompatActivity() {
                 if (response.code() == 200) {
                     Log.i("LDAP  id Response", response.body()?.data?.id.toString())
                     Log.i("LDAP type Response", response.body()?.data?.type.toString())
-                    val sessionId:String=response.body()?.data?.id.toString()
-                    LoginPrefs.saveSessionIdForLdap(context,sessionId)
+                    val sessionId: String = response.body()?.data?.id.toString()
+                    LoginPrefs.saveSessionIdForLdap(context, sessionId)
 
                     //   toast("Login Successfully")
                     val sharedPreferences: SharedPreferences =
@@ -332,8 +337,8 @@ class SignInActivity : AppCompatActivity() {
                     myEdit.putString("LdapPassword", password);
                     myEdit.commit()
 
-                    checkValidSessionForLdapLogin(context,sessionId)
-                   // val intent = Intent(this@SignInActivity, MainActivity::class.java)
+                    checkValidSessionForLdapLogin(context, sessionId)
+                    // val intent = Intent(this@SignInActivity, MainActivity::class.java)
                     //startActivity(intent)
                 } else {
                     toast("Login Not Successfully Please Try Again")
@@ -360,7 +365,7 @@ class SignInActivity : AppCompatActivity() {
             .create(ApiService::class.java)
 
         val call = apiService.getUsernameForLdapLogin(
-            "PHPSESSID=" +sessionId
+            "PHPSESSID=" + sessionId
         )
 
         call.enqueue(object : Callback<LdapUserNameResponse> {
@@ -372,14 +377,20 @@ class SignInActivity : AppCompatActivity() {
             ) {
                 ProgressDialog.cancelLoading()
                 if (response.code() == 200) {
-                    Log.i("LDAP user Response", "LDAP userName:"+ (response.body()?.meta?.userName.toString()))
-                    Log.i("LDAP user Response", "LDAP isPortal:"+ (response.body()?.meta?.isPortalUser.toString()))
+                    Log.i(
+                        "LDAP user Response",
+                        "LDAP userName:" + (response.body()?.meta?.userName.toString())
+                    )
+                    Log.i(
+                        "LDAP user Response",
+                        "LDAP isPortal:" + (response.body()?.meta?.isPortalUser.toString())
+                    )
                     //   toast("Login Successfully")
-                    val userName:String=response.body()?.meta?.userName.toString()
-                    if(userName!="") {
+                    val userName: String = response.body()?.meta?.userName.toString()
+                    if (userName != "") {
                         val intent = Intent(this@SignInActivity, MainActivity::class.java)
                         startActivity(intent)
-                    }else{
+                    } else {
                         toast("Login Not Successfully Please Try Again")
                     }
                 } else {
