@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     bottomNavigationActivity.getTokenFromMainAcitivity(decode, this);
                 }
+
             }
         }
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("qrcodefloatingbutton"));
@@ -263,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
                 PrintersFragment printersFragment=new PrintersFragment();
                 printersFragment.removePrinters(getApplicationContext());
-
+                //finish();
                 Intent intent = new Intent(getApplicationContext(), SignInCompany.class);
                 startActivity(intent);
             }

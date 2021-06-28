@@ -159,30 +159,6 @@ public class PrintPreview extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         //*************************************************
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -596,7 +572,27 @@ public class PrintPreview extends AppCompatActivity {
      selectPrinterText.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Collections.sort(serverSecurePrinterListWithDetailsSharedPreflist, new Comparator<PrinterModel>() {
+             ArrayList<PrinterModel> uniquePrinterList= new ArrayList<PrinterModel>();
+
+            for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
+                boolean isAvailblePrinter =false;
+                PrinterModel printerModel =serverSecurePrinterListWithDetailsSharedPreflist.get(i);
+                if(uniquePrinterList.size()>0){
+                          for(int j=0;j<uniquePrinterList.size();j++){
+                              PrinterModel uniquePrinterModel =uniquePrinterList.get(j);
+                              if(printerModel.getServiceName().toString().equals(uniquePrinterModel.getServiceName().toString())){
+                                  isAvailblePrinter=true;
+                              }
+                          }
+                          if(isAvailblePrinter == false) {
+                              uniquePrinterList.add(printerModel);
+                          }
+                }else{
+                    uniquePrinterList.add(printerModel);
+                }
+            }
+
+            Collections.sort(uniquePrinterList, new Comparator<PrinterModel>() {
                 @Override
                 public int compare(PrinterModel item, PrinterModel t1) {
                     String s1 = item.getServiceName();
@@ -606,7 +602,8 @@ public class PrintPreview extends AppCompatActivity {
 
             });
 
-            selectePrinterDialog(serverSecurePrinterListWithDetailsSharedPreflist);
+
+            selectePrinterDialog(uniquePrinterList);
         }
     });
 
