@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
  */
     Uri intent2 = intent.getData();
         if (intent2 != null) {
-            if(intent2.getScheme().equals("printerlogic")){
+            if(intent2.getScheme().equals("vasion-print")){
                 if (LoginPrefs.Companion.getOCTAToken(this) == null) {
                     @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
                     String IsLdap = prefs.getString("IsLdap", "");
