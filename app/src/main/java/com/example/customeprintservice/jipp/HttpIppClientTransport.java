@@ -44,7 +44,7 @@ public class HttpIppClientTransport implements IppClientTransport {
         Map<String, List<String>> map  = connection.getRequestProperties();
         for (Map.Entry<String, List<String>> entry : map.entrySet()){
             Log.d("headers","Key = " + entry.getKey() + ", Value = " + Arrays.toString(entry.getValue().toArray()));
-            logger.info("Devnco_Android HttpIppClientTransport headers Key = " + entry.getKey() + ", Value = " + Arrays.toString(entry.getValue().toArray()));
+          //  logger.info("Devnco_Android HttpIppClientTransport headers Key = " + entry.getKey() + ", Value = " + Arrays.toString(entry.getValue().toArray()));
          }
 
         // Copy IppPacket to the output stream

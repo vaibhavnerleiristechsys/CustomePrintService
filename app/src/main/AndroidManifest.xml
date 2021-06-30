@@ -22,28 +22,41 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".DialogActivity"
+        <activity android:name=".print.QRScanActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="vasion-print" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".DialogActivity"
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            tools:ignore="Instantiatable">
-        </activity>
+            tools:ignore="Instantiatable" />
         <activity
             android:name=".print.PrintPreview"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
-
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
@@ -59,22 +72,16 @@
             -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="printerlogicidp"/>
-            </intent-filter>
-            <intent-filter >
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="vasion-print"
-                     />
+
+                <data android:scheme="printerlogicidp" />
             </intent-filter>
 
         </activity>
         <activity
             android:name=".print.BottomNavigationActivityForServerPrint"
-
             android:label="@string/title_activity_bottom_navigation_for_server_print" />
         <activity android:name=".signin.GoogleLoginActivity" />
         <activity android:name=".CustomePrintActivity" />
@@ -98,10 +105,10 @@
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".jipp.QRCodeScanActivity" />
         <activity

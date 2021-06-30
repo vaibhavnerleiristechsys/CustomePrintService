@@ -64,46 +64,64 @@ class QRCodeScanActivity : AppCompatActivity() {
 
         val scannerView = findViewById<CodeScannerView>(R.id.scanner_view)
 
+        val extras = intent.extras
+        var location:String=""
+        var printerId:String=""
+        if (extras != null) {
+             location = extras.getString("startqrcodescan").toString()
+            printerId  = extras.getString("printerId").toString()
 
+        }
+
+        if(location.equals("startqrcodescan")) {
+            scannerView.visibility=View.GONE
+            backbutton.visibility =View.GONE
+            if (printerId != null) {
+                getJobListByPrinterId(this, printerId)
+            }
+            PrintersFragment().getPrinterListByPrinterId(
+                this,
+                printerId.toString(),
+                "getprinterToken"
+            )
+        }
         val permisison2 = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
         if (permisison2 != PackageManager.PERMISSION_GRANTED) {
             makeRequest2()
         }
 
-            codeScanner = CodeScanner(this, scannerView)
-            codeScanner.camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id
-            codeScanner.formats = CodeScanner.ALL_FORMATS // list of type BarcodeFormat,
-            codeScanner.autoFocusMode = AutoFocusMode.SAFE // or CONTINUOUS
-            codeScanner.scanMode = ScanMode.SINGLE // or CONTINUOUS or PREVIEW
-            codeScanner.isAutoFocusEnabled = true // Whether to enable auto focus or not
-            codeScanner.isFlashEnabled = false // Whether to enable flash or not
+        codeScanner = CodeScanner(this, scannerView)
+        codeScanner.camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id
+        codeScanner.formats = CodeScanner.ALL_FORMATS // list of type BarcodeFormat,
+        codeScanner.autoFocusMode = AutoFocusMode.SAFE // or CONTINUOUS
+        codeScanner.scanMode = ScanMode.SINGLE // or CONTINUOUS or PREVIEW
+        codeScanner.isAutoFocusEnabled = true // Whether to enable auto focus or not
+        codeScanner.isFlashEnabled = false // Whether to enable flash or not
 
-            codeScanner.decodeCallback = DecodeCallback {
-                runOnUiThread {
-                   // Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
-                    var string = it.text
-                    var printerId = string.filter { it.isDigit() }
-                    getJobListByPrinterId(this, printerId)
-                    PrintersFragment().getPrinterListByPrinterId(
-                        this,
-                        printerId.toString(),
-                        "getprinterToken"
-                    )
+        codeScanner.decodeCallback = DecodeCallback {
+            runOnUiThread {
+                // Toast.makeText(this, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
+                var string = it.text
+                var printerId = string.filter { it.isDigit() }
+                getJobListByPrinterId(this, printerId)
+                PrintersFragment().getPrinterListByPrinterId(
+                    this,
+                    printerId.toString(),
+                    "getprinterToken"
+                )
 
-                }
             }
-            codeScanner.errorCallback = ErrorCallback {
-                runOnUiThread {
-                    /*Toast.makeText(
-                        this, "Camera initialization error: ${it.message}",
-                        Toast.LENGTH_LONG
-                    ).show()*/
-                }
+        }
+        codeScanner.errorCallback = ErrorCallback {
+            runOnUiThread {
             }
+        }
 
-            scannerView.setOnClickListener {
-                codeScanner.startPreview()
-            }
+        scannerView.setOnClickListener {
+            codeScanner.startPreview()
+        }
+
+
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
             mMessageReceiver1,
@@ -112,7 +130,6 @@ class QRCodeScanActivity : AppCompatActivity() {
 
 
         backbutton.setOnClickListener {
-
              val intent = Intent(this@QRCodeScanActivity, MainActivity::class.java)
              startActivity(intent)
 
@@ -141,7 +158,11 @@ class QRCodeScanActivity : AppCompatActivity() {
         }
 
 
+    override fun onBackPressed() {
 
+        val intent = Intent(this@QRCodeScanActivity, MainActivity::class.java)
+        startActivity(intent)
+    }
 
 
     fun getJobListByPrinterId(context: Context, printerId: String) {
@@ -215,10 +236,10 @@ class QRCodeScanActivity : AppCompatActivity() {
                             selectedFile.userName = it?.userName
                             selectedFile.workStationId = it?.workstationId
                             selectedFile.pages = it?.pages
-                            val sizeInKb :Int? =it?.jobSize
+                            val sizeInKb: Int? = it?.jobSize
                             val size = sizeInKb?.div(1024)
-                            val fileSize:String=size.toString()+"KB";
-                            selectedFile.jobSize=fileSize
+                            val fileSize: String = size.toString() + "KB";
+                            selectedFile.jobSize = fileSize
                             selectedFileList.add(selectedFile)
                             getdocumentListFromQrCode.add(selectedFile)
                         }
@@ -242,8 +263,9 @@ class QRCodeScanActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-               // Toast.makeText(context, t.message.toString(), Toast.LENGTH_SHORT).show()
-                DataDogLogger.getLogger().e("Devnco_Android printer:"+ " Exception in getJobListByPrinterId:"+ t.message.toString());
+                // Toast.makeText(context, t.message.toString(), Toast.LENGTH_SHORT).show()
+                DataDogLogger.getLogger()
+                    .e("Devnco_Android printer:" + " Exception in getJobListByPrinterId:" + t.message.toString());
                 Log.i("printer", t.message.toString())
             }
         })
@@ -295,7 +317,7 @@ class QRCodeScanActivity : AppCompatActivity() {
 
         printerRecyclerView?.layoutManager =
             LinearLayoutManager(
-                applicationContext,
+                context,
                 LinearLayout.VERTICAL,
                 false
             )
@@ -310,14 +332,17 @@ class QRCodeScanActivity : AppCompatActivity() {
         }
 
         val adapter = MyItemRecyclerViewAdapter(
-            getdocumentListFromQrCode,"QrCodeScan"
+            getdocumentListFromQrCode, "QrCodeScan"
         )
         printerRecyclerView?.adapter = adapter
         dialog.show()
 
         imgCancel.setOnClickListener {
-            val intent = Intent(this@QRCodeScanActivity, QRCodeScanActivity::class.java)
+            val intent = Intent(this@QRCodeScanActivity, MainActivity::class.java)
             startActivity(intent)
+          //  Toast.makeText(this,"finish()" , Toast.LENGTH_SHORT).show()
+            dialog.cancel()
+
         }
 
         floatButton?.setOnClickListener {
@@ -330,7 +355,10 @@ class QRCodeScanActivity : AppCompatActivity() {
 
                 //   selectedFile = BottomNavigationActivityForServerPrint.selectedServerFile[0]
                     BottomNavigationActivityForServerPrint.selectedServerFileForQrCode.clear()
-                    BottomNavigationActivityForServerPrint.selectedServerFileForQrCode.add(0,selectedFile)
+                    BottomNavigationActivityForServerPrint.selectedServerFileForQrCode.add(
+                        0,
+                        selectedFile
+                    )
 
                 if (selectedFile != null) {
                     if (selectedFile.jobType == "pull_print") {
@@ -364,6 +392,13 @@ class QRCodeScanActivity : AppCompatActivity() {
             }
         }
     }
+
+
+    fun getdigit(string: String): String?{
+        var printerId = string.filter { it.isDigit() }
+        return printerId
+    }
+
 }
 
 

@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -115,7 +116,7 @@ public class ServerPrintRelaseFragment extends Fragment {
     //Logger logger = LoggerFactory.getLogger(ServerPrintRelaseFragment.class);
     public static ArrayList<PrinterModel> printerList=new ArrayList<PrinterModel>();
     public static boolean getholdJobAPIStart=false;
-
+    private Context mContext;
     public ServerPrintRelaseFragment() {
     }
 
@@ -136,27 +137,16 @@ public class ServerPrintRelaseFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        ProgressDialog.Companion.showLoadingDialog(requireContext(), "please wait");
+
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver1, new IntentFilter("menuFunctionlityDisplay"));
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(mMessageReceiver2, new IntentFilter("menuFunctionlityDisplayhidden"));
 
-        if(getholdJobAPIStart==false){
-            ServerPrintRelaseFragment.getJobUpdateCall(requireContext());
-            getholdJobAPIStart=true;
-        }
 
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                MainActivity mainActivity=new MainActivity();
-                mainActivity.getAttributeDeatilsForNativePrint(requireContext());
-            }
-        }, 7000);
 
 
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -166,6 +156,26 @@ public class ServerPrintRelaseFragment extends Fragment {
         recyclerViewList =(RecyclerView) view.findViewById(R.id.list);
         noDataMessage =(ConstraintLayout) view.findViewById(R.id.empty_view);
         context = view.getContext();
+        ProgressDialog.Companion.showLoadingDialog(context, "please wait");
+        if(getholdJobAPIStart==false){
+            ServerPrintRelaseFragment.getJobUpdateCall(context);
+            getholdJobAPIStart=true;
+        }
+
+
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity mainActivity=new MainActivity();
+
+                mainActivity.getAttributeDeatilsForNativePrint(requireContext());
+
+            }
+        }, 7000);
+
+
+
        if(((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
             ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -184,7 +194,7 @@ public class ServerPrintRelaseFragment extends Fragment {
              PrintersFragment printersFragment1 = new PrintersFragment();
              printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
          }else {
-             final Handler handler = new Handler();
+             //final Handler handler = new Handler();
              handler.postDelayed(new Runnable() {
                  @Override
                  public void run() {

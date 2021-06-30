@@ -79,6 +79,14 @@
     <string name="ic_print">&#xe126;</string>
     <string name="ic_add_circle">&#xe009;</string>
     <string name="yourcompany_vasion_com"><font size="18">yourcompany.printercloud.com</font></string>
+    <string name="title_activity_qr_code_scan">QrCodeScanActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
 
 </resources>

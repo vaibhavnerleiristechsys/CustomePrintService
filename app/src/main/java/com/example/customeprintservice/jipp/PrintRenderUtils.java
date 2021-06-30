@@ -499,7 +499,13 @@ public class PrintRenderUtils {
                                                         });
                                             }else{
                                                 String errorString=errorPageString;
-
+                                                new Handler(Looper.getMainLooper()).post(
+                                                        new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
+                                                            }
+                                                        });
                                                 DataDogLogger.getLogger().e("Devnco_Android printer:"+ "Exception in renderPageUsingDefaultPdfRendererForSelectedPages:"+ errorString);
                                             }
 
@@ -675,6 +681,13 @@ public class PrintRenderUtils {
                             });
                 }else{
                     String errorString=errorPageString;
+                    new Handler(Looper.getMainLooper()).post(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
+                                }
+                            });
                     DataDogLogger.getLogger().e("Devnco_Android printer:" + errorString);
                 }
 

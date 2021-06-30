@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.customeprintservice.R;
+import com.example.customeprintservice.jipp.QRCodeScanActivity;
 import com.example.customeprintservice.room.SelectedFile;
 import com.example.customeprintservice.signin.GoogleLoginActivity;
 import com.example.customeprintservice.utils.DataDogLogger;

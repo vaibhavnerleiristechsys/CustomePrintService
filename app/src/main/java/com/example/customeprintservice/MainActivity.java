@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+
 import com.example.customeprintservice.jipp.FileUtils;
 import com.example.customeprintservice.jipp.PrintUtils;
 import com.example.customeprintservice.jipp.PrinterList;
@@ -99,17 +100,7 @@ public class MainActivity extends AppCompatActivity {
         print=findViewById(R.id.print);
         fab = findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
-       // mLogger = SampleApplication1.fromContext(getApplicationContext()).getLogger();
 
-       /* logger.d("A debug message.");
-        logger.i("Some relevant information ?");
-        logger.w("An important warning…");
-        logger.e("An error was met!");
-        logger.wtf("What a Terrible Failure!");
-*/
-       // BottomNavigationActivity bottomNavigationActivity1 = new BottomNavigationActivity();
-     //   PrintersFragment printersFragment1 = new PrintersFragment();
-      //  printersFragment1.getPrinterList(this, bottomNavigationActivity1.decodeJWT(this));
 
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver1,
                 new IntentFilter("om.example.PRINT_RESPONSE"));
@@ -118,91 +109,10 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String action = intent.getAction();
         list.clear();
-/*
-        if (action != null) {
-            switch (action) {
-                case Intent.ACTION_SEND_MULTIPLE:
-                    ArrayList<Uri> imageUris = new ArrayList<Uri>();
-                    for (int i = 0; i < intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM).size(); i++) {
 
-                        imageUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-                    }
-                    for (int j = 0; j < imageUris.size(); j++) {
-                        Uri imageUri = imageUris.get(j);
-
-                        if (imageUri != null) {
-                            String realPath = FileUtils.getPath(this, imageUri);
-                            SelectedFile selectedFile = new SelectedFile();
-                            File file = new File(realPath);
-                            selectedFile.setFileName(file.getName());
-                            selectedFile.setFilePath(realPath);
-                            selectedFile.setFromApi(false);
-                            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                            Date date = new Date();
-                            String strDate = dateFormat.format(date);
-                            selectedFile.setFileSelectedDate(strDate);
-                            list.add(selectedFile);
-                        }
-                    }
-
-                    SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(this);
-                    Gson gson1 = new Gson();
-                    String json2 = prefs1.getString("localdocumentlist", null);
-                    Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
-                    }.getType();
-                    localDocumentSharedPreflist = gson1.fromJson(json2, type1);
-                    if (localDocumentSharedPreflist != null) {
-                        list.addAll(localDocumentSharedPreflist);
-                    }
-                    SharedPreferences.Editor editor1 = prefs1.edit();
-                    String convertedJson = gson1.toJson(list);
-                    editor1.putString("localdocumentlist", convertedJson);
-                    editor1.apply();
-                    Toast.makeText(this, "file added", Toast.LENGTH_LONG).show();
-
-                    if (LoginPrefs.Companion.getOCTAToken(this) == null) {
-                        Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
-                        startActivity(intent1);
-                    }
-
-
-                case Intent.ACTION_SEND:
-                    Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                    if (imageUri != null) {
-                        String realPath = FileUtils.getPath(this, imageUri);
-                        SelectedFile selectedFile = new SelectedFile();
-                        File file = new File(realPath);
-                        selectedFile.setFileName(file.getName());
-                        selectedFile.setFilePath(realPath);
-                        selectedFile.setFromApi(false);
-                        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                        Date date = new Date();
-                        String strDate = dateFormat.format(date);
-                        selectedFile.setFileSelectedDate(strDate);
-                                Intent intent1 = new Intent(getApplicationContext(), PrintPreview.class);
-                                Bundle bundle = new Bundle();
-                                bundle.putString("filePath", realPath);
-                                intent1.putExtras(bundle);
-                                startActivity(intent1);
-
-                    }
-                    if (LoginPrefs.Companion.getOCTAToken(this) == null) {
-                        @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
-                        String IsLdap = prefs.getString("IsLdap", "");
-                        if(!IsLdap.equals("LDAP")) {
-                            Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
-                            startActivity(intent1);
-                        }
-                    }
-
-            }
-
-        }
-
- */
     Uri intent2 = intent.getData();
         if (intent2 != null) {
-            if(intent2.getScheme().equals("vasion-print")){
+       /*     if(intent2.getScheme().equals("vasion-print")){
                 if (LoginPrefs.Companion.getOCTAToken(this) == null) {
                     @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
                     String IsLdap = prefs.getString("IsLdap", "");
@@ -211,7 +121,24 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent1);
                     }
                 }
-            }else {
+                else{
+
+                    Log.d("path",intent2.getPath());
+                    QRCodeScanActivity qrCodeScanActivity=new QRCodeScanActivity();
+                    String printerId = qrCodeScanActivity.getdigit(intent2.getPath().toString());
+                    Log.d("printerId:",printerId);
+
+
+                    Intent intent1 = new Intent(getApplicationContext(), QRCodeScanActivity.class);
+                    intent1.putExtra("startqrcodescan", "startqrcodescan");
+                    intent1.putExtra("printerId", printerId);
+                    startActivity(intent1);
+
+                }
+
+            }
+            */
+           // else {
                 String decodeUrl = intent2.getEncodedPath().replaceFirst("/", "").toString();
                 BottomNavigationActivity bottomNavigationActivity = new BottomNavigationActivity();
                 String decode = bottomNavigationActivity.decode(decodeUrl);
@@ -242,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                     bottomNavigationActivity.getTokenFromMainAcitivity(decode, this);
                 }
 
-            }
+          //  }
         }
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("qrcodefloatingbutton"));
 
@@ -253,6 +180,8 @@ public class MainActivity extends AppCompatActivity {
         signout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 LoginPrefs.Companion.deleteToken(getApplicationContext());
                 PrinterList printerList =new PrinterList();
                 printerList.removePrinters();
@@ -267,6 +196,8 @@ public class MainActivity extends AppCompatActivity {
                 //finish();
                 Intent intent = new Intent(getApplicationContext(), SignInCompany.class);
                 startActivity(intent);
+
+
             }
         });
 
