@@ -32,6 +32,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.hp.jipp.model.Media
 import java.io.*
+import java.net.InetAddress
 import java.net.URI
 import java.util.*
 import java.util.function.Consumer
@@ -249,7 +250,7 @@ class PrinterLogicPrintService : PrintService() {
                 this@PrinterLogicPrintService
             )
 */
-            if(isPullPrinter.equals("1")){
+            if(isPullPrinter.equals("1") || isPullPrinter.equals("1.0") ){
 
                 var printPreview: PrintPreview =PrintPreview()
                 printPreview.sendHoldJobFromNativePrint(
@@ -259,10 +260,14 @@ class PrinterLogicPrintService : PrintService() {
                     this@PrinterLogicPrintService
                 )
 
-
-                val intent = Intent(this@PrinterLogicPrintService, MainActivity::class.java)
-                startActivity(intent)
+                printJob.complete()
+              //  val intent = Intent(this@PrinterLogicPrintService, MainActivity::class.java)
+               // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                //startActivity(intent)
               //  printPreview.selectePrinterDialoga(baseContext)
+                val dialogIntent = Intent(this, MainActivity::class.java)
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(dialogIntent)
             }else {
                 val fileDescriptor = ParcelFileDescriptor.open(
                     file,
@@ -434,7 +439,10 @@ internal class PrinterDiscoverySession(
         }
 
         if (sharedPreferencesStoredPrinterListWithDetails != null) {
+            var counter: Int =1
             sharedPreferencesStoredPrinterListWithDetails.forEach(Consumer { p: PrinterModel ->
+
+
                 val printerId = ArrayList<PrinterId>()
                 Log.d("service name", p.serviceName.toString())
                 if (p.printerHost != null) {
@@ -449,7 +457,13 @@ internal class PrinterDiscoverySession(
 
                     Log.d("host ", p.printerHost.toString())
                     DataDogLogger.getLogger().i("Devnco_Android host " + p.printerHost.toString())
-                    printerId.add(printService.generatePrinterId(p.printerHost.toString()))
+
+                    if(p.isPullPrinter.equals("1.0") || p.isPullPrinter.equals("1")){
+                       // printerId.add(printService.generatePrinterId("/::"+counter))
+                        p.printerHost= InetAddress.getByName("192.168.1."+counter)
+                        counter++
+                    }
+                        printerId.add(printService.generatePrinterId(p.printerHost.toString()))
                     val builder = PrinterInfo.Builder(
                         printService.generatePrinterId(p.printerHost.toString()),
                         p.serviceName, PrinterInfo.STATUS_IDLE
@@ -885,7 +899,7 @@ internal class PrinterDiscoverySession(
 
                             }
                         } else {
-                            if(p.isPullPrinter.equals("1")){
+                            if (p.isPullPrinter.equals("1") || p.isPullPrinter.equals("1.0")) {
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A0, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A1, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A10, false)
@@ -910,13 +924,16 @@ internal class PrinterDiscoverySession(
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.JIS_B6, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.JIS_EXEC, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.JPN_HAGAKI, false)
-                                capBuilder.addMediaSize(PrintAttributes.MediaSize.NA_JUNIOR_LEGAL, false)
+                                capBuilder.addMediaSize(
+                                    PrintAttributes.MediaSize.NA_JUNIOR_LEGAL,
+                                    false
+                                )
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.NA_LEDGER, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.PRC_1, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.PRC_8, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.PRC_3, false)
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.ROC_16K, false)
-                            }else {
+                            } else {
                                 capBuilder.addMediaSize(PrintAttributes.MediaSize.ISO_A5, true)
                             }
                         }
@@ -933,12 +950,12 @@ internal class PrinterDiscoverySession(
                                     PrintAttributes.COLOR_MODE_COLOR
                                 )
                             } else {
-                                if(p.isPullPrinter.equals("1")){
+                                if (p.isPullPrinter.equals("1")) {
                                     capBuilder.setColorModes(
                                         PrintAttributes.COLOR_MODE_COLOR + PrintAttributes.COLOR_MODE_MONOCHROME,
                                         PrintAttributes.COLOR_MODE_COLOR
                                     )
-                                }else {
+                                } else {
                                     capBuilder.setColorModes(
                                         PrintAttributes.COLOR_MODE_COLOR,
                                         PrintAttributes.COLOR_MODE_COLOR
@@ -978,6 +995,11 @@ internal class PrinterDiscoverySession(
                             .build()
                     }
 
+                /*    if(printerInfo.id.localId. .equals(/::1)){
+
+                    }
+
+                 */
                     printers.add(printerInfo)
 
                     printerHashmap.hashMap.put(printerId[0], p)

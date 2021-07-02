@@ -31,6 +31,7 @@ import com.example.customeprintservice.jipp.PrinterList
 import com.example.customeprintservice.jipp.PrinterModel
 import com.example.customeprintservice.model.DecodedJWTResponse
 import com.example.customeprintservice.prefs.LoginPrefs
+import com.example.customeprintservice.prefs.LoginPrefs.Companion.getOCTAToken
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getSiteId
 import com.example.customeprintservice.prefs.LoginPrefs.Companion.getTenantUrl
 import com.example.customeprintservice.prefs.SignInCompanyPrefs
@@ -125,7 +126,13 @@ class PrintersFragment : Fragment() {
                 val handler = Handler()
                 handler.postDelayed({
                     val mainActivity = MainActivity()
-                    mainActivity.getAttributeDeatilsForNativePrint(requireContext())
+                    try {
+                        mainActivity.getAttributeDeatilsForNativePrint(requireContext())
+                    } catch (e: Exception) {
+                        DataDogLogger.getLogger().i(
+                            "Devnco_Android :" + e.message
+                        )
+                    }
                 }, 7000)
 
 
@@ -765,32 +772,32 @@ class PrintersFragment : Fragment() {
 
 
     fun addPrinterForshareDocument(printer: PrinterModel, context: Context) {
-        if(printer.isPullPrinter.equals("0.0")) {
+     //   if(printer.isPullPrinter.equals("0.0")) {
             var serverSecurePrinterListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
-            val prefs1 = PreferenceManager.getDefaultSharedPreferences(context)
-            val gson1 = Gson()
-            val json2 = prefs1.getString("prefServerSecurePrinterListWithDetails", null)
-            val type1 = object :
+            val prefs5 = PreferenceManager.getDefaultSharedPreferences(context)
+            val gson5 = Gson()
+            val json5 = prefs5.getString("prefServerSecurePrinterListWithDetails", null)
+            val type5 = object :
                 TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
-            if (json2 != null) {
-                serverSecurePrinterListWithDetailsSharedPreflist = gson1.fromJson<java.util.ArrayList<PrinterModel>>(
-                    json2,
-                    type1
+            if (json5 != null) {
+                serverSecurePrinterListWithDetailsSharedPreflist = gson5.fromJson<java.util.ArrayList<PrinterModel>>(
+                    json5,
+                    type5
                 )
                 serverSecurePrinterListWithDetailsSharedPreflist.add(printer)
-                val editor = prefs1.edit()
-                val json1 = gson1.toJson(serverSecurePrinterListWithDetailsSharedPreflist)
-                editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                val editor = prefs5.edit()
+                val json6 = gson5.toJson(serverSecurePrinterListWithDetailsSharedPreflist)
+                editor.putString("prefServerSecurePrinterListWithDetails", json6)
                 editor.apply()
 
             }else{
                 serverSecurePrinterListWithDetailsSharedPreflist.add(printer)
-                val editor = prefs1.edit()
-                val json1 = gson1.toJson(serverSecurePrinterListWithDetailsSharedPreflist)
-                editor.putString("prefServerSecurePrinterListWithDetails", json1)
+                val editor = prefs5.edit()
+                val json6 = gson5.toJson(serverSecurePrinterListWithDetailsSharedPreflist)
+                editor.putString("prefServerSecurePrinterListWithDetails", json6)
                 editor.apply()
             }
-        }
+       // }
 
 
         var addedListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()

@@ -508,7 +508,7 @@ public class PrintPreview extends AppCompatActivity {
                 }
                 if(radioButton.getText().toString().equals("All") && selectedPrinterModel !=null && filePath !=null  && !selectPrinter.toString().equals("select printer")) {
                     String secure_release = selectedPrinterModel.getSecure_release();
-                    if(selectedPrinterModel.getIsPullPrinter().equals("1")){
+                    if(selectedPrinterModel.getIsPullPrinter().equals("1") || selectedPrinterModel.getIsPullPrinter().equals("1.0")){
                         dialogPromptPrinter("alwaysHold");
                     }else{
                         if(secure_release.equals("0") || secure_release.equals("1") || secure_release.equals("2")){
@@ -1377,6 +1377,8 @@ public class PrintPreview extends AppCompatActivity {
         if(printerId != null && isPullPrinter != null) {
             printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), totalPageCount,printerId,isPullPrinter,"");
         }
+
+
     }
 
 
