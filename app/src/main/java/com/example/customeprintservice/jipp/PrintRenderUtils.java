@@ -215,7 +215,7 @@ public class PrintRenderUtils {
                                         }
 
                                         int CompletedPageCounter =0;
-                                        String errorPageString ="Printing error in page no. ";
+                                        String errorPageString ="Printing failed on page no. ";
                                         for(int i=0;i<PrintUtils.jobstatusList.size();i++){
                                             JobsModel jobmodel = PrintUtils.jobstatusList.get(i);
                                             if(jobmodel.getJobStatus().toLowerCase().contains("completed")){
@@ -231,11 +231,16 @@ public class PrintRenderUtils {
                                                     new Runnable() {
                                                         @Override
                                                         public void run() {
+                                                            com.example.customeprintservice.MainActivity mainActivity=new com.example.customeprintservice.MainActivity();
+                                                            mainActivity.addNotification(context,"Successfully All Pages Printed.");
                                                             Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
                                                         }
                                                     });
                                         }else{
                                             String errorString=errorPageString;
+                                            com.example.customeprintservice.MainActivity mainActivity=new com.example.customeprintservice.MainActivity();
+                                            mainActivity.addNotification(context,errorString);
+                                            Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
                                             DataDogLogger.getLogger().e("Devnco_Android printer:"+ "error in renderPageUsingDefaultPdfRenderer:"+errorString);
                                         }
 
@@ -478,7 +483,7 @@ public class PrintRenderUtils {
 
 
                                             int CompletedPageCounter =0;
-                                            String errorPageString ="Printing error in page no. ";
+                                            String errorPageString ="Printing failed on page no. ";
                                             for(int i=0;i<PrintUtils.jobstatusList.size();i++){
                                                 JobsModel jobmodel = PrintUtils.jobstatusList.get(i);
                                                 if(jobmodel.getJobStatus().toLowerCase().contains("completed")){
@@ -494,6 +499,8 @@ public class PrintRenderUtils {
                                                         new Runnable() {
                                                             @Override
                                                             public void run() {
+                                                                com.example.customeprintservice.MainActivity mainActivity=new com.example.customeprintservice.MainActivity();
+                                                                mainActivity.addNotification(context,"Successfully All Pages Printed.");
                                                                 Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
                                                             }
                                                         });
@@ -503,6 +510,8 @@ public class PrintRenderUtils {
                                                         new Runnable() {
                                                             @Override
                                                             public void run() {
+                                                                com.example.customeprintservice.MainActivity mainActivity=new com.example.customeprintservice.MainActivity();
+                                                                mainActivity.addNotification(context,errorString);
                                                                 Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
                                                             }
                                                         });
@@ -660,7 +669,7 @@ public class PrintRenderUtils {
                     public void run() {
                         try {
                 int CompletedPageCounter =0;
-                String errorPageString ="Printing error in page no. ";
+                String errorPageString ="Printing failed on page no. ";
                 for(int i=0;i<PrintUtils.jobstatusList.size();i++){
                     JobsModel jobmodel = PrintUtils.jobstatusList.get(i);
                     if(jobmodel.getJobStatus().toLowerCase().contains("completed")){
@@ -668,6 +677,7 @@ public class PrintRenderUtils {
                     }else{
 
                         errorPageString=errorPageString+jobmodel.getPageNo()+",";
+
                     }
                 }
 
@@ -676,6 +686,8 @@ public class PrintRenderUtils {
                             new Runnable() {
                                 @Override
                                 public void run() {
+                                    com.example.customeprintservice.MainActivity mainActivity=new com.example.customeprintservice.MainActivity();
+                                    mainActivity.addNotification(context,"Successfully All Pages Printed.");
                                     Toast.makeText(context, "Successfully All Pages Printed.", Toast.LENGTH_LONG).show();
                                 }
                             });
@@ -685,6 +697,8 @@ public class PrintRenderUtils {
                             new Runnable() {
                                 @Override
                                 public void run() {
+                                    com.example.customeprintservice.MainActivity mainActivity=new com.example.customeprintservice.MainActivity();
+                                    mainActivity.addNotification(context,errorString);
                                     Toast.makeText(context, errorString, Toast.LENGTH_LONG).show();
                                 }
                             });
