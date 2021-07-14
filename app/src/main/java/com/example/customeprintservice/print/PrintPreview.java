@@ -128,8 +128,10 @@ public class PrintPreview extends AppCompatActivity {
         setContentView(R.layout.activity_print_preview);
         Bundle bundle = getIntent().getExtras();
         TextView copies = (TextView) findViewById(R.id.copies);
-        String copyNo ="Copies "+noOfCopy;
-        copies.setText(copyNo);
+        TextView noOfcopies= findViewById(R.id.noOfcopies);
+        String copyNo =""+noOfCopy;
+        copies.setText("Copies");
+        noOfcopies.setText(copyNo);
         context=this;
         list.clear();
         getSupportActionBar().hide();
@@ -361,8 +363,9 @@ public class PrintPreview extends AppCompatActivity {
             public void onClick(View view) {
                 noOfCopy=noOfCopy+1;
                 noOfCopies=noOfCopy;
-                String copyNo ="Copies "+noOfCopy;
-                copies.setText(copyNo);
+                String copyNo =""+noOfCopy;
+              //  copies.setText(copyNo);
+                noOfcopies.setText(copyNo);
             }
         });
 
@@ -372,8 +375,9 @@ public class PrintPreview extends AppCompatActivity {
                 if(noOfCopy>1) {
                     noOfCopy = noOfCopy - 1;
                     noOfCopies=noOfCopy;
-                    String copyNo = "Copies " + noOfCopy;
-                    copies.setText(copyNo);
+                    String copyNo = "" + noOfCopy;
+                  //  copies.setText(copyNo);
+                    noOfcopies.setText(copyNo);
                 }
             }
         });
