@@ -113,7 +113,6 @@ public class ServerPrintRelaseFragment extends Fragment {
     private RecyclerView recyclerViewList;
     private ConstraintLayout noDataMessage;
     public  List<Printer> listOfPrinters=new ArrayList<Printer>();
-    //Logger logger = LoggerFactory.getLogger(ServerPrintRelaseFragment.class);
     public static ArrayList<PrinterModel> printerList=new ArrayList<PrinterModel>();
     public static boolean getholdJobAPIStart=false;
     private Context mContext;
@@ -202,22 +201,11 @@ public class ServerPrintRelaseFragment extends Fragment {
                      serverCallForGettingAllPrinters(context);
                      PrintersFragment printersFragment1 = new PrintersFragment();
                      printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
-                /*     if(isStartedJobUpdateMethod==null) {
-                         getJobUpdateCall();
-                     }
-
-                 */
                  }
              }, 5000);
          }
      }else{
          getjobListStatus();
-      //   serverCallForGettingAllPrinters(requireContext());
-         /*if(isStartedJobUpdateMethod==null) {
-             getJobUpdateCall();
-         }
-
-          */
          PrintersFragment printersFragment1 = new PrintersFragment();
          printersFragment1.getPrinterList(context, bottomNavigationActivity1.decodeJWT(context));
      }
@@ -286,27 +274,6 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }
                   if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")){
 
-                     /*  PrinterList printerList = new PrinterList();
-                      PrinterModel printerModel;
-                     for(int i=0;i<printerList.getPrinterList().size();i++){
-                          Boolean isAvailable=false;
-                          printerModel=printerList.getPrinterList().get(i);
-                          if(printerModel.getIsPullPrinter() !=null) {
-                              if (printerModel.getManual() == true && printerModel.getIsPullPrinter().equals("0.0")) {
-
-                                  for (int j = 0; j < PrintersFragment.Companion.getServerSecurePrinterListWithDetails().size(); j++) {
-                                      PrinterModel printer = PrintersFragment.Companion.getServerSecurePrinterListWithDetails().get(j);
-                                      if (printer.getPrinterHost().equals(printerModel.getPrinterHost())) {
-                                          isAvailable = true;
-                                      }
-                                  }
-                                  if (isAvailable == false && printerModel != null) {
-                                      PrintersFragment.Companion.getServerSecurePrinterListWithDetails().add(printerModel);
-                                  }
-                              }
-                          }
-                      }
-*/
                       Collections.sort(PrintersFragment.Companion.getAllPrintersForPullHeldJob(), new Comparator<PrinterModel>() {
                           @Override
                           public int compare(PrinterModel item, PrinterModel t1) {
@@ -317,7 +284,6 @@ public class ServerPrintRelaseFragment extends Fragment {
 
                       });
                     ArrayList<PrinterModel> RecentPrinterAddedList =  addRecentPrintersToDisplay(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
-                    //  selectePrinterDialog(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
                       selectePrinterDialog(RecentPrinterAddedList);
 
                   }else if (selectedFile.isFromApi()==true && selectedFile.getJobType().equals("secure_release")){
@@ -526,11 +492,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                    if(selectedPrinterId!=null && selectedPrinterToken!=null) {
                         release_t = selectedPrinterId + "," + selectedPrinterToken;
                    }
-                   //Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
                    printReleaseFragment.releaseJob(context,release_t);
                    dialog.cancel();
                }else{
-                 //  Toast.makeText(requireContext(), "print release", Toast.LENGTH_LONG).show();
                    printReleaseFragment.releaseJob(context,"null");
                    dialog.cancel();
                }
@@ -541,13 +505,11 @@ public class ServerPrintRelaseFragment extends Fragment {
                     String FilePath =selectedFile.getFilePath();
                     PrintActivity printActivity =new PrintActivity();
                     printActivity.locaPrint(FilePath,localPrinturl,context);
-                 //   Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                     dialog.cancel();
                     Intent myIntent = new Intent(getActivity(), MainActivity.class);
                     getActivity().startActivity(myIntent);
 
                }else if(secure_release == 3 || secure_release ==4){
-                  // Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
                    dialog.cancel();
                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
                    getActivity().startActivity(myIntent);
@@ -556,54 +518,12 @@ public class ServerPrintRelaseFragment extends Fragment {
                    String FilePath =selectedFile.getFilePath();
                    PrintActivity printActivity =new PrintActivity();
                    printActivity.locaPrint(FilePath,localPrinturl,context);
-
-                 //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                    dialog.cancel();
                    Intent myIntent = new Intent(getActivity(), MainActivity.class);
                    getActivity().startActivity(myIntent);
                }
 
             }
-
-           //**********************
-            /*
-                        if(selectedFile.getSourceMachine().equals("Mobile")){
-                ArrayList<SelectedFile> localDocumentSharedPreflist = new ArrayList<SelectedFile>();
-                String FileName=selectedFile.getFileName();
-                String filePath="";
-                SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
-                Gson gson1 = new Gson();
-                String json2 = prefs1.getString("holdlocaldocumentlist", null);
-                Type type1 = new TypeToken<ArrayList<SelectedFile>>() {
-                }.getType();
-                localDocumentSharedPreflist = gson1.fromJson(json2, type1);
-                if(localDocumentSharedPreflist != null) {
-                    for (int i = 0; i < localDocumentSharedPreflist.size(); i++) {
-                        SelectedFile selectedPrefFile = localDocumentSharedPreflist.get(i);
-                        if (selectedPrefFile.getFileName().contains(FileName)) {
-                            File file = new File(selectedPrefFile.getFilePath());
-                            Log.d("File::", file.getName() + "" + file.getAbsolutePath());
-                            filePath =file.getAbsolutePath();
-
-                        }
-                    }
-                }
-
-                try {
-                    sendLocalPrintHoldJob(filePath,context,selectedPrinterHost,selectedPrinterServiceName,selectedPrinterId);
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-             */
-            //*******************
-
-
-
-
 
         });
         dialog.show();
@@ -822,8 +742,6 @@ public class ServerPrintRelaseFragment extends Fragment {
 
                 }
 
-            //printerRecyclerView.setAdapter(new FragmentPrinterListAdapter(context,printerList,"selectPrinter"));
-            //printerRecyclerView.setItemViewCacheSize(50);
         }
     };
 
@@ -1042,7 +960,6 @@ public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAd
                 final int pageCount = renderer.getPageCount();
 
                 printRenderUtils.renderPageUsingDefaultPdfRendererForSelectedPages(file, finalLocalurl, context, 0, pageCount, 1,ippUri,pageCount,true,"portrait","");
-             //   Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
             }
 
         }else if(file.getName().contains(".docx") || file.getName().contains(".doc")){
@@ -1053,8 +970,6 @@ public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAd
                 String finalLocalurl = "http" + ":/" + hostAddress.toString() + ":631/ipp/print";
                 PrintRenderUtils printRenderUtils = new PrintRenderUtils();
                 printRenderUtils.printNoOfCOpiesJpgOrPngAndPdfFiles(file, finalLocalurl, context, 1,ippUri,true,"portrait","", Sides.oneSided);
-              //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
-
             }
         }
 
@@ -1064,22 +979,6 @@ public void sendLocalPrintHoldJob(String filePath ,Context context,String hostAd
 
 
 public static void getJobUpdateCall(Context context){
-   /* new Timer().scheduleAtFixedRate(new TimerTask() {
-        @Override
-        public void run() {
-            PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
-            new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            printReleaseFragment.gettingHeldJobStatus(context);
-                            handler.postDelayed(this, 30000);
-                        }
-                    });
-
-
-        }
-    }, 30000, 30000);*/
     PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
      Handler handler = new Handler();
      new Handler(Looper.getMainLooper()).post(

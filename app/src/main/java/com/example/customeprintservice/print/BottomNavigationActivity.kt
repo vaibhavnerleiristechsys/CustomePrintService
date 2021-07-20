@@ -67,109 +67,6 @@ class BottomNavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_bottom_navigation)
-     //   val printersFragment1 = PrintersFragment()
-      //  printersFragment1.getPrinterList(applicationContext,decodeJWT(applicationContext))
-
-      /*  list.clear()
-        when (intent.action) {
-            Intent.ACTION_SEND_MULTIPLE -> {
-                intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).let {
-                    it?.forEach {
-                        val realPath = FileUtils.getPath(this@BottomNavigationActivity, it)
-                        Log.i("printer", "realpath==>$realPath")
-                        logger.info("Devnco_Android printer"+ "realpath==>$realPath")
-                        val selectedFile = SelectedFile()
-                        selectedFile.filePath = realPath
-                        selectedFile.fileName = File(realPath).name
-                        selectedFile.isFromApi = false
-                        selectedFile.fileSelectedDate =
-                            SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
-                        list.add(selectedFile)
-
-                    }
-                }
-                Log.i("printer", "list of shared url=>$list")
-                logger.info("Devnco_Android printer"+ "list of shared url=>$list")
-                if (LoginPrefs.getOCTAToken(this@BottomNavigationActivity) == null) {
-
-                    startActivity(intentFor<SignInCompany>().noHistory())
-                    this@BottomNavigationActivity.overridePendingTransition(
-                        R.anim.entry,
-                        R.anim.end
-                    )
-                    finishAffinity()
-                }
-            }
-
-            Intent.ACTION_SEND -> {
-
-                val imageUri =
-                    intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-
-                if (imageUri != null) {
-                    val realPath = FileUtils.getPath(this, imageUri as Uri?)
-                    val selectedFile = SelectedFile()
-                    selectedFile.filePath = realPath
-                    selectedFile.fileName = File(realPath).name
-                    selectedFile.isFromApi = false
-                    selectedFile.fileSelectedDate =
-                        SimpleDateFormat("yyyy-MM-dd HH:mm").format(Date())
-                    list.add(selectedFile)
-                } else {
-                 //   Toast.makeText(this, "Error Occurred, URI is invalid", Toast.LENGTH_LONG)
-                        .show()
-                }
-                if (LoginPrefs.getOCTAToken(this@BottomNavigationActivity) == null) {
-
-                    startActivity(intentFor<SignInCompany>().noHistory())
-                    this@BottomNavigationActivity.overridePendingTransition(
-                        R.anim.entry,
-                        R.anim.end
-                    )
-                    finishAffinity()
-                }
-            }
-        }
-*/
-  /*      val intent = intent.data
-
-
-        if (intent != null) {
-            Log.i("printer", "intent data--->${intent.encodedPath}")
-            logger.info("Devnco_Android printer"+ "intent data--->${intent.encodedPath}")
-
-            val decodeUrl: String =
-                intent.encodedPath
-                    ?.replaceFirst("/", "").toString().let { decode(it).toString() }
-
-            val url = Uri.parse(decodeUrl)
-
-            val expires: String = url.getQueryParameter("expires").toString()
-            val sessionId: String = url.getQueryParameter("sessionId").toString()
-            val signature: String = url.getQueryParameter("signature").toString()
-
-            val finalUrl = "https://${url.host + url.path}/"
-
-            ProgressDialog.showLoadingDialog(this@BottomNavigationActivity, "getting Token")
-            getToken(finalUrl, expires, sessionId, signature,this@BottomNavigationActivity)
-
-        } else {
-
-
-            printReleaseFragment.arguments = bundle
-        }
-
-
-        if (list.isNotEmpty()) {
-            bundle.putSerializable("sharedFileList", list)
-        }
-*/
-/*
-        Handler().postDelayed({
-            //doSomethingHere()
-            PrintUtils().setContextAndInitializeJMDNS(this@BottomNavigationActivity)
-        }, 5000)
-*/
     }
 
 
@@ -200,13 +97,10 @@ class BottomNavigationActivity : AppCompatActivity() {
                     LoginPrefs.saveOctaToken(context, token.toString())
                     Log.i("printer", "tok==>$token")
                     DataDogLogger.getLogger().i("Devnco_Android printer"+ "tok==>$token")
-               //     ProgressDialog.cancelLoading()
                     printReleaseFragment.arguments = bundle
 
-                  //  val printersFragment1 = PrintersFragment()
-                  //  printersFragment1.getPrinterList(context,decodeJWT(context))
                 } else {
-                   // toast("Response is Not Successful")
+
                 }
             }
 
@@ -235,7 +129,7 @@ class BottomNavigationActivity : AppCompatActivity() {
             )
             userName = decoded.user.toString()
         } catch (ex: Exception) {
-            //context.toast("Failed to Decode Jwt Token")
+
         }
         return userName.toString()
     }

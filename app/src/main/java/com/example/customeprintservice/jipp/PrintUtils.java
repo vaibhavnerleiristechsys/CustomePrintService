@@ -91,15 +91,13 @@ public class PrintUtils {
     private final static IppClientTransport transport = new HttpIppClientTransport();
     private final static String CMD_NAME = "jprint";
     private Context context = null;
-    //Logger logger = LoggerFactory.getLogger(PrintUtils.class);
+
     public static ArrayList<JobsModel> jobstatusList=new ArrayList<>();
 
     public void setContextAndInitializeJMDNS(Context context) {
         this.context = context;
         ExecutorService executor = Executors.newFixedThreadPool(1);
-        /*JMDnsUtils dnsUtil = new JMDnsUtils();
-        dnsUtil.setContext(context);
-        executor.execute(dnsUtil);*/
+
         NSDUtils nsdUtils = new NSDUtils();
         nsdUtils.setContext(context);
         executor.execute(nsdUtils);
@@ -232,15 +230,6 @@ public class PrintUtils {
                     jobModel.setJobId(jobId);
                     jobstatusList.add(jobModel);
 
-                 /*   new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Toast.makeText(context, "Page No: "+pageCountNo+" Print Status: "+jobState[1], Toast.LENGTH_LONG).show();
-                                }
-                            });
-
-                  */
                 }
 
             } catch (Exception ex) {
@@ -337,32 +326,10 @@ public class PrintUtils {
 
                 IppPacketData request = new IppPacketData(printRequest, new FileInputStream(inputFile));
                 DataDogLogger.getLogger().i("Devnco_Android print method : "+ "IppPacketData Request->" + request.toString());
-/*
-               new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                              //  Toast.makeText(context, request.toString(), Toast.LENGTH_LONG).show();
-                            }
-                        });
 
-
-*/
 
                 IppPacketData printResponse = transport.sendData(uri, request);
                 DataDogLogger.getLogger().i("Devnco_Android  print method : "+ "printResponse->"+printResponse.toString());
-
-/*
-                new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(context, printResponse.toString(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-*/
-
 
 
                 resultMap.put("printResponse :",printResponse.toString()) ;
@@ -417,43 +384,17 @@ public class PrintUtils {
                     IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x200)
                             .build();
             DataDogLogger.getLogger().i("Devnco_Android attributeRequest for 0x200==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
-          /* String attr ="attributeRequest:"+attributeRequest.toString();
-            new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            //Toast.makeText(context, attr, Toast.LENGTH_LONG).show();
-                        }
-                    });
-*/
+
             IppPacketData request = new IppPacketData(attributeRequest);
             DataDogLogger.getLogger().i("Devnco_Android IppPacketData request for 0x200==> Uri:"+specificUri+" ==> "+request.toString());
-           // logger.info("Devnco_Android IppPacketData request for 0x200  ==> Uri:"+specificUri+" ==> "+request.toString());
-       /*     String request1 ="request:"+request.toString();
-            new Handler(Looper.getMainLooper()).post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            //Toast.makeText(context, request1, Toast.LENGTH_LONG).show();
-                        }
-                    });
 
-        */
             IppPacketData response;
             try{
                 response = transport.sendData(specificUri, request);
                 DataDogLogger.getLogger().i("Devnco_Android IppPacketData response for 0x200==> Uri:"+specificUri+" ==> "+response.toString());
-             /*     String response1 ="response:"+response.toString();
-              new Handler(Looper.getMainLooper()).post(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                //Toast.makeText(context, response1, Toast.LENGTH_LONG).show();
-                            }
-                        });
-*/
+
                 IppPacket responsePacket = response.getPacket();
-               // logger.info("Devnco_Android responsePacket for 0x200 Uri:"+specificUri+" ==> "+responsePacket.toString());
+
 
                 resultMap = getResponseDetails(responsePacket);
 
@@ -463,32 +404,14 @@ public class PrintUtils {
                      attributeRequest = IppPacket.getPrinterAttributes(specificUri).setMajorVersionNumber(0x100)
                                     .build();
                     DataDogLogger.getLogger().i("Devnco_Android attributeRequest for version 0x100 ==> Uri:"+specificUri+" ==> "+attributeRequest.toString());
-              /*       String attributeRequest1 ="attributeRequest for 1:"+attributeRequest.toString();
-                   new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Toast.makeText(context, attributeRequest1, Toast.LENGTH_LONG).show();
-                                }
-                            });
-*/
+
                      request = new IppPacketData(attributeRequest);
                     DataDogLogger.getLogger().i("Devnco_Android IppPacketData request for 0x100==> Uri:"+specificUri+" ==> "+request.toString());
                 //    logger.info("Devnco_Android IppPacketData request for version 0x100 ==> Uri:"+specificUri+" ==> "+request.toString());
 
                     response = transport.sendData(specificUri, request);
                     DataDogLogger.getLogger().i("Devnco_Android IppPacketData response for version  0x100 ==> Uri:"+specificUri+" ==> "+response.toString());
-                 /*   String response2 ="response for 0x100:"+response.toString();
-                    new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Toast.makeText(context, response2, Toast.LENGTH_LONG).show();
-                                }
-                            });
 
-
-                  */
                      responsePacket = response.getPacket();
               //      logger.info("Devnco_Android responsePacket for version  0x100 ==> Uri:"+specificUri+" ==> "+responsePacket.toString());
 
@@ -496,11 +419,7 @@ public class PrintUtils {
                     resultMap.put("versionNumber","0x100");
                 }
 
-              /*  Intent intent =
-                        new Intent("com.example.PRINT_RESPONSE")
-                                .putExtra("getPrinterAttributes", response.toString());
-                context.sendBroadcast(intent);
-*/
+
                 if(resultMap.get("status").trim().equalsIgnoreCase("successful-ok"))
                 {
                     resultMap.put("finalUri",specificUri.toString());
@@ -513,14 +432,7 @@ public class PrintUtils {
                     resultMap.put("result-"+count,resultMap.get("status"));
                     String result ="result-"+count+" uri-"+specificUri.toString()+" status-"+resultMap.get("status");
                     DataDogLogger.getLogger().i("Devnco_Android status of getAttributeCall ==> Uri:"+specificUri+" ==> "+resultMap.get("status"));
-               /*     new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Toast.makeText(context,result , Toast.LENGTH_LONG).show();
-                                }
-                            });
-*/
+
                 }
             }
             catch (Exception e){
@@ -558,15 +470,7 @@ public class PrintUtils {
                     Log.d("exception in getResponseDetails ",e.getMessage());
                     DataDogLogger.getLogger().e("Devnco_Android exception in getResponseDetails "+e.getMessage());
                     String result ="exception in getResponseDetails:"+e.getMessage();
-                  /*  new Handler(Looper.getMainLooper()).post(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    //Toast.makeText(context, result, Toast.LENGTH_LONG).show();
-                                }
-                            });
 
-                   */
                     continue;
                 }
             }
@@ -590,7 +494,7 @@ public class PrintUtils {
 
         return resultMap;
 
-        // for (AttributeGroup attributeGroup : attributeGroupList) {
+
 
     }
 

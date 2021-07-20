@@ -117,7 +117,6 @@ public class PrintPreview extends AppCompatActivity {
     private NumberPicker picker1,picker2;
     private String[] pickerVals,pickerVals2;
     public Spinner orientationSpinner,staticSpinner,paperSidesSpinner;
-    //Logger logger = LoggerFactory.getLogger(PrintPreview.class);
     RecyclerView printerRecyclerView;
     TextView selectPrinterText,selectPrinterPaperSize;
     ImageView selectprinterarrow,selectprinterPaperSizearrow;
@@ -228,12 +227,6 @@ public class PrintPreview extends AppCompatActivity {
                         selectedFile.setFileSelectedDate(strDate);
                         filePath=realPath;
 
-                        //Intent intent1 = new Intent(getApplicationContext(), PrintPreview.class);
-                        //Bundle bundle = new Bundle();
-                        //bundle.putString("filePath", realPath);
-                        //intent1.putExtras(bundle);
-                        //startActivity(intent1);
-
                     }
                     if (LoginPrefs.Companion.getOCTAToken(this) == null) {
                         @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
@@ -249,9 +242,6 @@ public class PrintPreview extends AppCompatActivity {
         }
         // *********************************************************
 
-
-
-      //  filePath = bundle.getString("filePath", "");
         File file = new File(filePath);
         SelectedFile selectedFile = new SelectedFile();
         selectedFile.setFileName(file.getName());
@@ -279,14 +269,10 @@ public class PrintPreview extends AppCompatActivity {
             radioBtnForPage.setVisibility(View.INVISIBLE);
             jpgOrPngImagePreview(file);
         }
-     //   Spinner dynamicSpinner = (Spinner) findViewById(R.id.dynamic_spinner);
+
          orientationSpinner = (Spinner) findViewById(R.id.orientation_spinner);
         paperSidesSpinner = (Spinner) findViewById(R.id.paperSidesSpinner);
-      /*  String[] paperSidesItems = new String[] {"Simplex", "Duplex"};
 
-        ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, paperSidesItems);
-        paperSidesSpinner.setAdapter(paperSidesAdapter);
-*/
         paperSidesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
@@ -329,33 +315,6 @@ public class PrintPreview extends AppCompatActivity {
             items.add(printerModel.getServiceName());
         }
 
-      //  ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, items);
-      //  dynamicSpinner.setAdapter(adapter);
-
-
-/*
-        dynamicSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectPrinter=parent.getItemAtPosition(position).toString();
-                for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
-                    PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
-                     if(printerModel.getServiceName().toString().equals(parent.getItemAtPosition(position).toString())){
-                       selectedPrinterModel=printerModel;
-                         getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
-                      }
-
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-
-*/
 
 
         addCopy.setOnClickListener(new View.OnClickListener() {
@@ -364,7 +323,6 @@ public class PrintPreview extends AppCompatActivity {
                 noOfCopy=noOfCopy+1;
                 noOfCopies=noOfCopy;
                 String copyNo =""+noOfCopy;
-              //  copies.setText(copyNo);
                 noOfcopies.setText(copyNo);
             }
         });
@@ -376,16 +334,12 @@ public class PrintPreview extends AppCompatActivity {
                     noOfCopy = noOfCopy - 1;
                     noOfCopies=noOfCopy;
                     String copyNo = "" + noOfCopy;
-                  //  copies.setText(copyNo);
                     noOfcopies.setText(copyNo);
                 }
             }
         });
 
          staticSpinner = (Spinner) findViewById(R.id.static_spinner);
-       // String[] printItems = new String[] {"Monochrome", "Color"};
-        //ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, printItems);
-        //staticSpinner.setAdapter(staticAdapter);
 
         staticSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -405,26 +359,6 @@ public class PrintPreview extends AppCompatActivity {
 
             }
         });
-
-       // paperSizeSpinner= (Spinner) findViewById(R.id.paperSizeSpinner);
-
-/*
-        paperSizeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,int position, long id) {
-                String paperSized= parent.getItemAtPosition(position).toString();
-                Log.d("paperSize=",paperSized);
-                paperSize=paperSized;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-*/
-
 
 
         orientationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -455,17 +389,6 @@ public class PrintPreview extends AppCompatActivity {
         selectPrinterPaperSize=(TextView) findViewById(R.id.selectPrinterPaperSize);
         selectprinterarrow =(ImageView) findViewById(R.id.selectprinterarrow);
         selectprinterPaperSizearrow =(ImageView) findViewById(R.id.selectprinterPaperSizearrow);
-
-/*
-        radioBtnForPage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("tag","Click on page radiobutton");
-                pickPrinterPageDialog();
-            }
-        });
-
-*/
 
 
         selectDocumentFloatingButton.setOnClickListener(new View.OnClickListener() {
@@ -516,24 +439,18 @@ public class PrintPreview extends AppCompatActivity {
                         dialogPromptPrinter("alwaysHold");
                     }else{
                         if(secure_release.equals("0") || secure_release.equals("1") || secure_release.equals("2")){
-
-                            //Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrint");
 
                         }else if(secure_release.equals("3") || secure_release.equals("4")){
-                          //  Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysHold");
 
                         }
                         else if(secure_release.equals("5") || secure_release.equals("6")){
-
-                            //Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrompt");
 
 
                         }
                     }
-                    //dialogPromptPrinter();
                 }
                 else if(radioButton.getText().toString().equals("page") && selectedPrinterModel !=null && filePath !=null  && !selectPrinter.toString().equals("select printer") && PageIndexCorrect==true) {
                     String secure_release = selectedPrinterModel.getSecure_release();
@@ -541,24 +458,16 @@ public class PrintPreview extends AppCompatActivity {
                         dialogPromptPrinter("alwaysHold");
                     }else{
                         if(secure_release.equals("0") || secure_release.equals("1") || secure_release.equals("2")){
-
-                            //Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrint");
 
                         }else if(secure_release.equals("3") || secure_release.equals("4")){
-                          //  Toast.makeText(context, "print hold", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysHold");
 
                         }
                         else if(secure_release.equals("5") || secure_release.equals("6")){
-
-                          //  Toast.makeText(context, "print release", Toast.LENGTH_LONG).show();
                             dialogPromptPrinter("alwaysPrompt");
-
-
                         }
                     }
-                    //dialogPromptPrinter();
                 }
             }
         });
@@ -739,8 +648,6 @@ public class PrintPreview extends AppCompatActivity {
                 Toast.makeText(context, "file added", Toast.LENGTH_LONG).show();
                 dialog1.cancel();
                 moveTaskToBack(true);
-              //  Intent myIntent = new Intent(context, MainActivity.class);
-               // startActivity(myIntent);
 
                 String FileName =file.getName().toString();
                Long fileSize= file.length();
@@ -950,13 +857,7 @@ public class PrintPreview extends AppCompatActivity {
                     PrintUtils printUtils = new PrintUtils();
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri, context);
                     if (!resultMap.containsKey("status")) {
-                        new Handler(Looper.getMainLooper()).post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                    //    Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
-                                    }
-                                });
+
                     }
                     if(resultMap.get("status").equals("successful-ok")){
                           String orientation =resultMap.get("orientation-requested-supported");
@@ -1053,7 +954,6 @@ public class PrintPreview extends AppCompatActivity {
                         ArrayList<String> items = new ArrayList<String>();
                         ArrayList<String>ColorSupportedlist = new ArrayList<String>();
                         HashSet<String> colorSupportedList =new HashSet<String>();
-                    //    ArrayList<String>FileSizelist = new ArrayList<String>();
                         ArrayList<String>documentSupportedlist = new ArrayList<String>();
                         ArrayList<String>sideSupportedlist = new ArrayList<String>();
 
@@ -1088,8 +988,7 @@ public class PrintPreview extends AppCompatActivity {
                             documentSupportedlist.add(documentSupportList.get(i));
                             if(documentSupportList.get(i).toLowerCase().contains("pdf")){
                                 isDuplexPrintSupported=true;
-                             //   sideSupportedlist.add("two-sided-long-edge");
-                              //  sideSupportedlist.add("two-sided-short-edge");
+
                             }
                         }
 
@@ -1099,8 +998,6 @@ public class PrintPreview extends AppCompatActivity {
                             sideSupportedlist.add("Duplex");
                         }
 
-
-                        //  items.add("landscape");
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1108,8 +1005,6 @@ public class PrintPreview extends AppCompatActivity {
                                 orientationSpinner.setAdapter(adapter);
                                 ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1,ColorSupportedlist);
                                 staticSpinner.setAdapter(staticAdapter);
-                              //  ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item1,FileSizelist);
-                              //  paperSizeSpinner.setAdapter(fileSizeAdapter);
                                 ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1, sideSupportedlist);
                                 paperSidesSpinner.setAdapter(paperSidesAdapter);
 
@@ -1207,7 +1102,6 @@ public class PrintPreview extends AppCompatActivity {
                             ArrayList<String> items = new ArrayList<String>();
                             ArrayList<String>ColorSupportedlist = new ArrayList<String>();
                             HashSet<String> colorSupportedList =new HashSet<String>();
-                           // ArrayList<String>FileSizelist = new ArrayList<String>();
                             ArrayList<String>documentSupportedlist = new ArrayList<String>();
                             ArrayList<String>sideSupportedlist = new ArrayList<String>();
                             items.add("portrait");
@@ -1253,8 +1147,6 @@ public class PrintPreview extends AppCompatActivity {
                             orientationSpinner.setAdapter(adapter);
                             ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1,ColorSupportedlist);
                             staticSpinner.setAdapter(staticAdapter);
-                            //  ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item1,FileSizelist);
-                            //  paperSizeSpinner.setAdapter(fileSizeAdapter);
                             ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1, sideSupportedlist);
                             paperSidesSpinner.setAdapter(paperSidesAdapter);
                         }
@@ -1310,7 +1202,6 @@ public class PrintPreview extends AppCompatActivity {
             public void run() {
                 ArrayList<String> items = new ArrayList<String>();
                 ArrayList<String>ColorSupportedlist = new ArrayList<String>();
-             //   ArrayList<String>FileSizelist = new ArrayList<String>();
                 ArrayList<String>sideSupportedlist = new ArrayList<String>();
                 FileSizelist.clear();
                 selectPrinterPaperSize.setText("Select Paper Size");
@@ -1320,8 +1211,6 @@ public class PrintPreview extends AppCompatActivity {
                 orientationSpinner.setAdapter(adapter);
                 ArrayAdapter<String> staticAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1,ColorSupportedlist);
                 staticSpinner.setAdapter(staticAdapter);
-             //   ArrayAdapter<String> fileSizeAdapter  = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,FileSizelist);
-             //   paperSizeSpinner.setAdapter(fileSizeAdapter);
                 ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1, sideSupportedlist);
                 paperSidesSpinner.setAdapter(paperSidesAdapter);
 
@@ -1367,9 +1256,6 @@ public class PrintPreview extends AppCompatActivity {
         editor1.apply();
         Toast.makeText(context, "file added", Toast.LENGTH_LONG).show();
         moveTaskToBack(true);
-        //  Intent myIntent = new Intent(context, MainActivity.class);
-        // startActivity(myIntent);
-
         String FileName =file.getName().toString();
         if(FileName.contains(".pdf")){
             FileName= FileName.replace(".pdf","");
@@ -1382,25 +1268,6 @@ public class PrintPreview extends AppCompatActivity {
             printReleaseFragment.sendHeldJob(context,  FileName, fileSize.toString(), totalPageCount,printerId,isPullPrinter,"");
         }
 
-
-    }
-
-
-
-    public void selectePrinterDialoga(Context context) {
-          /*  AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            LayoutInflater inflater = LayoutInflater.from(context);
-            View content = inflater.inflate(R.layout.dialog_printer_prompt, null);
-            builder.setView(content);
-            final AlertDialog ad = builder.show();
-           */
-        AlertDialog alertDialog = new AlertDialog.Builder(context)
-                .setTitle("Title")
-                .setMessage("Are you sure?")
-                .create();
-
-        alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-        alertDialog.show();
 
     }
 

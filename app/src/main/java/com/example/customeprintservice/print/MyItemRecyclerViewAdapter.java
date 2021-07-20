@@ -38,7 +38,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         mValues = items;
         locationPlaced=location;
     }
-    //Logger logger = LoggerFactory.getLogger(MyItemRecyclerViewAdapter.class);
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
@@ -257,10 +257,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 }
 
                             } else {
-                               // holder.documenticon.setVisibility(View.VISIBLE);
-                               // holder.checkBox.setVisibility(View.GONE);
-                              //  holder.checkBox.setChecked(false);
-                              //  holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
                             }
                         }
                     } catch (Exception e) {
@@ -324,10 +321,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                                 }
 
                             } else {
-                              //  holder.documenticon.setVisibility(View.VISIBLE);
-                               // holder.checkBox.setVisibility(View.GONE);
-                               // holder.checkBox.setChecked(false);
-                               // holder.serverDocument.setBackgroundColor(Color.parseColor("#FFFFFF"));
+
                             }
                         }
                     } catch (Exception e) {

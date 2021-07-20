@@ -93,7 +93,7 @@ class PrintReleaseFragment : Fragment() {
     private val releaseJobCheckedList = ArrayList<SelectedFile>()
     private var releaseJobCheckedListForServer = ArrayList<SelectedFile>()
     private val swipeContainer: SwipeRefreshLayout? = null
-  //  var logger = LoggerFactory.getLogger(PrintReleaseFragment::class.java)
+
 
     companion object {
         public val getdocumentList = java.util.ArrayList<SelectedFile>()
@@ -154,8 +154,7 @@ class PrintReleaseFragment : Fragment() {
             val intent = Intent(context, BottomNavigationActivityForServerPrint::class.java)
             startActivity(intent)
         }
-       // val printersFragment =PrintersFragment()
-       // printersFragment.getPrinterList(requireContext(),decodeJWT());
+
 
         btnFragmentSelectDoc.setOnClickListener {
             if (Permissions().checkAndRequestPermissions(context as Activity)) {
@@ -821,7 +820,7 @@ class PrintReleaseFragment : Fragment() {
                 userName = decoded.email.toString()
             }
         } catch (ex: Exception) {
-            //context.toast("Failed to Decode Jwt Token")
+
         }
         return userName.toString()
     }
@@ -846,7 +845,6 @@ class PrintReleaseFragment : Fragment() {
     }
 
     private fun validateToken() {
-//        Log.i("Printer", "IdpUrl->${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}")
 
         val apiService = RetrofitClient(requireContext())
             .getRetrofitInstance(
@@ -959,7 +957,6 @@ class PrintReleaseFragment : Fragment() {
                     doAsync {
                         app.dbInstance().selectedFileDao().deleteItemsFromApi()
                     }
-                    // ServerPrintRelaseFragment.serverDocumentlist.clear()
                     getdocumentList.clear();
                     Toast.makeText(context, "Empty list..No Job Hold", Toast.LENGTH_SHORT)
                         .show()
@@ -1047,7 +1044,6 @@ class PrintReleaseFragment : Fragment() {
 
             override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-                //Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
                 Log.i("printer", t.message.toString())
                 DataDogLogger.getLogger().i("Devnco_Android printer" + t.message.toString())
             }
@@ -1069,8 +1065,7 @@ class PrintReleaseFragment : Fragment() {
             AbsListView.LayoutParams.WRAP_CONTENT,
             AbsListView.LayoutParams.WRAP_CONTENT
         )
-//        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        //        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
         val wlp = window.attributes
         wlp.gravity = Gravity.CENTER
         window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -1505,18 +1500,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         val workStationId: String? =LoginPrefs.getworkSatationId(context)
         Log.d("workStationId pref: ", workStationId.toString())
         var data =""
-      /*  if(workStationId == null || workStationId =="") {
 
-            LoginPrefs.saveGuId(context,guid)
-            Log.d("held data:", "workstationId not Present")
-           data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                    "<data mac=\"10.0.0.4\" w=\"\" >\n" +
-                    "<register dns=\"\" ip4=\""+ipAddress+"\" nb=\"Mobile99\"/>\n" +
-                    "<full guid=\"" + guid + "\">\n" +
-                    "</full>\n" +
-                    "</data>"
-        }
-        else {*/
             LoginPrefs.saveGuId(context,guid)
         var oldHoldJobs:String=sendOldHeldJob(context)
         Log.d("oldHoldJobs",oldHoldJobs)

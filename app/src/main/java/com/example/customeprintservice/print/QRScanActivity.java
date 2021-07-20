@@ -40,15 +40,7 @@ public class QRScanActivity extends AppCompatActivity {
                     QRCodeScanActivity qrCodeScanActivity = new QRCodeScanActivity();
                     String printerId = qrCodeScanActivity.getdigit(intent2.getPath().toString());
                     Log.d("printerId:", printerId);
-                 /*   qrCodeScanActivity.getJobListByPrinterId(this,printerId);
-                    PrintersFragment printersFragment=new PrintersFragment();
-                    printersFragment.getPrinterListByPrinterId(
-                            this,
-                            printerId.toString(),
-                            "getprinterToken"
-                    );
 
-                  */
 
                     Intent intent1 = new Intent(getApplicationContext(), QRCodeScanActivity.class);
                     intent1.putExtra("startqrcodescan", "startqrcodescan");

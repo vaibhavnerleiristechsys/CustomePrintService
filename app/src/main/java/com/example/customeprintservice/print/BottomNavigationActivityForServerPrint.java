@@ -29,7 +29,7 @@ public class BottomNavigationActivityForServerPrint extends AppCompatActivity  i
         setContentView(R.layout.activity_bottom_navigation_for_server_print);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         selectedServerFile.clear();
-    //    printReleaseFragment.getJobStatusesForServerList(getApplicationContext());
+
 
         loadFragment(new ServerPrintRelaseFragment());
         BottomNavigationView navigation = findViewById(R.id.nav_view);

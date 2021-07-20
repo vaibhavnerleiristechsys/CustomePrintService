@@ -62,7 +62,7 @@ class PrintersFragment : Fragment() {
 
     val printerList = ArrayList<PrinterModel>()
     var isSwipeCompleted:Boolean =true
-   // var logger = LoggerFactory.getLogger(PrintersFragment::class.java)
+
 
     companion object {
          val discoveredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
@@ -105,14 +105,7 @@ class PrintersFragment : Fragment() {
         search.visibility=View.GONE
         clear.visibility=View.GONE
         updateUi(PrinterList().printerList, requireContext(), "")
-     //   PrinterList().printerList.clear()
-    //    getPrinterList(requireContext(), decodeJWT())
-       // Log.i("printer", "Login token" + LoginPrefs.getOCTAToken(requireContext()))
-       /* logger.info(
-            "Devnco_Android printer" + "Login token" + LoginPrefs.getOCTAToken(
-                requireContext()
-            )
-        )*/
+
         val intent = Intent("qrcodefloatingbutton")
         intent.putExtra("qrCodeScanBtn", "InActive")
         LocalBroadcastManager.getInstance(requireContext()).sendBroadcast(intent)
@@ -169,22 +162,7 @@ class PrintersFragment : Fragment() {
         search.addTextChangedListener(watcher)
     }
 
-/*
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_search, menu)
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.serach -> {
-                search.visibility = View.VISIBLE
-                clear.visibility = View.VISIBLE
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-*/
 
     @RequiresApi(Build.VERSION_CODES.N)
     @SuppressLint("WrongConstant")
@@ -217,7 +195,7 @@ class PrintersFragment : Fragment() {
 
             })
 
-          //  list.addAll(sharedPreferencesStoredPrinterListWithDetails)
+
         }
 
         val sortedList:ArrayList<PrinterModel> = PrinterListComparator.getSortedPrinterList(list)
@@ -240,9 +218,6 @@ class PrintersFragment : Fragment() {
         recyclerViewPrinterLst?.adapter = adapter
 
 
-
-
-       // val alphabetsList:ArrayList<String> = {"A","B"}
         val recyclerViewAlphabetsList = view?.findViewById<RecyclerView>(R.id.alphabetsRecyclerView)
         recyclerViewAlphabetsList?.layoutManager = LinearLayoutManager(
             context,
@@ -290,15 +265,6 @@ class PrintersFragment : Fragment() {
                         "      <ip mask=\"255.255.255.0\">" + ipAddress + "</ip>\n" +
                         "    </ips>\n" +
                         "  </machine>\n" +
-                        /*  "  <idp>\n" +
-                        "    {\"idpName\": \"Okta\",\n" +
-                        "      \"username\": \"ranjeeta.balakrishnan@devnco.co\",\n" +
-                        "      \"isLoggedIn\": \"true\",\n" +
-                        "      \"type\": \"auth-type\",\n" +
-                        "      \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIyMjMxN2RlMC05NDRkLTRhNjItOGIxNy03YjYyZWQ5OGM5Y2EiLCJpZHAiOiJPa3RhIiwic2l0ZSI6ImRldm5jb29rdGEiLCJ1c2VyIjoicmFuamVldGEuYmFsYWtyaXNobmFuQGRldm5jby5jbyIsInNlc3Npb24iOiJhOGI0NmE1Yi0wYWFlLTQ4ZjUtOWUxMS04NTM5YzljZDdkMTIiLCJleHAiOjE2MzkyMTQ0MzgsImlhdCI6MTYwNzY3ODQzOCwiaXNzIjoiY29tLnByaW50ZXJsb2dpYy5zZXJ2aWNlcy5hdXRobiIsImF1ZCI6ImNvbS5wcmludGVybG9naWMuY2xpZW50cy5kZXNrdG9wLmlkcCJ9.HKiyYRd0QNql6zRsz276L6nGgiQG0GHcYpA6s6h7dOZQoAJZI5G5nZfdPARUEX3vvnEqpy4E8xDrKepk24SoKOQB4dXoSfwg0B6D1B5sz7Dl8Pf6D0N0wvXQl9cEC2LNpv3WqI_qXPYXS6ihO926XSa6f7mo2j3pwmzPZkrO_Q8PSaAjNoXhfCgVXh4oDApTb8A-kO7D67ky9w-GjoMfLdieVqoD1DcWMKkGfFKIdAHDWsEuxamR7xvmtBVvtNnOKIEAxKwf_SqL2JDpMt4PEqvcGd1Cp2_WqREHpq5UG1t0go52PCY7YqCt9e6AypWE0KcxbOo9uoauXKIn5e95sA\"}\n" +
-                        "  </idp>\n" +
-
-                       */
                         "  <memberships>\n" +
                         "    <computer />\n" +
                         "    <user>\n" +
@@ -316,9 +282,6 @@ class PrintersFragment : Fragment() {
             val idpInfo ="\"clientType\":"+"\"serverId\""+",\"idpName\":"+"\""+xIdpName+"\",\"username\":"+"\""+username+"\",\"isLoggedIn\":"+"\""+true+"\",\"type\":"+"\""+xIdpType+"\",\"token\":"+"\""+LoginPrefs.getOCTAToken(
                 context
             )+"\"";
-           // val bytesEncoded: ByteArray = Base64.encodeBase64(idpInfo.toByteArray())
-            //val encodedIdpInfo =String(bytesEncoded)
-           // Log.d("bytesEncoded: ", bytesEncoded.toString())
             Log.d("encodedIdpInfo: ", URLEncoder.encode(idpInfo))
             apiService.getPrinterListForGoogle(
                 siteId.toString(),
@@ -426,7 +389,7 @@ class PrintersFragment : Fragment() {
                             Log.i("printer", "html res=>${it.text()}")
                             DataDogLogger.getLogger()
                                 .i("Devnco_Android printer" + "html res=>${it.text()}")
-                            //   PrinterList().addPrinterModel(printerModel)
+
 
                             val thread = Thread(Runnable {
                                 try {
@@ -462,8 +425,6 @@ class PrintersFragment : Fragment() {
 
 
                         }, 8000)
-                        // updateUi(PrinterList().printerList)
-                        // swipeContainer.isRefreshing = false
                         cancelLoading()
 
                     } catch (e: Exception) {
@@ -538,7 +499,7 @@ class PrintersFragment : Fragment() {
         }
 
         floatButton.setOnClickListener {
-            //Toast.makeText(requireContext(), "Click on float btn", Toast.LENGTH_SHORT).show()
+
         }
     }
 
@@ -558,7 +519,7 @@ class PrintersFragment : Fragment() {
                 userName = decoded.email.toString()
             }
         } catch (ex: Exception) {
-            //context.toast("Failed to Decode Jwt Token")
+
         }
         return userName.toString()
     }
@@ -713,7 +674,7 @@ class PrintersFragment : Fragment() {
                     printer.isColor = isColor
                     printer.location = location
                     var flagIsExist: Boolean = false
-                    //when select one document then only get printer by using queue id for display in dialog box
+
                     if (purpose.equals("forSecureRelase")) {
                         printer.manual = false
                         printer.fromServer = true

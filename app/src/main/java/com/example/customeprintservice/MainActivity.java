@@ -117,33 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
     Uri intent2 = intent.getData();
         if (intent2 != null) {
-       /*     if(intent2.getScheme().equals("vasion-print")){
-                if (LoginPrefs.Companion.getOCTAToken(this) == null) {
-                    @SuppressLint("WrongConstant") SharedPreferences prefs = getSharedPreferences("MySharedPref", Context.MODE_APPEND);
-                    String IsLdap = prefs.getString("IsLdap", "");
-                    if(!IsLdap.equals("LDAP")) {
-                        Intent intent1 = new Intent(getApplicationContext(), SignInCompany.class);
-                        startActivity(intent1);
-                    }
-                }
-                else{
 
-                    Log.d("path",intent2.getPath());
-                    QRCodeScanActivity qrCodeScanActivity=new QRCodeScanActivity();
-                    String printerId = qrCodeScanActivity.getdigit(intent2.getPath().toString());
-                    Log.d("printerId:",printerId);
-
-
-                    Intent intent1 = new Intent(getApplicationContext(), QRCodeScanActivity.class);
-                    intent1.putExtra("startqrcodescan", "startqrcodescan");
-                    intent1.putExtra("printerId", printerId);
-                    startActivity(intent1);
-
-                }
-
-            }
-            */
-           // else {
                 String decodeUrl = intent2.getEncodedPath().replaceFirst("/", "").toString();
                 BottomNavigationActivity bottomNavigationActivity = new BottomNavigationActivity();
                 String decode = bottomNavigationActivity.decode(decodeUrl);
@@ -174,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
                     bottomNavigationActivity.getTokenFromMainAcitivity(decode, this);
                 }
 
-          //  }
+
         }
         LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mMessageReceiver, new IntentFilter("qrcodefloatingbutton"));
 
@@ -197,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
 
                 PrintersFragment printersFragment=new PrintersFragment();
                 printersFragment.removePrinters(getApplicationContext());
-                //finish();
                 Intent intent = new Intent(getApplicationContext(), SignInCompany.class);
                 startActivity(intent);
 
@@ -314,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             if (intent.getStringExtra("getPrintResponse") != null) {
                 String printResponseStatus = intent.getStringExtra("getPrintResponse").toString();
-                //Toast.makeText(context, printResponseStatus, Toast.LENGTH_LONG).show();
+
             }
 
         }
@@ -355,7 +328,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static String findTenantBaseUrl(String tenantBaseUrl) {
         String tenantUrl = "";
-       //String url ="https://gw.app.printercloud.com/devncookta/";
+
         int i =tenantBaseUrl.indexOf("/",9);
         tenantUrl =tenantBaseUrl.substring(0,i);
         return tenantUrl;
@@ -448,13 +421,7 @@ public class MainActivity extends AppCompatActivity {
                     PrintUtils printUtils = new PrintUtils();
                     Map<String, String> resultMap = printUtils.getAttributesCall(ippUri, context);
                     if (!resultMap.containsKey("status")) {
-                        new Handler(Looper.getMainLooper()).post(
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                    //    Toast.makeText(context, " get Attribute failed", Toast.LENGTH_LONG).show();
-                                    }
-                                });
+
                     }
                     if(resultMap.get("status").equals("successful-ok")){
                         String orientation =resultMap.get("orientation-requested-supported");
@@ -551,7 +518,6 @@ public class MainActivity extends AppCompatActivity {
                         ArrayList<String> items = new ArrayList<String>();
                         ArrayList<String>ColorSupportedlist = new ArrayList<String>();
                         HashSet<String> colorSupportedList =new HashSet<String>();
-                        //    ArrayList<String>FileSizelist = new ArrayList<String>();
                         ArrayList<String>documentSupportedlist = new ArrayList<String>();
                         ArrayList<String>sideSupportedlist = new ArrayList<String>();
 
@@ -578,16 +544,14 @@ public class MainActivity extends AppCompatActivity {
                         ColorSupportedlist.addAll(listOfColorSupported);
                         for(int i=0;i<mediaSupportList.size();i++){
                             Log.d("mediaSupported:",mediaSupportList.get(i));
-                          //  FileSizelist.add(mediaSupportList.get(i));
+
                         }
 
                         for(int i=0;i<documentSupportList.size();i++){
                             Log.d("documentSupported:",documentSupportList.get(i));
                             documentSupportedlist.add(documentSupportList.get(i));
                             if(documentSupportList.get(i).toLowerCase().contains("pdf")){
-                               // isDuplexPrintSupported=true;
-                                //   sideSupportedlist.add("two-sided-long-edge");
-                                //  sideSupportedlist.add("two-sided-short-edge");
+
                             }
                         }
 
