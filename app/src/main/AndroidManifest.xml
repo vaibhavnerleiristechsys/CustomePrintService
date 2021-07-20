@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.customeprintservice">
+    package="com.printerlogic.printerlogic">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -13,7 +13,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
-        android:name=".PrintService"
+        android:name="com.printerlogic.printerlogic.PrintService"
         android:allowBackup="true"
         android:icon="@drawable/printerlogicicon1"
         android:label="@string/app_name"
@@ -22,7 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".print.QRScanActivity"
+        <activity android:name="com.printerlogic.printerlogic.print.QRScanActivity"
             android:launchMode="singleTask"
             android:noHistory="true">
             <intent-filter>
@@ -34,12 +34,12 @@
         </activity>
 
         <activity
-            android:name=".DialogActivity"
+            android:name="com.printerlogic.printerlogic.DialogActivity"
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             tools:ignore="Instantiatable" />
         <activity
-            android:name=".print.PrintPreview"
+            android:name="com.printerlogic.printerlogic.print.PrintPreview"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -58,7 +58,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name="com.printerlogic.printerlogic.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
@@ -81,25 +81,25 @@
 
         </activity>
         <activity
-            android:name=".print.BottomNavigationActivityForServerPrint"
+            android:name="com.printerlogic.printerlogic.print.BottomNavigationActivityForServerPrint"
             android:label="@string/title_activity_bottom_navigation_for_server_print" />
-        <activity android:name=".signin.GoogleLoginActivity" />
-        <activity android:name=".CustomePrintActivity" />
+        <activity android:name="com.printerlogic.printerlogic.signin.GoogleLoginActivity" />
+        <activity android:name="com.printerlogic.printerlogic.CustomePrintActivity" />
         <activity
-            android:name=".print.BottomNavigationActivity"
+            android:name="com.printerlogic.printerlogic.print.BottomNavigationActivity"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".signin.SignInActivity"
+            android:name="com.printerlogic.printerlogic.signin.SignInActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".signin.SignInCompany"
+            android:name="com.printerlogic.printerlogic.signin.SignInCompany"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity
-            android:name=".signin.SplashScreenActivity"
+            android:name="com.printerlogic.printerlogic.signin.SplashScreenActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -110,15 +110,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".jipp.QRCodeScanActivity" />
+        <activity android:name="com.printerlogic.printerlogic.jipp.QRCodeScanActivity" />
         <activity
-            android:name=".jipp.PrintActivity"
+            android:name="com.printerlogic.printerlogic.jipp.PrintActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".jipp.PrinterDiscoveryActivity"
+            android:name="com.printerlogic.printerlogic.jipp.PrinterDiscoveryActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".jipp.MainActivity"
+            android:name="com.printerlogic.printerlogic.jipp.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -126,14 +126,14 @@
         </activity>
 
         <service
-            android:name=".PrinterLogicPrintService"
+            android:name="com.printerlogic.printerlogic.PrinterLogicPrintService"
             android:permission="android.permission.BIND_PRINT_SERVICE">
             <intent-filter>
                 <action android:name="android.printservice.PrintService" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".jipp.MyReceiver">
+        <receiver android:name="com.printerlogic.printerlogic.jipp.MyReceiver">
             <intent-filter>
                 <action android:name="com.example.PRINT_RESPONSE" />
             </intent-filter>

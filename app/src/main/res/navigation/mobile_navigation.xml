@@ -7,55 +7,55 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.customeprintservice.print.ui.home.HomeFragment"
+        android:name="com.printerlogic.printerlogic.print.ui.home.HomeFragment"
         android:label="Workspace"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.example.customeprintservice.print.ui.gallery.GalleryFragment"
+        android:name="com.printerlogic.printerlogic.print.ui.gallery.GalleryFragment"
         android:label="Reports"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="com.example.customeprintservice.print.ui.slideshow.SlideshowFragment"
+        android:name="com.printerlogic.printerlogic.print.ui.slideshow.SlideshowFragment"
         android:label="Storage"
         tools:layout="@layout/fragment_slideshow" />
 
     <fragment
         android:id="@+id/nav_tools"
-        android:name="com.example.customeprintservice.print.ui.tools.ToolsFragment"
+        android:name="com.printerlogic.printerlogic.print.ui.tools.ToolsFragment"
         android:label="Forms"
         tools:layout="@layout/fragment_tools" />
 
     <fragment
         android:id="@+id/nav_share"
-        android:name="com.example.customeprintservice.print.ServerPrintRelaseFragment"
+        android:name="com.printerlogic.printerlogic.print.ServerPrintRelaseFragment"
         android:label="Print"
         tools:layout="@layout/fragment_server_print_relase" />
 
     <fragment
         android:id="@+id/nav_send"
-        android:name="com.example.customeprintservice.print.ui.send.SendFragment"
+        android:name="com.printerlogic.printerlogic.print.ui.send.SendFragment"
         android:label="@string/menu_send"
         tools:layout="@layout/fragment_send" />
 
     <fragment
         android:id="@+id/bottom_home"
-        android:name="com.example.customeprintservice.print.ServerPrintRelaseFragment"
+        android:name="com.printerlogic.printerlogic.print.ServerPrintRelaseFragment"
         android:label="@string/print"
         tools:layout="@layout/fragment_server_print_relase" />
 
     <fragment
         android:id="@+id/bottom_dashboard"
-        android:name="com.example.customeprintservice.print.PrintersFragment"
+        android:name="com.printerlogic.printerlogic.print.PrintersFragment"
         android:label="@string/print"
         tools:layout="@layout/fragment_printers" />
 
     <fragment
         android:id="@+id/bottom_notifications"
-        android:name="com.example.customeprintservice.print.ui.gallery.GalleryFragment"
+        android:name="com.printerlogic.printerlogic.print.ui.gallery.GalleryFragment"
         android:label="@string/print"
         tools:layout="@layout/fragment_gallery" />
 
