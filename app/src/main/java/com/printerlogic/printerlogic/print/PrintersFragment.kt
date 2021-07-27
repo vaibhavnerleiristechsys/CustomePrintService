@@ -247,15 +247,17 @@ class PrintersFragment : Fragment() {
         val xIdpType =SignInCompanyPrefs.getIdpType(context)
         val xIdpName =SignInCompanyPrefs.getIdpName(context)
 
-        BASE_URL = "https://"+companyUrl+"/client/gateway.php/"
-
+     //   BASE_URL = "https://"+companyUrl+"/client/gateway.php/"
+        BASE_URL = "https://"+companyUrl+"/api/mobile/client-gateway/"
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
+            val sessionId = LoginPrefs.getSessionIdForLdap(context)
             apiService.getPrinterListForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
+                "PHPSESSID=" + sessionId,
                 "1",
                 "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                         "<system driverless=\"1\">\n" +
@@ -271,6 +273,7 @@ class PrintersFragment : Fragment() {
                         "    </user>\n" +
                         "  </memberships>\n" +
                         "</system>"
+
             )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(
@@ -560,10 +563,13 @@ class PrintersFragment : Fragment() {
         //val BASE_URL = "https://gw.app.printercloud.com/"+siteId+"/prs/v1/printers/"+printerId+"/"
 
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
-        val call = if(IsLdap.equals("LDAP")){ apiService.getPrinterDetailsByPrinterIdForLdap(
+        val call = if(IsLdap.equals("LDAP")){
+            val sessionId = LoginPrefs.getSessionIdForLdap(context)
+            apiService.getPrinterDetailsByPrinterIdForLdap(
             siteId.toString(),
             LdapUsername.toString(),
-            LdapPassword.toString()
+            LdapPassword.toString(),
+           "PHPSESSID=" + sessionId
         )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(

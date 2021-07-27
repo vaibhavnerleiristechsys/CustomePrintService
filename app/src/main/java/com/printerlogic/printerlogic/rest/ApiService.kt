@@ -218,14 +218,16 @@ interface ApiService {
     fun getPrinterDetailsByPrinterIdForLdap(
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
-        @Header("X-PrinterLogic-Password") password: String
+        @Header("X-PrinterLogic-Password") password: String,
+        @Header("Cookie") cookie: String
     ): Call<Any>?
 
     @GET(".")
     fun getPrinterDetailsByNodeIdForLdap(
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
-        @Header("X-PrinterLogic-Password") password: String
+        @Header("X-PrinterLogic-Password") password: String,
+        @Header("Cookie") cookie: String
     ): Call<PrinterDetailsResponse>?
 
     @GET(".")
@@ -264,7 +266,8 @@ interface ApiService {
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String,
-        @Query("include") include: String
+        @Query("include") include: String,
+        @Header("Cookie") cookie: String
     ): Call<GetJobStatusesResponse>
 
     @POST(".")
@@ -272,7 +275,8 @@ interface ApiService {
         @Body releaseJobRequest: ReleaseJobRequest,
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
-        @Header("X-PrinterLogic-Password") password: String
+        @Header("X-PrinterLogic-Password") password: String,
+        @Header("Cookie") cookie: String
     ): Call<ReleaseJobResponse>
 
     @POST(".")
@@ -281,6 +285,7 @@ interface ApiService {
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String,
+        @Header("Cookie") cookie: String,
         @Query("format") format: String,
         @Query("t") t: String
 
@@ -292,8 +297,10 @@ interface ApiService {
         @Header("X-Site-Id") XSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String,
+        @Header("Cookie") cookie: String,
         @Field("checkin") checkin: String,
         @Field("configuration") configuration: String
+
     ): Call<ResponseBody>
 
     @FormUrlEncoded
@@ -302,7 +309,8 @@ interface ApiService {
         @Header("X-Site-Id") XSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String,
-        @Field("data") data: String
+        @Field("data") data: String,
+        @Header("Cookie") cookie: String
     ): Call<ResponseBody>
 
     @POST(".")
@@ -310,7 +318,8 @@ interface ApiService {
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
         @Header("X-PrinterLogic-Password") password: String,
-        @Body jobStatusCancel: CancelJobRequest
+        @Body jobStatusCancel: CancelJobRequest,
+        @Header("Cookie") cookie: String
     ): Call<CancelJobResponse>
 
 
@@ -399,7 +408,8 @@ interface ApiService {
     fun getPrintersListForLdap(
         @Header("X-Site-ID") xSiteId: String,
         @Header("X-PrinterLogic-User-Name") userName: String,
-        @Header("X-PrinterLogic-Password") password: String
+        @Header("X-PrinterLogic-Password") password: String,
+        @Header("Cookie") cookie: String
     ): Call<List<Printer>>
 
     @FormUrlEncoded

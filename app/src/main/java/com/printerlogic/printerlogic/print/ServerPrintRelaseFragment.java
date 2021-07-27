@@ -574,11 +574,13 @@ public class ServerPrintRelaseFragment extends Fragment {
         ApiService apiService = new RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService.class);
         Call call;
         if(IsLdap.equals("LDAP")){
+            String sessionId = LoginPrefs.Companion.getSessionIdForLdap(context);
             call = apiService.getPrintJobStatusesForLdap(
                     siteId.toString(),
                     LdapUsername.toString(),
                     LdapPassword.toString(),
-                    "printerDeviceQueue.printers"
+                    "printerDeviceQueue.printers",
+                    "PHPSESSID=" + sessionId
             );
         }else if(siteId.contains("google")){
             DataDogLogger.getLogger().i("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
@@ -802,14 +804,19 @@ public class ServerPrintRelaseFragment extends Fragment {
         String url = ""+tanentUrl+"/"+siteId+"/tree/api/node/";
         //String url = "https://gw.app.printercloud.com/"+siteId+"/tree/api/node/";
 
+
+
         ApiService apiService = new RetrofitClient(context).getRetrofitInstance(url).create(ApiService.class);
         PrintReleaseFragment prf = new PrintReleaseFragment();
         Call call;
         if(IsLdap.equals("LDAP")){
+
+            String sessionId = LoginPrefs.Companion.getSessionIdForLdap(context);
             call = apiService.getPrintersListForLdap(
                     siteId.toString(),
                     LdapUsername.toString(),
-                    LdapPassword.toString()
+                    LdapPassword.toString(),
+                    "PHPSESSID=" + sessionId
             );
         }else if(siteId.contains("google")){
 

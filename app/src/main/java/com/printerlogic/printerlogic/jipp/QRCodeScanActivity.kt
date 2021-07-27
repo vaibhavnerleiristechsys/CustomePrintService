@@ -19,10 +19,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.budiyev.android.codescanner.*
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.printerlogic.printerlogic.MainActivity
 import com.printerlogic.printerlogic.R
 import com.printerlogic.printerlogic.model.DecodedJWTResponse
 import com.printerlogic.printerlogic.prefs.LoginPrefs
+import com.printerlogic.printerlogic.prefs.LoginPrefs.Companion.getSessionIdForLdap
 import com.printerlogic.printerlogic.prefs.LoginPrefs.Companion.getTenantUrl
 import com.printerlogic.printerlogic.prefs.SignInCompanyPrefs
 import com.printerlogic.printerlogic.print.*
@@ -34,9 +38,6 @@ import com.printerlogic.printerlogic.room.SelectedFile
 import com.printerlogic.printerlogic.utils.DataDogLogger
 import com.printerlogic.printerlogic.utils.JwtDecode
 import com.printerlogic.printerlogic.utils.ProgressDialog
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -44,6 +45,7 @@ import kotlinx.android.synthetic.main.activity_q_r_code_scan.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+
 
 class QRCodeScanActivity : AppCompatActivity() {
 
@@ -185,12 +187,14 @@ class QRCodeScanActivity : AppCompatActivity() {
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
+            val sessionId = getSessionIdForLdap(context)
             apiService.getPrintJobStatusesForLdap(
                 "devncoldap",
                 LdapUsername.toString(),
                 LdapPassword.toString(),
-                "printerDeviceQueue.printers"
-            )
+                "printerDeviceQueue.printers",
+                "PHPSESSID=" + sessionId
+                )
         }else{
             apiService.getPrintJobStatusesForQrCode(
                 "Bearer " + LoginPrefs.getOCTAToken(context),

@@ -154,10 +154,13 @@ class PrinterListService {
             .getRetrofitInstance(BASE_URL)
             .create(ApiService::class.java)
         val call = if(IsLdap.equals("LDAP")){
+            val sessionId = LoginPrefs.getSessionIdForLdap(context)
             apiService.getPrinterDetailsByNodeIdForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
-                LdapPassword.toString())
+                LdapPassword.toString(),
+                "PHPSESSID=" + sessionId
+            )
         }else if(siteId.toString().contains("google")){
             logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +authorization + " username: " + userName)
             apiService.getPrinterDetailsByNodeIdForGoogle(

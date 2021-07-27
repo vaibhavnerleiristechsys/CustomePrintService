@@ -27,6 +27,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.printerlogic.printerlogic.MainActivity
 import com.printerlogic.printerlogic.PrintService
 import com.printerlogic.printerlogic.R
@@ -37,6 +41,7 @@ import com.printerlogic.printerlogic.jipp.PrinterModel
 import com.printerlogic.printerlogic.model.DecodedJWTResponse
 import com.printerlogic.printerlogic.model.ServerJobsModel
 import com.printerlogic.printerlogic.prefs.LoginPrefs
+import com.printerlogic.printerlogic.prefs.LoginPrefs.Companion.getSessionIdForLdap
 import com.printerlogic.printerlogic.prefs.LoginPrefs.Companion.getTenantUrl
 import com.printerlogic.printerlogic.prefs.SignInCompanyPrefs
 import com.printerlogic.printerlogic.printjobstatus.model.canceljob.CancelJobRequest
@@ -52,10 +57,6 @@ import com.printerlogic.printerlogic.rest.RetrofitClient
 import com.printerlogic.printerlogic.room.SelectedFile
 import com.printerlogic.printerlogic.utils.*
 import com.printerlogic.printerlogic.utils.ProgressDialog.Companion.cancelLoading
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -75,6 +76,7 @@ import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class PrintReleaseFragment : Fragment() {
 
@@ -234,11 +236,13 @@ class PrintReleaseFragment : Fragment() {
 
 
         val call = if(IsLdap.equals("LDAP")){
+            val sessionId = LoginPrefs.getSessionIdForLdap(context)
             apiService.jobStatusCancelForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
-                jobStatusCancel
+                jobStatusCancel,
+                "PHPSESSID=" + sessionId
             )
         }else if(siteId.toString().contains("google")){
             apiService.jobStatusCancelForGoogle(
@@ -338,21 +342,25 @@ class PrintReleaseFragment : Fragment() {
 
         val call = if(IsLdap.equals("LDAP")){
             if(!release_t.equals("null")){
+                val sessionId = LoginPrefs.getSessionIdForLdap(context)
             apiService.releaseJobForPullPrinterLdap(
                 releaseJobRequest,
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
+                "PHPSESSID=" + sessionId,
                 "json:api",
                 release_t
             )
             }
             else{
+                val sessionId = LoginPrefs.getSessionIdForLdap(context)
                 apiService.releaseJobForLdap(
                     releaseJobRequest,
                     siteId.toString(),
                     LdapUsername.toString(),
-                    LdapPassword.toString()
+                    LdapPassword.toString(),
+                    "PHPSESSID=" + sessionId
                 )
             }
 
@@ -489,21 +497,25 @@ class PrintReleaseFragment : Fragment() {
 
         val call = if(IsLdap.equals("LDAP")){
             if(!release_t.equals("null")){
+                val sessionId = LoginPrefs.getSessionIdForLdap(context)
                 apiService.releaseJobForPullPrinterLdap(
                     releaseJobRequest,
                     siteId.toString(),
                     LdapUsername.toString(),
                     LdapPassword.toString(),
+                    "PHPSESSID=" + sessionId,
                     "json:api",
                     release_t
                 )
             }
             else{
+                val sessionId = LoginPrefs.getSessionIdForLdap(context)
                 apiService.releaseJobForLdap(
                     releaseJobRequest,
                     siteId.toString(),
                     LdapUsername.toString(),
-                    LdapPassword.toString()
+                    LdapPassword.toString(),
+                    "PHPSESSID=" + sessionId
                 )
             }
 
@@ -612,11 +624,13 @@ class PrintReleaseFragment : Fragment() {
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
-         apiService.getPrintJobStatusesForLdap(
+            val sessionId = LoginPrefs.getSessionIdForLdap(context)
+            apiService.getPrintJobStatusesForLdap(
              siteId.toString(),
              LdapUsername.toString(),
              LdapPassword.toString(),
-             "printerDeviceQueue.printers"
+             "printerDeviceQueue.printers",
+             "PHPSESSID=" + sessionId
          )
         }else if(siteId.toString().contains("google")){
             apiService.getPrintJobStatusesForGoogle(
@@ -722,7 +736,7 @@ class PrintReleaseFragment : Fragment() {
 
             override fun onFailure(call: Call<GetJobStatusesResponse>, t: Throwable) {
                 ProgressDialog.cancelLoading()
-              //  Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
+                //  Toast.makeText(requireContext(), t.message.toString(), Toast.LENGTH_SHORT).show()
                 Log.i("printer", t.message.toString())
                 DataDogLogger.getLogger().i("Devnco_Android printer" + t.message.toString())
             }
@@ -919,11 +933,13 @@ class PrintReleaseFragment : Fragment() {
             .create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
+            val sessionId = LoginPrefs.getSessionIdForLdap(context)
             apiService.getPrintJobStatusesForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
-                "printerDeviceQueue.printers"
+                "printerDeviceQueue.printers",
+                "PHPSESSID=" + sessionId
             )
         }else if(siteId.toString().contains("google")){
             apiService.getPrintJobStatusesForGoogle(
@@ -1244,7 +1260,15 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
 
 
-    fun sendHeldJob(context: Context, fileName: String,fileSize:String,totalPageCount:String,printerId:String,isPullPrinter:String,purpose:String){
+    fun sendHeldJob(
+        context: Context,
+        fileName: String,
+        fileSize: String,
+        totalPageCount: String,
+        printerId: String,
+        isPullPrinter: String,
+        purpose: String
+    ){
         @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
             "MySharedPref",
             Context.MODE_APPEND
@@ -1289,12 +1313,22 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         var data =""
         if(workStationId == null || workStationId =="") {
             LoginPrefs.saveJobId(context, jobId)
-            LoginPrefs.saveGuId(context,guid)
+            LoginPrefs.saveGuId(context, guid)
             var macAddress:String=ServerPrintRelaseFragment.getMacAddress(context)
             Log.d("macAddress:", macAddress)
-            PrintPreview.setJobId(context,jobId.toString(),fileName);
+            PrintPreview.setJobId(context, jobId.toString(), fileName);
             Log.d("held data:", "workstationId not Present")
-            addHeldJobs(context,jobId,dateTime,documentTitle,fileSize,totalPageCount,printType,printerId,usernName)
+            addHeldJobs(
+                context,
+                jobId,
+                dateTime,
+                documentTitle,
+                fileSize,
+                totalPageCount,
+                printType,
+                printerId,
+                usernName
+            )
 
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\"\" >\n" +
@@ -1308,7 +1342,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         }else if(purpose.equals("fullPackageRequired")){
             Log.d("delta data:", "delta data send")
             var jobID : String? = LoginPrefs.getLastJobId(context);
-            LoginPrefs.saveGuId(context,guid)
+            LoginPrefs.saveGuId(context, guid)
             var jobIdentity=0
             if(jobID==null){
                 jobIdentity=jobId.toInt();
@@ -1317,7 +1351,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                 jobIdentity = jobIds?.plus(1)
                 LoginPrefs.saveJobId(context, jobIdentity.toString())
             }
-            PrintPreview.setJobId(context,jobIdentity.toString(),fileName);
+            PrintPreview.setJobId(context, jobIdentity.toString(), fileName);
             val documentTitle=fileName
 
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
@@ -1332,7 +1366,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         }else{
             Log.d("delta data:", "delta data send")
             var jobID : String? = LoginPrefs.getLastJobId(context);
-            LoginPrefs.saveGuId(context,guid)
+            LoginPrefs.saveGuId(context, guid)
             var jobIdentity=0
             if(jobID==null){
                 jobIdentity=jobId.toInt();
@@ -1341,10 +1375,20 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
              jobIdentity = jobIds?.plus(1)
             LoginPrefs.saveJobId(context, jobIdentity.toString())
             }
-            PrintPreview.setJobId(context,jobIdentity.toString(),fileName);
+            PrintPreview.setJobId(context, jobIdentity.toString(), fileName);
             val documentTitle=fileName
 
-            addHeldJobs(context,jobIdentity.toString(),dateTime,documentTitle,fileSize,totalPageCount,printType,printerId,usernName)
+            addHeldJobs(
+                context,
+                jobIdentity.toString(),
+                dateTime,
+                documentTitle,
+                fileSize,
+                totalPageCount,
+                printType,
+                printerId,
+                usernName
+            )
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
                     "<data mac=\"10.0.0.4\" w=\""+workStationId+"\" >\n" +
                     "<delta basedon=\""+oldGuid+"\" guid=\""+guid+"\">\n" +
@@ -1357,15 +1401,17 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
 
 
-        BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
+       // BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
+        BASE_URL = "https://"+companyUrl+"/api/mobile/print-job-events/"
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
-
+        val sessionId = LoginPrefs.getSessionIdForLdap(context)
         val call = if(IsLdap.equals("LDAP")){
             apiService.sendHeldJobForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
-                data
+                data,
+                "PHPSESSID=" + sessionId
             )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(
@@ -1415,21 +1461,37 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     try {
 
                         val html = response.body()?.string()
-                        Log.d("response of held job:",html.toString())
+                        Log.d("response of held job:", html.toString())
 
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
-                        Log.d("parse held job:",document.toString())
+                        Log.d("parse held job:", document.toString())
                         val error = document.select("e")
-                        val errormassage:String =error.toString()
-                        Log.d("errormsg in held job:",errormassage.toString())
-                        if(errormassage.contains("There was an error applying the delta information. Full package required")){
-                          //  LoginPrefs.saveworkSatationId(context, "");
-                            sendHeldJob(context,fileName,fileSize,totalPageCount,printerId,isPullPrinter,"fullPackageRequired")
+                        val errormassage: String = error.toString()
+                        Log.d("errormsg in held job:", errormassage.toString())
+                        if (errormassage.contains("There was an error applying the delta information. Full package required")) {
+                            //  LoginPrefs.saveworkSatationId(context, "");
+                            sendHeldJob(
+                                context,
+                                fileName,
+                                fileSize,
+                                totalPageCount,
+                                printerId,
+                                isPullPrinter,
+                                "fullPackageRequired"
+                            )
                         }
 
-                        if(errormassage.contains("The workstation needs to be registered")){
+                        if (errormassage.contains("The workstation needs to be registered")) {
                             LoginPrefs.saveworkSatationId(context, "");
-                            sendHeldJob(context,fileName,fileSize,totalPageCount,printerId,isPullPrinter,"")
+                            sendHeldJob(
+                                context,
+                                fileName,
+                                fileSize,
+                                totalPageCount,
+                                printerId,
+                                isPullPrinter,
+                                ""
+                            )
                         }
 
 
@@ -1437,7 +1499,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
                         Log.d("workstationId:", element.text())
                         val workStationId = element.text()
-                        if(workStationId != null && workStationId !="") {
+                        if (workStationId != null && workStationId != "") {
                             LoginPrefs.saveworkSatationId(context, workStationId)
                         }
                         cancelLoading()
@@ -1464,7 +1526,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
 //****************************************************** every 7 sec call ********************************************
 
-    fun gettingHeldJobStatus(context: Context,purpose:String){
+    fun gettingHeldJobStatus(context: Context, purpose: String){
         @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
             "MySharedPref",
             Context.MODE_APPEND
@@ -1500,9 +1562,9 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         Log.d("workStationId pref: ", workStationId.toString())
         var data =""
 
-            LoginPrefs.saveGuId(context,guid)
+            LoginPrefs.saveGuId(context, guid)
         var oldHoldJobs:String=sendOldHeldJob(context)
-        Log.d("oldHoldJobs",oldHoldJobs)
+        Log.d("oldHoldJobs", oldHoldJobs)
 
         if(purpose.equals("FullPackageNeed")){
             data = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
@@ -1521,15 +1583,18 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
         }
     //    }
 
-        BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
+     //   BASE_URL = "https://"+companyUrl+"/state/query/client_requests.php/"
+        BASE_URL = "https://"+companyUrl+"/api/mobile/print-job-events/"
         val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
         val call = if(IsLdap.equals("LDAP")){
+            val sessionId = LoginPrefs.getSessionIdForLdap(context)
             apiService.sendHeldJobForLdap(
                 siteId.toString(),
                 LdapUsername.toString(),
                 LdapPassword.toString(),
-                data
+                data,
+                "PHPSESSID=" + sessionId
             )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(
@@ -1579,51 +1644,51 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     try {
 
                         val html = response.body()?.string()
-                        Log.d("response of held job:",html.toString())
+                        Log.d("response of held job:", html.toString())
 
                         val document = Jsoup.parse(html, "", Parser.xmlParser())
-                        Log.d("parse held job:",document.toString())
+                        Log.d("parse held job:", document.toString())
                         val error = document.select("e")
-                        val errormassage:String =error.toString()
-                        Log.d("errormsg in held job:",errormassage.toString())
-                       if(errormassage.contains("There was an error applying the delta information. Full package required")){
-                           // LoginPrefs.saveworkSatationId(context, "");
-                            gettingHeldJobStatus(context,"FullPackageNeed")
+                        val errormassage: String = error.toString()
+                        Log.d("errormsg in held job:", errormassage.toString())
+                        if (errormassage.contains("There was an error applying the delta information. Full package required")) {
+                            // LoginPrefs.saveworkSatationId(context, "");
+                            gettingHeldJobStatus(context, "FullPackageNeed")
                         }
 
 
-                     val release =document.select("release")
-                        if(!release.isEmpty()){
+                        val release = document.select("release")
+                        if (!release.isEmpty()) {
                             val data = document.select("m")
 
-                            Log.i("printer", "release data==>"+data.toString())
+                            Log.i("printer", "release data==>" + data.toString())
 
                             data.forEach {
-                                var jobId=""
-                                var printerId=""
-                                var printerName=""
-                                var printerHost=""
-                                var jobstatus =""
+                                var jobId = ""
+                                var printerId = ""
+                                var printerName = ""
+                                var printerHost = ""
+                                var jobstatus = ""
 
-                                jobId =it.attr("data")
-                                jobstatus=it.attr("m")
+                                jobId = it.attr("data")
+                                jobstatus = it.attr("m")
 
-                              release.forEach {
+                                release.forEach {
 
-                                printerId=it.attr("pid")
-                                printerName=it.attr("title")
+                                    printerId = it.attr("pid")
+                                    printerName = it.attr("title")
 
-                            }
-
-                            val address =document.select("address")
-                            if(address != null) {
-                                address.forEach {
-                                    printerHost=it.attr("host")
                                 }
-                            }
-                                if(data.size > 1) {
-                                    removeHeldJobs(context,jobId)
-                                    if(jobstatus.equals("2")) {
+
+                                val address = document.select("address")
+                                if (address != null) {
+                                    address.forEach {
+                                        printerHost = it.attr("host")
+                                    }
+                                }
+                                if (data.size > 1) {
+                                    removeHeldJobs(context, jobId)
+                                    if (jobstatus.equals("2")) {
                                         Handler().postDelayed(
                                             {
                                                 Log.i(
@@ -1652,9 +1717,9 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                         )
                                     }
 
-                                }else{
-                                    removeHeldJobs(context,jobId)
-                                    if(jobstatus.equals("2")) {
+                                } else {
+                                    removeHeldJobs(context, jobId)
+                                    if (jobstatus.equals("2")) {
                                         Log.i("printer", "it single job Name==>" + printerName)
                                         Log.i("printer", "it single job jobId==>" + jobId)
                                         Log.i("printer", "it single job printerId==>" + printerId)
@@ -1673,8 +1738,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                 }
                             }
 
-                        }
-                        else {
+                        } else {
 
                             val data = document.select("m")
 
@@ -1689,8 +1753,8 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                 data.forEach {
 
                                     if (data.size > 1) {
-                                        removeHeldJobs(context,it.attr("data"))
-                                        if(it.attr("m").equals("2")) {
+                                        removeHeldJobs(context, it.attr("data"))
+                                        if (it.attr("m").equals("2")) {
                                             Handler().postDelayed(
                                                 {
                                                     ServerPrintRelaseFragment.getjobFromSharedPreferences(
@@ -1701,8 +1765,8 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                                             )
                                         }
                                     } else {
-                                        removeHeldJobs(context,it.attr("data"))
-                                        if(it.attr("m").equals("2")) {
+                                        removeHeldJobs(context, it.attr("data"))
+                                        if (it.attr("m").equals("2")) {
                                             ServerPrintRelaseFragment.getjobFromSharedPreferences(
                                                 context, it.attr("data"), it.attr("pid")
                                             )
@@ -1717,7 +1781,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
                         Log.d("workstationId:", element.text())
                         val workStationId = element.text()
-                       if(workStationId != null && workStationId !="") {
+                        if (workStationId != null && workStationId != "") {
                             LoginPrefs.saveworkSatationId(context, workStationId)
                         }
                         cancelLoading()
@@ -1743,7 +1807,17 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
     }
 
 
-    fun addHeldJobs(context:Context,jobId:String,dateTime:String,documentTitle:String,size:String,TotalPageCount:String,printType:String,printerId:String,username:String){
+    fun addHeldJobs(
+        context: Context,
+        jobId: String,
+        dateTime: String,
+        documentTitle: String,
+        size: String,
+        TotalPageCount: String,
+        printType: String,
+        printerId: String,
+        username: String
+    ){
         val ServerJobsModelList =java.util.ArrayList<ServerJobsModel>()
         var serverJobsModel =ServerJobsModel()
         serverJobsModel.jobId=jobId
@@ -1793,12 +1867,12 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
         var oldHeldJob:String=""
         for (item in sharedPreferencesServerJobsModelList) {
-         Log.d("jobId:",item.jobId)
-         Log.d("dateTime:",item.dateTime)
-         Log.d("documentTitle:",item.documentTitle)
-         Log.d("size:",item.size)
-         Log.d("totalPageCount:",item.totalPageCount)
-         Log.d("printType:",item.printType)
+         Log.d("jobId:", item.jobId)
+         Log.d("dateTime:", item.dateTime)
+         Log.d("documentTitle:", item.documentTitle)
+         Log.d("size:", item.size)
+         Log.d("totalPageCount:", item.totalPageCount)
+         Log.d("printType:", item.printType)
             var printerId =item.printerId
             var jobIdentity =item.jobId
             var usernName =item.userName
@@ -1813,12 +1887,12 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                     "</queue>\n"
 
         }
-        Log.d("oldHeldJob:",oldHeldJob)
+        Log.d("oldHeldJob:", oldHeldJob)
         return oldHeldJob
     }
 
 
-    fun removeHeldJobs(context:Context,jobId:String){
+    fun removeHeldJobs(context: Context, jobId: String){
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
         val json = prefs.getString("prefaddedServerJobsModelList", null)

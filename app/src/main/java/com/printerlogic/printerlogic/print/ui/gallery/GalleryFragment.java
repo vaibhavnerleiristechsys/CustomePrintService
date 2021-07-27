@@ -159,10 +159,13 @@ public class GalleryFragment extends Fragment {
 
         Call call;
         if(IsLdap.equals("LDAP")){
+
+            String sessionId = LoginPrefs.Companion.getSessionIdForLdap(context);
             call = apiService.getPrintersListForLdap(
                     siteId.toString(),
                     LdapUsername.toString(),
-                    LdapPassword.toString()
+                    LdapPassword.toString(),
+                    "PHPSESSID=" + sessionId
             );
         }else if(siteId.contains("google")){
             DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(requireContext())+" username: "+prf.decodeJWT(requireContext()));
