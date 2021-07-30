@@ -370,7 +370,10 @@ public class MainActivity extends AppCompatActivity {
 
         for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
             PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
-            if(!printerModel.getIsPullPrinter().equals("1")) {
+            if(printerModel.getIsPullPrinter().equals("0") ) {
+                getAttributeResponse(printerModel.getPrinterHost().toString(), printerModel.getServiceName(), context);
+            }
+            if(printerModel.getIsPullPrinter().equals("0.0")){
                 getAttributeResponse(printerModel.getPrinterHost().toString(), printerModel.getServiceName(), context);
             }
         }

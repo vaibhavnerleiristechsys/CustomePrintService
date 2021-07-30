@@ -126,12 +126,12 @@ class FragmentPrinterListAdapter (
 
         holder.getCardview().setOnClickListener {
             if(location.equals("printpreview")) {
-                if (list[position].printerHost != null) {
+               // if (list[position].printerHost != null) {
                     val intent = Intent("selected print preview printer")
                     intent.putExtra("printer name", list[position].serviceName);
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
-                }
+               // }
 
             } else {
                 if (list[position].printerHost != null) {

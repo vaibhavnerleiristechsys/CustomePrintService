@@ -642,7 +642,7 @@ public class PrintPreview extends AppCompatActivity {
                Long fileSize= file.length();
                 PrintReleaseFragment printReleaseFragment =new PrintReleaseFragment();
                 String  pageCount =String.valueOf(totalPageCount);
-                if(selectedPrinterModel != null && selectedPrinterModel.getPrinterHost() != null) {
+                if(selectedPrinterModel != null) {
                    String printerId=selectedPrinterModel.getId();
                    String isPullPrinter=selectedPrinterModel.getIsPullPrinter().toString();
                    Log.d("isPullPrinter :",isPullPrinter);
@@ -1082,12 +1082,14 @@ public class PrintPreview extends AppCompatActivity {
                 PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
                 if(printerModel.getServiceName().toString().equals(printerName.toString())){
                     selectedPrinterModel=printerModel;
-                    if(selectedPrinterModel.getPrinterHost() !=null) {
                         clearAttributeList();
 
                         if(selectedPrinterModel.getIsPullPrinter().equals("0")) {
                             getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
-                        }else{
+                        }else if(selectedPrinterModel.getIsPullPrinter().equals("0.0")){
+                            getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                        }
+                        else{
                             ArrayList<String> items = new ArrayList<String>();
                             ArrayList<String>ColorSupportedlist = new ArrayList<String>();
                             HashSet<String> colorSupportedList =new HashSet<String>();
@@ -1139,7 +1141,7 @@ public class PrintPreview extends AppCompatActivity {
                             ArrayAdapter<String> paperSidesAdapter  = new ArrayAdapter<String>(getApplicationContext(), R.layout.simple_spinner_item1, sideSupportedlist);
                             paperSidesSpinner.setAdapter(paperSidesAdapter);
                         }
-                    }
+
                 }
 
             }

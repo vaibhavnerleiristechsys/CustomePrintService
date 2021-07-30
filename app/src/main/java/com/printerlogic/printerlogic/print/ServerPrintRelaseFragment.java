@@ -735,7 +735,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     if(isAvailable == true){
 
                     }else{
-                        Toast.makeText(context, "Printer is Not available", Toast.LENGTH_LONG).show();
+                       Toast.makeText(context, "Printer is Not available", Toast.LENGTH_LONG).show();
                     }
 
                 }
