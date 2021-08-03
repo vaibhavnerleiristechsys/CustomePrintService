@@ -1085,9 +1085,17 @@ public class PrintPreview extends AppCompatActivity {
                         clearAttributeList();
 
                         if(selectedPrinterModel.getIsPullPrinter().equals("0")) {
-                            getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                            try {
+                                getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                            }catch(Exception e){
+                                DataDogLogger.getLogger().e("Devnco_Android Exception (getAttributeResponse) - " + e.getMessage());
+                            }
                         }else if(selectedPrinterModel.getIsPullPrinter().equals("0.0")){
-                            getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                            try {
+                                getAttributeResponse(selectedPrinterModel.getPrinterHost().toString());
+                            }catch(Exception e){
+                                DataDogLogger.getLogger().e("Devnco_Android Exception (getAttributeResponse) - " + e.getMessage());
+                            }
                         }
                         else{
                             ArrayList<String> items = new ArrayList<String>();

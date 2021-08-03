@@ -371,11 +371,19 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
             PrinterModel printerModel= serverSecurePrinterListWithDetailsSharedPreflist.get(i);
             if(printerModel.getIsPullPrinter().equals("0") ) {
+                try{
                 getAttributeResponse(printerModel.getPrinterHost().toString(), printerModel.getServiceName(), context);
+            }catch(Exception e){
+                DataDogLogger.getLogger().e("Devnco_Android Exception (getAttributeResponse) - " + e.getMessage());
+                }
             }
             if(printerModel.getIsPullPrinter().equals("0.0")){
+                try{
                 getAttributeResponse(printerModel.getPrinterHost().toString(), printerModel.getServiceName(), context);
-            }
+                }catch(Exception e){
+                    DataDogLogger.getLogger().e("Devnco_Android Exception (getAttributeResponse) - " + e.getMessage());
+                }
+                }
         }
     }
 

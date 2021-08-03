@@ -47,6 +47,9 @@ class FragmentPrinterListAdapter (
     val holders = ArrayList<ViewHolder>()
     private var selectedPosition = -1
     val headers = ArrayList<String>()
+    companion object {
+        lateinit var getContext :Context
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -55,6 +58,7 @@ class FragmentPrinterListAdapter (
         val view =
             LayoutInflater.from(context)
                 .inflate(R.layout.card_fragment_printer_list, parent, false)
+        getContext =context
         return FragmentPrinterListAdapter.ViewHolder(view)
     }
 
@@ -201,7 +205,7 @@ class FragmentPrinterListAdapter (
                 try {
                     if (it.serviceName.equals(holder.getPrinterName().text.toString())) {
                         Log.d("delete dialog open","delete dialog open")
-                        dialogDeletePrinter( it)
+                        dialogDeletePrinter( it,context)
                         Log.d("after delete dialog","after delete dialog")
                     }
                 }catch (e: Exception){
@@ -302,7 +306,7 @@ class FragmentPrinterListAdapter (
 
     @SuppressLint("WrongConstant")
     @RequiresApi(api = Build.VERSION_CODES.N)
-    fun dialogDeletePrinter(printerModel: PrinterModel){
+    fun dialogDeletePrinter(printerModel: PrinterModel,context :Context){
         val dialog = Dialog(context)
         dialog.setContentView(R.layout.dialog_confirmation_delete_printer)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
@@ -344,9 +348,9 @@ class FragmentPrinterListAdapter (
             }
 
             dialog.cancel()
-            //  notifyDataSetChanged()
-            val intent = Intent("callUpdateUIMethod")
-            LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
+              notifyDataSetChanged()
+          //  val intent = Intent("callUpdateUIMethod")
+           // LocalBroadcastManager.getInstance(context).sendBroadcast(intent)
 
         }
 

@@ -167,21 +167,23 @@ class SignInActivity : AppCompatActivity() {
         btnSignInWithOkta.setOnClickListener {
             if (bundle.getString("buttonName") == "Okta") {
                 //searchWeb(desktopUrl)
-                searchWebForOkta(desktopUrl)
+                searchWebForBrowser(desktopUrl)
             }
             else if(bundle.getString("buttonName")=="Google"){
 
                // val desktopUrl = "https://gw.app.printercloud.com/googleid/authn/idp/Google/oidc/desktop/login"
                // val desktopUrl
-                searchWeb(desktopUrl)
+               // searchWeb(desktopUrl)
+                searchWebForBrowser(desktopUrl)
             }
             else{
-                searchWeb(desktopUrl)
+               // searchWeb(desktopUrl)
+                searchWebForBrowser(desktopUrl)
             }
         }
     }
 
-    private fun searchWebForOkta(query: String?){
+    private fun searchWebForBrowser(query: String?){
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(query)
         startActivity(i)

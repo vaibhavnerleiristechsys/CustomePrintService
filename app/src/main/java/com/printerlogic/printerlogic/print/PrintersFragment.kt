@@ -5,10 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
 import android.content.*
-import android.os.Build
-import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
+import android.os.*
 import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +21,11 @@ import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.printerlogic.printerlogic.MainActivity
 import com.printerlogic.printerlogic.R
 import com.printerlogic.printerlogic.adapter.FragmentPrinterListAdapter
@@ -40,11 +42,6 @@ import com.printerlogic.printerlogic.rest.RetrofitClient
 import com.printerlogic.printerlogic.utils.*
 import com.printerlogic.printerlogic.utils.ProgressDialog.Companion.cancelLoading
 import com.printerlogic.printerlogic.utils.ProgressDialog.Companion.showLoadingDialog
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_printers.*
 import okhttp3.ResponseBody
 import org.jsoup.Jsoup
@@ -566,11 +563,11 @@ class PrintersFragment : Fragment() {
         val call = if(IsLdap.equals("LDAP")){
             val sessionId = LoginPrefs.getSessionIdForLdap(context)
             apiService.getPrinterDetailsByPrinterIdForLdap(
-            siteId.toString(),
-            LdapUsername.toString(),
-            LdapPassword.toString(),
-           "PHPSESSID=" + sessionId
-        )
+                siteId.toString(),
+                LdapUsername.toString(),
+                LdapPassword.toString(),
+                "PHPSESSID=" + sessionId
+            )
         }else if(siteId.toString().contains("google")){
             DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + "Bearer " + LoginPrefs.getOCTAToken(
@@ -608,121 +605,178 @@ class PrintersFragment : Fragment() {
             ) {
 
                 if (response.isSuccessful) {
-
-                    Log.d("response of printerId:", response.body().toString())
-                    DataDogLogger.getLogger().i(
-                        "Devnco_Android response of printerId:" + response.body().toString()
-                    )
-                    var s = response.body().toString()
-                    s = s.replace("\"", "")
-                    val hashMap: HashMap<String, String> = HashMap<String, String>()
-                    val pairs = s.split(",".toRegex()).toTypedArray()
-                    for (i in pairs.indices) {
-                        val pair = pairs[i]
-                        val keyValue =
-                            pair.split("=".toRegex()).toTypedArray()
-                        if (keyValue.size > 1) {
-                            if (keyValue[0].trim().equals("pull-print")) {
-                                if (!hashMap.containsKey("pull-print")) {
+                    val thread = Thread(Runnable {
+                        Log.d("response of printerId:", response.body().toString())
+                        DataDogLogger.getLogger().i(
+                            "Devnco_Android response of printerId:" + response.body().toString()
+                        )
+                        var s = response.body().toString()
+                        s = s.replace("\"", "")
+                        val hashMap: HashMap<String, String> = HashMap<String, String>()
+                        val pairs = s.split(",".toRegex()).toTypedArray()
+                        for (i in pairs.indices) {
+                            val pair = pairs[i]
+                            val keyValue =
+                                pair.split("=".toRegex()).toTypedArray()
+                            if (keyValue.size > 1) {
+                                if (keyValue[0].trim().equals("pull-print")) {
+                                    if (!hashMap.containsKey("pull-print")) {
+                                        hashMap.put(keyValue[0].trim(), keyValue[1])
+                                    }
+                                } else {
                                     hashMap.put(keyValue[0].trim(), keyValue[1])
                                 }
-                            } else {
-                                hashMap.put(keyValue[0].trim(), keyValue[1])
                             }
                         }
-                    }
-                    val title = hashMap.get("title")
-                    val hostAddress = hashMap.get("host-address")
-                    val isPullPrinter = hashMap.get("is-pull-printer")
-                    val printerToken = hashMap.get("printer-token")
-                    val pull_print = hashMap.get("pull-print")
-                    val is_Color = hashMap.get("is-color")
-                    val isColor: Int
-                    if (is_Color.equals("0.0")) {
-                        isColor = 0
-                    } else {
-                        isColor = 1
-                    }
-                    val location: String = hashMap.getOrDefault("location", "")
-                    val id = hashMap.get("id")
-                    Log.d("title", title.toString())
-                    DataDogLogger.getLogger().i("Devnco_Android title:" + title.toString())
-                    Log.d("hostAddress", hostAddress.toString())
-                    DataDogLogger.getLogger()
-                        .i("Devnco_Android hostAddress:" + hostAddress.toString())
-                    Log.d("isPullPrinter", isPullPrinter.toString())
-                    DataDogLogger.getLogger()
-                        .i("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
-                    ServerPrintRelaseFragment.selectedPrinterId = id
-                    ServerPrintRelaseFragment.selectedPrinterToken = printerToken
-                    ServerPrintRelaseFragment.selectedPrinterHost = hostAddress.toString()
-                    ServerPrintRelaseFragment.selectedPrinterServiceName = title.toString()
-                    val printer: PrinterModel = PrinterModel()
-                    printer.id = id
-                    val thread = Thread(Runnable {
-                        try {
-                            printer.printerHost = InetAddress.getByName(hostAddress)
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
+                        val title = hashMap.get("title")
+                        val hostAddress = hashMap.get("host-address")
+                        val isPullPrinter = hashMap.get("is-pull-printer")
+                        val printerToken = hashMap.get("printer-token")
+                        val pull_print = hashMap.get("pull-print")
+                        val is_Color = hashMap.get("is-color")
+                        val secureRelease = hashMap.get("secure-release")
+                        var secureReleaseId=""
+                        if (secureRelease.equals("0.0")) {
+                            secureReleaseId="0"
+                        }else if (secureRelease.equals("1.0")) {
+                            secureReleaseId="1"
+                        }else if (secureRelease.equals("2.0")) {
+                            secureReleaseId="2"
+                        }else if (secureRelease.equals("3.0")) {
+                            secureReleaseId="3"
+                        }else if (secureRelease.equals("4.0")) {
+                            secureReleaseId="4"
+                        }else if (secureRelease.equals("5.0")) {
+                            secureReleaseId="5"
+                        }else if (secureRelease.equals("6.0")) {
+                            secureReleaseId="6"
+                        }
+
+
+
+                        val isColor: Int
+                        if (is_Color.equals("0.0")) {
+                            isColor = 0
+                        } else {
+                            isColor = 1
+                        }
+                        val location: String = hashMap.getOrDefault("location", "")
+                        val id = hashMap.get("id")
+                        Log.d("title", title.toString())
+                        DataDogLogger.getLogger().i("Devnco_Android title:" + title.toString())
+                        Log.d("hostAddress", hostAddress.toString())
+                        DataDogLogger.getLogger()
+                            .i("Devnco_Android hostAddress:" + hostAddress.toString())
+                        Log.d("isPullPrinter", isPullPrinter.toString())
+                        DataDogLogger.getLogger()
+                            .i("Devnco_Android isPullPrinter:" + isPullPrinter.toString())
+                        ServerPrintRelaseFragment.selectedPrinterId = id
+                        ServerPrintRelaseFragment.selectedPrinterToken = printerToken
+                        ServerPrintRelaseFragment.selectedPrinterHost = hostAddress.toString()
+                        ServerPrintRelaseFragment.selectedPrinterServiceName = title.toString()
+                        val printer: PrinterModel = PrinterModel()
+                        printer.id = id
+                        printer.secure_release = secureReleaseId.toString()
+                        if (isPullPrinter.equals("1.0") || isPullPrinter.equals("1")) {
+                            printer.printerHost = InetAddress.getByName("192.168.1." + id)
+                        } else {
+
+                            try {
+                                printer.printerHost = InetAddress.getByName(hostAddress)
+
+                                // show error
+                                Handler(Looper.getMainLooper()).post {
+                                    Toast.makeText(
+                                        context,
+                                        "host:: " + printer.printerHost.hostAddress,
+                                        Toast.LENGTH_LONG
+                                    ).show();
+                                }
+
+                            } catch (e: java.lang.Exception) {
+                                Handler(Looper.getMainLooper()).post {
+                                    Toast.makeText(
+                                        context,
+                                        "exception:: " + e.message,
+                                        Toast.LENGTH_LONG
+                                    ).show();
+                                }
+
+                                e.printStackTrace()
+                            }
+
+
+                        }
+
+                        printer.serviceName = title
+                        printer.printerPort = 631
+                        printer.manual = true
+                        printer.fromServer = false
+                        printer.isPullPrinter = isPullPrinter.toString()
+                        printer.pull_print = pull_print;
+                        printer.isColor = isColor
+                        printer.location = location
+                        var flagIsExist: Boolean = false
+
+                        if (purpose.equals("forSecureRelase")) {
+                            printer.manual = false
+                            printer.fromServer = true
+                            serverSecurePrinterForHeldJob.clear()
+                            serverSecurePrinterForHeldJob.add(printer)
+                        }
+
+                        if (purpose.equals("getprinterToken")) {
+                            BottomNavigationActivityForServerPrint.selectedPrinter.serviceName =
+                                title
+                            BottomNavigationActivityForServerPrint.selectedPrinter.printerHost =
+                                InetAddress.getByName(
+                                    hostAddress
+                                )
+                            BottomNavigationActivityForServerPrint.selectedPrinter.id = printerId
+                        }
+
+                        if (purpose.equals("printerDetailForAddPrinterTab")) {
+
+                            PrinterList().printerList.forEach {
+                                if (it.serviceName.equals(printer.serviceName)) {
+                                    flagIsExist = true
+                                }
+                            }
+
+                            if (!flagIsExist) {
+                                if (printer.printerHost.hostAddress != null) {
+                                    PrinterList().addPrinterModel(printer)
+                                    addPrinterForshareDocument(printer, context)
+                                    Handler(Looper.getMainLooper()).post {
+                                        Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
+                                }
+                            } else {
+                                Handler(Looper.getMainLooper()).post {
+                                    Toast.makeText(
+                                        context,
+                                        "Printer Already Added",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                            }
+
+
+                        }
+
+                        if (purpose.equals("getPrinterDetailsForPullJob")) {
+                            if (printer.isPullPrinter.equals("0.0") && (printer.pull_print.equals("2.0") || printer.pull_print.equals(
+                                    "0.0"
+                                ))
+                            ) {
+                                printer.manual = false
+                                allPrintersForPullHeldJob.add(printer);
+                            }
                         }
                     })
                     thread.start()
-
-
-
-                    printer.serviceName = title
-                    printer.printerPort = 631
-                    printer.manual = true
-                    printer.fromServer = false
-                    printer.isPullPrinter = isPullPrinter.toString()
-                    printer.pull_print = pull_print;
-                    printer.isColor = isColor
-                    printer.location = location
-                    var flagIsExist: Boolean = false
-
-                    if (purpose.equals("forSecureRelase")) {
-                        printer.manual = false
-                        printer.fromServer = true
-                        serverSecurePrinterForHeldJob.clear()
-                        serverSecurePrinterForHeldJob.add(printer)
-                    }
-
-                    if (purpose.equals("getprinterToken")) {
-                        BottomNavigationActivityForServerPrint.selectedPrinter.serviceName = title
-                        BottomNavigationActivityForServerPrint.selectedPrinter.printerHost =
-                            InetAddress.getByName(
-                                hostAddress
-                            )
-                        BottomNavigationActivityForServerPrint.selectedPrinter.id = printerId
-                    }
-
-                    if (purpose.equals("printerDetailForAddPrinterTab")) {
-
-                        PrinterList().printerList.forEach {
-                            if (it.serviceName.equals(printer.serviceName)) {
-                                flagIsExist = true
-                            }
-                        }
-
-                        if (!flagIsExist) {
-                            PrinterList().addPrinterModel(printer)
-                            addPrinterForshareDocument(printer, context)
-                            Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(context, "Printer Already Added", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-
-                    if (purpose.equals("getPrinterDetailsForPullJob")) {
-                        if (printer.isPullPrinter.equals("0.0") && (printer.pull_print.equals("2.0") || printer.pull_print.equals(
-                                "0.0"
-                            ))
-                        ) {
-                            printer.manual = false
-                            allPrintersForPullHeldJob.add(printer);
-                        }
-                    }
                     ProgressDialog.cancelLoading()
                 }
 
