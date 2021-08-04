@@ -374,7 +374,12 @@ class QRCodeScanActivity : AppCompatActivity() {
                         printReleaseFragment.releaseJobForQrCode(context, release_t)
                         dialog.cancel()
                     } else {
-                        printReleaseFragment.releaseJobForQrCode(context, "null")
+                        try {
+                            printReleaseFragment.releaseJobForQrCode(context, "null")
+                        }catch (e: java.lang.Exception){
+                            DataDogLogger.getLogger().i(
+                                "Devnco_Android qrCode scan excetion: " +e.message)
+                        }
                     }
                 }
             }

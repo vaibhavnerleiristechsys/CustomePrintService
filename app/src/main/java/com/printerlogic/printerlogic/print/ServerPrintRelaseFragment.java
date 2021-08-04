@@ -164,8 +164,13 @@ public class ServerPrintRelaseFragment extends Fragment {
             public void run() {
                 MainActivity mainActivity=new MainActivity();
 
-                mainActivity.getAttributeDeatilsForNativePrint(requireContext());
-
+                try {
+                    mainActivity.getAttributeDeatilsForNativePrint(requireContext());
+                }catch (Exception e){
+                    DataDogLogger.getLogger().i(
+                            "Devnco_Android getAttribute Exception: " + e.getMessage()
+                    );
+                }
             }
         }, 7000);
 
@@ -270,15 +275,19 @@ public class ServerPrintRelaseFragment extends Fragment {
                 }
                   if(selectedFile.isFromApi()==true && selectedFile.getJobType().equals("pull_print")){
 
-                      Collections.sort(PrintersFragment.Companion.getAllPrintersForPullHeldJob(), new Comparator<PrinterModel>() {
-                          @Override
-                          public int compare(PrinterModel item, PrinterModel t1) {
-                              String s1 = item.getServiceName();
-                              String s2 = t1.getServiceName();
-                              return s1.compareToIgnoreCase(s2);
-                          }
+                      try {
+                          Collections.sort(PrintersFragment.Companion.getAllPrintersForPullHeldJob(), new Comparator<PrinterModel>() {
+                              @Override
+                              public int compare(PrinterModel item, PrinterModel t1) {
+                                  String s1 = item.getServiceName();
+                                  String s2 = t1.getServiceName();
+                                  return s1.compareToIgnoreCase(s2);
+                              }
 
-                      });
+                          });
+                      }catch(Exception e ){
+                          DataDogLogger.getLogger().i("Devnco_Android exception in sort:"+e.getMessage());
+                      }
                     ArrayList<PrinterModel> RecentPrinterAddedList =  addRecentPrintersToDisplay(PrintersFragment.Companion.getAllPrintersForPullHeldJob());
                       selectePrinterDialog(RecentPrinterAddedList);
 
@@ -306,6 +315,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                            }
                       }
 
+                      try{
                       Collections.sort(PrintersFragment.Companion.getServerSecurePrinterListWithDetails(), new Comparator<PrinterModel>() {
                           @Override
                           public int compare(PrinterModel item, PrinterModel t1) {
@@ -315,6 +325,9 @@ public class ServerPrintRelaseFragment extends Fragment {
                           }
 
                       });
+                      }catch(Exception e){
+                          DataDogLogger.getLogger().i("Devnco_Android exception in sorting :"+e.getMessage());
+                      }
 
                       selectePrinterDialog(PrintersFragment.Companion.getServerSecurePrinterListWithDetails());
                   }
@@ -988,7 +1001,11 @@ public static void getJobUpdateCall(Context context){
             new Runnable() {
                 @Override
                 public void run() {
-                    printReleaseFragment.gettingHeldJobStatus(context,"");
+                    try {
+                        printReleaseFragment.gettingHeldJobStatus(context, "");
+                    }catch (Exception e){
+                        DataDogLogger.getLogger().i("Devnco_Android getJobUpdateCall: "+e.getMessage());
+                    }
                     handler.postDelayed(this, 15000);
                 }
             });

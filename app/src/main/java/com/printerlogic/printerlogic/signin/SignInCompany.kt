@@ -23,12 +23,9 @@ import com.printerlogic.printerlogic.prefs.SignInCompanyPrefs
 import com.printerlogic.printerlogic.print.ServerPrintRelaseFragment
 import com.printerlogic.printerlogic.rest.ApiService
 import com.printerlogic.printerlogic.rest.RetrofitClient
-import com.printerlogic.printerlogic.utils.CheckInternetConnection
-import com.printerlogic.printerlogic.utils.GoogleAPI
-import com.printerlogic.printerlogic.utils.HideKeyboard
-import com.printerlogic.printerlogic.utils.ProgressDialog
 import com.google.gson.JsonObject
 import com.google.gson.internal.LinkedTreeMap
+import com.printerlogic.printerlogic.utils.*
 import kotlinx.android.synthetic.main.activity_sign_in_company.*
 import org.jetbrains.anko.toast
 import org.slf4j.LoggerFactory
@@ -113,8 +110,14 @@ class SignInCompany : AppCompatActivity() {
             if (CheckInternetConnection.isNetworkConnected(this@SignInCompany)) {
                 if (LoginPrefs.getOCTAToken(this@SignInCompany) == null) {
                     ProgressDialog.showLoadingDialog(this@SignInCompany, "Loading")
-                    checkValidation()
-
+                    try {
+                        checkValidation()
+                    }catch (e: java.lang.Exception) {
+                        DataDogLogger.getLogger().i(
+                            "Devnco_Android signIn excetion: " +e.message)
+                        ProgressDialog.cancelLoading()
+                        toast("Please check URL")
+                    }
                    if(edtYourCompany.text.toString().contains("google")) {
                       GoogleAPI.getGoogleData(this@SignInCompany)
                     }

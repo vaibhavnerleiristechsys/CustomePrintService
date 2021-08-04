@@ -36,7 +36,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="56dp"
         android:layout_marginEnd="16dp"
-
         android:background="@drawable/rounded_edittext"
         android:hint="@string/yourcompany_vasion_com"
         android:drawableLeft="@drawable/httpsimg4"

@@ -47,10 +47,21 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getFileName());
+
         holder.mContentView.setText(mValues.get(position).getFileSelectedDate());
         holder.mFileSize.setText(mValues.get(position).getJobSize());
+        if(locationPlaced.equals("QrCodeScan")){
+            if(mValues.get(position).getFileName().length()>13) {
+                holder.mIdView.setText(mValues.get(position).getFileName().substring(0, 13));
+            }else{
+                holder.mIdView.setText(mValues.get(position).getFileName());
+            }
+        }else{
+            holder.mIdView.setText(mValues.get(position).getFileName());
+        }
+
         holders.add(holder);
+
 
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override

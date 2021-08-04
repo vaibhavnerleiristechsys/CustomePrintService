@@ -686,20 +686,24 @@ class PrintersFragment : Fragment() {
 
                                 // show error
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(
+                                /*    Toast.makeText(
                                         context,
                                         "host:: " + printer.printerHost.hostAddress,
                                         Toast.LENGTH_LONG
                                     ).show();
+
+                                 */
                                 }
 
                             } catch (e: java.lang.Exception) {
                                 Handler(Looper.getMainLooper()).post {
-                                    Toast.makeText(
+                                 /*   Toast.makeText(
                                         context,
                                         "exception:: " + e.message,
                                         Toast.LENGTH_LONG
                                     ).show();
+
+                                  */
                                 }
 
                                 e.printStackTrace()
@@ -875,6 +879,7 @@ class PrintersFragment : Fragment() {
            val editor = prefs1.edit()
            val json1 = gson1.toJson(emptyList)
            editor.putString("prefServerSecurePrinterListWithDetails", json1)
+       editor.putString("deployedPrintersListForPrintPreivew", json1)
        editor.putString("prefaddedPrinterListWithDetails", json1)
        editor.commit()
 

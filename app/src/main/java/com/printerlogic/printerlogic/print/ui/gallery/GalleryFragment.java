@@ -66,10 +66,13 @@ public class GalleryFragment extends Fragment {
         context = rootView.getContext();
         swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipeContainer);
 
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.drawericon1);
-
+        try {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeAsUpIndicator(R.drawable.drawericon1);
+        }catch (Exception e){
+            DataDogLogger.getLogger().i("Devnco_Android Tree View : "+e.getMessage());
+        }
 
 
         //View root = inflater.inflate(R.layout.fragment_gallery, null, false);
