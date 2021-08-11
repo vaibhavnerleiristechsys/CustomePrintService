@@ -32,13 +32,15 @@ import java.util.Map;
 public class GoogleAPI {
     static String clientId;
     static String client_secret;
+    static String token_url;
 
 
     public static void getGoogleData(Context context) {
 
-
+   String companyUrl =LoginPrefs.Companion.getCompanyUrl(context);
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url = "https://googleid.printercloud.com/api/idp";
+       // String url = "https://googleid.printercloud.com/api/idp";
+        String url ="https://"+companyUrl+"/api/idp";
        JsonArrayRequest jsonObjectRequest = new JsonArrayRequest (Request.Method.GET,url,null,
                new Response.Listener<JSONArray>() {
                    @Override
@@ -51,10 +53,12 @@ public class GoogleAPI {
                            jsonObject = GoogleApiData.getJSONObject(0);
                             clientId =  jsonObject.getString("server_id");
                            client_secret=jsonObject.getString("server_secret");
+                           token_url=jsonObject.getString("token_uri");
                            LoginPrefs.Companion.saveClientId(context,clientId);
                            LoginPrefs.Companion.saveClientSecret(context,client_secret);
+                           LoginPrefs.Companion.saveTokenUri(context,token_url);
 
-
+                           Log.d("token_uri:",token_url);
                            Log.d("client_id:",clientId);
 
 
@@ -137,8 +141,12 @@ public class GoogleAPI {
                         Gson g = new Gson();
                         JsonObject jsonObject = g.fromJson(response, JsonObject.class);
                         JsonElement idToken=jsonObject.get("id_token");
+                        JsonElement accessToken=jsonObject.get("access_token");
                         Log.d("idToken",idToken.toString());
+                        Log.d("accessToken",accessToken.toString());
+                        String accessTokenString =accessToken.toString().replaceAll("\"", "").toString();
                         LoginPrefs.Companion.saveOctaToken(context, idToken.getAsString());
+                        LoginPrefs.Companion.saveAccessToken(context,accessTokenString);
 
 
                     }
@@ -166,6 +174,61 @@ public class GoogleAPI {
                 params.put("client_secret",serverSecret);
                 params.put("redirect_uri",requestUri);
                 params.put("grant_type","authorization_code");
+                return params;
+            }
+
+        };
+        queue.add(jsonObjRequest);
+
+    }
+
+
+
+    public void RefreshGoogleToken(Context context){
+       // String url = LoginPrefs.Companion.getgoogleTokenUrl(context);
+        String url = LoginPrefs.Companion.getTokenUri(context);
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String serverSecret = LoginPrefs.Companion.getClientSecret(context);
+        StringRequest jsonObjRequest = new StringRequest(
+                Request.Method.POST,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("google api response",response.toString());
+                        Gson g = new Gson();
+                        JsonObject jsonObject = g.fromJson(response, JsonObject.class);
+                        JsonElement idToken=jsonObject.get("id_token");
+                        JsonElement accessToken=jsonObject.get("access_token");
+                        Log.d("idToken",idToken.toString());
+                        Log.d("accessToken",accessToken.toString());
+                        LoginPrefs.Companion.saveOctaToken(context, idToken.getAsString());
+                        String accessTokenString =accessToken.toString().replaceAll("\"", "").toString();
+                        LoginPrefs.Companion.saveAccessToken(context,accessTokenString);
+                    }
+                },
+                new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d("volley", "Error: " + error.getMessage());
+                        error.printStackTrace();
+
+                    }
+                }) {
+
+            @Override
+            public String getBodyContentType() {
+                return "application/x-www-form-urlencoded; charset=UTF-8";
+            }
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("refresh_token", LoginPrefs.Companion.getAccessToken(context));
+                params.put("client_id", LoginPrefs.Companion.getClientId(context));
+                params.put("client_secret",LoginPrefs.Companion.getClientSecret(context));
+                params.put("grant_type","refresh_token");
                 return params;
             }
 

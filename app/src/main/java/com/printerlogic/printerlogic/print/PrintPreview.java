@@ -231,7 +231,8 @@ public class PrintPreview extends AppCompatActivity {
         }
         // *********************************************************
 
-        File file = new File(filePath);
+        try {
+            File file = new File(filePath);
         SelectedFile selectedFile = new SelectedFile();
         selectedFile.setFileName(file.getName());
         selectedFile.setFilePath(filePath);
@@ -257,6 +258,11 @@ public class PrintPreview extends AppCompatActivity {
             pagesCount.setVisibility(View.INVISIBLE);
             radioBtnForPage.setVisibility(View.INVISIBLE);
             jpgOrPngImagePreview(file);
+        }
+        }catch(Exception e){
+            DataDogLogger.getLogger().i(
+                    "Devnco_Android file exception: " + e.getMessage()
+            );
         }
 
          orientationSpinner = (Spinner) findViewById(R.id.orientation_spinner);

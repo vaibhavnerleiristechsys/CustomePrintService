@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
+
+import com.printerlogic.printerlogic.prefs.LoginPrefs;
 import com.printerlogic.printerlogic.print.PrintersFragment;
 import com.printerlogic.printerlogic.print.ui.gallery.GalleryFragment;
 import com.printerlogic.printerlogic.printjobstatus.model.printerlist.Printer;
@@ -67,12 +69,14 @@ public class IconTreeItemHolder extends TreeNode.BaseNodeViewHolder<IconTreeItem
             @Override
             public void onClick(View v) {
                 IconTreeItemHolder.IconTreeItem item = (IconTreeItemHolder.IconTreeItem) value;
+                DataDogLogger.getLogger().i("Devnco_Android selected Add Printer: "+ item.text.toString());
                         for(int i=0;i<GalleryFragment.listOfPrinters.size();i++){
                             Printer printer=GalleryFragment.listOfPrinters.get(i);
                             if(printer.getNode_title().equals(item.text.toString())){
+                                DataDogLogger.getLogger().i("Devnco_Android selected Node title: "+ printer.getNode_title().toString());
                                 if(printer.getObject_id()!=null) {
                                     Log.d("printer id", printer.getObject_id().toString());
-                                    DataDogLogger.getLogger().i("Devnco_Android printer id"+ printer.getObject_id().toString());
+                                    DataDogLogger.getLogger().i("Devnco_Android selected printer id"+ printer.getObject_id().toString());
                                     new PrintersFragment().getPrinterListByPrinterId(context,printer.getObject_id().toString(),"printerDetailForAddPrinterTab");
                                 }
                             }

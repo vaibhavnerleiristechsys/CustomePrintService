@@ -272,7 +272,7 @@ class PrintersFragment : Fragment() {
                         "</system>"
 
             )
-        }else if(siteId.toString().contains("google")){
+        }else if(xIdpType.toString().toLowerCase().equals("oidc")){
             DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
@@ -568,7 +568,7 @@ class PrintersFragment : Fragment() {
                 LdapPassword.toString(),
                 "PHPSESSID=" + sessionId
             )
-        }else if(siteId.toString().contains("google")){
+        }else if(SignInCompanyPrefs.getIdpType(context).toString().toLowerCase().equals("oidc")){
             DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + "Bearer " + LoginPrefs.getOCTAToken(
                     context
@@ -740,6 +740,20 @@ class PrintersFragment : Fragment() {
                         }
 
                         if (purpose.equals("printerDetailForAddPrinterTab")) {
+                            try {
+                                DataDogLogger.getLogger().i(
+                                    "Devnco_Android API call for Add printer : " + BASE_URL.toString() + " Token: " + "Bearer " + LoginPrefs.getOCTAToken(
+                                        context
+                                    ).toString() + " username: " + decodeJWT(context)
+                                )
+                            }catch(e: java.lang.Exception){
+                                DataDogLogger.getLogger().i(
+                                    "Devnco_Android Add Printer API datadog exception : " + e.message
+                                )
+                            }
+
+
+
 
                             PrinterList().printerList.forEach {
                                 if (it.serviceName.equals(printer.serviceName)) {
@@ -748,15 +762,30 @@ class PrintersFragment : Fragment() {
                             }
 
                             if (!flagIsExist) {
+                                DataDogLogger.getLogger().i(
+                                    "Devnco_Android Add Printer check Isavailble  : " + flagIsExist.toString()
+                                )
                                 if (printer.printerHost.hostAddress != null) {
+                                    DataDogLogger.getLogger().i(
+                                        "Devnco_Android Add Printer host addresss  : " + printer.printerHost.hostAddress.toString()
+                                    )
                                     PrinterList().addPrinterModel(printer)
                                     addPrinterForshareDocument(printer, context)
+                                    DataDogLogger.getLogger().i(
+                                        "Devnco_Android Add Printer   : " +"Printer Added"
+                                    )
                                     Handler(Looper.getMainLooper()).post {
                                         Toast.makeText(context, "Printer Added", Toast.LENGTH_SHORT)
                                             .show()
                                     }
                                 }
                             } else {
+                                DataDogLogger.getLogger().i(
+                                    "Devnco_Android Add Printer check printer Isavailable  : " + flagIsExist.toString()
+                                )
+                                DataDogLogger.getLogger().i(
+                                    "Devnco_Android Add Printer   : " +"Printer Already Added"
+                                )
                                 Handler(Looper.getMainLooper()).post {
                                     Toast.makeText(
                                         context,

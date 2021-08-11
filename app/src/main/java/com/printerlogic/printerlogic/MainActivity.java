@@ -145,22 +145,7 @@ public class MainActivity extends AppCompatActivity {
         signout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                LoginPrefs.Companion.deleteToken(getApplicationContext());
-                PrinterList printerList =new PrinterList();
-                printerList.removePrinters();
-                SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
-                SharedPreferences.Editor myEdit = sharedPreferences.edit();
-                myEdit.putString("IsLdap", "Others");
-
-                myEdit.commit();
-
-                PrintersFragment printersFragment=new PrintersFragment();
-                printersFragment.removePrinters(getApplicationContext());
-                Intent intent = new Intent(getApplicationContext(), SignInCompany.class);
-                startActivity(intent);
-
-
+                signOut(getApplicationContext());
             }
         });
 
@@ -171,6 +156,58 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    public void logOut(Context context){
+        try {
+            LoginPrefs.Companion.deleteToken(context);
+            PrinterList printerList = new PrinterList();
+            printerList.removePrinters();
+            // SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+            ;
+            SharedPreferences.Editor myEdit = sharedPreferences.edit();
+            myEdit.putString("IsLdap", "Others");
+
+            myEdit.commit();
+
+            PrintersFragment printersFragment = new PrintersFragment();
+            printersFragment.removePrinters(context);
+            Intent intent = new Intent(context, SignInCompany.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }catch(Exception e){
+            Log.d("logout exception",e.getMessage());
+            DataDogLogger.getLogger().e("Devnco_Android Exception Logout - " + e.getMessage());
+        }
+       // startActivity(intent);
+
+    }
+
+    public void signOut(Context context){
+        try {
+            LoginPrefs.Companion.deleteToken(context);
+            PrinterList printerList = new PrinterList();
+            printerList.removePrinters();
+             SharedPreferences sharedPreferences = getSharedPreferences("MySharedPref", Context.MODE_PRIVATE);
+            //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+            SharedPreferences.Editor myEdit = sharedPreferences.edit();
+            myEdit.putString("IsLdap", "Others");
+
+            myEdit.commit();
+
+            PrintersFragment printersFragment = new PrintersFragment();
+            printersFragment.removePrinters(context);
+            Intent intent = new Intent(context, SignInCompany.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        }catch(Exception e){
+            Log.d("logout exception",e.getMessage());
+            DataDogLogger.getLogger().e("Devnco_Android Exception Logout - " + e.getMessage());
+        }
+        // startActivity(intent);
 
     }
 

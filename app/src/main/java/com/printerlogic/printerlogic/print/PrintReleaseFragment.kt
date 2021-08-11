@@ -244,7 +244,7 @@ class PrintReleaseFragment : Fragment() {
                 jobStatusCancel,
                 "PHPSESSID=" + sessionId
             )
-        }else if(siteId.toString().contains("google")){
+        }else if(SignInCompanyPrefs.getIdpType(context).toString().equals("oidc")){
             apiService.jobStatusCancelForGoogle(
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 decodeJWT(context),
@@ -364,7 +364,7 @@ class PrintReleaseFragment : Fragment() {
                 )
             }
 
-        }else if(siteId.toString().contains("google")){
+        }else if(SignInCompanyPrefs.getIdpType(context).toString().equals("oidc")){
             if(!release_t.equals("null")) {
                 apiService.releaseJobForPullPrinterForGoogle(
                     releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
@@ -519,7 +519,7 @@ class PrintReleaseFragment : Fragment() {
                 )
             }
 
-        }else if(siteId.toString().contains("google")){
+        }else if(SignInCompanyPrefs.getIdpType(context).toString().toLowerCase().equals("oidc")){
             if(!release_t.equals("null")) {
                 apiService.releaseJobForPullPrinterForGoogle(
                     releaseJobRequest, "Bearer " + LoginPrefs.getOCTAToken(context),
@@ -632,7 +632,7 @@ class PrintReleaseFragment : Fragment() {
              "printerDeviceQueue.printers",
              "PHPSESSID=" + sessionId
          )
-        }else if(siteId.toString().contains("google")){
+        }else if(idpType.toString().toLowerCase().equals("oidc")){
             apiService.getPrintJobStatusesForGoogle(
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 userName,
@@ -857,15 +857,15 @@ class PrintReleaseFragment : Fragment() {
         return userName.toString()
     }
 
-    private fun validateToken() {
+     fun validateToken(context: Context) {
 
-        val apiService = RetrofitClient(requireContext())
+        val apiService = RetrofitClient(context)
             .getRetrofitInstance(
-                "${SignInCompanyPrefs.getIdpUrl(requireContext()).toString()}/validate-token/"
+                "${SignInCompanyPrefs.getIdpUrl(context).toString()}/validate-token/"
             )
             .create(ApiService::class.java)
         val call = apiService.validateToken(
-            LoginPrefs.getOCTAToken(requireContext()),
+            LoginPrefs.getOCTAToken(context),
             decodeJWT()
         )
 
@@ -941,7 +941,7 @@ class PrintReleaseFragment : Fragment() {
                 "printerDeviceQueue.printers",
                 "PHPSESSID=" + sessionId
             )
-        }else if(siteId.toString().contains("google")){
+        }else if(SignInCompanyPrefs.getIdpType(context).toString().toLowerCase().equals("oidc")){
             apiService.getPrintJobStatusesForGoogle(
                 "Bearer " + LoginPrefs.getOCTAToken(context),
                 decodeJWT(context),
@@ -1141,7 +1141,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
 
     val apiService = RetrofitClient(context).getRetrofitInstance(BASE_URL).create(ApiService::class.java)
 
-    val call = if(siteId.toString().contains("google")){
+    val call = if(xIdpType.toString().toLowerCase().equals("oidc")){
         apiService.sendMetaDataForGoogle(
             siteId.toString(),
             "Bearer ${LoginPrefs.getOCTAToken(context)}",
@@ -1413,7 +1413,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                 data,
                 "PHPSESSID=" + sessionId
             )
-        }else if(siteId.toString().contains("google")){
+        }else if(xIdpType.equals("oidc")){
             DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context
@@ -1596,7 +1596,7 @@ fun sendMetaData(context: Context, TotalPageCount: Int, colorMode: Int){
                 data,
                 "PHPSESSID=" + sessionId
             )
-        }else if(siteId.toString().contains("google")){
+        }else if(xIdpType.toString().toLowerCase().equals("oidc")){
             DataDogLogger.getLogger().i(
                 "Devnco_Android API call: " + BASE_URL.toString() + " Token: " + LoginPrefs.getOCTAToken(
                     context

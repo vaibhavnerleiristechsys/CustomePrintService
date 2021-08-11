@@ -170,7 +170,7 @@ public class GalleryFragment extends Fragment {
                     LdapPassword.toString(),
                     "PHPSESSID=" + sessionId
             );
-        }else if(siteId.contains("google")){
+        }else if(SignInCompanyPrefs.Companion.getIdpType(context).toLowerCase().contains("oidc")){
             DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(requireContext())+" username: "+prf.decodeJWT(requireContext()));
             call = apiService.getPrintersListForGoogle(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(requireContext()),

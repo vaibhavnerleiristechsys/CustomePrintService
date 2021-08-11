@@ -18,6 +18,7 @@ object Constants {
     const val UpdateGuids="UpdateGuids"
     const val SessionId="SessionId"
     const val StartJob="StartJob"
+    const val ACCESS_TOKEN = "accessToken"
 
 
 }

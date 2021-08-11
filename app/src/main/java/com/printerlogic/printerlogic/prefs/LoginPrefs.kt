@@ -1,6 +1,7 @@
 package com.printerlogic.printerlogic.prefs
 
 import android.content.Context
+import com.printerlogic.printerlogic.utils.Constants.ACCESS_TOKEN
 import com.printerlogic.printerlogic.utils.Constants.Guids
 import com.printerlogic.printerlogic.utils.Constants.OCTA_TOKEN
 import com.printerlogic.printerlogic.utils.Constants.SessionId
@@ -29,6 +30,8 @@ class LoginPrefs {
         private val UPDATEGUID="UPDATEGUID"
         private val SESSIONID="SESSIONID"
         private val STARTJOB = "STARTJOB"
+        private val TOKENURI= "TOKENURI"
+        private val AccessTOKEN = "Accesstoken"
 
         fun saveOctaToken(context: Context, token: String) {
             val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
@@ -40,6 +43,18 @@ class LoginPrefs {
             val sharedPreferences = context.getSharedPreferences(OCTA_TOKEN, Context.MODE_PRIVATE)
             return sharedPreferences.getString(TOKEN, null)
            // return "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIxMmI4MDJmOS1mMzUwLTQ5YmUtYWFmNi01NWQxZmE3MzQ2ZmQiLCJpZHAiOiJBenVyZUFEIiwic2l0ZSI6Im1pa2VtYXJzaGFsbC1kZW1vIiwidXNlciI6Im1pa2VAbWlrZW1hcnNoYWxsLm1lIiwic2Vzc2lvbiI6ImI3Mjg4OTFlLTY3YmUtNDE4Ny05N2M0LTg2ZTMzYzQwNmIxNiIsImV4cCI6MTY1NTkwOTczNSwiaWF0IjoxNjI0MzczNzM1LCJpc3MiOiJjb20ucHJpbnRlcmxvZ2ljLnNlcnZpY2VzLmF1dGhuIiwiYXVkIjoiY29tLnByaW50ZXJsb2dpYy5jbGllbnRzLmRlc2t0b3AuaWRwIn0.g6HX2dXwRRkGfnDInw1rqSazH0qt-HyiNrCcaa24Lhc3NP-_Dkj9_YXFrSyDBCsjvYvSBCPJfTh2RYhssGrj8KKM8d-3Llg_ZsECXmq6XuMH74e1MoVInqb_g2K9qUdnZoo2lcfCF-O1Vk4okCE3KLRM8Rqd0tO8UAKnzvwxDx1hUM2Ak9LVFC6feoKcOQmvk4c3OmkMYlkd_VaQQ1852eUjxWMOAW4tGG2WLWEwlXcQeFbs_8SkSrUjaHPCQ5thtm1kX8rzapjhFOY-nnz9ngTWTYGMlWxsDaZQ5pPNzSQHpf3whYqevO2gxB6BUo2q42IWYNtuBqGlaoqzi9_-Ug"
+        }
+
+        fun saveAccessToken(context: Context, token: String) {
+            val sharedPreferences = context.getSharedPreferences(ACCESS_TOKEN, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(AccessTOKEN, token).apply()
+        }
+
+        fun getAccessToken(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(ACCESS_TOKEN, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(AccessTOKEN, null)
+            // return "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJqdGkiOiIxMmI4MDJmOS1mMzUwLTQ5YmUtYWFmNi01NWQxZmE3MzQ2ZmQiLCJpZHAiOiJBenVyZUFEIiwic2l0ZSI6Im1pa2VtYXJzaGFsbC1kZW1vIiwidXNlciI6Im1pa2VAbWlrZW1hcnNoYWxsLm1lIiwic2Vzc2lvbiI6ImI3Mjg4OTFlLTY3YmUtNDE4Ny05N2M0LTg2ZTMzYzQwNmIxNiIsImV4cCI6MTY1NTkwOTczNSwiaWF0IjoxNjI0MzczNzM1LCJpc3MiOiJjb20ucHJpbnRlcmxvZ2ljLnNlcnZpY2VzLmF1dGhuIiwiYXVkIjoiY29tLnByaW50ZXJsb2dpYy5jbGllbnRzLmRlc2t0b3AuaWRwIn0.g6HX2dXwRRkGfnDInw1rqSazH0qt-HyiNrCcaa24Lhc3NP-_Dkj9_YXFrSyDBCsjvYvSBCPJfTh2RYhssGrj8KKM8d-3Llg_ZsECXmq6XuMH74e1MoVInqb_g2K9qUdnZoo2lcfCF-O1Vk4okCE3KLRM8Rqd0tO8UAKnzvwxDx1hUM2Ak9LVFC6feoKcOQmvk4c3OmkMYlkd_VaQQ1852eUjxWMOAW4tGG2WLWEwlXcQeFbs_8SkSrUjaHPCQ5thtm1kX8rzapjhFOY-nnz9ngTWTYGMlWxsDaZQ5pPNzSQHpf3whYqevO2gxB6BUo2q42IWYNtuBqGlaoqzi9_-Ug"
         }
 
         fun saveSiteId(context: Context, siteId: String) {
@@ -99,6 +114,17 @@ class LoginPrefs {
         fun getClientSecret(context: Context): String? {
             val sharedPreferences = context.getSharedPreferences(ClientSecret, Context.MODE_PRIVATE)
             return sharedPreferences.getString(ClientSecret, null)
+        }
+
+        fun saveTokenUri(context: Context, tokenuri: String) {
+            val sharedPreferences = context.getSharedPreferences(TOKENURI, Context.MODE_PRIVATE)
+            val editor = sharedPreferences.edit()
+            editor.putString(TOKENURI, tokenuri).apply()
+        }
+
+        fun getTokenUri(context: Context): String? {
+            val sharedPreferences = context.getSharedPreferences(TOKENURI, Context.MODE_PRIVATE)
+            return sharedPreferences.getString(TOKENURI, null)
         }
 
 

@@ -61,6 +61,7 @@ import com.printerlogic.printerlogic.rest.ApiService;
 import com.printerlogic.printerlogic.rest.RetrofitClient;
 import com.printerlogic.printerlogic.room.SelectedFile;
 import com.printerlogic.printerlogic.utils.DataDogLogger;
+import com.printerlogic.printerlogic.utils.GoogleAPI;
 import com.printerlogic.printerlogic.utils.ProgressDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -154,6 +155,13 @@ public class ServerPrintRelaseFragment extends Fragment {
         ProgressDialog.Companion.showLoadingDialog(context, "please wait");
         if(getholdJobAPIStart==false){
             ServerPrintRelaseFragment.getJobUpdateCall(context);
+            try {
+                ServerPrintRelaseFragment.getRefreshTokenForGoogleLogin(context);
+            }catch (Exception e){
+                DataDogLogger.getLogger().i(
+                        "Devnco_Android getRefreshTokenForGoogleLogin Exception: " + e.getMessage()
+                );
+            }
             getholdJobAPIStart=true;
         }
 
@@ -595,7 +603,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     "printerDeviceQueue.printers",
                     "PHPSESSID=" + sessionId
             );
-        }else if(siteId.contains("google")){
+        }else if(SignInCompanyPrefs.Companion.getIdpType(context).toLowerCase().contains("oidc")){
             DataDogLogger.getLogger().i("Devnco_Android API call: "+BASE_URL.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+printReleaseFragment.decodeJWT(context));
             call = apiService.getPrintJobStatusesForGoogle(
                     "Bearer " + LoginPrefs.Companion.getOCTAToken(context),
@@ -686,7 +694,15 @@ public class ServerPrintRelaseFragment extends Fragment {
 
                     ProgressDialog.Companion.cancelLoading();
                     swipeContainer.setRefreshing(false);
-            }else{
+            }else if(response.code()==401) {
+                if (SignInCompanyPrefs.Companion.getIdpType(context).toLowerCase().contains("oidc")){
+                    MainActivity mainActivity = new MainActivity();
+                    mainActivity.logOut(context);
+                }
+              //GoogleAPI googleAPI =new GoogleAPI();
+              //googleAPI.RefreshGoogleToken(context);
+                }
+                else{
                     ProgressDialog.Companion.cancelLoading();
                     swipeContainer.setRefreshing(false);
                     DataDogLogger.getLogger().i("Devnco_Android Geeting held job response message** : "+response.raw().toString()+" **====>");
@@ -831,7 +847,7 @@ public class ServerPrintRelaseFragment extends Fragment {
                     LdapPassword.toString(),
                     "PHPSESSID=" + sessionId
             );
-        }else if(siteId.contains("google")){
+        }else if(SignInCompanyPrefs.Companion.getIdpType(context).toLowerCase().contains("oidc")){
 
             DataDogLogger.getLogger().i("Devnco_Android API call: "+url.toString()+" Token: "+LoginPrefs.Companion.getOCTAToken(context)+" username: "+prf.decodeJWT(context));
             call = apiService.getPrintersListForGoogle(
@@ -1012,6 +1028,30 @@ public static void getJobUpdateCall(Context context){
 
 
 }
+
+
+    public static void getRefreshTokenForGoogleLogin(Context context){
+        GoogleAPI googleAPI =new GoogleAPI();
+        Handler handler = new Handler();
+        new Handler(Looper.getMainLooper()).post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if(SignInCompanyPrefs.Companion.getIdpType(context).toLowerCase().contains("oidc")) {
+                                Log.d("refresh token","refresh token");
+                                googleAPI.RefreshGoogleToken(context);
+                            }
+                        }catch (Exception e){
+                            DataDogLogger.getLogger().i("Devnco_Android getRefreshTokenForGoogleLogin : "+e.getMessage());
+                        }
+                        handler.postDelayed(this, 1800000);
+                    }
+                });
+
+
+    }
+
 public static void getjobFromSharedPreferences(Context context,String jobId,String printerId) throws IOException {
     SharedPreferences prefs1 = PreferenceManager.getDefaultSharedPreferences(context);
     ArrayList<SelectedFile> documentSharedPreflist = new ArrayList<SelectedFile>();

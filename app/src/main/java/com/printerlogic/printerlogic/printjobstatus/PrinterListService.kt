@@ -161,7 +161,7 @@ class PrinterListService {
                 LdapPassword.toString(),
                 "PHPSESSID=" + sessionId
             )
-        }else if(siteId.toString().contains("google")){
+        }else if(idpType.toString().toLowerCase().equals("oidc")){
             logger.info("Devnco_Android API call: " + BASE_URL.toString() + " Token: " +authorization + " username: " + userName)
             apiService.getPrinterDetailsByNodeIdForGoogle(
                 "Bearer "+authorization, userName, idpType, idpName,"serverId"
