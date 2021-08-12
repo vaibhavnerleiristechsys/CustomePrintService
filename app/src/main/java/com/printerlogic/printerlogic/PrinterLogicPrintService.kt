@@ -5,6 +5,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.pdf.PdfRenderer
 import android.os.Build
@@ -21,16 +22,17 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.hp.jipp.model.Media
 import com.printerlogic.printerlogic.jipp.PrintRenderUtils
 import com.printerlogic.printerlogic.jipp.PrinterModel
+import com.printerlogic.printerlogic.prefs.SignInCompanyPrefs
 import com.printerlogic.printerlogic.print.BottomNavigationActivityForServerPrint
 import com.printerlogic.printerlogic.print.PrintPreview
 import com.printerlogic.printerlogic.print.PrintersFragment
 import com.printerlogic.printerlogic.room.SelectedFile
 import com.printerlogic.printerlogic.utils.DataDogLogger
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.hp.jipp.model.Media
 import java.io.*
 import java.net.InetAddress
 import java.net.URI
@@ -383,7 +385,7 @@ internal class PrinterDiscoverySession(
 ) : PrinterDiscoverySession() {
     var printService: PrinterLogicPrintService
     private var printerInfo: PrinterInfo? = null
-    private var appContext: Context? = null
+    private lateinit var appContext: Context
      var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
      var deployedSecurePrinterListWithDetailsSharedPreflist = java.util.ArrayList<PrinterModel>()
    // var logger = LoggerFactory.getLogger(PrinterDiscoverySession::class.java)
@@ -426,10 +428,41 @@ internal class PrinterDiscoverySession(
 
 
         if (json != null) {
-            sharedPreferencesStoredPrinterListWithDetails = gson.fromJson<java.util.ArrayList<PrinterModel>>(
+            @SuppressLint("WrongConstant")val sh: SharedPreferences = appContext.getSharedPreferences(
+                "MySharedPref",
+                Context.MODE_APPEND
+            )
+            val IsLdap = sh.getString("IsLdap", "")
+            val LdapUsername= sh.getString("LdapUsername", "")
+            val userName =sh.getString("userName", "")
+
+            sharedPreferencesStoredPrinterListWithDetails.clear()
+            var manualPrinterList = java.util.ArrayList<PrinterModel>()
+            manualPrinterList = gson.fromJson<java.util.ArrayList<PrinterModel>>(
                 json,
                 type
             )
+
+
+            manualPrinterList.forEach(Consumer { p: PrinterModel ->
+               if(p.idpName !=null) {
+                   if (p.printerAddedByUser.equals(userName) && p.idpName.equals(
+                           SignInCompanyPrefs.getIdpName(
+                               appContext
+                           )
+                       )
+                   ) {
+                       sharedPreferencesStoredPrinterListWithDetails.add(p);
+                   } else if (p.printerAddedByUser.equals(LdapUsername) && p.idpName.equals(IsLdap)) {
+                       sharedPreferencesStoredPrinterListWithDetails.add(p);
+                   }
+               }else{
+                   sharedPreferencesStoredPrinterListWithDetails.add(p);
+               }
+
+            })
+
+
         }
 
         if (deployedSecurePrinterListWithDetailsSharedPreflist != null && deployedSecurePrinterListWithDetailsSharedPreflist.size > 0) {
@@ -458,12 +491,12 @@ internal class PrinterDiscoverySession(
                     Log.d("host ", p.printerHost.toString())
                     DataDogLogger.getLogger().i("Devnco_Android host " + p.printerHost.toString())
 
-                    if(p.isPullPrinter.equals("1.0") || p.isPullPrinter.equals("1")){
-                       // printerId.add(printService.generatePrinterId("/::"+counter))
-                        p.printerHost= InetAddress.getByName("192.168.1."+counter)
+                    if (p.isPullPrinter.equals("1.0") || p.isPullPrinter.equals("1")) {
+                        // printerId.add(printService.generatePrinterId("/::"+counter))
+                        p.printerHost = InetAddress.getByName("192.168.1." + counter)
                         counter++
                     }
-                        printerId.add(printService.generatePrinterId(p.printerHost.toString()))
+                    printerId.add(printService.generatePrinterId(p.printerHost.toString()))
                     val builder = PrinterInfo.Builder(
                         printService.generatePrinterId(p.printerHost.toString()),
                         p.serviceName, PrinterInfo.STATUS_IDLE
@@ -995,7 +1028,7 @@ internal class PrinterDiscoverySession(
                             .build()
                     }
 
-                /*    if(printerInfo.id.localId. .equals(/::1)){
+                    /*    if(printerInfo.id.localId. .equals(/::1)){
 
                     }
 
@@ -1019,7 +1052,9 @@ internal class PrinterDiscoverySession(
     override fun onDestroy() {}
 
     init {
-        appContext = context
+        if (context != null) {
+            appContext = context
+        }
         this.printService = printService
     }
 }

@@ -89,6 +89,10 @@ class FragmentPrinterListAdapter (
             holder.getPrinterHeaderName().visibility=View.VISIBLE
         }
 
+        if(location.equals("printpreview")){
+            holder.getRemovePrinter().visibility=View.GONE
+        }
+
 
      //  holder.getPrinterHeaderName().visibility=View.VISIBLE
         var isExist= false

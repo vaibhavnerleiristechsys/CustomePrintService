@@ -41,6 +41,10 @@ public class PrinterModel {
 
     private List<String> documentSupportList;
 
+    private String printerAddedByUser;
+
+    private String IdpName;
+
 
 
     public String getSecure_release() {
@@ -185,6 +189,23 @@ public class PrinterModel {
 
     public void setDocumentSupportList(List<String> documentSupportList) {
         this.documentSupportList = documentSupportList;
+    }
+
+
+    public String getPrinterAddedByUser() {
+        return printerAddedByUser;
+    }
+
+    public void setPrinterAddedByUser(String printerAddedByUser) {
+        this.printerAddedByUser = printerAddedByUser;
+    }
+
+    public String getIdpName() {
+        return IdpName;
+    }
+
+    public void setIdpName(String idpName) {
+        IdpName = idpName;
     }
 }
 

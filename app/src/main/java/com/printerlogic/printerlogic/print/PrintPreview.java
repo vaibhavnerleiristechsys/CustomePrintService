@@ -15,6 +15,7 @@ import com.printerlogic.printerlogic.jipp.PrintRenderUtils;
 import com.printerlogic.printerlogic.jipp.PrintUtils;
 import com.printerlogic.printerlogic.jipp.PrinterModel;
 import com.printerlogic.printerlogic.prefs.LoginPrefs;
+import com.printerlogic.printerlogic.prefs.SignInCompanyPrefs;
 import com.printerlogic.printerlogic.room.SelectedFile;
 import com.printerlogic.printerlogic.signin.SignInCompany;
 import com.printerlogic.printerlogic.utils.DataDogLogger;
@@ -481,6 +482,11 @@ public class PrintPreview extends AppCompatActivity {
         @Override
         public void onClick(View view) {
              ArrayList<PrinterModel> uniquePrinterList= new ArrayList<PrinterModel>();
+            BottomNavigationActivity bottomNavigationActivity = new BottomNavigationActivity();
+            @SuppressLint("WrongConstant") SharedPreferences prefs = context.getSharedPreferences("MySharedPref", Context.MODE_APPEND);
+            String IsLdap = prefs.getString("IsLdap", "");
+            String LdapUsername= prefs.getString("LdapUsername", "");
+
 
             for(int i=0;i<serverSecurePrinterListWithDetailsSharedPreflist.size();i++){
                 boolean isAvailblePrinter =false;
@@ -493,10 +499,39 @@ public class PrintPreview extends AppCompatActivity {
                               }
                           }
                           if(isAvailblePrinter == false) {
-                              uniquePrinterList.add(printerModel);
+                              try {
+                                  if (printerModel.getIdpName() != null) {
+                                      if (printerModel.getPrinterAddedByUser().equals(bottomNavigationActivity.decodeJWT(context)) && printerModel.getIdpName().equals(SignInCompanyPrefs.Companion.getIdpName(context))) {
+                                          uniquePrinterList.add(printerModel);
+                                      } else if (printerModel.getPrinterAddedByUser().equals(LdapUsername) && printerModel.getIdpName().equals(IsLdap)) {
+                                          uniquePrinterList.add(printerModel);
+                                      }
+                                  } else {
+                                      uniquePrinterList.add(printerModel);
+                                  }
+                              }catch(Exception e){
+                                  DataDogLogger.getLogger().i(
+                                          "Devnco_Android printerList exception: " + e.getMessage()
+                                  );
+                              }
+
                           }
                 }else{
-                    uniquePrinterList.add(printerModel);
+                    try {
+                        if (printerModel.getIdpName() != null) {
+                            if (printerModel.getPrinterAddedByUser().equals(bottomNavigationActivity.decodeJWT(context)) && printerModel.getIdpName().equals(SignInCompanyPrefs.Companion.getIdpName(context))) {
+                                uniquePrinterList.add(printerModel);
+                            } else if (printerModel.getPrinterAddedByUser().equals(LdapUsername) && printerModel.getIdpName().equals(IsLdap)) {
+                                uniquePrinterList.add(printerModel);
+                            }
+                        } else {
+                            uniquePrinterList.add(printerModel);
+                        }
+                    }catch(Exception e){
+                        DataDogLogger.getLogger().i(
+                                "Devnco_Android printerList else exception: " + e.getMessage()
+                        );
+                    }
                 }
             }
 

@@ -167,6 +167,15 @@ class PrintersFragment : Fragment() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)
         val gson = Gson()
         val json = prefs.getString("prefaddedPrinterListWithDetails", null)
+
+        @SuppressLint("WrongConstant")val sh: SharedPreferences = context.getSharedPreferences(
+            "MySharedPref",
+            Context.MODE_APPEND
+        )
+        val IsLdap = sh.getString("IsLdap", "")
+        val LdapUsername= sh.getString("LdapUsername", "")
+
+
         val type = object :
             TypeToken<java.util.ArrayList<PrinterModel?>?>() {}.type
         var sharedPreferencesStoredPrinterListWithDetails = java.util.ArrayList<PrinterModel>()
@@ -186,7 +195,11 @@ class PrintersFragment : Fragment() {
                     }
                 })
                 if (isAvailable == false) {
-                    list.add(p)
+                    if(p.printerAddedByUser.equals(decodeJWT(context) )  && p.idpName.equals(SignInCompanyPrefs.getIdpName(context))) {
+                        list.add(p)
+                    }else if(p.printerAddedByUser.equals(LdapUsername) && p.idpName.equals(IsLdap)){
+                        list.add(p)
+                    }
                 }
 
             })
@@ -517,6 +530,12 @@ class PrintersFragment : Fragment() {
             if(decoded.email!=null) {
                 userName = decoded.email.toString()
             }
+
+            val sharedPreferences: SharedPreferences =
+                requireContext().getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+            val myEdit = sharedPreferences.edit()
+            myEdit.putString("userName", userName);
+            myEdit.commit()
         } catch (ex: Exception) {
 
         }
@@ -537,6 +556,11 @@ class PrintersFragment : Fragment() {
             if(decoded.email!=null) {
                 userName = decoded.email.toString()
             }
+
+            val sharedPreferences: SharedPreferences = context.getSharedPreferences("MySharedPref", Context.MODE_PRIVATE)
+            val myEdit = sharedPreferences.edit()
+            myEdit.putString("userName", userName);
+            myEdit.commit()
         } catch (ex: Exception) {
             Log.d("exception", ex.toString())
             DataDogLogger.getLogger().e("Devnco_Android exception" + ex.toString())
@@ -769,6 +793,13 @@ class PrintersFragment : Fragment() {
                                     DataDogLogger.getLogger().i(
                                         "Devnco_Android Add Printer host addresss  : " + printer.printerHost.hostAddress.toString()
                                     )
+
+                                    printer.printerAddedByUser=decodeJWT(context)
+                                    printer.idpName=SignInCompanyPrefs.getIdpName(context).toString()
+                                    if(IsLdap.equals("LDAP")){
+                                        printer.printerAddedByUser=LdapUsername.toString()
+                                        printer.idpName="LDAP"
+                                    }
                                     PrinterList().addPrinterModel(printer)
                                     addPrinterForshareDocument(printer, context)
                                     DataDogLogger.getLogger().i(
@@ -907,9 +938,9 @@ class PrintersFragment : Fragment() {
        val gson1 = Gson()
            val editor = prefs1.edit()
            val json1 = gson1.toJson(emptyList)
-           editor.putString("prefServerSecurePrinterListWithDetails", json1)
+          // editor.putString("prefServerSecurePrinterListWithDetails", json1)
        editor.putString("deployedPrintersListForPrintPreivew", json1)
-       editor.putString("prefaddedPrinterListWithDetails", json1)
+     //  editor.putString("prefaddedPrinterListWithDetails", json1)
        editor.commit()
 
 

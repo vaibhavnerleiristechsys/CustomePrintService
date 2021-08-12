@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
             ;
             SharedPreferences.Editor myEdit = sharedPreferences.edit();
             myEdit.putString("IsLdap", "Others");
+            myEdit.putString("userName", "Others");
 
             myEdit.commit();
 
@@ -195,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
             SharedPreferences.Editor myEdit = sharedPreferences.edit();
             myEdit.putString("IsLdap", "Others");
-
+            myEdit.putString("userName", "Others");
             myEdit.commit();
 
             PrintersFragment printersFragment = new PrintersFragment();
